@@ -41,6 +41,8 @@ public class SplashActivity extends DataBindBaseActivity<ActivitySplashBinding> 
 
     @Override
     protected void iniListener() {
+        SyncManager.Instance().init(this);
+
         SyncManager.Instance()
                 .getRoom("123456")
                 .get(new DocumentReference.DataCallback() {

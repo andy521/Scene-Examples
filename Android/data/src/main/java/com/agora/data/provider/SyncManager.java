@@ -1,5 +1,7 @@
 package com.agora.data.provider;
 
+import android.content.Context;
+
 import com.agora.data.model.Room;
 
 public final class SyncManager implements ISyncManager {
@@ -20,6 +22,10 @@ public final class SyncManager implements ISyncManager {
     }
 
     private ISyncManager mISyncManager;
+
+    public void init(Context mContext) {
+        mISyncManager = new DataSyncImp(mContext);
+    }
 
     public RoomReference getRoom(String id) {
         return new RoomReference(id);
