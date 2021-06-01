@@ -22,7 +22,7 @@ import io.agora.marriageinterview.databinding.MerryItemRoomsBinding;
  *
  * @author chenhengfei@agora.io
  */
-public class RoomListAdapter extends BaseRecyclerViewAdapter<Room, RoomListAdapter.ViewHolder> {
+public class  RoomListAdapter extends BaseRecyclerViewAdapter<Room, RoomListAdapter.ViewHolder> {
 
     public RoomListAdapter(@Nullable List<Room> datas, @Nullable Object listener) {
         super(datas, listener);

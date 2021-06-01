@@ -6,5 +6,6 @@ include ':data'
 include ':baselibrary'
 include ':InteractivePodcast'
 include ':MarriageInterview'
+include ':KTV'
 
 rootProject.name = "Agora-Scene-Android"

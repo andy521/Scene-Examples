@@ -3,16 +3,25 @@ package com.agora.data.provider;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.agora.data.Config;
+import androidx.annotation.NonNull;
+
 import com.agora.data.R;
-import com.agora.data.model.Room;
-import com.google.gson.Gson;
+import com.agora.data.model.AgoraMember;
+import com.agora.data.model.AgoraRoom;
+import com.agora.data.sync.CollectionReference;
+import com.agora.data.sync.DocumentReference;
+import com.agora.data.sync.FieldFilter;
+import com.agora.data.sync.ISyncManager;
+import com.agora.data.sync.Query;
+import com.agora.data.sync.RoomReference;
+import com.agora.data.sync.SyncManager;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.leancloud.AVException;
 import cn.leancloud.AVLogger;
@@ -25,13 +34,11 @@ import cn.leancloud.livequery.AVLiveQuerySubscribeCallback;
 import cn.leancloud.push.PushService;
 import cn.leancloud.types.AVNull;
 import io.agora.baselibrary.BuildConfig;
-import io.reactivex.MaybeObserver;
+import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
 public class DataSyncImp implements ISyncManager {
-
-    private Gson mGson = new Gson();
 
     public DataSyncImp(Context mContext) {
         if (BuildConfig.DEBUG) {
@@ -53,43 +60,73 @@ public class DataSyncImp implements ISyncManager {
     }
 
     @Override
-    public void createRoom(Room room, DocumentReference.DataCallback callback) {
-        AVObject avObject = new AVObject("ROOM");
-        avObject.saveInBackground().subscribe(new Observer<AVObject>() {
-            @Override
-            public void onSubscribe(@NotNull Disposable d) {
+    public void get(DocumentReference reference, SyncManager.DataItemCallback callback) {
+        if (reference instanceof RoomReference) {
+            AVQuery<AVObject> query = AVQuery.getQuery(AgoraRoom.TABLE_NAME);
+            query.getInBackground(reference.getId())
+                    .subscribe(new Observer<AVObject>() {
+                        @Override
+                        public void onSubscribe(@NonNull Disposable d) {
 
-            }
+                        }
 
-            @Override
-            public void onNext(@NotNull AVObject avObject) {
-                callback.onSuccess(new AgoraObject(avObject));
-            }
+                        @Override
+                        public void onNext(@NonNull AVObject avObject) {
+                            callback.onSuccess(new AgoraObject(avObject));
+                        }
 
-            @Override
-            public void onError(@NotNull Throwable e) {
+                        @Override
+                        public void onError(@NonNull Throwable e) {
+                            callback.onFail(-1, e.getMessage());
+                        }
 
-            }
+                        @Override
+                        public void onComplete() {
 
-            @Override
-            public void onComplete() {
+                        }
+                    });
+        } else {
+            String collectionKey = reference.getParent().getKey();
+            AVQuery<AVObject> avQuery = AVQuery.getQuery(collectionKey);
+            avQuery.getInBackground(reference.getId())
+                    .subscribe(new Observer<AVObject>() {
+                        @Override
+                        public void onSubscribe(@NonNull Disposable d) {
 
-            }
-        });
+                        }
+
+                        @Override
+                        public void onNext(@NonNull AVObject avObject) {
+                            callback.onSuccess(new AgoraObject(avObject));
+                        }
+
+                        @Override
+                        public void onError(@NonNull Throwable e) {
+                            callback.onFail(-1, e.getMessage());
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
+        }
     }
 
     @Override
-    public void getRooms(CollectionReference.DataCallback callback) {
-        AVQuery<AVObject> avQuery = AVQuery.getQuery("ROOM");
+    public void getList(CollectionReference reference, SyncManager.DataListCallback callback) {
+        String roomId = reference.getParent().getId();
+        AVQuery<AVObject> avQuery = AVQuery.getQuery(reference.getKey());
+        avQuery.whereEqualTo(AgoraMember.COLUMN_ROOMID, roomId);
         avQuery.findInBackground()
                 .subscribe(new Observer<List<AVObject>>() {
                     @Override
-                    public void onSubscribe(@NotNull Disposable d) {
+                    public void onSubscribe(@NonNull Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(@NotNull List<AVObject> avObjects) {
+                    public void onNext(@NonNull List<AVObject> avObjects) {
                         List<AgoraObject> list = new ArrayList<>();
                         for (AVObject avObject : avObjects) {
                             list.add(new AgoraObject(avObject));
@@ -98,8 +135,8 @@ public class DataSyncImp implements ISyncManager {
                     }
 
                     @Override
-                    public void onError(@NotNull Throwable e) {
-
+                    public void onError(@NonNull Throwable e) {
+                        callback.onFail(-1, e.getMessage());
                     }
 
                     @Override
@@ -110,122 +147,27 @@ public class DataSyncImp implements ISyncManager {
     }
 
     @Override
-    public void get(DocumentReference reference) {
-        if (reference instanceof RoomReference) {
-            AVQuery<AVObject> query = AVQuery.getQuery("ROOM");
-            query.include(Config.MEMBER_ANCHORID);
-            query.getInBackground(reference.getId())
-                    .firstElement()
-                    .subscribe(new MaybeObserver<AVObject>() {
-                        @Override
-                        public void onSubscribe(@NotNull Disposable d) {
-
-                        }
-
-                        @Override
-                        public void onSuccess(@NotNull AVObject avObject) {
-                            reference.onSuccess(new AgoraObject(avObject));
-                        }
-
-                        @Override
-                        public void onError(@NotNull Throwable e) {
-                            reference.onFail(-1, e.getMessage());
-                        }
-
-                        @Override
-                        public void onComplete() {
-
-                        }
-                    });
-        } else {
-            String roomId = reference.getParent().getParent().getId();
-            AVObject avObjectRoom = AVObject.createWithoutData("ROOM", roomId);
-
-            String collectionKey = reference.getParent().getKey();
-            AVQuery<AVObject> avQuery = AVQuery.getQuery(collectionKey);
-            avQuery.whereEqualTo("roomId", avObjectRoom);
-            avQuery.getInBackground(reference.getId())
-                    .firstElement()
-                    .subscribe(new MaybeObserver<AVObject>() {
-                        @Override
-                        public void onSubscribe(@NotNull Disposable d) {
-
-                        }
-
-                        @Override
-                        public void onSuccess(@NotNull AVObject avObject) {
-                            reference.onSuccess(new AgoraObject(avObject));
-                        }
-
-                        @Override
-                        public void onError(@NotNull Throwable e) {
-                            reference.onFail(-1, e.getMessage());
-                        }
-
-                        @Override
-                        public void onComplete() {
-
-                        }
-                    });
-        }
-    }
-
-    @Override
-    public void getList(CollectionReference reference) {
-        String roomId = reference.getParent().getId();
-        AVObject avObjectRoom = AVObject.createWithoutData("ROOM", roomId);
-
-        AVQuery<AVObject> avQuery = AVQuery.getQuery(reference.getKey());
-        avQuery.whereEqualTo("roomId", avObjectRoom);
-        avQuery.findInBackground()
-                .subscribe(new Observer<List<AVObject>>() {
-                    @Override
-                    public void onSubscribe(@NotNull Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(@NotNull List<AVObject> avObjects) {
-                        List<AgoraObject> list = new ArrayList<>();
-                        for (AVObject avObject : avObjects) {
-                            list.add(new AgoraObject(avObject));
-                        }
-                        reference.onSuccess(list);
-                    }
-
-                    @Override
-                    public void onError(@NotNull Throwable e) {
-                        reference.onFail(-1, e.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-    }
-
-    @Override
-    public void add(CollectionReference reference, Object object) {
+    public void add(CollectionReference reference, HashMap<String, Object> datas, SyncManager.DataItemCallback callback) {
         String collectionKey = reference.getKey();
         AVObject avObject = new AVObject(collectionKey);
-//        avObject.put(Config.USER_NAME, user.getName());
-//        avObject.put(Config.USER_AVATAR, user.getAvatar());
+        for (Map.Entry<String, Object> entry : datas.entrySet()) {
+            avObject.add(entry.getKey(), entry.getValue());
+        }
         avObject.saveInBackground()
                 .subscribe(new Observer<AVObject>() {
                     @Override
-                    public void onSubscribe(@NotNull Disposable d) {
+                    public void onSubscribe(@NonNull Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(@NotNull AVObject avObject) {
-
+                    public void onNext(@NonNull AVObject avObject) {
+                        callback.onSuccess(new AgoraObject(avObject));
                     }
 
                     @Override
-                    public void onError(@NotNull Throwable e) {
-                        reference.onFail(-1, e.getMessage());
+                    public void onError(@NonNull Throwable e) {
+                        callback.onFail(-1, e.getMessage());
                     }
 
                     @Override
@@ -233,28 +175,30 @@ public class DataSyncImp implements ISyncManager {
 
                     }
                 });
-
     }
 
     @Override
-    public void delete(DocumentReference reference) {
+    public void delete(DocumentReference reference, SyncManager.Callback callback) {
         if (reference instanceof RoomReference) {
-            AVObject avObject = AVObject.createWithoutData("ROOM", reference.getId());
-            avObject.deleteInBackground()
+            AVObject avObjectRoom = AVObject.createWithoutData(AgoraRoom.TABLE_NAME, reference.getId());
+            AVQuery<AVObject> avQueryMember = AVQuery.getQuery(AgoraMember.TABLE_NAME)
+                    .whereEqualTo(AgoraMember.COLUMN_ROOMID, reference.getId());
+
+            Observable.concat(avQueryMember.deleteAllInBackground(), avObjectRoom.deleteInBackground())
                     .subscribe(new Observer<AVNull>() {
                         @Override
-                        public void onSubscribe(@NotNull Disposable d) {
+                        public void onSubscribe(@NonNull Disposable d) {
 
                         }
 
                         @Override
-                        public void onNext(@NotNull AVNull avNull) {
-                            reference.onSuccess();
+                        public void onNext(@NonNull AVNull avNull) {
+                            callback.onSuccess();
                         }
 
                         @Override
-                        public void onError(@NotNull Throwable e) {
-                            reference.onFail(-1, e.getMessage());
+                        public void onError(@NonNull Throwable e) {
+                            callback.onFail(-1, e.getMessage());
                         }
 
                         @Override
@@ -263,26 +207,23 @@ public class DataSyncImp implements ISyncManager {
                         }
                     });
         } else {
-            String roomId = reference.getParent().getParent().getId();
-            AVObject avObjectRoom = AVObject.createWithoutData("ROOM", roomId);
-
             String collectionKey = reference.getParent().getKey();
             AVObject avObjectcollection = AVObject.createWithoutData(collectionKey, reference.getId());
             avObjectcollection.deleteInBackground()
                     .subscribe(new Observer<AVNull>() {
                         @Override
-                        public void onSubscribe(@NotNull Disposable d) {
+                        public void onSubscribe(@NonNull Disposable d) {
 
                         }
 
                         @Override
-                        public void onNext(@NotNull AVNull avNull) {
-                            reference.onSuccess();
+                        public void onNext(@NonNull AVNull avNull) {
+                            callback.onSuccess();
                         }
 
                         @Override
-                        public void onError(@NotNull Throwable e) {
-                            reference.onFail(-1, e.getMessage());
+                        public void onError(@NonNull Throwable e) {
+                            callback.onFail(-1, e.getMessage());
                         }
 
                         @Override
@@ -293,26 +234,70 @@ public class DataSyncImp implements ISyncManager {
         }
     }
 
+    private AVQuery<AVObject> createAVQuery(String theClassName, Query mQuery) {
+        AVQuery<AVObject> mAVQuery = AVQuery.getQuery(theClassName);
+
+        if (mQuery != null) {
+            List<FieldFilter> list = mQuery.getFilters();
+            for (FieldFilter filter : list) {
+                if (filter.getOperator() == FieldFilter.Operator.EQUAL) {
+                    mAVQuery.whereEqualTo(filter.getField(), filter.getValue());
+                }
+            }
+        }
+
+        return mAVQuery;
+    }
+
     @Override
-    public void update(DocumentReference reference, String key, Object data) {
+    public void deleteBatch(CollectionReference reference, SyncManager.Callback callback) {
+        String collectionKey = reference.getKey();
+        Query mQuery = reference.getQuery();
+        AVQuery<AVObject> mAVQuery = createAVQuery(collectionKey, mQuery);
+        mAVQuery.deleteAllInBackground()
+                .subscribe(new Observer<AVNull>() {
+                    @Override
+                    public void onSubscribe(@NotNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NotNull AVNull avNull) {
+                        callback.onSuccess();
+                    }
+
+                    @Override
+                    public void onError(@NotNull Throwable e) {
+                        callback.onFail(-1, e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    @Override
+    public void update(DocumentReference reference, String key, Object data, SyncManager.DataItemCallback callback) {
         if (reference instanceof RoomReference) {
-            AVObject avObject = AVObject.createWithoutData("ROOM", reference.getId());
+            AVObject avObject = AVObject.createWithoutData(AgoraRoom.TABLE_NAME, reference.getId());
             avObject.put(key, data);
             avObject.saveInBackground()
                     .subscribe(new Observer<AVObject>() {
                         @Override
-                        public void onSubscribe(@NotNull Disposable d) {
+                        public void onSubscribe(@NonNull Disposable d) {
 
                         }
 
                         @Override
-                        public void onNext(@NotNull AVObject avObject) {
-                            reference.onSuccess();
+                        public void onNext(@NonNull AVObject avObject) {
+                            callback.onSuccess(new AgoraObject(avObject));
                         }
 
                         @Override
-                        public void onError(@NotNull Throwable e) {
-                            reference.onFail(-1, e.getMessage());
+                        public void onError(@NonNull Throwable e) {
+                            callback.onFail(-1, e.getMessage());
                         }
 
                         @Override
@@ -321,27 +306,24 @@ public class DataSyncImp implements ISyncManager {
                         }
                     });
         } else {
-            String roomId = reference.getParent().getParent().getId();
-            AVObject avObjectRoom = AVObject.createWithoutData("ROOM", roomId);
-
             String collectionKey = reference.getParent().getKey();
-            AVObject avObjectcollection = AVObject.createWithoutData(collectionKey, reference.getId());
-            avObjectcollection.put(key, data);
-            avObjectcollection.saveInBackground()
+            AVObject avObjectCollection = AVObject.createWithoutData(collectionKey, reference.getId());
+            avObjectCollection.put(key, data);
+            avObjectCollection.saveInBackground()
                     .subscribe(new Observer<AVObject>() {
                         @Override
-                        public void onSubscribe(@NotNull Disposable d) {
+                        public void onSubscribe(@NonNull Disposable d) {
 
                         }
 
                         @Override
-                        public void onNext(@NotNull AVObject avObject) {
-                            reference.onSuccess();
+                        public void onNext(@NonNull AVObject avObject) {
+                            callback.onSuccess(new AgoraObject(avObject));
                         }
 
                         @Override
-                        public void onError(@NotNull Throwable e) {
-                            reference.onFail(-1, e.getMessage());
+                        public void onError(@NonNull Throwable e) {
+                            callback.onFail(-1, e.getMessage());
                         }
 
                         @Override

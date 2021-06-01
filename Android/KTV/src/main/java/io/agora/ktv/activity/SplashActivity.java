@@ -1,0 +1,43 @@
+package io.agora.ktv.activity;
+
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+
+import io.agora.baselibrary.base.DataBindBaseActivity;
+import io.agora.ktv.R;
+import io.agora.ktv.databinding.KtvActivitySplashBinding;
+
+
+/**
+ * 闪屏界面
+ *
+ * @author chenhengfei@agora.io
+ */
+public class SplashActivity extends DataBindBaseActivity<KtvActivitySplashBinding> {
+
+    @Override
+    protected void iniBundle(@NonNull Bundle bundle) {
+
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.merry_activity_splash;
+    }
+
+    @Override
+    protected void iniView() {
+
+    }
+
+    @Override
+    protected void iniListener() {
+
+    }
+
+    @Override
+    protected void iniData() {
+        finish();
+    }
+}
