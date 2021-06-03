@@ -1,5 +1,6 @@
 package io.agora.ktv.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -23,7 +24,7 @@ public class SplashActivity extends DataBindBaseActivity<KtvActivitySplashBindin
 
     @Override
     protected int getLayoutId() {
-        return R.layout.merry_activity_splash;
+        return R.layout.ktv_activity_splash;
     }
 
     @Override
@@ -38,6 +39,7 @@ public class SplashActivity extends DataBindBaseActivity<KtvActivitySplashBindin
 
     @Override
     protected void iniData() {
+        startActivity(new Intent(this, RoomListActivity.class));
         finish();
     }
 }

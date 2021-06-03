@@ -5,9 +5,11 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import com.agora.data.Config;
 import com.agora.data.R;
 import com.agora.data.model.AgoraMember;
 import com.agora.data.model.AgoraRoom;
+import com.agora.data.sync.AgoraException;
 import com.agora.data.sync.CollectionReference;
 import com.agora.data.sync.DocumentReference;
 import com.agora.data.sync.FieldFilter;
@@ -15,8 +17,7 @@ import com.agora.data.sync.ISyncManager;
 import com.agora.data.sync.Query;
 import com.agora.data.sync.RoomReference;
 import com.agora.data.sync.SyncManager;
-
-import org.jetbrains.annotations.NotNull;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,12 +36,17 @@ import cn.leancloud.push.PushService;
 import cn.leancloud.types.AVNull;
 import io.agora.baselibrary.BuildConfig;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
-public class DataSyncImp implements ISyncManager {
+public class DataSyncImpl implements ISyncManager {
 
-    public DataSyncImp(Context mContext) {
+    private Gson mGson = new Gson();
+
+    public DataSyncImpl(Context mContext) {
         if (BuildConfig.DEBUG) {
             AVOSCloud.setLogLevel(AVLogger.Level.DEBUG);
         } else {
@@ -57,6 +63,55 @@ public class DataSyncImp implements ISyncManager {
         AVOSCloud.initialize(mContext, appid, appKey, url);
 
         PushService.startIfRequired(mContext);
+    }
+
+    @Override
+    public Observable<AgoraRoom> creatRoom(AgoraRoom room) {
+        AVObject avObject = new AVObject(AgoraRoom.TABLE_NAME);
+        avObject.put(AgoraRoom.COLUMN_OWNERID, room.getOwnerId());
+        avObject.put(AgoraRoom.COLUMN_NAME, room.getName());
+        return avObject.saveInBackground()
+                .subscribeOn(Schedulers.io())
+                .map(new Function<AVObject, AgoraRoom>() {
+                    @Override
+                    public AgoraRoom apply(@NonNull AVObject avObject) throws Exception {
+                        AgoraRoom mAgoraRoom = mGson.fromJson(avObject.toJSONObject().toJSONString(), AgoraRoom.class);
+                        mAgoraRoom.setId(avObject.getObjectId());
+                        return mAgoraRoom;
+                    }
+                }).onErrorResumeNext(new Function<Throwable, ObservableSource<? extends AgoraRoom>>() {
+                    @Override
+                    public ObservableSource<? extends AgoraRoom> apply(@NonNull Throwable throwable) throws Exception {
+                        return Observable.error(new AgoraException(throwable));
+                    }
+                });
+    }
+
+    @Override
+    public Observable<List<AgoraRoom>> getRooms() {
+        AVQuery<AVObject> query = AVQuery.getQuery(AgoraRoom.TABLE_NAME);
+        query.limit(30);
+        query.orderByDescending(Config.ROOM_CREATEDAT);
+        return query.findInBackground()
+                .subscribeOn(Schedulers.io())
+                .map(new Function<List<AVObject>, List<AgoraRoom>>() {
+                    @Override
+                    public List<AgoraRoom> apply(@NonNull List<AVObject> avObjects) throws Exception {
+                        List<AgoraRoom> rooms = new ArrayList<>();
+                        for (AVObject object : avObjects) {
+                            AgoraRoom room = mGson.fromJson(object.toJSONObject().toJSONString(), AgoraRoom.class);
+                            room.setId(object.getObjectId());
+                            rooms.add(room);
+                        }
+                        return rooms;
+                    }
+                })
+                .onErrorResumeNext(new Function<Throwable, ObservableSource<? extends List<AgoraRoom>>>() {
+                    @Override
+                    public ObservableSource<? extends List<AgoraRoom>> apply(@NonNull Throwable throwable) throws Exception {
+                        return Observable.error(new AgoraException(throwable));
+                    }
+                });
     }
 
     @Override
@@ -77,7 +132,7 @@ public class DataSyncImp implements ISyncManager {
 
                         @Override
                         public void onError(@NonNull Throwable e) {
-                            callback.onFail(-1, e.getMessage());
+                            callback.onFail(new AgoraException(e));
                         }
 
                         @Override
@@ -102,7 +157,7 @@ public class DataSyncImp implements ISyncManager {
 
                         @Override
                         public void onError(@NonNull Throwable e) {
-                            callback.onFail(-1, e.getMessage());
+                            callback.onFail(new AgoraException(e));
                         }
 
                         @Override
@@ -136,7 +191,7 @@ public class DataSyncImp implements ISyncManager {
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        callback.onFail(-1, e.getMessage());
+                        callback.onFail(new AgoraException(e));
                     }
 
                     @Override
@@ -151,7 +206,7 @@ public class DataSyncImp implements ISyncManager {
         String collectionKey = reference.getKey();
         AVObject avObject = new AVObject(collectionKey);
         for (Map.Entry<String, Object> entry : datas.entrySet()) {
-            avObject.add(entry.getKey(), entry.getValue());
+            avObject.put(entry.getKey(), entry.getValue());
         }
         avObject.saveInBackground()
                 .subscribe(new Observer<AVObject>() {
@@ -167,7 +222,7 @@ public class DataSyncImp implements ISyncManager {
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        callback.onFail(-1, e.getMessage());
+                        callback.onFail(new AgoraException(e));
                     }
 
                     @Override
@@ -198,7 +253,7 @@ public class DataSyncImp implements ISyncManager {
 
                         @Override
                         public void onError(@NonNull Throwable e) {
-                            callback.onFail(-1, e.getMessage());
+                            callback.onFail(new AgoraException(e));
                         }
 
                         @Override
@@ -223,7 +278,7 @@ public class DataSyncImp implements ISyncManager {
 
                         @Override
                         public void onError(@NonNull Throwable e) {
-                            callback.onFail(-1, e.getMessage());
+                            callback.onFail(new AgoraException(e));
                         }
 
                         @Override
@@ -257,18 +312,18 @@ public class DataSyncImp implements ISyncManager {
         mAVQuery.deleteAllInBackground()
                 .subscribe(new Observer<AVNull>() {
                     @Override
-                    public void onSubscribe(@NotNull Disposable d) {
+                    public void onSubscribe(@NonNull Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(@NotNull AVNull avNull) {
+                    public void onNext(@NonNull AVNull avNull) {
                         callback.onSuccess();
                     }
 
                     @Override
-                    public void onError(@NotNull Throwable e) {
-                        callback.onFail(-1, e.getMessage());
+                    public void onError(@NonNull Throwable e) {
+                        callback.onFail(new AgoraException(e));
                     }
 
                     @Override
@@ -297,7 +352,7 @@ public class DataSyncImp implements ISyncManager {
 
                         @Override
                         public void onError(@NonNull Throwable e) {
-                            callback.onFail(-1, e.getMessage());
+                            callback.onFail(new AgoraException(e));
                         }
 
                         @Override
@@ -323,7 +378,7 @@ public class DataSyncImp implements ISyncManager {
 
                         @Override
                         public void onError(@NonNull Throwable e) {
-                            callback.onFail(-1, e.getMessage());
+                            callback.onFail(new AgoraException(e));
                         }
 
                         @Override

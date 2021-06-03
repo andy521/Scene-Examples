@@ -7,6 +7,8 @@ import com.agora.data.R;
 import java.io.Serializable;
 
 public class User implements Serializable, Cloneable {
+    public static final String TABLE_NAME = "USER";
+
     private String objectId;
     private String name;
     private String avatar;

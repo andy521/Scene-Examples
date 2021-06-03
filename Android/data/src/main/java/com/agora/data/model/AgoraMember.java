@@ -23,8 +23,8 @@ public class AgoraMember {
     public HashMap<String, Object> toHashMap() {
         HashMap<String, Object> datas = new HashMap<>();
         datas.put(COLUMN_ROOMID, roomId);
-        datas.put(COLUMN_STREAMID, roomId);
-        datas.put(COLUMN_USERID, roomId);
+        datas.put(COLUMN_STREAMID, streamId);
+        datas.put(COLUMN_USERID, userId);
         datas.put(COLUMN_ROLE, role);
         datas.put(COLUMN_ISAUDIOMUTED, isAudioMuted);
         datas.put(COLUMN_ISSELFAUDIOMUTED, isSelfAudioMuted);

@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 
 public class Member implements Serializable, Cloneable {
+    public static final String TABLE_NAME = "ROOM";
+
     public enum Role {
         Listener(0), Speaker(1), Left(2), Right(3);
 

@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.util.List;
 
 public class Room implements Serializable, Cloneable {
+    public static final String TABLE_NAME = "ROOM";
+
     private String objectId;
     private String channelName;
     private User anchorId;

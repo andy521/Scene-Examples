@@ -3,6 +3,8 @@ package com.agora.data.model;
 import java.io.Serializable;
 
 public class Action implements Serializable {
+    public static final String TABLE_NAME = "ACTION";
+
     private String objectId;
     private Member memberId;
     private Room roomId;

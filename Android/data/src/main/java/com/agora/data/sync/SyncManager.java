@@ -2,11 +2,14 @@ package com.agora.data.sync;
 
 import android.content.Context;
 
+import com.agora.data.model.AgoraRoom;
 import com.agora.data.provider.AgoraObject;
-import com.agora.data.provider.DataSyncImp;
+import com.agora.data.provider.DataSyncImpl;
 
 import java.util.HashMap;
 import java.util.List;
+
+import io.reactivex.Observable;
 
 /**
  * 房间状态同步
@@ -31,11 +34,21 @@ public final class SyncManager implements ISyncManager {
     private ISyncManager mISyncManager;
 
     public void init(Context mContext) {
-        mISyncManager = new DataSyncImp(mContext);
+        mISyncManager = new DataSyncImpl(mContext);
     }
 
     public RoomReference getRoom(String id) {
         return new RoomReference(id);
+    }
+
+    @Override
+    public Observable<AgoraRoom> creatRoom(AgoraRoom room) {
+        return mISyncManager.creatRoom(room);
+    }
+
+    @Override
+    public Observable<List<AgoraRoom>> getRooms() {
+        return mISyncManager.getRooms();
     }
 
     @Override
@@ -91,18 +104,18 @@ public final class SyncManager implements ISyncManager {
     public interface Callback {
         void onSuccess();
 
-        void onFail(int code, String msg);
+        void onFail(AgoraException exception);
     }
 
     public interface DataItemCallback {
         void onSuccess(AgoraObject result);
 
-        void onFail(int code, String msg);
+        void onFail(AgoraException exception);
     }
 
     public interface DataListCallback {
         void onSuccess(List<AgoraObject> result);
 
-        void onFail(int code, String msg);
+        void onFail(AgoraException exception);
     }
 }

@@ -16,12 +16,11 @@
     <application
         android:name=".AppApplication"
         android:allowBackup="false"
-        android:icon="@mipmap/icon_launcher_1024"
         android:label="@string/ktv_app_name"
         android:requestLegacyExternalStorage="true"
         android:screenOrientation="portrait"
         android:supportsRtl="true"
-        android:theme="@style/MerryAppTheme"
+        android:theme="@style/KtvAppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <meta-data
             android:name="android.max_aspect"
@@ -29,13 +28,14 @@
 
         <activity
             android:name=".activity.SplashActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait">
-            <intent-filter tools:node="remove">
+            android:launchMode="singleTask">
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.RoomListActivity" />
+        <activity android:name=".activity.RoomActivity" />
     </application>
 </manifest>

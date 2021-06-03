@@ -1,8 +1,17 @@
 package com.agora.data.sync;
 
+import com.agora.data.model.AgoraRoom;
+
 import java.util.HashMap;
+import java.util.List;
+
+import io.reactivex.Observable;
 
 public interface ISyncManager {
+    Observable<AgoraRoom> creatRoom(AgoraRoom room);
+
+    Observable<List<AgoraRoom>> getRooms();
+
     void get(DocumentReference reference, SyncManager.DataItemCallback callback);
 
     void getList(CollectionReference reference, SyncManager.DataListCallback callback);

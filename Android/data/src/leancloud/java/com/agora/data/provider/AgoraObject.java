@@ -22,4 +22,9 @@ public class AgoraObject implements IAgoraObject {
     public <T> T toObject(@NonNull Class<T> valueType) {
         return new Gson().fromJson(avObject.toJSONObject().toJSONString(), valueType);
     }
+
+    @Override
+    public String getId() {
+        return avObject.getObjectId();
+    }
 }

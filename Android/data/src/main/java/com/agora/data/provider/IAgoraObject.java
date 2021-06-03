@@ -9,4 +9,6 @@ import androidx.annotation.NonNull;
 public interface IAgoraObject {
 
     <T> T toObject(@NonNull Class<T> valueType);
+
+    String getId();
 }

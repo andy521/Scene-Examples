@@ -1,4 +1,4 @@
-package com.agora.data.sync;
+package io.agora.ktv.data;
 
 import android.content.Context;
 

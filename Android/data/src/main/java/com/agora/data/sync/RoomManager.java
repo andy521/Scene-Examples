@@ -2,16 +2,15 @@ package com.agora.data.sync;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
-import com.agora.data.BaseError;
 import com.agora.data.model.AgoraMember;
-import com.agora.data.model.BusinessMember;
-import com.agora.data.model.BusinessRoom;
-import com.agora.data.model.Member;
-import com.agora.data.model.Room;
-import com.agora.data.observer.DataObserver;
+import com.agora.data.model.AgoraRoom;
+import com.agora.data.model.User;
 import com.agora.data.provider.AgoraObject;
+import com.elvishew.xlog.Logger;
+import com.elvishew.xlog.XLog;
+
+import io.reactivex.Completable;
+import io.reactivex.Single;
 
 /**
  * 房间控制
@@ -20,6 +19,7 @@ import com.agora.data.provider.AgoraObject;
  * @date 2021/06/01
  */
 public final class RoomManager {
+    private Logger.Builder mLogger = XLog.tag("RoomManager");
 
     private volatile static RoomManager instance;
 
@@ -27,7 +27,6 @@ public final class RoomManager {
 
     private RoomManager(Context mContext) {
         this.mContext = mContext;
-        SyncManager.Instance().init(mContext);
     }
 
     public static RoomManager Instance(Context mContext) {
@@ -40,144 +39,162 @@ public final class RoomManager {
         return instance;
     }
 
-    public void createRoom(BusinessRoom room, DataCallback<Room> callback) {
-//        DataRepositroy.Instance(mContext)
-//                .creatRoom(room)
-//                .subscribe(new DataObserver<Room>(mContext) {
-//                    @Override
-//                    public void handleError(@NonNull BaseError e) {
-//                        callback.onFail(e.getCode(), e.getMessage());
-//                    }
-//
-//                    @Override
-//                    public void handleSuccess(@NonNull Room room) {
-//                        callback.onSuccess(room);
-//                    }
-//                });
+    public Single<AgoraMember> joinRoom(AgoraRoom room, User user) {
+        return Single.create(emitter ->
+                {
+                    mLogger.d("joinRoom() called with: room = [%s], user = [%s]", room, user);
+                    //1：判断房间是否存在
+                    SyncManager.Instance()
+                            .getRoom(room.getId())
+                            .get(new SyncManager.DataItemCallback() {
+                                @Override
+                                public void onSuccess(AgoraObject result) {
+                                    mLogger.d("getRoom() onSuccess() called with: result = [%s]", result);
+                                    //2：删除一次，因为有可能是异常退出导致第二次进入，所以删除之前的。
+                                    SyncManager.Instance()
+                                            .getRoom(room.getId())
+                                            .collection(AgoraMember.TABLE_NAME)
+                                            .query(new Query()
+                                                    .whereEqualTo(AgoraMember.COLUMN_USERID, user.getObjectId()))
+                                            .delete(new SyncManager.Callback() {
+                                                @Override
+                                                public void onSuccess() {
+                                                    mLogger.d("delete() onSuccess() called");
+                                                }
+
+                                                @Override
+                                                public void onFail(AgoraException exception) {
+                                                    mLogger.e("delete() onFail() called with: exception = [%s]", exception.toString());
+                                                }
+                                            });
+
+                                    //3. 加入到Member中
+                                    AgoraMember agoraMember = new AgoraMember();
+                                    agoraMember.setRoomId(room.getId());
+                                    agoraMember.setUserId(user.getObjectId());
+
+                                    SyncManager.Instance()
+                                            .getRoom(room.getId())
+                                            .collection(AgoraMember.TABLE_NAME)
+                                            .add(agoraMember.toHashMap(), new SyncManager.DataItemCallback() {
+                                                @Override
+                                                public void onSuccess(AgoraObject result) {
+                                                    mLogger.d("add() onSuccess() called with: result = [%s]", result);
+                                                    AgoraMember agoraMemberRemote = result.toObject(AgoraMember.class);
+                                                    agoraMemberRemote.setId(result.getId());
+                                                    emitter.onSuccess(agoraMemberRemote);
+                                                }
+
+                                                @Override
+                                                public void onFail(AgoraException exception) {
+                                                    mLogger.e("add() onFail() called with: exception = [%s]", exception.toString());
+                                                    emitter.onError(exception);
+                                                }
+                                            });
+                                }
+
+                                @Override
+                                public void onFail(AgoraException exception) {
+                                    mLogger.e("getRoom() onFail() called with: exception = [%s]", exception.toString());
+                                    emitter.onError(exception);
+                                }
+                            });
+                }
+        );
     }
 
-    public void joinRoom(BusinessRoom room, BusinessMember member, DataCallback<Room> callback) {
-        //1：判断房间是否存在
-        SyncManager.Instance()
-                .getRoom(room.getObjectId())
-                .get(new SyncManager.DataItemCallback() {
-                    @Override
-                    public void onSuccess(AgoraObject result) {
-                        //2：删除一次，因为有可能是异常退出导致第二次进入，所以删除之前的。
-                        SyncManager.Instance()
-                                .getRoom(room.getObjectId())
-                                .collection(AgoraMember.TABLE_NAME)
-                                .query(new Query()
-                                        .whereEqualTo(AgoraMember.COLUMN_USERID, member.getUser().getObjectId()))
-                                .delete(new SyncManager.Callback() {
-                                    @Override
-                                    public void onSuccess() {
+    public Completable updateMineStreamId(AgoraRoom room, AgoraMember member) {
+        return Completable.create(emitter ->
+                SyncManager.Instance()
+                        .getRoom(room.getId())
+                        .collection(AgoraMember.TABLE_NAME)
+                        .document(member.getId())
+                        .update(AgoraMember.COLUMN_STREAMID, member.getStreamId(), new SyncManager.DataItemCallback() {
+                            @Override
+                            public void onSuccess(AgoraObject result) {
+                                emitter.onComplete();
+                            }
 
-                                    }
-
-                                    @Override
-                                    public void onFail(int code, String msg) {
-
-                                    }
-                                });
-
-                        AgoraMember agoraMember = new AgoraMember();
-                        SyncManager.Instance()
-                                .getRoom(room.getObjectId())
-                                .collection(AgoraMember.TABLE_NAME)
-                                .add(agoraMember.toHashMap(), new SyncManager.DataItemCallback() {
-                                    @Override
-                                    public void onSuccess(AgoraObject result) {
-
-                                    }
-
-                                    @Override
-                                    public void onFail(int code, String msg) {
-
-                                    }
-                                });
-                    }
-
-                    @Override
-                    public void onFail(int code, String msg) {
-                        callback.onFail(code, msg);
-                    }
-                });
+                            @Override
+                            public void onFail(AgoraException exception) {
+                                emitter.onError(exception);
+                            }
+                        })
+        );
     }
 
-    public void leaveRoom(Room room) {
-        SyncManager.Instance()
-                .getRoom(room.getObjectId())
-                .delete(new SyncManager.Callback() {
-                    @Override
-                    public void onSuccess() {
+    public Completable leaveRoom(AgoraRoom room) {
+        return Completable.create(emitter ->
+                SyncManager.Instance()
+                        .getRoom(room.getId())
+                        .delete(new SyncManager.Callback() {
+                            @Override
+                            public void onSuccess() {
+                                emitter.onComplete();
+                            }
 
-                    }
+                            @Override
+                            public void onFail(AgoraException exception) {
+                                emitter.onError(exception);
+                            }
+                        }));
 
-                    @Override
-                    public void onFail(int code, String msg) {
-
-                    }
-                });
     }
 
-    public void toggleSelfAudio(Room room, Member member, boolean isMute) {
-        SyncManager.Instance()
-                .getRoom(room.getObjectId())
-                .collection(AgoraMember.TABLE_NAME)
-                .document(member.getObjectId())
-                .update(AgoraMember.COLUMN_ISSELFAUDIOMUTED, isMute, new SyncManager.DataItemCallback() {
-                    @Override
-                    public void onSuccess(AgoraObject result) {
-                        AgoraMember memberNew = result.toObject(AgoraMember.class);
-                    }
+    public Completable toggleSelfAudio(AgoraRoom room, AgoraMember member, boolean isMute) {
+        return Completable.create(emitter ->
+                SyncManager.Instance()
+                        .getRoom(room.getId())
+                        .collection(AgoraMember.TABLE_NAME)
+                        .document(member.getId())
+                        .update(AgoraMember.COLUMN_ISSELFAUDIOMUTED, isMute ? 1 : 0, new SyncManager.DataItemCallback() {
+                            @Override
+                            public void onSuccess(AgoraObject result) {
+                                emitter.onComplete();
+                            }
 
-                    @Override
-                    public void onFail(int code, String msg) {
-
-                    }
-                });
+                            @Override
+                            public void onFail(AgoraException exception) {
+                                emitter.onError(exception);
+                            }
+                        }));
     }
 
-    public void toggleAudio(Room room, Member member, boolean isMute) {
-        SyncManager.Instance()
-                .getRoom(room.getObjectId())
-                .collection(AgoraMember.TABLE_NAME)
-                .document(member.getObjectId())
-                .update(AgoraMember.COLUMN_ISAUDIOMUTED, isMute, new SyncManager.DataItemCallback() {
-                    @Override
-                    public void onSuccess(AgoraObject result) {
-                        AgoraMember memberNew = result.toObject(AgoraMember.class);
-                    }
+    public Completable toggleAudio(AgoraRoom room, AgoraMember member, boolean isMute) {
+        return Completable.create(emitter ->
+                SyncManager.Instance()
+                        .getRoom(room.getId())
+                        .collection(AgoraMember.TABLE_NAME)
+                        .document(member.getId())
+                        .update(AgoraMember.COLUMN_ISAUDIOMUTED, isMute ? 1 : 0, new SyncManager.DataItemCallback() {
+                            @Override
+                            public void onSuccess(AgoraObject result) {
+                                emitter.onComplete();
+                            }
 
-                    @Override
-                    public void onFail(int code, String msg) {
-
-                    }
-                });
+                            @Override
+                            public void onFail(AgoraException exception) {
+                                emitter.onError(exception);
+                            }
+                        }));
     }
 
-    public void changeRole(Room room, Member member, int role) {
-        SyncManager.Instance()
-                .getRoom(room.getObjectId())
-                .collection(AgoraMember.TABLE_NAME)
-                .document(member.getObjectId())
-                .update(AgoraMember.COLUMN_ROLE, role, new SyncManager.DataItemCallback() {
-                    @Override
-                    public void onSuccess(AgoraObject result) {
-                        AgoraMember memberNew = result.toObject(AgoraMember.class);
-                    }
+    public Completable changeRole(AgoraRoom room, AgoraMember member, int role) {
+        return Completable.create(emitter ->
+                SyncManager.Instance()
+                        .getRoom(room.getId())
+                        .collection(AgoraMember.TABLE_NAME)
+                        .document(member.getId())
+                        .update(AgoraMember.COLUMN_ROLE, role, new SyncManager.DataItemCallback() {
+                            @Override
+                            public void onSuccess(AgoraObject result) {
+                                emitter.onComplete();
+                            }
 
-                    @Override
-                    public void onFail(int code, String msg) {
-
-                    }
-                });
-    }
-
-    public interface DataCallback<T> {
-        void onSuccess(T result);
-
-        void onFail(int code, String msg);
+                            @Override
+                            public void onFail(AgoraException exception) {
+                                emitter.onError(exception);
+                            }
+                        }));
     }
 }

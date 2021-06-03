@@ -2,8 +2,8 @@
 
 import leancloud
 
-appid = ''
-appkey = ''
+appid = 'HlhdxEP2mt0agmaDECdzHRrP-9Nh9j0Va'
+appkey = 'cuBS7GYWcGvOFfV9oBVXj5lf'
 
 isInit = False
 
@@ -61,10 +61,18 @@ def createTable():
     action.set('status', 1)
     action.save()
 
+    # AgoraRoom
+    AgoraRoom = leancloud.Object.extend('AgoraRoom')
+    mAgoraRoom = AgoraRoom()
+    mAgoraRoom.set('id', 'TestId')
+    mAgoraRoom.set('streamId', '1')
+    mAgoraRoom.save()
+
     user.destroy()
     room.destroy()
     member.destroy()
     action.destroy()
+    mAgoraRoom.destroy()
     print("数据库创建成功。")
 
 
