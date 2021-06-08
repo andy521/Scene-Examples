@@ -55,10 +55,10 @@ public class CollectionReference {
     }
 
     public void get(SyncManager.DataListCallback callback) {
-        SyncManager.Instance().getList(this, callback);
+        SyncManager.Instance().get(this, callback);
     }
 
     public void delete(SyncManager.Callback callback) {
-        SyncManager.Instance().deleteBatch(this, callback);
+        SyncManager.Instance().delete(this, callback);
     }
 }

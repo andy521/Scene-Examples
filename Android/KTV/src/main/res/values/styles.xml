@@ -1,9 +1,23 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="KtvAppTheme" parent="BaseAppTheme">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <style name="ktv_AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/ktv_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/ktv_colorPrimaryDark</item>
+        <item name="colorAccent">@color/ktv_colorAccent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="ktv_style_titlebar" parent="@style/style_titlebar">
+        <item name="android:id">@id/titleBar</item>
+        <item name="android:theme">@style/toolbar_theme</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
+        <item name="titleTextColor">@android:color/white</item>
+        <item name="ct_icon_back">@mipmap/ktv_back</item>
+        <item name="ct_showback">true</item>
+        <item name="android:background">@color/ktv_colorPrimary</item>
     </style>
 </resources>

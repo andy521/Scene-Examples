@@ -23,6 +23,10 @@ public class DocumentReference {
         return id;
     }
 
+    public Query getQuery() {
+        return mQuery;
+    }
+
     public DocumentReference query(Query mQuery) {
         this.mQuery = mQuery;
         return this;

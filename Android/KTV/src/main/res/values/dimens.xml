@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="ktv_title_size">20sp</dimen>
+    <dimen name="ktv_list_empty_size">16sp</dimen>
+</resources>

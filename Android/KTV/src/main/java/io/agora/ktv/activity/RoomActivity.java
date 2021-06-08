@@ -24,7 +24,7 @@ import io.reactivex.disposables.Disposable;
 
 
 /**
- * 房间
+ * 房间界面
  *
  * @author chenhengfei@agora.io
  */
@@ -52,8 +52,6 @@ public class RoomActivity extends DataBindBaseActivity<KtvActivityRoomBinding> i
 
     @Override
     protected void iniListener() {
-        mDataBinding.btMic.setOnClickListener(this);
-        mDataBinding.btRequest.setOnClickListener(this);
     }
 
     private AgoraMember mAgoraMember;
@@ -92,11 +90,11 @@ public class RoomActivity extends DataBindBaseActivity<KtvActivityRoomBinding> i
 
     @Override
     public void onClick(View v) {
-        if (v == mDataBinding.btMic) {
-            toggleMic();
-        } else if (v == mDataBinding.btRequest) {
-            changeRole();
-        }
+//        if (v == mDataBinding.btMic) {
+//            toggleMic();
+//        } else if (v == mDataBinding.btRequest) {
+//            changeRole();
+//        }
     }
 
     private void toggleMic() {

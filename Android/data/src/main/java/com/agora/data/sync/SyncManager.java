@@ -57,8 +57,8 @@ public final class SyncManager implements ISyncManager {
     }
 
     @Override
-    public void getList(CollectionReference reference, SyncManager.DataListCallback callback) {
-        mISyncManager.getList(reference, callback);
+    public void get(CollectionReference reference, SyncManager.DataListCallback callback) {
+        mISyncManager.get(reference, callback);
     }
 
     @Override
@@ -72,13 +72,18 @@ public final class SyncManager implements ISyncManager {
     }
 
     @Override
-    public void deleteBatch(CollectionReference reference, Callback callback) {
-        mISyncManager.deleteBatch(reference, callback);
+    public void delete(CollectionReference reference, Callback callback) {
+        mISyncManager.delete(reference, callback);
     }
 
     @Override
     public void update(DocumentReference reference, String key, Object data, SyncManager.DataItemCallback callback) {
         mISyncManager.update(reference, key, data, callback);
+    }
+
+    @Override
+    public void update(DocumentReference reference, HashMap<String, Object> datas, DataItemCallback callback) {
+        mISyncManager.update(reference, datas, callback);
     }
 
     @Override

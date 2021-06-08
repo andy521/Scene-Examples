@@ -39,6 +39,60 @@ public final class RoomManager {
         return instance;
     }
 
+    public void subcribeRoom(AgoraRoom room) {
+        SyncManager.Instance()
+                .getRoom(room.getId())
+                .subcribe(new SyncManager.EventListener() {
+                    @Override
+                    public void onCreated(AgoraObject item) {
+
+                    }
+
+                    @Override
+                    public void onUpdated(AgoraObject item) {
+
+                    }
+
+                    @Override
+                    public void onDeleted(String objectId) {
+
+                    }
+
+                    @Override
+                    public void onSubscribeError(int error) {
+
+                    }
+                });
+    }
+
+    public void subcribeRoom2(AgoraRoom room) {
+        SyncManager.Instance()
+                .getRoom(room.getId())
+                .collection(AgoraMember.TABLE_NAME)
+                .document("111")
+                .subcribe(new SyncManager.EventListener() {
+                    @Override
+                    public void onCreated(AgoraObject item) {
+
+                    }
+
+                    @Override
+                    public void onUpdated(AgoraObject item) {
+
+                    }
+
+                    @Override
+                    public void onDeleted(String objectId) {
+
+                    }
+
+                    @Override
+                    public void onSubscribeError(int error) {
+
+                    }
+                });
+    }
+
     public Single<AgoraMember> joinRoom(AgoraRoom room, User user) {
         return Single.create(emitter ->
                 {
@@ -50,6 +104,8 @@ public final class RoomManager {
                                 @Override
                                 public void onSuccess(AgoraObject result) {
                                     mLogger.d("getRoom() onSuccess() called with: result = [%s]", result);
+                                    AgoraRoom mRoom = result.toObject(AgoraRoom.class);
+
                                     //2：删除一次，因为有可能是异常退出导致第二次进入，所以删除之前的。
                                     SyncManager.Instance()
                                             .getRoom(room.getId())

@@ -169,7 +169,7 @@ public class DataSyncImpl implements ISyncManager {
     }
 
     @Override
-    public void getList(CollectionReference reference, SyncManager.DataListCallback callback) {
+    public void get(CollectionReference reference, SyncManager.DataListCallback callback) {
         String roomId = reference.getParent().getId();
         AVQuery<AVObject> avQuery = AVQuery.getQuery(reference.getKey());
         avQuery.whereEqualTo(AgoraMember.COLUMN_ROOMID, roomId);
@@ -305,7 +305,7 @@ public class DataSyncImpl implements ISyncManager {
     }
 
     @Override
-    public void deleteBatch(CollectionReference reference, SyncManager.Callback callback) {
+    public void delete(CollectionReference reference, SyncManager.Callback callback) {
         String collectionKey = reference.getKey();
         Query mQuery = reference.getQuery();
         AVQuery<AVObject> mAVQuery = createAVQuery(collectionKey, mQuery);
@@ -389,12 +389,72 @@ public class DataSyncImpl implements ISyncManager {
         }
     }
 
+    @Override
+    public void update(DocumentReference reference, HashMap<String, Object> datas, SyncManager.DataItemCallback callback) {
+        if (reference instanceof RoomReference) {
+            AVObject avObject = AVObject.createWithoutData(AgoraRoom.TABLE_NAME, reference.getId());
+            for (Map.Entry<String, Object> entry : datas.entrySet()) {
+                avObject.put(entry.getKey(), entry.getValue());
+            }
+            avObject.saveInBackground()
+                    .subscribe(new Observer<AVObject>() {
+                        @Override
+                        public void onSubscribe(@NonNull Disposable d) {
+
+                        }
+
+                        @Override
+                        public void onNext(@NonNull AVObject avObject) {
+                            callback.onSuccess(new AgoraObject(avObject));
+                        }
+
+                        @Override
+                        public void onError(@NonNull Throwable e) {
+                            callback.onFail(new AgoraException(e));
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
+        } else {
+            String collectionKey = reference.getParent().getKey();
+            AVObject avObjectCollection = AVObject.createWithoutData(collectionKey, reference.getId());
+            for (Map.Entry<String, Object> entry : datas.entrySet()) {
+                avObjectCollection.put(entry.getKey(), entry.getValue());
+            }
+            avObjectCollection.saveInBackground()
+                    .subscribe(new Observer<AVObject>() {
+                        @Override
+                        public void onSubscribe(@NonNull Disposable d) {
+
+                        }
+
+                        @Override
+                        public void onNext(@NonNull AVObject avObject) {
+                            callback.onSuccess(new AgoraObject(avObject));
+                        }
+
+                        @Override
+                        public void onError(@NonNull Throwable e) {
+                            callback.onFail(new AgoraException(e));
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    });
+        }
+    }
+
     private HashMap<SyncManager.EventListener, AVLiveQuery> events = new HashMap<>();
 
     @Override
     public void subcribe(DocumentReference reference, SyncManager.EventListener listener) {
         if (reference instanceof RoomReference) {
-            AVQuery<AVObject> query = AVQuery.getQuery(reference.getParent().getKey());
+            AVQuery<AVObject> query = createAVQuery(AgoraRoom.TABLE_NAME, reference.getQuery());
             AVLiveQuery avLiveQuery = AVLiveQuery.initWithQuery(query);
             avLiveQuery.setEventHandler(new AVLiveQueryEventHandler() {
 

@@ -55,7 +55,7 @@ public class RoomListActivity extends DataBindBaseActivity<KtvActivityRoomListBi
             super.onRoomClosed(room, fromUser);
 
 //            mAdapter.deleteItem(room);
-            mDataBinding.tvEmpty.setVisibility(mAdapter.getItemCount() <= 0 ? View.VISIBLE : View.GONE);
+//            mDataBinding.tvEmpty.setVisibility(mAdapter.getItemCount() <= 0 ? View.VISIBLE : View.GONE);
         }
     };
 
@@ -81,7 +81,7 @@ public class RoomListActivity extends DataBindBaseActivity<KtvActivityRoomListBi
     protected void iniListener() {
         RoomManager.Instance(this).addRoomEventCallback(mSimpleRoomEventCallback);
         mDataBinding.swipeRefreshLayout.setOnRefreshListener(this);
-        mDataBinding.ivHead.setOnClickListener(this);
+//        mDataBinding.ivHead.setOnClickListener(this);
         mDataBinding.btCrateRoom.setOnClickListener(this);
     }
 
@@ -90,7 +90,7 @@ public class RoomListActivity extends DataBindBaseActivity<KtvActivityRoomListBi
         UserManager.Instance(this).setupDataRepositroy(io.agora.ktv.data.DataRepositroy.Instance(this));
 
         mDataBinding.btCrateRoom.setVisibility(View.VISIBLE);
-        mDataBinding.tvEmpty.setVisibility(mAdapter.getItemCount() <= 0 ? View.VISIBLE : View.GONE);
+//        mDataBinding.tvEmpty.setVisibility(mAdapter.getItemCount() <= 0 ? View.VISIBLE : View.GONE);
 
         login();
     }
@@ -146,7 +146,7 @@ public class RoomListActivity extends DataBindBaseActivity<KtvActivityRoomListBi
                     @Override
                     public void onComplete() {
                         mDataBinding.swipeRefreshLayout.setRefreshing(false);
-                        mDataBinding.tvEmpty.setVisibility(mAdapter.getItemCount() <= 0 ? View.VISIBLE : View.GONE);
+//                        mDataBinding.tvEmpty.setVisibility(mAdapter.getItemCount() <= 0 ? View.VISIBLE : View.GONE);
                     }
                 });
     }
