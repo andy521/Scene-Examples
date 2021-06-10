@@ -5,16 +5,16 @@
 //  Created by XC on 2021/3/14.
 //
 
+import Core
 import Foundation
+import RxCocoa
 import RxSwift
 import UIKit
-import RxCocoa
-import Core
 
 class ListenerMiniToolbar: UIStackView {
     weak var delegate: MiniRoomView!
     let disposeBag = DisposeBag()
-    
+
     var handsupView: IconButton = {
         let view = IconButton()
         view.icon = "iconBlueHandsUp"
@@ -25,7 +25,7 @@ class ListenerMiniToolbar: UIStackView {
             .active()
         return view
     }()
-    
+
     var exitView: IconButton = {
         let view = IconButton()
         view.icon = "iconExit"
@@ -36,22 +36,23 @@ class ListenerMiniToolbar: UIStackView {
             .active()
         return view
     }()
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         spacing = 16
         addArrangedSubview(exitView)
         addArrangedSubview(handsupView)
     }
-    
-    required init(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
     }
-    
+
     func subcribeUIEvent() {
         handsupView.rx.tap
             .throttle(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance)
@@ -59,44 +60,44 @@ class ListenerMiniToolbar: UIStackView {
                 self.delegate.viewModel.handsup()
             }
             .subscribe(onNext: { [unowned self] result in
-                if (!result.success) {
+                if !result.success {
                     self.delegate.show(message: result.message ?? "unknown error".localized, type: .error)
                 } else {
                     self.delegate.show(message: "Request received. Please wait ...".localized, type: .info)
                 }
             })
             .disposed(by: disposeBag)
-        
+
         exitView.rx.tap
             .throttle(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance)
             .flatMap { [unowned self] _ in
                 self.delegate.viewModel.leaveRoom(action: .leave)
             }
             .filter { [unowned self] result in
-                if (!result.success) {
+                if !result.success {
                     self.delegate.show(message: result.message ?? "unknown error".localized, type: .error)
                 }
                 return result.success
             }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] result in
+            .subscribe(onNext: { [unowned self] _ in
                 self.delegate.dismiss()
                 self.delegate.leaveAction?(.leave, nil)
             })
             .disposed(by: disposeBag)
-        
-        self.delegate.viewModel.syncLocalUIStatus()
+
+        delegate.viewModel.syncLocalUIStatus()
     }
-    
+
     func onReceivedAction(_ result: Result<PodcastAction>) {
-        if (!result.success) {
+        if !result.success {
             Logger.log(message: result.message ?? "unknown error".localized, level: .error)
         } else {
             if let action = result.data {
                 switch action.action {
                 case .invite:
-                    if (action.status == .ing) {
-                        InvitedDialog().show(with: action, delegate: self.delegate)
+                    if action.status == .ing {
+                        InvitedDialog().show(with: action, delegate: delegate)
                     }
                 default:
                     Logger.log(message: "received action \(action.action)", level: .info)
@@ -104,6 +105,6 @@ class ListenerMiniToolbar: UIStackView {
             }
         }
     }
-    
+
     func subcribeRoomEvent() {}
 }

@@ -9,13 +9,12 @@ import Foundation
 import UIKit
 
 open class BaseUICollectionViewCell<T>: UICollectionViewCell {
-    
     open var model: T!
-    
-    open override func layoutSubviews() {
+
+    override open func layoutSubviews() {
         super.layoutSubviews()
         render()
     }
-    
+
     open func render() {}
 }

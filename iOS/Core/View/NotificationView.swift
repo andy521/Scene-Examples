@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 
 public class NotificationView: UIView {
-
     public var icon: UIImageView = {
         let view = UIImageView()
         view.image = UIImage(named: "redcaution", in: Bundle(identifier: "io.agora.Core"), with: nil)
@@ -18,7 +17,7 @@ public class NotificationView: UIView {
             .active()
         return view
     }()
-    
+
     public var message: UILabel = {
         let view = UILabel()
         view.font = UIFont.systemFont(ofSize: 13)
@@ -26,14 +25,14 @@ public class NotificationView: UIView {
         view.numberOfLines = 0
         return view
     }()
-    
+
     var type: NotificationType = .info
-    
-    public override func layoutSubviews() {
+
+    override public func layoutSubviews() {
         super.layoutSubviews()
         shadow()
         switch type {
-        case .info:
+        case .info, .warning, .done:
             backgroundColor = UIColor(hex: "#1E3763")
             rounded(color: "#2F67CA", borderWidth: 1, radius: 8)
             addSubview(message)
@@ -55,7 +54,7 @@ public class NotificationView: UIView {
                 .active()
         }
     }
-    
+
     static func create(message: String, type: NotificationType) -> NotificationView {
         let view = NotificationView()
         view.type = type

@@ -5,16 +5,16 @@
 //  Created by XC on 2021/4/8.
 //
 
+import Core
 import Foundation
-import UIKit
 import RxCocoa
 import RxSwift
-import Core
+import UIKit
 
 class DisclaimerController: BaseViewContoller {
-    @IBOutlet weak var backButton: UIView!
-    @IBOutlet weak var textView: UITextView!
-    
+    @IBOutlet var backButton: UIView!
+    @IBOutlet var textView: UITextView!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         textView.alwaysBounceVertical = true
@@ -23,9 +23,9 @@ class DisclaimerController: BaseViewContoller {
         let attributes = [
             NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14),
             NSAttributedString.Key.paragraphStyle: style,
-            NSAttributedString.Key.foregroundColor: UIColor.white
+            NSAttributedString.Key.foregroundColor: UIColor.white,
         ]
-        
+
         if let filepath = Utils.bundle.path(forResource: "disclaimer", ofType: nil) {
             do {
                 let contents = try String(contentsOfFile: filepath)
@@ -34,7 +34,7 @@ class DisclaimerController: BaseViewContoller {
                 Logger.log(message: error.localizedDescription, level: .error)
             }
         }
-        
+
         let tapBack = UITapGestureRecognizer()
         backButton.addGestureRecognizer(tapBack)
         tapBack.rx.event
@@ -43,9 +43,9 @@ class DisclaimerController: BaseViewContoller {
             })
             .disposed(by: disposeBag)
     }
-    
+
     static func instance() -> DisclaimerController {
-        let storyBoard: UIStoryboard = UIStoryboard(name: "Main", bundle: Utils.bundle)
+        let storyBoard = UIStoryboard(name: "Main", bundle: Utils.bundle)
         let controller = storyBoard.instantiateViewController(withIdentifier: "DisclaimerController") as! DisclaimerController
         return controller
     }

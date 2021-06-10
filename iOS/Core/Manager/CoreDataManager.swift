@@ -5,44 +5,44 @@
 //  Created by XC on 2021/4/19.
 //
 
-import Foundation
 import CoreData
+import Foundation
 import RxSwift
 
 class CoreDataManager {
     public static let shared = CoreDataManager()
-    
-    let identifier: String  = "io.agora.Core"
+
+    let identifier: String = "io.agora.Core"
     let model: String = "Model"
-    
+
     lazy var persistentContainer: NSPersistentContainer = {
         let messageKitBundle = Bundle(identifier: self.identifier)
         let modelURL = messageKitBundle!.url(forResource: self.model, withExtension: "momd")!
-        let managedObjectModel =  NSManagedObjectModel(contentsOf: modelURL)
+        let managedObjectModel = NSManagedObjectModel(contentsOf: modelURL)
 
         let container = NSPersistentContainer(name: self.model, managedObjectModel: managedObjectModel!)
-        container.loadPersistentStores { (storeDescription, error) in
-            if let err = error{
+        container.loadPersistentStores { _, error in
+            if let err = error {
                 fatalError("Loading of store failed:\(err)")
             }
         }
         return container
     }()
-    
+
     static func getSingleNSManagedObject(entityName: String, create: Bool = false) throws -> NSManagedObject? {
         let managedContext = shared.persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: entityName)
         let nSManagedObjects = try managedContext.fetch(fetchRequest)
-        if (nSManagedObjects.count > 0) {
+        if nSManagedObjects.count > 0 {
             return nSManagedObjects[0]
-        } else if (create) {
+        } else if create {
             let entity = NSEntityDescription.entity(forEntityName: entityName, in: managedContext)!
             return NSManagedObject(entity: entity, insertInto: managedContext)
         } else {
             return nil
         }
     }
-    
+
     public func saveContext() {
         let context = persistentContainer.viewContext
         if context.hasChanges {
@@ -54,7 +54,7 @@ class CoreDataManager {
             }
         }
     }
-    
+
     public static func getAccount() -> User? {
         do {
             let account = try getSingleNSManagedObject(entityName: "Account")
@@ -68,7 +68,7 @@ class CoreDataManager {
             return nil
         }
     }
-    
+
     public static func saveAccount(user: User) -> Observable<Result<User>> {
         return Single.create { single in
             let managedContext = shared.persistentContainer.viewContext
@@ -91,7 +91,7 @@ class CoreDataManager {
         .asObservable()
         .subscribe(on: MainScheduler.instance)
     }
-    
+
     public static func getSetting() -> LocalSetting? {
         do {
             let setting = try getSingleNSManagedObject(entityName: "Setting")
@@ -105,7 +105,7 @@ class CoreDataManager {
             return nil
         }
     }
-    
+
     public static func saveSetting(setting: LocalSetting) -> Observable<Result<LocalSetting>> {
         return Single.create { single in
             let managedContext = shared.persistentContainer.viewContext

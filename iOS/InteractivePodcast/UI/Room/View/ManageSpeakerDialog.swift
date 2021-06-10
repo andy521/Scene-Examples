@@ -5,11 +5,11 @@
 //  Created by XC on 2021/3/13.
 //
 
-import Foundation
-import UIKit
-import RxSwift
-import RxCocoa
 import Core
+import Foundation
+import RxCocoa
+import RxSwift
+import UIKit
 
 class ManageSpeakerDialog: Dialog {
     weak var delegate: RoomController!
@@ -17,17 +17,17 @@ class ManageSpeakerDialog: Dialog {
         didSet {
             name.text = model.user.name
             avatar.image = UIImage(named: model.user.getLocalAvatar(), in: Utils.bundle, with: nil)
-            if (model.isMuted) {
+            if model.isMuted {
                 closeMicButton.setTitle(model.isMuted ? "Turn on mic".localized : "Turn off mic".localized, for: .normal)
             }
         }
     }
-    
+
     var avatar: UIImageView = {
         let view = RoundImageView()
         return view
     }()
-    
+
     var name: UILabel = {
         let view = UILabel()
         view.font = UIFont.systemFont(ofSize: 15)
@@ -35,7 +35,7 @@ class ManageSpeakerDialog: Dialog {
         view.textColor = UIColor(hex: Colors.White)
         return view
     }()
-    
+
     var kickButton: UIButton = {
         let view = RoundButton()
         view.borderColor = "#AA4E5E76"
@@ -45,7 +45,7 @@ class ManageSpeakerDialog: Dialog {
         view.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         return view
     }()
-    
+
     var closeMicButton: UIButton = {
         let view = RoundButton()
         view.borderColor = "#AA4E5E76"
@@ -55,54 +55,54 @@ class ManageSpeakerDialog: Dialog {
         view.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         return view
     }()
-    
+
     override func setup() {
         backgroundColor = UIColor(hex: Colors.Black)
-        
+
         addSubview(avatar)
         addSubview(name)
         addSubview(kickButton)
         addSubview(closeMicButton)
-        
+
         kickButton.rx.tap
             .throttle(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance)
             .flatMap { [unowned self] _ in
-                return self.delegate.viewModel.kickSpeaker(member: self.model)
+                self.delegate.viewModel.kickSpeaker(member: self.model)
             }
             .flatMap { [unowned self] result -> Observable<Result<Bool>> in
-                return result.onSuccess {
-                    return self.delegate.dismiss(dialog: self).asObservable().map { _ in Result(success: true) }
+                result.onSuccess {
+                    self.delegate.dismiss(dialog: self).asObservable().map { _ in Result(success: true) }
                 }
             }
             .subscribe(onNext: { [unowned self] result in
-                if (!result.success) {
+                if !result.success {
                     self.delegate.show(message: result.message ?? "unknown error".localized, type: .error)
                 }
             })
             .disposed(by: disposeBag)
-        
+
         closeMicButton.rx.tap
             .throttle(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance)
             .flatMap { [unowned self] _ -> Observable<Result<Void>> in
-                if (self.model.isMuted) {
+                if self.model.isMuted {
                     return self.delegate.viewModel.unMuteSpeaker(member: self.model)
                 } else {
                     return self.delegate.viewModel.muteSpeaker(member: self.model)
                 }
             }
             .flatMap { [unowned self] result -> Observable<Result<Void>> in
-                return result.onSuccess {
-                    return self.delegate.dismiss(dialog: self).asObservable().map { _ in result }
+                result.onSuccess {
+                    self.delegate.dismiss(dialog: self).asObservable().map { _ in result }
                 }
             }
             .subscribe(onNext: { [unowned self] result in
-                if (!result.success) {
+                if !result.success {
                     self.delegate.show(message: result.message ?? "unknown error".localized, type: .error)
                 }
             })
             .disposed(by: disposeBag)
     }
-    
+
     override func render() {
         roundCorners([.topLeft, .topRight], radius: 30)
         shadow()
@@ -111,18 +111,18 @@ class ManageSpeakerDialog: Dialog {
             .marginTop(anchor: topAnchor, constant: 30)
             .centerX(anchor: centerXAnchor)
             .active()
-        
+
         name.marginTop(anchor: avatar.bottomAnchor, constant: 10)
             .marginLeading(anchor: leadingAnchor, constant: 20, relation: .greaterOrEqual)
             .centerX(anchor: centerXAnchor)
             .active()
-        
+
         kickButton.width(constant: 200)
             .height(constant: 36)
             .marginTop(anchor: name.bottomAnchor, constant: 15)
             .centerX(anchor: centerXAnchor)
             .active()
-        
+
         closeMicButton.width(constant: 200)
             .height(constant: 36)
             .marginTop(anchor: kickButton.bottomAnchor, constant: 15)
@@ -130,11 +130,10 @@ class ManageSpeakerDialog: Dialog {
             .marginBottom(anchor: bottomAnchor, constant: safeAreaInsets.bottom + 20)
             .active()
     }
-    
+
     func show(with member: PodcastMember, delegate: RoomController) {
         self.delegate = delegate
-        self.model = member
-        self.show(controller: delegate)
+        model = member
+        show(controller: delegate)
     }
 }
-

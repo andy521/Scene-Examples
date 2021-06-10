@@ -5,19 +5,19 @@
 //  Created by XC on 2021/4/23.
 //
 
-import Foundation
-import UIKit
-import RxSwift
 import Core
+import Foundation
+import RxSwift
+import UIKit
 
 class InvitedDialog: Dialog {
     weak var delegate: RoomDelegate!
     var action: BlindDateAction! {
         didSet {
-            message.text = "\(self.delegate.viewModel.roomManager?.user.name ?? "") \("invite you to speak".localized)"
+            message.text = "\(delegate.viewModel.roomManager?.user.name ?? "") \("invite you to speak".localized)"
         }
     }
-    
+
     var title: UILabel = {
         let view = UILabel()
         view.font = UIFont.systemFont(ofSize: 20, weight: .bold)
@@ -27,7 +27,7 @@ class InvitedDialog: Dialog {
         view.textAlignment = .center
         return view
     }()
-    
+
     var message: UILabel = {
         let view = UILabel()
         view.font = UIFont.systemFont(ofSize: 16)
@@ -37,7 +37,7 @@ class InvitedDialog: Dialog {
         view.textAlignment = .center
         return view
     }()
-    
+
     var cancelButton: UIButton = {
         let view = RoundButton()
         view.borderColor = Colors.Purple
@@ -47,7 +47,7 @@ class InvitedDialog: Dialog {
         view.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         return view
     }()
-    
+
     var okButton: UIButton = {
         let view = RoundButton()
         view.setTitle("Ok".localized, for: .normal)
@@ -57,23 +57,23 @@ class InvitedDialog: Dialog {
         view.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         return view
     }()
-    
+
     override func setup() {
         addSubview(title)
         addSubview(message)
         addSubview(cancelButton)
         addSubview(okButton)
-        
+
         title.marginTop(anchor: topAnchor, constant: 30)
             .marginLeading(anchor: leadingAnchor, constant: 30)
             .centerX(anchor: centerXAnchor)
             .active()
-        
+
         message.marginTop(anchor: title.bottomAnchor, constant: 27)
             .marginLeading(anchor: leadingAnchor, constant: 30)
             .centerX(anchor: centerXAnchor)
             .active()
-        
+
         cancelButton
             .height(constant: 42)
             .marginLeading(anchor: leadingAnchor, constant: 30)
@@ -81,7 +81,7 @@ class InvitedDialog: Dialog {
             .marginTop(anchor: message.bottomAnchor, constant: 27)
             .marginBottom(anchor: bottomAnchor, constant: 30)
             .active()
-        
+
         okButton
             .height(constant: 42)
             .marginLeading(anchor: centerXAnchor, constant: 7.5)
@@ -89,52 +89,52 @@ class InvitedDialog: Dialog {
             .marginTop(anchor: message.bottomAnchor, constant: 27)
             .marginBottom(anchor: bottomAnchor, constant: 30)
             .active()
-        
+
         backgroundColor = UIColor(hex: Colors.White)
-        
+
         cancelButton.rx.tap
             .flatMap { [unowned self] _ in
-                return self.delegate.viewModel.process(action: self.action, agree: false)
+                self.delegate.viewModel.process(action: self.action, agree: false)
             }
             .flatMap { [unowned self] result -> Observable<Result<Bool>> in
-                return result.onSuccess {
-                    return self.delegate.dismiss(dialog: self).asObservable().map { _ in Result(success: true) }
+                result.onSuccess {
+                    self.delegate.dismiss(dialog: self).asObservable().map { _ in Result(success: true) }
                 }
             }
             .subscribe(onNext: { [unowned self] result in
-                if (!result.success) {
+                if !result.success {
                     self.delegate.show(message: result.message ?? "unknown error".localized, type: .error, duration: 1.5)
                 }
             })
             .disposed(by: disposeBag)
-        
+
         okButton.rx.tap
             .debounce(RxTimeInterval.microseconds(300), scheduler: MainScheduler.instance)
             .throttle(RxTimeInterval.seconds(1), scheduler: MainScheduler.instance)
             .flatMap { [unowned self] _ in
-                return self.delegate.viewModel.process(action: self.action, agree: true)
+                self.delegate.viewModel.process(action: self.action, agree: true)
             }
             .flatMap { [unowned self] result -> Observable<Result<Bool>> in
-                return result.onSuccess {
-                    return self.delegate.dismiss(dialog: self).asObservable().map { _ in Result(success: true) }
+                result.onSuccess {
+                    self.delegate.dismiss(dialog: self).asObservable().map { _ in Result(success: true) }
                 }
             }
             .subscribe(onNext: { [unowned self] result in
-                if (!result.success) {
+                if !result.success {
                     self.delegate.show(message: result.message ?? "unknown error".localized, type: .error, duration: 1.5)
                 }
             })
             .disposed(by: disposeBag)
     }
-    
+
     override func render() {
         rounded(radius: 18)
         shadow()
     }
-    
+
     func show(with action: BlindDateAction, delegate: RoomDelegate) {
         self.delegate = delegate
         self.action = action
-        self.show(controller: delegate, style: .center, padding: 27)
+        show(controller: delegate, style: .center, padding: 27)
     }
 }

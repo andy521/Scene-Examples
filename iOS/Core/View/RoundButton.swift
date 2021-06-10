@@ -9,26 +9,26 @@ import Foundation
 import UIKit
 
 open class RoundButton: UIButton {
-    
     open var borderColor: String?
-    
-    open override func layoutSubviews() {
+    open var borderWidth: CGFloat = 0
+
+    override open func layoutSubviews() {
         super.layoutSubviews()
-        rounded(color: borderColor, borderWidth: 1)
+        rounded(color: borderColor, borderWidth: borderWidth)
     }
-    
-    open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+
+    override open func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-        self.alpha = 0.65
+        alpha = 0.65
     }
-    
-    open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+
+    override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
-        self.alpha = 1
+        alpha = 1
     }
-    
-    open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+
+    override open func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesCancelled(touches, with: event)
-        self.alpha = 1
+        alpha = 1
     }
 }

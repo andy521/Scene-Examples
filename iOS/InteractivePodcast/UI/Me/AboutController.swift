@@ -5,24 +5,24 @@
 //  Created by XC on 2021/4/8.
 //
 
+import Core
 import Foundation
-import UIKit
 import RxCocoa
 import RxSwift
-import Core
+import UIKit
 
 class AboutController: BaseViewContoller {
-    @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet weak var itemView0: UIView!
-    @IBOutlet weak var itemView1: UIView!
-    @IBOutlet weak var itemView2: UIView!
-    
-    @IBOutlet weak var publishTimeView: UILabel!
-    @IBOutlet weak var sdkVersionView: UILabel!
-    @IBOutlet weak var appVersionView: UILabel!
-    
-    @IBOutlet weak var backButton: UIView!
-    
+    @IBOutlet var scrollView: UIScrollView!
+    @IBOutlet var itemView0: UIView!
+    @IBOutlet var itemView1: UIView!
+    @IBOutlet var itemView2: UIView!
+
+    @IBOutlet var publishTimeView: UILabel!
+    @IBOutlet var sdkVersionView: UILabel!
+    @IBOutlet var appVersionView: UILabel!
+
+    @IBOutlet var backButton: UIView!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         scrollView.alwaysBounceVertical = true
@@ -35,7 +35,7 @@ class AboutController: BaseViewContoller {
                 }
             })
             .disposed(by: disposeBag)
-        
+
         let tapItem1 = UITapGestureRecognizer()
         itemView1.addGestureRecognizer(tapItem1)
         tapItem1.rx.event
@@ -43,7 +43,7 @@ class AboutController: BaseViewContoller {
                 self.navigationController?.pushViewController(DisclaimerController.instance(), animated: true)
             })
             .disposed(by: disposeBag)
-        
+
         let tapItem2 = UITapGestureRecognizer()
         itemView2.addGestureRecognizer(tapItem2)
         tapItem2.rx.event
@@ -53,11 +53,11 @@ class AboutController: BaseViewContoller {
                 }
             })
             .disposed(by: disposeBag)
-        
+
         publishTimeView.text = BuildConfig.PublishTime
         sdkVersionView.text = BuildConfig.SdkVersion
         appVersionView.text = BuildConfig.AppVersion
-        
+
         let tapBack = UITapGestureRecognizer()
         backButton.addGestureRecognizer(tapBack)
         tapBack.rx.event
@@ -66,9 +66,9 @@ class AboutController: BaseViewContoller {
             })
             .disposed(by: disposeBag)
     }
-    
+
     static func instance() -> AboutController {
-        let storyBoard: UIStoryboard = UIStoryboard(name: "Main", bundle: Utils.bundle)
+        let storyBoard = UIStoryboard(name: "Main", bundle: Utils.bundle)
         let controller = storyBoard.instantiateViewController(withIdentifier: "AboutController") as! AboutController
         return controller
     }

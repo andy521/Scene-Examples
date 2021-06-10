@@ -5,24 +5,23 @@
 //  Created by XC on 2021/4/16.
 //
 
-import UIKit
+import Core
 import RxCocoa
 import RxSwift
-import Core
+import UIKit
 
 class ViewController: CustomTabBarController {
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
-    
+
     override func setupView() {
         viewControllers = [
             HomeController.instance(),
             UIViewController(),
             UIViewController(),
-            SettingController.instance()
+            SettingController.instance(),
         ]
         setTabBar(items: [
             CustomTabBarItem(icon: UIImage(systemName: "square.grid.3x3")!, title: "All".localized),
@@ -36,4 +35,3 @@ class ViewController: CustomTabBarController {
         ])
     }
 }
-

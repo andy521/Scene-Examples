@@ -5,9 +5,9 @@
 //  Created by XUCH on 2021/3/10.
 //
 
+import Core
 import Foundation
 import UIKit
-import Core
 
 class IconView: UIView {
     fileprivate static let insets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)

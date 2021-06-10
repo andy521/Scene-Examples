@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 
 class ProcessingView: UIView {
-    
     private var indeicator: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView()
         if #available(iOS 13.0, *) {
@@ -18,7 +17,7 @@ class ProcessingView: UIView {
         view.color = UIColor(hex: "#FFF")
         return view
     }()
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = UIColor(hex: "#000").withAlphaComponent(0.65)
@@ -32,15 +31,16 @@ class ProcessingView: UIView {
             .active()
         indeicator.startAnimating()
     }
-    
-    required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
     }
-    
+
     static func create() -> ProcessingView {
         return ProcessingView(frame: CGRect(x: 0, y: 0, width: 128, height: 128))
     }

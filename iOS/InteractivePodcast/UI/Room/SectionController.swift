@@ -9,10 +9,9 @@ import IGListKit
 import UIKit
 
 final class SectionController: ListSectionController {
-
     private var object: String?
 
-    override func sizeForItem(at index: Int) -> CGSize {
+    override func sizeForItem(at _: Int) -> CGSize {
         let width = collectionContext!.insetContainerSize.width
         let height = LabelCell.singleLineHeight
         return CGSize(width: width, height: height)

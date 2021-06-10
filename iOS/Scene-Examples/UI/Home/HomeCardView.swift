@@ -5,9 +5,9 @@
 //  Created by XC on 2021/4/20.
 //
 
+import Core
 import Foundation
 import UIKit
-import Core
 
 protocol HomeCard {
     var title: String { get }
@@ -22,7 +22,7 @@ class HomeCardView: UITableViewCell {
             contentView.backgroundColor = item.color
         }
     }
-    
+
     var name: UILabel = {
         let view = UILabel()
         view.font = UIFont.systemFont(ofSize: 15)
@@ -30,30 +30,31 @@ class HomeCardView: UITableViewCell {
         view.textColor = UIColor(hex: Colors.White)
         return view
     }()
-    
-    //var background: CALayer? = nil
-    
+
+    // var background: CALayer? = nil
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        //background = contentView.gradientLayer(colors: [UIColor(hex: "#641BDF"), UIColor(hex: "#D07AF5")])
-        //layer.insertSublayer(background!, at: 0)
+        // background = contentView.gradientLayer(colors: [UIColor(hex: "#641BDF"), UIColor(hex: "#D07AF5")])
+        // layer.insertSublayer(background!, at: 0)
         render()
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        //background?.frame = bounds
+        // background?.frame = bounds
     }
-    
-    required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     func render() {
         selectionStyle = .none
         backgroundColor = .clear
         contentView.addSubview(name)
-        
+
         name.centerX(anchor: contentView.centerXAnchor)
             .centerY(anchor: contentView.centerYAnchor)
             .active()

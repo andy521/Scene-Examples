@@ -5,55 +5,57 @@
 //  Created by XC on 2021/4/21.
 //
 
-import Foundation
-import UIKit
-import RxSwift
-import RxCocoa
 import Core
+import Foundation
+import RxCocoa
+import RxSwift
+import UIKit
 
 public class BlindDateHomeController: BaseViewContoller {
-    @IBOutlet weak var reloadButton: RoundButton!
-    @IBOutlet weak var emptyView: UILabel!
-    @IBOutlet weak var listView: UICollectionView! {
+    @IBOutlet var reloadButton: RoundButton!
+    @IBOutlet var emptyView: UILabel!
+    @IBOutlet var listView: UICollectionView! {
         didSet {
             let layout = WaterfallLayout()
             layout.delegate = self
             layout.sectionInset = UIEdgeInsets(top: 12, left: 12, bottom: 0, right: 12)
             layout.minimumLineSpacing = 7
             layout.minimumInteritemSpacing = 7
-            
+
             listView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 70, right: 0)
             listView.collectionViewLayout = layout
             listView.register(HomeCardView.self, forCellWithReuseIdentifier: NSStringFromClass(HomeCardView.self))
             listView.dataSource = self
         }
     }
-    @IBOutlet weak var createRoomButton: UIButton!
-    private var createRoomDialog: CreateRoomDialog? = nil
+
+    @IBOutlet var createRoomButton: UIButton!
+    private var createRoomDialog: CreateRoomDialog?
     private let refreshControl: UIRefreshControl = {
         let view = UIRefreshControl()
         view.tintColor = UIColor(hex: Colors.Gray)
         return view
     }()
+
     private var viewModel: HomeViewModel!
-    
-    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+
+    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return [.portrait]
     }
-    
-    public override var preferredStatusBarStyle: UIStatusBarStyle {
+
+    override public var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
-    
+
     func configNavbar() {
-        self.title = "Room List".localized
+        title = "Room List".localized
         if let navBar = navigationController?.navigationBar {
             navBar.tintColor = .white
             navBar.backItem?.backButtonTitle = ""
-            
+
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
-            //appearance.backgroundColor = UIColor(hex: "#641BDF")
+            // appearance.backgroundColor = UIColor(hex: "#641BDF")
             appearance.backgroundImage = UIImage.gradient(
                 colors: [UIColor(hex: "#641BDF"), UIColor(hex: "#D07AF5")],
                 with: navBar.superview!.bounds
@@ -63,25 +65,25 @@ public class BlindDateHomeController: BaseViewContoller {
             navigationItem.scrollEdgeAppearance = appearance
         }
     }
-    
-    public override func viewWillAppear(_ animated: Bool) {
+
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
         configNavbar()
     }
-    
-    public override func viewDidLoad() {
+
+    override public func viewDidLoad() {
         super.viewDidLoad()
         listView.refreshControl = refreshControl
         viewModel = HomeViewModel()
-        
-        if (Utils.checkNetworkPermission()) {
+
+        if Utils.checkNetworkPermission() {
             initAppData()
         } else {
             reloadButton.isHidden = false
             reloadButton.rx.tap
                 .subscribe(onNext: {
-                    if (Utils.checkNetworkPermission()) {
+                    if Utils.checkNetworkPermission() {
                         self.reloadButton.isHidden = true
                         self.initAppData()
                     } else {
@@ -90,10 +92,10 @@ public class BlindDateHomeController: BaseViewContoller {
                 })
                 .disposed(by: disposeBag)
         }
-        
+
         subcribeUIEvent()
     }
-    
+
     private func initAppData() {
         viewModel.setup()
             .do(onSubscribe: {
@@ -103,7 +105,7 @@ public class BlindDateHomeController: BaseViewContoller {
             })
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [unowned self] result in
-                if (result.success) {
+                if result.success {
                     // UIRefreshControl bug?
                     self.refreshControl.tintColor = UIColor(hex: Colors.Gray)
                     self.refreshControl.refreshManually()
@@ -113,7 +115,7 @@ public class BlindDateHomeController: BaseViewContoller {
             })
             .disposed(by: disposeBag)
     }
-    
+
     private func subcribeUIEvent() {
         createRoomButton.rx.tap
             .throttle(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance)
@@ -127,15 +129,15 @@ public class BlindDateHomeController: BaseViewContoller {
             }
             .subscribe()
             .disposed(by: disposeBag)
-        
+
         refreshControl
             .rx.controlEvent(.valueChanged)
             .flatMapLatest { [unowned self] _ in
-                return self.viewModel.dataSource()
+                self.viewModel.dataSource()
             }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [unowned self] result in
-                if (result.success) {
+                if result.success {
                     self.emptyView.isHidden = self.viewModel.roomList.count != 0
                     self.listView.reloadData()
                 } else {
@@ -143,57 +145,57 @@ public class BlindDateHomeController: BaseViewContoller {
                 }
             })
             .disposed(by: disposeBag)
-        
+
         viewModel.activityIndicator
-            .drive(self.refreshControl.rx.isRefreshing)
+            .drive(refreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
     }
-    
-    @IBAction func onTapSetting(_ sender: Any) {
+
+    @IBAction func onTapSetting(_: Any) {
         Logger.log(message: "onTapSetting", level: .info)
     }
-    
+
     private func refresh() {
         refreshControl.sendActions(for: .valueChanged)
     }
-    
+
     deinit {
-        Logger.log(message: "HomeController deinit", level: .info)
-        let _ = RoomManager.shared().leave().subscribe()
+        Logger.log(self, message: "deinit", level: .info)
+        _ = RoomManager.shared().leave().subscribe()
         RoomManager.shared().destory()
     }
-    
+
     public static func instance() -> BlindDateHomeController {
-        let storyBoard: UIStoryboard = UIStoryboard(name: "Main", bundle: Utils.bundle)
+        let storyBoard = UIStoryboard(name: "Main", bundle: Utils.bundle)
         let controller = storyBoard.instantiateViewController(withIdentifier: "HomeController") as! BlindDateHomeController
         return controller
     }
 }
 
 extension BlindDateHomeController: UICollectionViewDataSource {
-    public func numberOfSections(in collectionView: UICollectionView) -> Int {
+    public func numberOfSections(in _: UICollectionView) -> Int {
         return 1
     }
-    
+
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let card: HomeCardView = collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(HomeCardView.self), for: indexPath) as! HomeCardView
         card.delegate = self
         card.room = viewModel.roomList[indexPath.item]
         return card
     }
-    
-    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+
+    public func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
         return viewModel.roomList.count
     }
 }
 
 extension BlindDateHomeController: WaterfallLayoutDelegate {
-    public func collectionView(_ collectionView: UICollectionView, layout: WaterfallLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    public func collectionView(_: UICollectionView, layout: WaterfallLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = (layout.collectionViewContentSize.width - 16 * 2 - 10) / 2
         return HomeCardView.sizeForItem(room: viewModel.roomList[indexPath.item], width: width)
     }
-    
-    public func collectionViewLayout(for section: Int) -> WaterfallLayout.Layout {
+
+    public func collectionViewLayout(for _: Int) -> WaterfallLayout.Layout {
         return .waterfall(column: 2, distributionMethod: .balanced)
     }
 }
@@ -207,12 +209,12 @@ extension BlindDateHomeController: HomeCardDelegate {
             }, onDispose: {
                 self.show(processing: false)
             })
-            .subscribe() { [unowned self] result in
-                if (result.success) {
+            .subscribe { [unowned self] result in
+                if result.success {
                     let controller = RoomController.instance()
-                    //roomController.navigationController = self.navigationController
+                    // roomController.navigationController = self.navigationController
                     self.navigationController?.pushViewController(controller, animated: true)
-                    //self.push(controller: controller)
+                    // self.push(controller: controller)
                 } else {
                     self.show(message: result.message ?? "unknown error".localized, type: .error)
                 }
@@ -227,7 +229,7 @@ extension BlindDateHomeController: CreateRoomDelegate {
     func onDismiss() {
         createRoomDialog = nil
     }
-    
+
     func onCreateSuccess(with room: BlindDateRoom) {
         if let dialog = createRoomDialog {
             dialog.dismiss()
@@ -238,9 +240,9 @@ extension BlindDateHomeController: CreateRoomDelegate {
                 .disposed(by: disposeBag)
         }
     }
-    
+
     func createRoom(with name: String?) -> Observable<Result<BlindDateRoom>> {
-        if (name?.isEmpty == false) {
+        if name?.isEmpty == false {
             return viewModel.createRoom(with: name!)
         } else {
             return Observable.just(Result<BlindDateRoom>(success: false, message: "Enter a room name".localized))

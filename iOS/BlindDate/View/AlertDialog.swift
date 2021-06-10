@@ -5,14 +5,14 @@
 //  Created by XC on 2021/4/23.
 //
 
+import Core
 import Foundation
 import UIKit
-import Core
 
 class AlertDialog: UIView {
     var cancelAction: (() -> Void)?
     var okAction: (() -> Void)?
-    
+
     private var titleView: UILabel = {
         let view = UILabel()
         view.font = UIFont.systemFont(ofSize: 20, weight: .bold)
@@ -21,7 +21,7 @@ class AlertDialog: UIView {
         view.textAlignment = .center
         return view
     }()
-    
+
     private var messageView: UILabel = {
         let view = UILabel()
         view.font = UIFont.systemFont(ofSize: 16)
@@ -30,7 +30,7 @@ class AlertDialog: UIView {
         view.textAlignment = .center
         return view
     }()
-    
+
     private var cancelButton: UIButton = {
         let view = RoundButton()
         view.borderColor = Colors.Purple
@@ -40,7 +40,7 @@ class AlertDialog: UIView {
         view.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         return view
     }()
-    
+
     private var okButton: UIButton = {
         let view = RoundButton()
         view.setTitle("Ok".localized, for: .normal)
@@ -50,27 +50,27 @@ class AlertDialog: UIView {
         view.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         return view
     }()
-    
+
     init(title: String, message: String) {
         super.init(frame: CGRect())
         titleView.text = title
         messageView.text = message
-        
+
         addSubview(titleView)
         addSubview(messageView)
         addSubview(cancelButton)
         addSubview(okButton)
-        
+
         titleView.marginTop(anchor: topAnchor, constant: 30)
             .marginLeading(anchor: leadingAnchor, constant: 30)
             .centerX(anchor: centerXAnchor)
             .active()
-        
+
         messageView.marginTop(anchor: titleView.bottomAnchor, constant: 27)
             .marginLeading(anchor: leadingAnchor, constant: 30)
             .centerX(anchor: centerXAnchor)
             .active()
-        
+
         cancelButton
             .height(constant: 42)
             .marginLeading(anchor: leadingAnchor, constant: 30)
@@ -78,7 +78,7 @@ class AlertDialog: UIView {
             .marginTop(anchor: messageView.bottomAnchor, constant: 27)
             .marginBottom(anchor: bottomAnchor, constant: 30)
             .active()
-        
+
         okButton
             .height(constant: 42)
             .marginLeading(anchor: centerXAnchor, constant: 7.5)
@@ -86,27 +86,28 @@ class AlertDialog: UIView {
             .marginTop(anchor: messageView.bottomAnchor, constant: 27)
             .marginBottom(anchor: bottomAnchor, constant: 30)
             .active()
-        
+
         backgroundColor = UIColor(hex: Colors.White)
         okButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(ok(_:))))
         cancelButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(cancel(_:))))
     }
-    
-    required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         rounded(radius: 18)
         shadow()
     }
-    
-    @objc func cancel(_ sender: UITapGestureRecognizer? = nil) {
-        self.cancelAction?()
+
+    @objc func cancel(_: UITapGestureRecognizer? = nil) {
+        cancelAction?()
     }
-    
-    @objc func ok(_ sender: UITapGestureRecognizer? = nil) {
-        self.okAction?()
+
+    @objc func ok(_: UITapGestureRecognizer? = nil) {
+        okAction?()
     }
 }

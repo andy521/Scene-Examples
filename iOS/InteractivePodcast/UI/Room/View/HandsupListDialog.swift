@@ -5,10 +5,10 @@
 //  Created by XC on 2021/3/12.
 //
 
-import Foundation
-import UIKit
-import RxSwift
 import Core
+import Foundation
+import RxSwift
+import UIKit
 
 protocol RoomDelegate: DialogDelegate {
     var viewModel: RoomViewModel { get set }
@@ -24,19 +24,19 @@ class HandsupListDialog: Dialog {
         view.text = "Raised hands".localized
         return view
     }()
-    
+
     var listView: UITableView = {
         let view = UITableView()
         view.backgroundColor = .clear
         return view
     }()
-    
+
     override func setup() {
         backgroundColor = UIColor(hex: Colors.Black)
         addSubview(title)
         addSubview(listView)
     }
-    
+
     override func render() {
         roundCorners([.topLeft, .topRight], radius: 30)
         shadow()
@@ -44,7 +44,7 @@ class HandsupListDialog: Dialog {
             .marginTrailing(anchor: trailingAnchor, constant: 20)
             .marginTop(anchor: topAnchor, constant: 20)
             .active()
-        
+
         listView.marginTop(anchor: title.bottomAnchor, constant: 20)
             .marginLeading(anchor: leadingAnchor, constant: 20)
             .marginTrailing(anchor: trailingAnchor, constant: 20)
@@ -52,7 +52,7 @@ class HandsupListDialog: Dialog {
             .marginBottom(anchor: bottomAnchor)
             .active()
     }
-    
+
     func show(delegate: RoomDelegate) {
         self.delegate = delegate
         let id = NSStringFromClass(PodcastAction.self)
@@ -60,26 +60,26 @@ class HandsupListDialog: Dialog {
         listView.dataSource = self
         listView.rowHeight = 70
         listView.separatorStyle = .none
-        
+
         self.delegate.viewModel.onHandsupListChange
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] list in
+            .subscribe(onNext: { [unowned self] _ in
                 self.listView.reloadData()
             })
             .disposed(by: disposeBag)
-        self.show(controller: delegate)
+        show(controller: delegate)
     }
 }
 
 extension HandsupListDialog: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.delegate.viewModel.handsupList.count
+    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
+        return delegate.viewModel.handsupList.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let identifier = NSStringFromClass(PodcastAction.self)
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! HandsupCellView
-        cell.item = self.delegate.viewModel.handsupList[indexPath.row]
+        cell.item = delegate.viewModel.handsupList[indexPath.row]
         cell.delegate = self
         return cell
     }
@@ -87,11 +87,11 @@ extension HandsupListDialog: UITableViewDataSource {
 
 extension HandsupListDialog: HandsupListDelegate {
     func reject(action: PodcastAction) -> Observable<Result<Void>> {
-        return self.delegate.viewModel.process(action: action, agree: false)
+        return delegate.viewModel.process(action: action, agree: false)
     }
-    
+
     func agree(action: PodcastAction) -> Observable<Result<Void>> {
-        return self.delegate.viewModel.process(action: action, agree: true)
+        return delegate.viewModel.process(action: action, agree: true)
     }
 }
 
@@ -109,35 +109,36 @@ class HandsupCellView: UITableViewCell {
             avatar.image = UIImage(named: item.member.user.getLocalAvatar(), in: Utils.bundle, with: nil)
         }
     }
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         render()
         agreeButton.rx.tap
             .flatMap { [unowned self] _ in
-                return self.delegate.agree(action: self.item)
+                self.delegate.agree(action: self.item)
             }
             .subscribe()
             .disposed(by: disposeBag)
-        
+
         rejectButton.rx.tap
             .flatMap { [unowned self] _ in
-                return self.delegate.reject(action: self.item)
+                self.delegate.reject(action: self.item)
             }
             .subscribe()
             .disposed(by: disposeBag)
     }
-    
-    required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     var avatar: UIImageView = {
         let view = RoundImageView()
-        //view.image = UIImage(named: "default")
+        // view.image = UIImage(named: "default")
         return view
     }()
-    
+
     var name: UILabel = {
         let view = UILabel()
         view.font = UIFont.systemFont(ofSize: 15)
@@ -145,7 +146,7 @@ class HandsupCellView: UITableViewCell {
         view.textColor = UIColor(hex: Colors.White)
         return view
     }()
-    
+
     var rejectButton: UIButton = {
         let view = RoundButton()
         view.borderColor = "#AA4E5E76"
@@ -155,7 +156,7 @@ class HandsupCellView: UITableViewCell {
         view.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         return view
     }()
-    
+
     var agreeButton: UIButton = {
         let view = RoundButton()
         view.setTitle("Agree".localized, for: .normal)
@@ -164,7 +165,7 @@ class HandsupCellView: UITableViewCell {
         view.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         return view
     }()
-    
+
     func render() {
         selectionStyle = .none
         backgroundColor = .clear
@@ -172,7 +173,7 @@ class HandsupCellView: UITableViewCell {
         contentView.addSubview(name)
         contentView.addSubview(rejectButton)
         contentView.addSubview(agreeButton)
-        
+
         agreeButton.width(constant: 80)
             .height(constant: 36)
             .marginTrailing(anchor: contentView.trailingAnchor)

@@ -13,14 +13,14 @@ public class CustomTabBarItem: UIButton {
         case Switch
         case Push
     }
-    
+
     var mode: Mode = .Switch
     var builder: (() -> UIViewController)?
     var tint: Bool = true
-    
-    var color: UIColor = UIColor.lightGray {
+
+    var color = UIColor.lightGray {
         didSet {
-            if (tint) {
+            if tint {
                 if let image = iconView.image {
                     iconView.image = image.withRenderingMode(.alwaysTemplate)
                 }
@@ -31,14 +31,14 @@ public class CustomTabBarItem: UIButton {
             label.textColor = color
         }
     }
-    
+
     private let iconView: UIImageView = {
         let view = UIImageView()
         view.contentMode = .scaleAspectFit
         view.clipsToBounds = true
         return view
     }()
-    
+
     private let label: UILabel = {
         let view = UILabel()
         view.font = UIFont.systemFont(ofSize: 10)
@@ -47,19 +47,19 @@ public class CustomTabBarItem: UIButton {
         view.numberOfLines = 1
         return view
     }()
-    
+
     public convenience init(icon: UIImage, title: String, tint: Bool = true, builder: (() -> UIViewController)? = nil) {
         self.init()
         self.tint = tint
         self.builder = builder
-        if (self.builder != nil) {
-            self.mode = .Push
+        if self.builder != nil {
+            mode = .Push
         }
         iconView.image = icon
         label.text = title
         addSubview(iconView)
         addSubview(label)
-        
+
         iconView.marginTop(anchor: topAnchor, constant: 8)
             .centerX(anchor: centerXAnchor)
             .square()
@@ -74,33 +74,33 @@ public class CustomTabBarItem: UIButton {
 
 public class CustomTabBar: UITabBar {
     var customItems: [CustomTabBarItem] = []
-    public override var tintColor: UIColor! {
+    override public var tintColor: UIColor! {
         didSet {
             customItems.forEach { (item: CustomTabBarItem) in
                 item.color = tintColor
             }
         }
     }
-    
+
     func setItems(items: [CustomTabBarItem]) {
         customItems = items
         backgroundColor = .white
-        if (customItems.count == 0) {
+        if customItems.count == 0 {
             return
         }
 //        let line = UIView()
 //        line.backgroundColor = UIColor(hex: "#DBDBDB")
 //        addSubview(line)
-//        
+//
 //        line.height(constant: 0.5 / UIScreen.main.scale)
 //            .marginTop(anchor: topAnchor)
 //            .marginLeading(anchor: leadingAnchor)
 //            .marginTrailing(anchor: trailingAnchor)
 //            .active()
-        
+
         var horizontalConstraints = "H:|"
         let itemWidth: CGFloat = screenWidth / CGFloat(customItems.count)
-        customItems.enumerated().forEach { (index, item) in
+        customItems.enumerated().forEach { index, item in
             addSubview(item)
             item.marginTop(anchor: topAnchor)
                 .marginBottom(anchor: bottomAnchor)
@@ -115,24 +115,24 @@ public class CustomTabBar: UITabBar {
 }
 
 open class CustomTabBarController: UITabBarController {
-    var customTabBar: CustomTabBar = CustomTabBar()
-    var selectedColor: UIColor = UIColor(hex: "#2488FE")
+    var customTabBar = CustomTabBar()
+    var selectedColor = UIColor(hex: "#2488FE")
     var normalColor: UIColor = .lightGray {
         didSet {
             customTabBar.tintColor = normalColor
         }
     }
-    
-    open override func viewDidLoad() {
+
+    override open func viewDidLoad() {
         super.viewDidLoad()
-        //edgesForExtendedLayout = UIRectEdge(rawValue: 0)
-        //tabBar.isHidden = true
+        // edgesForExtendedLayout = UIRectEdge(rawValue: 0)
+        // tabBar.isHidden = true
         tabBar.backgroundColor = .clear
         setupView()
     }
-    
+
     open func setupView() {}
-    
+
     public func setTabBar(items: [CustomTabBarItem], height: CGFloat = 49) {
         guard items.count > 0 else {
             return
@@ -140,20 +140,20 @@ open class CustomTabBarController: UITabBarController {
         customTabBar.setItems(items: items)
         customTabBar.tintColor = normalColor
         customTabBar.customItems.first?.color = selectedColor
-        
+
         view.addSubview(customTabBar)
         customTabBar.marginLeading(anchor: view.leadingAnchor)
             .marginTrailing(anchor: view.trailingAnchor)
             .height(constant: height)
             .marginBottom(anchor: view.safeAreaLayoutGuide.bottomAnchor)
             .active()
-        
-        items.enumerated().forEach { (index, item) in
+
+        items.enumerated().forEach { index, item in
             item.tag = index
             item.addTarget(self, action: #selector(switchTab), for: .touchUpInside)
         }
     }
-    
+
     @objc func switchTab(button: UIButton) {
         let toIndex = button.tag
         let fromIndex = selectedIndex
@@ -163,8 +163,8 @@ open class CustomTabBarController: UITabBarController {
 
         let fromTab = customTabBar.customItems[fromIndex]
         let toTab = customTabBar.customItems[toIndex]
-        
-        if (toTab.mode == .Switch) {
+
+        if toTab.mode == .Switch {
             fromTab.color = normalColor
             toTab.color = selectedColor
             selectedIndex = toIndex

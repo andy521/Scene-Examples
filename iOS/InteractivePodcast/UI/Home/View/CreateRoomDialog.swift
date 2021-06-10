@@ -5,10 +5,10 @@
 //  Created by XUCH on 2021/3/5.
 //
 
-import Foundation
-import UIKit
-import RxSwift
 import Core
+import Foundation
+import RxSwift
+import UIKit
 
 protocol CreateRoomDelegate: BaseViewContoller {
     func createRoom(with: String?) -> Observable<Result<PodcastRoom>>
@@ -16,15 +16,14 @@ protocol CreateRoomDelegate: BaseViewContoller {
 }
 
 class CreateRoomDialog: UIView {
-    
     private let disposeBag = DisposeBag()
-    @IBOutlet weak var inputRoomView: UITextField!
-    @IBOutlet weak var createButton: UIButton!
-    @IBOutlet weak var cancelButton: UIButton!
-    @IBOutlet weak var indicatorView: UIActivityIndicatorView!
-    @IBOutlet weak var refreshButton: UIButton!
+    @IBOutlet var inputRoomView: UITextField!
+    @IBOutlet var createButton: UIButton!
+    @IBOutlet var cancelButton: UIButton!
+    @IBOutlet var indicatorView: UIActivityIndicatorView!
+    @IBOutlet var refreshButton: UIButton!
     weak var createRoomDelegate: CreateRoomDelegate!
-    
+
     private var showing = false
     private var processing = false {
         didSet {
@@ -35,34 +34,34 @@ class CreateRoomDialog: UIView {
             }
         }
     }
-    
+
     private func onCreateRoom() -> Observable<Result<PodcastRoom>> {
         return createButton.rx.tap
             .throttle(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance)
             .filter { [unowned self] in
-                return !self.processing
+                !self.processing
             }
             .map { [unowned self] in
                 self.processing = true
                 return self.inputRoomView.text
             }
             .flatMap { [unowned self] name in
-                return self.createRoomDelegate.createRoom(with: name)
+                self.createRoomDelegate.createRoom(with: name)
             }
             .map { [unowned self] result in
                 self.processing = false
                 return result
             }
     }
-    
+
     func show() -> Single<Bool> {
-        if (showing) {
+        if showing {
             return Single.just(true)
         } else {
             showing = true
             processing = false
             createButton.setTitle("", for: .disabled)
-            
+
             inputRoomView.attributedPlaceholder = NSAttributedString(
                 string: "Enter a room name".localized,
                 attributes: [NSAttributedString.Key.foregroundColor: UIColor.gray]
@@ -74,32 +73,32 @@ class CreateRoomDialog: UIView {
                     self.inputRoomView.text = Utils.randomRoomName()
                 })
                 .disposed(by: disposeBag)
-            
+
             cancelButton.rx.tap
                 .throttle(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance)
                 .flatMap { [unowned self] in
-                    return self.dismiss()
+                    self.dismiss()
                 }
                 .subscribe()
                 .disposed(by: disposeBag)
-            
+
             onCreateRoom()
                 .subscribe(onNext: { [unowned self] result in
                     guard let room = result.data else {
-                        self.createRoomDelegate.showToast(message: result.message, type: .error)
+                        self.createRoomDelegate.show(message: result.message, type: .error)
                         return
                     }
                     self.createRoomDelegate.onCreateSuccess(with: room)
                 })
                 .disposed(by: disposeBag)
-            
-            return self.createRoomDelegate.show(dialog: self, padding: 16, relation: UIView.Relation.greaterOrEqual).map { finished in
+
+            return createRoomDelegate.show(dialog: self, padding: 16, relation: UIView.Relation.greaterOrEqual).map { finished in
                 self.inputRoomView.becomeFirstResponder()
                 return finished
             }
         }
     }
-    
+
     func dismiss() -> Single<Bool> {
         return createRoomDelegate.dismiss(dialog: self)
             .map { [unowned self] finished in
@@ -107,14 +106,14 @@ class CreateRoomDialog: UIView {
                 return finished
             }
     }
-    
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         inputRoomView.endEditing(true)
     }
-    
+
     static func Create() -> CreateRoomDialog {
-        let dialog: CreateRoomDialog =  UIView.loadFromNib(name: "CreateRoomDialog", bundle: Utils.bundle)!
+        let dialog: CreateRoomDialog = UIView.loadFromNib(name: "CreateRoomDialog", bundle: Utils.bundle)!
         return dialog
     }
 }

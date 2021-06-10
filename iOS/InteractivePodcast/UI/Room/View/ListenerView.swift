@@ -5,28 +5,28 @@
 //  Created by XUCH on 2021/3/9.
 //
 
+import Core
 import Foundation
 import UIKit
-import Core
 
 class ListenerView: BaseUICollectionViewCell<PodcastMember> {
     fileprivate static let padding: CGFloat = 10
     fileprivate static let avatarWidth: CGFloat = 50
-    
+
     weak var delegate: RoomControlDelegate?
-    
+
     override var model: PodcastMember! {
         didSet {
             name.text = model.user.name
             avatar.image = UIImage(named: model.user.getLocalAvatar(), in: Utils.bundle, with: nil)
         }
     }
-    
+
     var avatar: UIImageView = {
         let view = RoundImageView()
         return view
     }()
-    
+
     var name: UILabel = {
         let view = UILabel()
         view.font = UIFont.systemFont(ofSize: 15)
@@ -34,7 +34,7 @@ class ListenerView: BaseUICollectionViewCell<PodcastMember> {
         view.textColor = UIColor(hex: Colors.White)
         return view
     }()
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(_:))))
@@ -42,11 +42,12 @@ class ListenerView: BaseUICollectionViewCell<PodcastMember> {
         addSubview(avatar)
         addSubview(name)
     }
-    
-    required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func render() {
         avatar
             .width(constant: ListenerView.avatarWidth)
@@ -59,11 +60,11 @@ class ListenerView: BaseUICollectionViewCell<PodcastMember> {
             .centerY(anchor: centerYAnchor)
             .active()
     }
-    
-    @objc func handleTap(_ sender: UITapGestureRecognizer? = nil) {
+
+    @objc func handleTap(_: UITapGestureRecognizer? = nil) {
         delegate?.onTap(member: model)
     }
-    
+
     static func sizeForItem(width: CGFloat) -> CGSize {
         return CGSize(width: width, height: padding + avatarWidth + padding)
     }

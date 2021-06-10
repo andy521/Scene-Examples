@@ -5,14 +5,14 @@
 //  Created by XUCH on 2021/3/10.
 //
 
+import Core
 import Foundation
 import UIKit
-import Core
 
 class RoundImageView: UIImageView {
     var color: String? = "#AA4E5E76"
     var borderWidth: CGFloat = 1
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         clipsToBounds = true

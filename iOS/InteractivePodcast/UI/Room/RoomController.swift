@@ -5,108 +5,110 @@
 //  Created by XUCH on 2021/3/6.
 //
 
-import Foundation
-import UIKit
-import RxSwift
-import RxCocoa
-import IGListKit
 import Core
+import Foundation
+import IGListKit
+import RxCocoa
+import RxSwift
+import UIKit
 
 class RoomController: BaseViewContoller, DialogDelegate, RoomDelegate {
-    
-    @IBOutlet weak var containerView: UIView! {
+    @IBOutlet var containerView: UIView! {
         didSet {
             containerView.roundCorners([.topLeft, .topRight], radius: 10)
         }
     }
-    @IBOutlet weak var roomNameView: UILabel!
-    @IBOutlet weak var closeButton: UIButton!
-    @IBOutlet weak var listView: UICollectionView! {
+
+    @IBOutlet var roomNameView: UILabel!
+    @IBOutlet var closeButton: UIButton!
+    @IBOutlet var listView: UICollectionView! {
         didSet {
             listView.collectionViewLayout = UICollectionViewFlowLayout()
             listView.alwaysBounceVertical = true
         }
     }
-    @IBOutlet weak var meButton: RoundImageButton!
-    
-    @IBOutlet weak var returnView: UIView! {
+
+    @IBOutlet var meButton: RoundImageButton!
+
+    @IBOutlet var returnView: UIView! {
         didSet {
             returnView.rounded(color: "#10141C", borderWidth: 2)
         }
     }
+
     @IBOutlet var tapReturn: UITapGestureRecognizer!
-    
-    @IBOutlet weak var toolbarView: UIView!
+
+    @IBOutlet var toolbarView: UIView!
     private var roomManagerToolbar: RoomManagerToolbar?
     private var roomSpeakerToolbar: RoomSpeakerToolbar?
     private var roomListenerToolbar: RoomListenerToolbar?
-        
-    var leaveAction: ((LeaveRoomAction, PodcastRoom?) -> Void)? = nil
+
+    var leaveAction: ((LeaveRoomAction, PodcastRoom?) -> Void)?
     private lazy var adapter: ListAdapter = {
-        return ListAdapter(updater: ListAdapterUpdater(), viewController: self)
+        ListAdapter(updater: ListAdapterUpdater(), viewController: self)
     }()
 
-    private var dataSourceDisposable: Disposable? = nil
-    private var actionDisposable: Disposable? = nil
-    
-    var viewModel: RoomViewModel = RoomViewModel()
+    private var dataSourceDisposable: Disposable?
+    private var actionDisposable: Disposable?
+
+    var viewModel = RoomViewModel()
 
     private func renderToolbar() {
         switch viewModel.role {
         case .manager:
-            if (roomManagerToolbar == nil) {
+            if roomManagerToolbar == nil {
                 roomManagerToolbar = RoomManagerToolbar()
                 toolbarView.addSubview(roomManagerToolbar!)
                 roomManagerToolbar!.fill(view: toolbarView).active()
                 roomManagerToolbar!.delegate = self
-                
-                if (roomSpeakerToolbar != nil || roomListenerToolbar != nil) {
+
+                if roomSpeakerToolbar != nil || roomListenerToolbar != nil {
                     roomSpeakerToolbar?.removeFromSuperview()
                     roomSpeakerToolbar = nil
                     roomListenerToolbar?.removeFromSuperview()
                     roomListenerToolbar = nil
                 }
-                
+
                 roomManagerToolbar?.subcribeUIEvent()
                 roomManagerToolbar?.subcribeRoomEvent()
             }
         case .speaker:
-            if (roomSpeakerToolbar == nil) {
+            if roomSpeakerToolbar == nil {
                 roomSpeakerToolbar = RoomSpeakerToolbar()
                 toolbarView.addSubview(roomSpeakerToolbar!)
                 roomSpeakerToolbar!.fill(view: toolbarView).active()
                 roomSpeakerToolbar!.delegate = self
-                
-                if (roomManagerToolbar != nil || roomListenerToolbar != nil) {
+
+                if roomManagerToolbar != nil || roomListenerToolbar != nil {
                     roomManagerToolbar?.removeFromSuperview()
                     roomManagerToolbar = nil
                     roomListenerToolbar?.removeFromSuperview()
                     roomListenerToolbar = nil
                 }
-                
+
                 roomSpeakerToolbar?.subcribeUIEvent()
                 roomSpeakerToolbar?.subcribeRoomEvent()
             }
         case .listener:
-            if (roomListenerToolbar == nil) {
+            if roomListenerToolbar == nil {
                 roomListenerToolbar = RoomListenerToolbar()
                 toolbarView.addSubview(roomListenerToolbar!)
                 roomListenerToolbar!.fill(view: toolbarView).active()
                 roomListenerToolbar!.delegate = self
-                if (roomSpeakerToolbar != nil || roomManagerToolbar != nil) {
+                if roomSpeakerToolbar != nil || roomManagerToolbar != nil {
                     roomSpeakerToolbar?.removeFromSuperview()
                     roomSpeakerToolbar = nil
                     roomManagerToolbar?.removeFromSuperview()
                     roomManagerToolbar = nil
                     show(message: "You've been set as audience".localized, type: .error)
                 }
-                
+
                 roomListenerToolbar?.subcribeUIEvent()
                 roomListenerToolbar?.subcribeRoomEvent()
             }
         }
     }
-    
+
     private func subcribeUIEvent() {
         meButton.rx.tap
             .throttle(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance)
@@ -118,63 +120,63 @@ class RoomController: BaseViewContoller, DialogDelegate, RoomDelegate {
                 )
             })
             .disposed(by: disposeBag)
-        
+
         tapReturn.rx.event
             .throttle(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance)
             .flatMap { [unowned self] _ in
-                return self.viewModel.leaveRoom(action: .mini)
+                self.viewModel.leaveRoom(action: .mini)
             }
             .filter { [unowned self] result in
-                if (!result.success) {
+                if !result.success {
                     self.show(message: result.message ?? "unknown error".localized, type: .error)
                 }
                 return result.success
             }
-            .flatMap { [unowned self] result in
-                return self.pop()
+            .flatMap { [unowned self] _ in
+                self.pop()
             }
             .subscribe(onNext: { [unowned self] _ in
                 self.leaveAction?(.mini, self.viewModel.room)
             })
             .disposed(by: disposeBag)
-        
+
         closeButton.rx.tap
             .throttle(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance)
             .concatMap { [unowned self] _ -> Observable<Bool> in
-                if (self.viewModel.isManager) {
+                if self.viewModel.isManager {
                     return self.showAlert(title: "Close room".localized, message: "Leaving the room ends the session and removes everyone".localized)
                 } else {
                     return Observable.just(true)
                 }
             }
             .filter { close in
-                return close
+                close
             }
             .concatMap { [unowned self] _ in
-                return self.viewModel.leaveRoom(action: .closeRoom)
+                self.viewModel.leaveRoom(action: .closeRoom)
             }
             .filter { [unowned self] result in
-                if (!result.success) {
+                if !result.success {
                     self.show(message: result.message ?? "unknown error".localized, type: .error)
                 }
                 return result.success
             }
             .concatMap { [unowned self] _ in
-                return self.pop()
+                self.pop()
             }
             .subscribe(onNext: { [unowned self] _ in
                 self.leaveAction?(.closeRoom, self.viewModel.room)
             })
             .disposed(by: disposeBag)
     }
-    
+
     private func subcribeRoomEvent() {
         dataSourceDisposable?.dispose()
         dataSourceDisposable = viewModel.roomMembersDataSource()
             .observe(on: MainScheduler.instance)
             .flatMap { [unowned self] result -> Observable<Result<Bool>> in
                 let roomClosed = result.data
-                if (roomClosed == true) {
+                if roomClosed == true {
                     return self.viewModel.leaveRoom(action: .leave).map { _ in result }
                 } else {
                     return Observable.just(result)
@@ -182,7 +184,7 @@ class RoomController: BaseViewContoller, DialogDelegate, RoomDelegate {
             }
             .observe(on: MainScheduler.instance)
             .flatMap { [unowned self] result -> Observable<Result<Bool>> in
-                if (result.data == true) {
+                if result.data == true {
                     Logger.log(message: "subcribeRoomEvent roomClosed", level: .info)
                     return self.popAsObservable().map { _ in result }
                 } else {
@@ -192,9 +194,9 @@ class RoomController: BaseViewContoller, DialogDelegate, RoomDelegate {
             }
             .subscribe(onNext: { [unowned self] result in
                 let roomClosed = result.data
-                if (!result.success) {
+                if !result.success {
                     self.show(message: result.message ?? "unknown error".localized, type: .error)
-                } else if (roomClosed == true) {
+                } else if roomClosed == true {
                     self.leaveAction?(.leave, self.viewModel.room)
                     self.disconnect()
                 } else {
@@ -215,18 +217,19 @@ class RoomController: BaseViewContoller, DialogDelegate, RoomDelegate {
                 }
             })
     }
-    
+
     func disconnect() {
+        Logger.log(self, message: "disconnect", level: .info)
         dataSourceDisposable?.dispose()
         dataSourceDisposable = nil
         actionDisposable?.dispose()
         actionDisposable = nil
     }
-    
+
     private func popAsObservable() -> Observable<Bool> {
         return super.pop().asObservable()
     }
-    
+
     override func pop() -> Single<Bool> {
         disconnect()
         return super.pop()
@@ -235,23 +238,23 @@ class RoomController: BaseViewContoller, DialogDelegate, RoomDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         meButton.setImage(UIImage(named: viewModel.account.getLocalAvatar(), in: Utils.bundle, with: nil), for: .normal)
-        
+
         adapter.collectionView = listView
         adapter.dataSource = self
         roomNameView.text = viewModel.room.channelName
         closeButton.isHidden = !viewModel.isManager
-        
+
         renderToolbar()
         subcribeUIEvent()
         subcribeRoomEvent()
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        self.navigationController?.interactivePopGestureRecognizer?.delegate = self
+
+    override func viewDidAppear(_: Bool) {
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
     }
-    
+
     static func instance(leaveAction: @escaping ((LeaveRoomAction, PodcastRoom?) -> Void)) -> RoomController {
-        let storyBoard: UIStoryboard = UIStoryboard(name: "Main", bundle: Utils.bundle)
+        let storyBoard = UIStoryboard(name: "Main", bundle: Utils.bundle)
         let controller = storyBoard.instantiateViewController(withIdentifier: "RoomController") as! RoomController
         controller.leaveAction = leaveAction
         controller.modalPresentationStyle = .fullScreen
@@ -265,10 +268,10 @@ protocol RoomControlDelegate: AnyObject {
 
 extension RoomController: RoomControlDelegate {
     func onTap(member: PodcastMember) {
-        if (viewModel.isManager) {
-            if (!member.isSpeaker) {
+        if viewModel.isManager {
+            if !member.isSpeaker {
                 InviteSpeakerDialog().show(with: member, delegate: self)
-            } else if (member.id != viewModel.member.id) {
+            } else if member.id != viewModel.member.id {
                 ManageSpeakerDialog().show(with: member, delegate: self)
             } else {
                 // block self?
@@ -279,11 +282,11 @@ extension RoomController: RoomControlDelegate {
 }
 
 extension RoomController: ListAdapterDataSource {
-    func objects(for listAdapter: ListAdapter) -> [ListDiffable] {
+    func objects(for _: ListAdapter) -> [ListDiffable] {
         return viewModel.memberList as! [ListDiffable]
     }
-    
-    func listAdapter(_ listAdapter: ListAdapter, sectionControllerFor object: Any) -> ListSectionController {
+
+    func listAdapter(_: ListAdapter, sectionControllerFor object: Any) -> ListSectionController {
         switch object {
         case is String:
             return SectionController()
@@ -293,14 +296,14 @@ extension RoomController: ListAdapterDataSource {
             return ListenersController(delegate: self)
         }
     }
-    
-    func emptyView(for listAdapter: ListAdapter) -> UIView? {
+
+    func emptyView(for _: ListAdapter) -> UIView? {
         return nil
     }
 }
 
 extension RoomController: UIGestureRecognizerDelegate {
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+    func gestureRecognizerShouldBegin(_: UIGestureRecognizer) -> Bool {
         false
     }
 }

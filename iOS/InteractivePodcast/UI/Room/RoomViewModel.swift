@@ -5,12 +5,12 @@
 //  Created by XUCH on 2021/3/6.
 //
 
-import Foundation
-import RxSwift
-import IGListKit
-import RxRelay
-import RxCocoa
 import Core
+import Foundation
+import IGListKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 enum LeaveRoomAction {
     case closeRoom
@@ -25,86 +25,85 @@ enum RoomRole {
 }
 
 class SpeakerGroup: NSObject, ListDiffable {
-    let list: Array<PodcastMember>
-    
-    init(list: Array<PodcastMember>) {
+    let list: [PodcastMember]
+
+    init(list: [PodcastMember]) {
         var managers = list.filter { member in
-            return member.isManager
+            member.isManager
         }
         let others = list.filter { member in
-            return !member.isManager
+            !member.isManager
         }
         managers.append(contentsOf: others)
         self.list = managers
     }
-    
+
     func diffIdentifier() -> NSObjectProtocol {
         return self
     }
-    
+
     func isEqual(toDiffableObject object: ListDiffable?) -> Bool {
-        return self === object ? true : self.isEqual(object)
+        return self === object ? true : isEqual(object)
     }
 }
 
 class MemberGroup: NSObject, ListDiffable {
-    var list: Array<PodcastMember>
-    
-    init(list: Array<PodcastMember>) {
+    var list: [PodcastMember]
+
+    init(list: [PodcastMember]) {
         self.list = list
     }
-    
+
     func diffIdentifier() -> NSObjectProtocol {
         return self
     }
-    
+
     func isEqual(toDiffableObject object: ListDiffable?) -> Bool {
-        return self === object ? true : self.isEqual(object)
+        return self === object ? true : isEqual(object)
     }
 }
 
 class RoomViewModel {
-    
     var room: PodcastRoom {
         return member.room
     }
-    
+
     var isSpeaker: Bool {
         return member.isSpeaker
     }
-    
+
     var isManager: Bool {
         return member.isManager
     }
-    
+
     var role: RoomRole {
         return isManager ? .manager : isSpeaker ? .speaker : .listener
     }
-    
+
     var account: User {
         return RoomManager.shared().account!
     }
-    
+
     var member: PodcastMember {
         return RoomManager.shared().member!
     }
-    
-    var roomManager: PodcastMember? = nil
-    
+
+    var roomManager: PodcastMember?
+
     var count: Int = 0
     var speakersCount: Int = 0
-    
+
     var coverCharacters: [User] = []
     var memberList: [Any] = []
     var handsupList: [PodcastAction] = []
     var onHandsupListChange: BehaviorRelay<[PodcastAction]> = BehaviorRelay(value: [])
-    
+
     func actionsSource() -> Observable<Result<PodcastAction>> {
         return RoomManager.shared().subscribeActions()
             .map { [unowned self] result in
                 if let action = result.data {
                     if (action.action == .handsUp && self.handsupList.first { item in
-                        return item.member.id == action.member.id
+                        item.member.id == action.member.id
                     } == nil) {
                         handsupList.append(action)
                         onHandsupListChange.accept(handsupList)
@@ -113,38 +112,38 @@ class RoomViewModel {
                 return result
             }
     }
-    
+
     func roomMembersDataSource() -> Observable<Result<Bool>> {
         return RoomManager.shared().subscribeMembers()
             .map { [unowned self] result in
                 Logger.log(message: "member isMuted:\(member.isMuted) member:\(member.isSelfMuted)", level: .info)
                 var roomClosed = false
-                if (result.success) {
+                if result.success {
                     syncLocalUIStatus()
                     self.memberList.removeAll()
                     self.count = 0
                     self.speakersCount = 0
                     if let list = result.data {
-                        if (list.count == 0) {
+                        if list.count == 0 {
                             roomClosed = true
                             self.roomManager = nil
                         } else {
                             roomManager = list.first { member in
-                                return member.isManager
+                                member.isManager
                             }
                             self.count = list.count
                         }
                         let speakerGroup = SpeakerGroup(
                             list: list.filter { user in
-                                return user.isSpeaker
+                                user.isSpeaker
                             }
                         )
                         self.speakersCount = speakerGroup.list.count
                         self.coverCharacters.removeAll()
-                        
+
                         let max = min(self.speakersCount, 3)
-                        if (max > 0) {
-                            for index in 0...(max - 1) {
+                        if max > 0 {
+                            for index in 0 ... (max - 1) {
                                 self.coverCharacters.append(speakerGroup.list[index].user)
                             }
                         } else {
@@ -152,14 +151,14 @@ class RoomViewModel {
                         }
                         let listenerGroup = MemberGroup(
                             list: list.filter { user in
-                                return !user.isSpeaker
+                                !user.isSpeaker
                             }
                         )
                         self.memberList.append(
                             contentsOf: [
                                 speakerGroup,
                                 "Audience".localized,
-                                listenerGroup
+                                listenerGroup,
                             ]
                         )
                     } else {
@@ -168,7 +167,7 @@ class RoomViewModel {
                             contentsOf: [
                                 SpeakerGroup(list: []),
                                 "Audience".localized,
-                                MemberGroup(list: [])
+                                MemberGroup(list: []),
                             ]
                         )
                     }
@@ -176,7 +175,7 @@ class RoomViewModel {
                 return Result(success: result.success, data: roomClosed, message: result.message)
             }
     }
-    
+
     func leaveRoom(action: LeaveRoomAction) -> Observable<Result<Void>> {
         Logger.log(message: "RoomViewModel leaveRoom action:\(action)", level: .info)
         switch action {
@@ -188,44 +187,44 @@ class RoomViewModel {
             return RoomManager.shared().leave()
         }
     }
-    
-    let isMuted: PublishRelay<Bool> = PublishRelay<Bool>()
-    
+
+    let isMuted = PublishRelay<Bool>()
+
     func muted() -> Bool {
         return RoomManager.shared().isMicrophoneClose()
     }
-    
-    func selfMute(mute: Bool) -> Observable<Result<Void>>{
+
+    func selfMute(mute: Bool) -> Observable<Result<Void>> {
         isMuted.accept(mute)
         return RoomManager.shared().closeMicrophone(close: mute)
     }
-    
-    func handsup() -> Observable<Result<Void>>{
+
+    func handsup() -> Observable<Result<Void>> {
         return RoomManager.shared().handsUp()
     }
-    
+
     func inviteSpeaker(member: PodcastMember) -> Observable<Result<Void>> {
         return RoomManager.shared().inviteSpeaker(member: member)
     }
-    
+
     func muteSpeaker(member: PodcastMember) -> Observable<Result<Void>> {
         return RoomManager.shared().muteSpeaker(member: member)
     }
-    
+
     func unMuteSpeaker(member: PodcastMember) -> Observable<Result<Void>> {
         return RoomManager.shared().unMuteSpeaker(member: member)
     }
-    
+
     func kickSpeaker(member: PodcastMember) -> Observable<Result<Void>> {
         return RoomManager.shared().kickSpeaker(member: member)
     }
-    
+
     func process(action: PodcastAction, agree: Bool) -> Observable<Result<Void>> {
         switch action.action {
         case .handsUp:
-            if (isManager) {
+            if isManager {
                 let find = handsupList.firstIndex { item in
-                    return item.id == action.id
+                    item.id == action.id
                 }
                 if let find = find {
                     handsupList.remove(at: find)
@@ -236,7 +235,7 @@ class RoomViewModel {
                 return Observable.just(Result(success: true))
             }
         case .invite:
-            if (!isManager && !isSpeaker) {
+            if !isManager, !isSpeaker {
                 return RoomManager.shared().process(invition: action, agree: agree)
             } else {
                 return Observable.just(Result(success: true))
@@ -245,7 +244,7 @@ class RoomViewModel {
             return Observable.just(Result(success: true))
         }
     }
-    
+
     func syncLocalUIStatus() {
         isMuted.accept(muted())
     }

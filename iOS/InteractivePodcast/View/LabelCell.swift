@@ -5,12 +5,11 @@
 //  Created by XUCH on 2021/3/9.
 //
 
+import Core
 import IGListKit
 import UIKit
-import Core
 
 final class LabelCell: UICollectionViewCell {
-
     fileprivate static let insets = UIEdgeInsets(top: 40, left: 0, bottom: 16, right: 0)
     fileprivate static let font = UIFont.systemFont(ofSize: 15)
 
@@ -20,7 +19,7 @@ final class LabelCell: UICollectionViewCell {
 
     static func textHeight(_ text: String, width: CGFloat) -> CGFloat {
         let constrainedSize = CGSize(width: width - insets.left - insets.right, height: CGFloat.greatestFiniteMagnitude)
-        let attributes = [ NSAttributedString.Key.font: font ]
+        let attributes = [NSAttributedString.Key.font: font]
         let options: NSStringDrawingOptions = [.usesFontLeading, .usesLineFragmentOrigin]
         let bounds = (text as NSString).boundingRect(with: constrainedSize, options: options, attributes: attributes, context: nil)
         return ceil(bounds.height) + insets.top + insets.bottom
@@ -57,7 +56,8 @@ final class LabelCell: UICollectionViewCell {
         contentView.layer.addSublayer(separator)
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -85,14 +85,11 @@ final class LabelCell: UICollectionViewCell {
 //        super.traitCollectionDidChange(previousTraitCollection)
 //        separator.backgroundColor = UIColor.defaultSeparator.cgColor
 //    }
-
 }
 
 extension LabelCell: ListBindable {
-
     func bindViewModel(_ viewModel: Any) {
         guard let viewModel = viewModel as? String else { return }
         label.text = viewModel
     }
-
 }

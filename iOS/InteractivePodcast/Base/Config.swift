@@ -5,25 +5,27 @@
 //  Created by XC on 2021/4/20.
 //
 
-import Foundation
 import AgoraRtcKit
 import Core
+import Foundation
 
 extension BuildConfig {
     static var PrivacyPolicy: String {
-        if (Utils.getCurrentLanguage() == "cn") {
+        if Utils.getCurrentLanguage() == "cn" {
             return "https://www.agora.io/cn/privacy-policy/"
         } else {
             return "https://www.agora.io/en/privacy-policy/"
         }
     }
+
     static var SignupUrl: String {
-        if (Utils.getCurrentLanguage() == "cn") {
+        if Utils.getCurrentLanguage() == "cn" {
             return "https://sso.agora.io/cn/v3/signup"
         } else {
             return "https://sso.agora.io/en/v3/signup"
         }
     }
+
     static let PublishTime = "2021.XX.XX"
     static let SdkVersion = AgoraRtcEngineKit.getSdkVersion()
     static var AppVersion: String? {

@@ -5,10 +5,10 @@
 //  Created by XC on 2021/4/21.
 //
 
-import UIKit
-import RxSwift
-import RxCocoa
 import Core
+import RxCocoa
+import RxSwift
+import UIKit
 
 protocol HomeCardDelegate: AnyObject {
     func onTapCard(with room: BlindDateRoom)
@@ -20,11 +20,11 @@ final class HomeCardView: UICollectionViewCell {
     fileprivate static let lineSpacing: CGFloat = 5
     fileprivate static let font = UIFont.systemFont(ofSize: 16)
     fileprivate static let lineHeight: CGFloat = 26.5
-    
-    //fileprivate let onRoomChanged: PublishRelay<Room> = PublishRelay()
+
+    // fileprivate let onRoomChanged: PublishRelay<Room> = PublishRelay()
     weak var delegate: HomeCardDelegate?
     let disposeBag = DisposeBag()
-    private let textStyle: [NSAttributedString.Key : Any] = {
+    private let textStyle: [NSAttributedString.Key: Any] = {
         let style = NSMutableParagraphStyle()
         style.lineSpacing = HomeCardView.lineSpacing
         let shadow = NSShadow()
@@ -34,21 +34,21 @@ final class HomeCardView: UICollectionViewCell {
         let attributes = [
             NSAttributedString.Key.font: HomeCardView.font,
             NSAttributedString.Key.paragraphStyle: style,
-            NSAttributedString.Key.shadow: shadow
+            NSAttributedString.Key.shadow: shadow,
         ]
         return attributes
     }()
-    
+
     var room: BlindDateRoom! {
         didSet {
-            //title.text = room.channelName
+            // title.text = room.channelName
             title.attributedText = NSAttributedString(string: room.channelName, attributes: textStyle)
             avatar.name.attributedText = NSAttributedString(string: room.anchor.name, attributes: textStyle)
-            avatar.avatar.image = UIImage(named: room.anchor.getLocalAvatar(), in: Bundle.init(identifier: "io.agora.InteractivePodcast")!, with: nil)
-            cover.image = UIImage(named: room.anchor.getLocalAvatar(), in: Bundle.init(identifier: "io.agora.InteractivePodcast")!, with: nil)
+            avatar.avatar.image = UIImage(named: room.anchor.getLocalAvatar(), in: Bundle(identifier: "io.agora.InteractivePodcast")!, with: nil)
+            cover.image = UIImage(named: room.anchor.getLocalAvatar(), in: Bundle(identifier: "io.agora.InteractivePodcast")!, with: nil)
         }
     }
-    
+
     var cover: UIImageView = {
         let view = RoundImageView()
         view.radius = 6
@@ -56,41 +56,41 @@ final class HomeCardView: UICollectionViewCell {
         view.borderWidth = 0
         return view
     }()
-    
+
     var avatar: AvatarView = {
         let view = AvatarView()
         return view
     }()
-    
+
     var title: UILabel = {
         let view = UILabel()
         view.textColor = UIColor(hex: Colors.White)
         view.numberOfLines = 2
         return view
     }()
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = UIColor.lightGray
-        
+
         addSubview(cover)
         addSubview(title)
         addSubview(avatar)
-        
+
         cover.fill(view: self)
             .active()
-        
+
         title.marginTop(anchor: topAnchor, constant: HomeCardView.padding)
             .marginLeading(anchor: leadingAnchor, constant: HomeCardView.padding)
             .centerX(anchor: centerXAnchor)
             .active()
-        
+
         avatar.height(constant: HomeCardView.ICON_WIDTH)
             .marginBottom(anchor: bottomAnchor, constant: 6)
             .marginLeading(anchor: leadingAnchor, constant: HomeCardView.padding)
             .marginTrailing(anchor: trailingAnchor, constant: HomeCardView.padding)
             .active()
-        
+
         onTap().rx.event
             .throttle(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance)
             .subscribe(onNext: { [unowned self] _ in
@@ -98,35 +98,36 @@ final class HomeCardView: UICollectionViewCell {
             })
             .disposed(by: disposeBag)
     }
-    
-    required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         rounded(radius: 6)
     }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.highlight()
+
+    override func touchesBegan(_: Set<UITouch>, with _: UIEvent?) {
+        highlight()
     }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.unhighlight()
+
+    override func touchesEnded(_: Set<UITouch>, with _: UIEvent?) {
+        unhighlight()
     }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.unhighlight()
+
+    override func touchesCancelled(_: Set<UITouch>, with _: UIEvent?) {
+        unhighlight()
     }
-    
+
     class AvatarView: UIView {
         var avatar: UIImageView = {
             let view = RoundImageView()
-            view.image = UIImage(named: "default", in: Bundle.init(identifier: "io.agora.InteractivePodcast")!, with: nil)
+            view.image = UIImage(named: "default", in: Bundle(identifier: "io.agora.InteractivePodcast")!, with: nil)
             return view
         }()
-        
+
         var name: UILabel = {
             let view = UILabel()
             view.font = UIFont.systemFont(ofSize: 14)
@@ -135,7 +136,7 @@ final class HomeCardView: UICollectionViewCell {
             view.shadow(offset: CGSize(width: 0, height: 1))
             return view
         }()
-        
+
         override init(frame: CGRect) {
             super.init(frame: frame)
             backgroundColor = .clear
@@ -152,14 +153,14 @@ final class HomeCardView: UICollectionViewCell {
                 .centerY(anchor: centerYAnchor, constant: 5)
                 .active()
         }
-        
-        required init?(coder: NSCoder) {
+
+        @available(*, unavailable)
+        required init?(coder _: NSCoder) {
             fatalError("init(coder:) has not been implemented")
         }
     }
 
-    static func sizeForItem(room: BlindDateRoom, width: CGFloat) -> CGSize {
+    static func sizeForItem(room _: BlindDateRoom, width: CGFloat) -> CGSize {
         return CGSize(width: width, height: width)
     }
 }
-

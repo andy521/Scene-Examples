@@ -7,8 +7,8 @@
 
 import UIKit
 
-extension String {
-    public var localized: String { NSLocalizedString(self, bundle: Bundle(identifier: "io.agora.Core")!, comment: "") }
+public extension String {
+    var localized: String { NSLocalizedString(self, bundle: Bundle(identifier: "io.agora.Core")!, comment: "") }
 }
 
 extension UserDefaults {
@@ -20,15 +20,16 @@ extension UserDefaults {
 
     func value<T: Decodable>(_ type: T.Type, forKey key: String) -> T? {
         if let data = object(forKey: key) as? Data,
-            let value = try? JSONDecoder().decode(type, from: data) {
+           let value = try? JSONDecoder().decode(type, from: data)
+        {
             return value
         }
         return nil
     }
 }
 
-extension UIColor {
-    public convenience init(hex: String, alpha: CGFloat? = nil) {
+public extension UIColor {
+    convenience init(hex: String, alpha: CGFloat? = nil) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0
         Scanner(string: hex).scanHexInt64(&int)
@@ -44,9 +45,9 @@ extension UIColor {
             (a, r, g, b) = (1, 1, 1, 0)
         }
         self.init(
-            red:   CGFloat(r) / 255,
+            red: CGFloat(r) / 255,
             green: CGFloat(g) / 255,
-            blue:  CGFloat(b) / 255,
+            blue: CGFloat(b) / 255,
             alpha: alpha ?? CGFloat(a) / 255
         )
     }
@@ -54,68 +55,67 @@ extension UIColor {
 
 public var screenWidth: CGFloat { return UIScreen.main.bounds.width }
 
-extension UIView {
-    
-    public enum Relation {
+public extension UIView {
+    enum Relation {
         case equal
         case greaterOrEqual
         case lessOrEqual
     }
-    
-    public func highlight() {
+
+    func highlight() {
         UIView.animate(withDuration: 0.1) {
             self.alpha = 0.5
         }
     }
-    
-    public func unhighlight() {
+
+    func unhighlight() {
         UIView.animate(withDuration: 0.1) {
             self.alpha = 1
         }
     }
-    
-    public func roundCorners(_ corners: UIRectCorner, radius: CGFloat) {
-        let path = UIBezierPath(roundedRect: self.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+
+    func roundCorners(_ corners: UIRectCorner, radius: CGFloat) {
+        let path = UIBezierPath(roundedRect: bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
         let mask = CAShapeLayer()
         mask.path = path.cgPath
-        self.layer.mask = mask
-        self.clipsToBounds = true
+        layer.mask = mask
+        clipsToBounds = true
     }
-    
-    public func rounded(color: String? = nil, borderWidth: CGFloat = 0, radius: CGFloat? = nil) {
-        self.layer.cornerRadius = radius ?? min(self.bounds.width, self.bounds.height) / 2
+
+    func rounded(color: String? = nil, borderWidth: CGFloat = 0, radius: CGFloat? = nil) {
+        layer.cornerRadius = radius ?? min(bounds.width, bounds.height) / 2
         if let borderColor = color {
-            self.layer.borderColor = UIColor(hex: borderColor).cgColor
+            layer.borderColor = UIColor(hex: borderColor).cgColor
         } else {
-            self.layer.borderColor = UIColor.clear.cgColor
+            layer.borderColor = UIColor.clear.cgColor
         }
-        self.layer.borderWidth = borderWidth
+        layer.borderWidth = borderWidth
     }
-    
-    public func shadow(color: String = "#000", radius: CGFloat = 10, offset: CGSize = .zero, opacity: Float = 0.65) {
-        self.layer.shadowRadius = radius
-        self.layer.shadowColor = UIColor(hex: color).cgColor
-        self.layer.shadowOffset = offset
-        self.layer.shadowOpacity = opacity
+
+    func shadow(color: String = "#000", radius: CGFloat = 10, offset: CGSize = .zero, opacity: Float = 0.65) {
+        layer.shadowRadius = radius
+        layer.shadowColor = UIColor(hex: color).cgColor
+        layer.shadowOffset = offset
+        layer.shadowOpacity = opacity
     }
-    
-    public func animateTo(frame: CGRect, withDuration duration: TimeInterval, completion: ((Bool) -> Void)? = nil) {
+
+    func animateTo(frame: CGRect, withDuration duration: TimeInterval, completion: ((Bool) -> Void)? = nil) {
         guard let _ = superview else {
             return
         }
-    
+
         let xScale = frame.size.width / self.frame.size.width
         let yScale = frame.size.height / self.frame.size.height
-        let x = frame.origin.x + (self.frame.width * xScale) * self.layer.anchorPoint.x
-        let y = frame.origin.y + (self.frame.height * yScale) * self.layer.anchorPoint.y
-        
+        let x = frame.origin.x + (self.frame.width * xScale) * layer.anchorPoint.x
+        let y = frame.origin.y + (self.frame.height * yScale) * layer.anchorPoint.y
+
         UIView.animate(withDuration: duration, delay: 0, options: .curveLinear, animations: {
             self.layer.position = CGPoint(x: x, y: y)
             self.transform = self.transform.scaledBy(x: xScale, y: yScale)
         }, completion: completion)
     }
-    
-    public func width(constant: CGFloat, relation: Relation = .equal) -> UIView {
+
+    func width(constant: CGFloat, relation: Relation = .equal) -> UIView {
         switch relation {
         case .equal:
             widthAnchor.constraint(equalToConstant: constant).isActive = true
@@ -126,8 +126,8 @@ extension UIView {
         }
         return self
     }
-    
-    public func height(constant: CGFloat, relation: Relation = .equal) -> UIView {
+
+    func height(constant: CGFloat, relation: Relation = .equal) -> UIView {
         switch relation {
         case .equal:
             heightAnchor.constraint(equalToConstant: constant).isActive = true
@@ -139,59 +139,59 @@ extension UIView {
         return self
     }
 
-    public func marginTop(anchor: NSLayoutYAxisAnchor, constant: CGFloat = 0, relation: Relation = .equal) -> UIView {
+    func marginTop(anchor: NSLayoutYAxisAnchor, constant: CGFloat = 0, relation: Relation = .equal) -> UIView {
         let from = topAnchor
         UIView.anchor(from, anchor, constant, relation)
         return self
     }
-    
-    public func marginBottom(anchor: NSLayoutYAxisAnchor, constant: CGFloat = 0, relation: Relation = .equal) -> UIView {
+
+    func marginBottom(anchor: NSLayoutYAxisAnchor, constant: CGFloat = 0, relation: Relation = .equal) -> UIView {
         let from = bottomAnchor
         UIView.anchor(from, anchor, -constant, relation)
         return self
     }
-    
-    public func marginLeading(anchor: NSLayoutXAxisAnchor, constant: CGFloat = 0, relation: Relation = .equal) -> UIView {
+
+    func marginLeading(anchor: NSLayoutXAxisAnchor, constant: CGFloat = 0, relation: Relation = .equal) -> UIView {
         let from = leadingAnchor
         UIView.anchor(from, anchor, constant, relation)
         return self
     }
-    
-    public func marginTrailing(anchor: NSLayoutXAxisAnchor, constant: CGFloat = 0, relation: Relation = .equal) -> UIView {
+
+    func marginTrailing(anchor: NSLayoutXAxisAnchor, constant: CGFloat = 0, relation: Relation = .equal) -> UIView {
         let from = trailingAnchor
         UIView.anchor(from, anchor, -constant, relation)
         return self
     }
-    
-    public func centerX(anchor: NSLayoutXAxisAnchor, constant: CGFloat = 0, relation: Relation = .equal) -> UIView {
+
+    func centerX(anchor: NSLayoutXAxisAnchor, constant: CGFloat = 0, relation: Relation = .equal) -> UIView {
         let from = centerXAnchor
         UIView.anchor(from, anchor, constant, relation)
         return self
     }
-    
-    public func centerY(anchor: NSLayoutYAxisAnchor, constant: CGFloat = 0, relation: Relation = .equal) -> UIView {
+
+    func centerY(anchor: NSLayoutYAxisAnchor, constant: CGFloat = 0, relation: Relation = .equal) -> UIView {
         let from = centerYAnchor
         UIView.anchor(from, anchor, constant, relation)
         return self
     }
-    
-    public func square() -> UIView {
+
+    func square() -> UIView {
         widthAnchor.constraint(equalTo: heightAnchor).isActive = true
         return self
     }
-    
-    public func fill(view: UIView, leading: CGFloat = 0, top: CGFloat = 0, trailing: CGFloat = 0, bottom: CGFloat = 0) -> UIView {
+
+    func fill(view: UIView, leading: CGFloat = 0, top: CGFloat = 0, trailing: CGFloat = 0, bottom: CGFloat = 0) -> UIView {
         return marginLeading(anchor: view.leadingAnchor, constant: leading)
             .marginTop(anchor: view.topAnchor, constant: top)
             .marginTrailing(anchor: view.trailingAnchor, constant: trailing)
             .marginBottom(anchor: view.bottomAnchor, constant: bottom)
     }
-    
-    public func active() {
+
+    func active() {
         translatesAutoresizingMaskIntoConstraints = false
     }
-    
-    public func addConstraints(withFormat format: String, views: UIView...) {
+
+    func addConstraints(withFormat format: String, views: UIView...) {
         var viewsDictionary = [String: UIView]()
         for i in 0 ..< views.count {
             let key = "v\(i)"
@@ -200,8 +200,8 @@ extension UIView {
         }
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: format, options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: viewsDictionary))
     }
-    
-    public func addConstraints(withFormat format: String, arrayOf views: [UIView]) {
+
+    func addConstraints(withFormat format: String, arrayOf views: [UIView]) {
         var viewsDictionary = [String: UIView]()
         for i in 0 ..< views.count {
             let key = "v\(i)"
@@ -210,8 +210,8 @@ extension UIView {
         }
         addConstraints(NSLayoutConstraint.constraints(withVisualFormat: format, options: NSLayoutConstraint.FormatOptions(), metrics: nil, views: viewsDictionary))
     }
-    
-    public static func anchor(_ from: NSLayoutYAxisAnchor, _ to: NSLayoutYAxisAnchor, _ constant: CGFloat, _ relation: Relation) {
+
+    static func anchor(_ from: NSLayoutYAxisAnchor, _ to: NSLayoutYAxisAnchor, _ constant: CGFloat, _ relation: Relation) {
         switch relation {
         case .equal:
             from.constraint(equalTo: to, constant: constant).isActive = true
@@ -221,8 +221,8 @@ extension UIView {
             from.constraint(lessThanOrEqualTo: to, constant: constant).isActive = true
         }
     }
-    
-    public static func anchor(_ from: NSLayoutXAxisAnchor, _ to: NSLayoutXAxisAnchor, _ constant: CGFloat, _ relation: Relation) {
+
+    static func anchor(_ from: NSLayoutXAxisAnchor, _ to: NSLayoutXAxisAnchor, _ constant: CGFloat, _ relation: Relation) {
         switch relation {
         case .equal:
             from.constraint(equalTo: to, constant: constant).isActive = true
@@ -232,9 +232,9 @@ extension UIView {
             from.constraint(lessThanOrEqualTo: to, constant: constant).isActive = true
         }
     }
-    
-    public func removeAllConstraints() {
-        var _superview = self.superview
+
+    func removeAllConstraints() {
+        var _superview = superview
         while let superview = _superview {
             for constraint in superview.constraints {
                 if let first = constraint.firstItem as? UIView, first == self {
@@ -246,14 +246,14 @@ extension UIView {
             }
             _superview = superview.superview
         }
-        self.removeConstraints(self.constraints)
-        self.translatesAutoresizingMaskIntoConstraints = true
+        removeConstraints(constraints)
+        translatesAutoresizingMaskIntoConstraints = true
     }
 }
 
-extension UIViewController {
-    public func addViewTop(_ view: UIView, window: Bool = true) -> UIView {
-        if (window) {
+public extension UIViewController {
+    func addViewTop(_ view: UIView, window: Bool = true) -> UIView {
+        if window {
             if let window: UIWindow = UIApplication.shared.windows.filter({ $0.isKeyWindow }).first {
                 window.addSubview(view)
                 return window
@@ -262,46 +262,37 @@ extension UIViewController {
         self.view.addSubview(view)
         return self.view
     }
-    
-    public func showToast(message: String?, type: NotificationType = .info, duration: CGFloat = 1.5) {
-        guard let _message = message else {
-            return
-        }
-        self.show(message: _message, type: type, duration: duration)
-    }
 }
 
-extension UITableView {
-    public func reloadData(_ completion: @escaping ()->()) {
+public extension UITableView {
+    func reloadData(_ completion: @escaping () -> Void) {
         UIView.animate(withDuration: 0, animations: {
             self.reloadData()
-        }, completion:{ _ in
+        }, completion: { _ in
             completion()
         })
     }
 
-    public func scroll(to: scrollsTo, animated: Bool) {
+    func scroll(to: scrollsTo, animated: Bool) {
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(300)) {
             let numberOfSections = self.numberOfSections
-            let numberOfRows = self.numberOfRows(inSection: numberOfSections-1)
-            switch to{
+            let numberOfRows = self.numberOfRows(inSection: numberOfSections - 1)
+            switch to {
             case .top:
                 if numberOfRows > 0 {
-                     let indexPath = IndexPath(row: 0, section: 0)
-                     self.scrollToRow(at: indexPath, at: .top, animated: animated)
+                    let indexPath = IndexPath(row: 0, section: 0)
+                    self.scrollToRow(at: indexPath, at: .top, animated: animated)
                 }
-                break
             case .bottom:
                 if numberOfRows > 0 {
-                    let indexPath = IndexPath(row: numberOfRows-1, section: (numberOfSections-1))
+                    let indexPath = IndexPath(row: numberOfRows - 1, section: numberOfSections - 1)
                     self.scrollToRow(at: indexPath, at: .bottom, animated: animated)
                 }
-                break
             }
         }
     }
 
-    public enum scrollsTo {
+    enum scrollsTo {
         case top, bottom
     }
 }
@@ -319,7 +310,7 @@ extension UIWindow {
         }
         return nil
     }
-    
+
     class func getVisibleViewControllerFrom(_ vc: UIViewController) -> UIViewController {
         if vc.isKind(of: UINavigationController.self) {
             let navigationController = vc as! UINavigationController
@@ -331,58 +322,66 @@ extension UIWindow {
             if let presentedViewController = vc.presentedViewController {
                 return UIWindow.getVisibleViewControllerFrom(presentedViewController.presentedViewController!)
             } else {
-                return vc;
+                return vc
             }
         }
     }
 }
 
-extension UIView {
-    public class func loadFromNib<T>(name: String, bundle: Bundle? = nil) -> T? {
+public extension UINavigationController {
+    func replaceTopViewController(with viewController: UIViewController, animated: Bool) {
+        var controllers = viewControllers
+        controllers[controllers.count - 1] = viewController
+        setViewControllers(controllers, animated: animated)
+    }
+}
+
+public extension UIView {
+    class func loadFromNib<T>(name: String, bundle: Bundle? = nil) -> T? {
         return UINib(
             nibName: name,
             bundle: bundle
         ).instantiate(withOwner: nil, options: nil)[0] as? T
     }
-    
-    public func onTap() -> UITapGestureRecognizer {
+
+    func onTap() -> UITapGestureRecognizer {
         let tap = UITapGestureRecognizer()
         addGestureRecognizer(tap)
         return tap
     }
 }
 
-extension UIView {
-    public func gradientLayer(colors: [UIColor], degree: CGFloat = 0) -> CAGradientLayer {
+public extension UIView {
+    func gradientLayer(colors: [UIColor], degree: CGFloat = 0) -> CAGradientLayer {
         let layer = CAGradientLayer()
         layer.frame = bounds
-        layer.colors = colors.map({ (color: UIColor) -> CGColor in
+        layer.colors = colors.map { (color: UIColor) -> CGColor in
             color.cgColor
-        })
+        }
 
         let a = tan((degree + 45) * CGFloat.pi / 180) - 1
         let b = 0.5 - a / 2
-        
+
         layer.startPoint = CGPoint(x: 0, y: b)
         layer.endPoint = CGPoint(x: 1, y: a + b)
         return layer
     }
 }
 
-extension UIImage {
-    public static func gradient(colors: [UIColor], with frame: CGRect, degree: CGFloat = 0) -> UIImage? {
+public extension UIImage {
+    static func gradient(colors: [UIColor], with frame: CGRect, degree: CGFloat = 0) -> UIImage? {
         let layer = CAGradientLayer()
         layer.frame = frame
-        layer.colors = colors.map({ (color: UIColor) -> CGColor in
+        layer.colors = colors.map { (color: UIColor) -> CGColor in
             color.cgColor
-        })
+        }
 
         let a = tan((degree + 45) * CGFloat.pi / 180) - 1
         let b = 0.5 - a / 2
-        
+
         layer.startPoint = CGPoint(x: 0, y: b)
         layer.endPoint = CGPoint(x: 1, y: a + b)
-        
+
         UIGraphicsBeginImageContext(CGSize(width: frame.width, height: frame.height))
         layer.render(in: UIGraphicsGetCurrentContext()!)
         guard let image = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
@@ -391,19 +390,18 @@ extension UIImage {
     }
 }
 
-extension UIRefreshControl {
-    public func refreshManually() {
+public extension UIRefreshControl {
+    func refreshManually() {
         if let scrollView = superview as? UIScrollView {
             scrollView.setContentOffset(CGPoint(x: 0, y: scrollView.contentOffset.y - frame.height), animated: false)
         }
-        //beginRefreshing()
+        // beginRefreshing()
         sendActions(for: .valueChanged)
     }
 }
 
-extension UIColor {
-
-    public class var background: UIColor {
+public extension UIColor {
+    class var background: UIColor {
         if #available(iOS 13.0, *) {
             return .systemBackground
         } else {
@@ -411,7 +409,7 @@ extension UIColor {
         }
     }
 
-    public class var secondaryBackground: UIColor {
+    class var secondaryBackground: UIColor {
         if #available(iOS 13.0, *) {
             return .secondarySystemBackground
         } else {
@@ -419,7 +417,7 @@ extension UIColor {
         }
     }
 
-    public class var defaultSeparator: UIColor {
+    class var defaultSeparator: UIColor {
         if #available(iOS 13.0, *) {
             return UIColor.separator
         } else {
@@ -430,7 +428,7 @@ extension UIColor {
         }
     }
 
-    public class var titleLabel: UIColor {
+    class var titleLabel: UIColor {
         if #available(iOS 13.0, *) {
             return .label
         } else {
@@ -438,7 +436,7 @@ extension UIColor {
         }
     }
 
-    public class var detailLabel: UIColor {
+    class var detailLabel: UIColor {
         if #available(iOS 13.0, *) {
             return .secondaryLabel
         } else {

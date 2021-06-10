@@ -5,25 +5,25 @@
 //  Created by XC on 2021/4/22.
 //
 
-import Foundation
-import RxSwift
-import IGListKit
-import RxRelay
-import RxCocoa
 import Core
+import Foundation
+import IGListKit
+import RxCocoa
+import RxRelay
+import RxSwift
 
 enum LeaveRoomAction {
     case closeRoom
     case leave
-    //case mini
+    // case mini
 }
 
 class SpeakerGroup {
     var hoster: BlindDateMember?
     var leftSpeaker: BlindDateMember?
     var rightSpeaker: BlindDateMember?
-    
-    func sync(list: Array<BlindDateMember>) {
+
+    func sync(list: [BlindDateMember]) {
         hoster = list.first { member in
             member.role == .manager
         }
@@ -38,31 +38,31 @@ class SpeakerGroup {
 
 class MemberGroup {
     private var first = true
-    var list: Array<BlindDateMember>
-    
+    var list: [BlindDateMember]
+
     init() {
-        self.list = []
+        list = []
     }
-    
-    func sync(list: Array<BlindDateMember>) -> (Bool, Array<BlindDateMember>) {
+
+    func sync(list: [BlindDateMember]) -> (Bool, [BlindDateMember]) {
         let add = first ? [] : list.filter { member -> Bool in
-            return self.list.count == 0 || self.list.first(where: { _member -> Bool in
+            self.list.count == 0 || self.list.first(where: { _member -> Bool in
                 _member.id == member.id
             }) == nil
         }
         first = false
         var changed = false
-        if (list.count != self.list.count) {
+        if list.count != self.list.count {
             changed = true
-        } else if (list.count != 0) {
-            for index in 0...list.count - 1 {
-                if (list[index].id != self.list[index].id) {
+        } else if list.count != 0 {
+            for index in 0 ... list.count - 1 {
+                if list[index].id != self.list[index].id {
                     changed = true
                     break
                 }
             }
         }
-        if (changed) {
+        if changed {
             self.list.removeAll()
             self.list.append(contentsOf: list)
         }
@@ -74,7 +74,7 @@ class MemberGroup {
 class RoomChat {
     var member: BlindDateMember
     var message: String
-    
+
     init(member: BlindDateMember, message: String) {
         self.message = message
         self.member = member
@@ -82,59 +82,59 @@ class RoomChat {
 }
 
 class RoomViewModel {
-    
     var room: BlindDateRoom {
         return member.room
     }
-    
+
     var isSpeaker: Bool {
         return member.role != .listener
     }
-    
+
     var isManager: Bool {
         return member.isManager
     }
-    
+
     var role: BlindDateRoomRole {
         return member.role
     }
-    
+
     var account: User {
         return RoomManager.shared().account!
     }
-    
+
     var member: BlindDateMember {
         return RoomManager.shared().member!
     }
-    
-    var roomManager: BlindDateMember? = nil
-    
-    //var count: Int = 0
-    //var speakersCount: Int = 0
-    
+
+    var roomManager: BlindDateMember?
+
+    // var count: Int = 0
+    // var speakersCount: Int = 0
+
     var topListeners: [Int: User?] = [0: nil, 1: nil, 2: nil]
     var onTopListenersChange: BehaviorRelay<Bool> = BehaviorRelay(value: false)
-    //var memberList: [Any] = []
-    var speakers: SpeakerGroup = SpeakerGroup()
-    
+    // var memberList: [Any] = []
+    var speakers = SpeakerGroup()
+
     var onListenersListChange: BehaviorRelay<Bool> = BehaviorRelay(value: false)
-    var listeners: MemberGroup = MemberGroup()
-    
+    var listeners = MemberGroup()
+
     var handsupList: [BlindDateAction] = []
     var onHandsupListChange: BehaviorRelay<[BlindDateAction]> = BehaviorRelay(value: [])
 
     var onMemberEnter: BehaviorRelay<BlindDateMember?> = BehaviorRelay(value: nil)
-    
+
     var messageList: [RoomChat] = []
-    
+
     func actionsSource() -> Observable<Result<BlindDateAction>> {
         return RoomManager.shared().subscribeActions()
             .map { [unowned self] result in
                 if let action = result.data {
                     if ((action.action == .handsUp || action.action == .requestLeft || action.action == .requestRight) &&
-                            self.handsupList.first { item in
-                        return item.member.id == action.member.id
-                    } == nil) {
+                        self.handsupList.first { item in
+                            item.member.id == action.member.id
+                        } == nil)
+                    {
                         handsupList.append(action)
                         onHandsupListChange.accept(handsupList)
                     }
@@ -142,21 +142,21 @@ class RoomViewModel {
                 return result
             }
     }
-    
+
     func sendMessage(message: String) -> Observable<Result<Void>> {
         return RoomManager.shared().sendMessage(message: message)
     }
-    
+
     func subscribeMessages() -> Observable<Result<BlindDateMessage>> {
         return RoomManager.shared().subscribeMessages()
             .map { [unowned self] result in
                 if let message = result.data {
                     let member: BlindDateMember?
-                    if (message.userId == self.speakers.hoster?.id) {
+                    if message.userId == self.speakers.hoster?.id {
                         member = self.speakers.hoster
-                    } else if (message.userId == self.speakers.leftSpeaker?.id) {
+                    } else if message.userId == self.speakers.leftSpeaker?.id {
                         member = self.speakers.leftSpeaker
-                    } else if (message.userId == self.speakers.rightSpeaker?.id) {
+                    } else if message.userId == self.speakers.rightSpeaker?.id {
                         member = self.speakers.rightSpeaker
                     } else {
                         member = self.listeners.list.first { member -> Bool in
@@ -170,40 +170,40 @@ class RoomViewModel {
                 return result
             }
     }
-    
+
     func roomMembersDataSource() -> Observable<Result<Bool>> {
         return RoomManager.shared().subscribeMembers()
             .map { [unowned self] result in
                 var roomClosed = false
-                if (result.success) {
+                if result.success {
                     syncLocalUIStatus()
                     if let list = result.data {
-                        if (list.count == 0) {
+                        if list.count == 0 {
                             roomClosed = true
                             self.roomManager = nil
                         } else {
                             roomManager = list.first { member in
-                                return member.isManager
+                                member.isManager
                             }
                         }
                         let (changed, add) = self.listeners.sync(list: list.filter { user in
-                            return user.role == .listener
+                            user.role == .listener
                         })
                         add.filter { member -> Bool in
                             member.id != self.speakers.hoster?.id &&
-                            member.id != self.speakers.leftSpeaker?.id &&
-                            member.id != self.speakers.rightSpeaker?.id
+                                member.id != self.speakers.leftSpeaker?.id &&
+                                member.id != self.speakers.rightSpeaker?.id
                         }
                         .forEach { member in
                             self.onMemberEnter.accept(member)
                         }
-                        if (changed) {
+                        if changed {
                             self.onListenersListChange.accept(true)
                         }
                         checkTopListeners()
-                        
+
                         self.speakers.sync(list: list.filter { user in
-                            return user.role != .listener
+                            user.role != .listener
                         })
                     } else {
                         self.roomManager = nil
@@ -212,23 +212,23 @@ class RoomViewModel {
                 return Result(success: result.success, data: roomClosed, message: result.message)
             }
     }
-    
+
     private func checkTopListeners() {
         var changed = false
         var tops: [Int: User?] = [0: nil, 1: nil, 2: nil]
-        let max = min(self.listeners.list.count, 3)
-        if (max > 0) {
-            for index in 0...(max - 1) {
-                tops[index] = self.listeners.list[index].user
+        let max = min(listeners.list.count, 3)
+        if max > 0 {
+            for index in 0 ... (max - 1) {
+                tops[index] = listeners.list[index].user
             }
         }
-        if (tops.count != 0 && tops.count == self.topListeners.count) {
-            for index in 0...2 {
+        if tops.count != 0, tops.count == topListeners.count {
+            for index in 0 ... 2 {
                 let a = tops[index]
-                let b = self.topListeners[index]
-                if (a == nil && b == nil) {
+                let b = topListeners[index]
+                if a == nil && b == nil {
                     continue
-                } else if (a??.id != b??.id || a??.avatar != b??.avatar) {
+                } else if a??.id != b??.id || a??.avatar != b??.avatar {
                     changed = true
                     break
                 }
@@ -236,14 +236,14 @@ class RoomViewModel {
         } else {
             changed = true
         }
-        if (changed) {
-            for index in 0...2 {
-                self.topListeners[index] = tops[index]
+        if changed {
+            for index in 0 ... 2 {
+                topListeners[index] = tops[index]
             }
-            self.onTopListenersChange.accept(true)
+            onTopListenersChange.accept(true)
         }
     }
-    
+
     func leaveRoom(action: LeaveRoomAction) -> Observable<Result<Void>> {
         Logger.log(message: "RoomViewModel leaveRoom action:\(action)", level: .info)
         switch action {
@@ -253,77 +253,77 @@ class RoomViewModel {
             return RoomManager.shared().leave()
         }
     }
-    
-    let isMuted: BehaviorRelay<Bool> = BehaviorRelay<Bool>(value: RoomManager.shared().isMicrophoneClose())
-    let isEnableBeauty: BehaviorRelay<Bool> = BehaviorRelay<Bool>(value: RoomManager.shared().isEnableBeauty())
-    
+
+    let isMuted = BehaviorRelay<Bool>(value: RoomManager.shared().isMicrophoneClose())
+    let isEnableBeauty = BehaviorRelay<Bool>(value: RoomManager.shared().isEnableBeauty())
+
     func muted() -> Bool {
         return RoomManager.shared().isMicrophoneClose()
     }
-    
+
     func enabledBeauty() -> Bool {
         return RoomManager.shared().isEnableBeauty()
     }
-    
+
     func enableBeauty(enable: Bool) {
         isEnableBeauty.accept(enable)
         RoomManager.shared().enableBeauty(enable: enable)
     }
-    
-    func selfMute(mute: Bool) -> Observable<Result<Void>>{
+
+    func selfMute(mute: Bool) -> Observable<Result<Void>> {
         isMuted.accept(mute)
         return RoomManager.shared().closeMicrophone(close: mute)
     }
-    
-    func handsup(left: Bool?) -> Observable<Result<Void>>{
+
+    func handsup(left: Bool?) -> Observable<Result<Void>> {
         return RoomManager.shared().handsUp(left: left)
     }
-    
+
     func inviteSpeaker(member: BlindDateMember) -> Observable<Result<Void>> {
         return RoomManager.shared().inviteSpeaker(member: member)
     }
-    
+
     func muteSpeaker(member: BlindDateMember) -> Observable<Result<Void>> {
         return RoomManager.shared().muteSpeaker(member: member)
     }
-    
+
     func unMuteSpeaker(member: BlindDateMember) -> Observable<Result<Void>> {
         return RoomManager.shared().unMuteSpeaker(member: member)
     }
-    
+
     func kickSpeaker(member: BlindDateMember) -> Observable<Result<Void>> {
         return RoomManager.shared().kickSpeaker(member: member)
     }
-    
+
     func process(action: BlindDateAction, agree: Bool) -> Observable<Result<Void>> {
         switch action.action {
         case .handsUp, .requestLeft, .requestRight:
-            if (isManager) {
+            if isManager {
                 let find = handsupList.firstIndex { item in
-                    return item.id == action.id
+                    item.id == action.id
                 }
                 if let find = find {
                     handsupList.remove(at: find)
                 }
                 onHandsupListChange.accept(handsupList)
-                if (self.speakers.leftSpeaker != nil && self.speakers.rightSpeaker != nil) {
+                if speakers.leftSpeaker != nil, speakers.rightSpeaker != nil {
                     return Observable.just(Result(success: false, message: "位置已满！"))
-                } else if (action.action == .handsUp) {
-                    action.action = self.speakers.leftSpeaker == nil ? .requestLeft : .requestRight
-                } else if (action.action == .requestLeft) {
-                    action.action = self.speakers.leftSpeaker == nil ? .requestLeft : .requestRight
-                } else if (action.action == .requestRight) {
-                    action.action = self.speakers.rightSpeaker == nil ? .requestRight : .requestLeft
+                } else if action.action == .handsUp {
+                    action.action = speakers.leftSpeaker == nil ? .requestLeft : .requestRight
+                } else if action.action == .requestLeft {
+                    action.action = speakers.leftSpeaker == nil ? .requestLeft : .requestRight
+                } else if action.action == .requestRight {
+                    action.action = speakers.rightSpeaker == nil ? .requestRight : .requestLeft
                 }
                 return RoomManager.shared().process(request: action, agree: agree)
             } else {
                 return Observable.just(Result(success: true))
             }
         case .invite:
-            if (!isManager && !isSpeaker) {
-                if (self.speakers.leftSpeaker != nil && self.speakers.rightSpeaker != nil) {
+            if !isManager, !isSpeaker {
+                if speakers.leftSpeaker != nil, speakers.rightSpeaker != nil {
                     return Observable.just(Result(success: false, message: "位置已满！"))
-                } else if (self.speakers.leftSpeaker == nil) {
+                } else if speakers.leftSpeaker == nil {
                     return RoomManager.shared().process(invitionLeft: action, agree: agree)
                 } else {
                     return RoomManager.shared().process(invitionRight: action, agree: agree)
@@ -335,7 +335,7 @@ class RoomViewModel {
             return Observable.just(Result(success: true))
         }
     }
-    
+
     func syncLocalUIStatus() {
         isMuted.accept(muted())
     }

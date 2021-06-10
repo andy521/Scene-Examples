@@ -8,12 +8,12 @@
 import Foundation
 import RxSwift
 
-extension User {
-    public static let TABLE: String = "USER"
-    public static let NAME: String = "name"
-    public static let AVATAR: String = "avatar"
-    
-    public func getLocalAvatar() -> String {
+public extension User {
+    static let TABLE: String = "USER"
+    static let NAME: String = "name"
+    static let AVATAR: String = "avatar"
+
+    func getLocalAvatar() -> String {
         switch avatar {
         case "1":
             return "default"
@@ -56,24 +56,24 @@ public protocol IUserManager {
     func update(user: User, name: String) -> Observable<Result<Void>>
 }
 
-extension User {
+public extension User {
     private static var manager: IUserManager {
         InjectionService.shared.resolve(IUserManager.self)
     }
-    
-    public static func create(user: User) -> Observable<Result<String>> {
+
+    static func create(user: User) -> Observable<Result<String>> {
         return User.manager.create(user: user)
     }
-    
-    public static func getUser(by objectId: String) -> Observable<Result<User>> {
+
+    static func getUser(by objectId: String) -> Observable<Result<User>> {
         return User.manager.getUser(by: objectId)
     }
-    
-    public static func randomUser() -> Observable<Result<User>>  {
+
+    static func randomUser() -> Observable<Result<User>> {
         return User.manager.randomUser()
     }
-    
-    public func update(name: String) -> Observable<Result<Void>> {
+
+    func update(name: String) -> Observable<Result<Void>> {
         return User.manager.update(user: self, name: name)
     }
 }

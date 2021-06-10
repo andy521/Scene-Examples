@@ -5,29 +5,29 @@
 //  Created by XC on 2021/4/20.
 //
 
-import Foundation
 import Core
+import Foundation
 
 extension Utils {
     static let bundle = Bundle(identifier: "io.agora.InteractivePodcast")!
-    
+
     static let namesData: [String: [String]] = [
         "cn": [
             "最长的电影",
             "Good voice",
             "Bad day",
             "好故事不容错过",
-            "Greatest talk show"
+            "Greatest talk show",
         ],
         "default": [
             "The longest movie",
             "Good voice",
             "Bad day",
             "Good story not to be missed",
-            "Greatest talk show"
-        ]
+            "Greatest talk show",
+        ],
     ]
-    
+
     static func randomRoomName() -> String {
         let language = getCurrentLanguage()
         let names = namesData[language] ?? namesData["default"]!
@@ -36,6 +36,6 @@ extension Utils {
     }
 }
 
-extension String {
-    public var localized: String { NSLocalizedString(self, bundle: Utils.bundle, comment: "") }
+public extension String {
+    var localized: String { NSLocalizedString(self, bundle: Utils.bundle, comment: "") }
 }

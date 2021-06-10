@@ -5,12 +5,11 @@
 //  Created by XUCH on 2021/3/11.
 //
 
+import Core
 import Foundation
 import UIKit
-import Core
 
 class RoundLabelView: UILabel {
-    
     override func layoutSubviews() {
         super.layoutSubviews()
         widthAnchor.constraint(greaterThanOrEqualToConstant: bounds.height).isActive = text?.isEmpty == false

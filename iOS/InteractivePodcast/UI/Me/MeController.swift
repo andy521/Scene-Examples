@@ -5,32 +5,31 @@
 //  Created by XUCH on 2021/3/6.
 //
 
+import Core
 import Foundation
-import UIKit
 import RxCocoa
 import RxSwift
-import Core
+import UIKit
 
 class MeController: BaseViewContoller {
-    
-    @IBOutlet weak var avatarView: UIImageView!
-    @IBOutlet weak var nameView: UILabel!
-    @IBOutlet weak var nickNameView: UILabel!
-    @IBOutlet weak var backButton: UIView!
-    @IBOutlet weak var setNameView: UIView!
-    @IBOutlet weak var aboutView: UIView!
-    @IBOutlet weak var audienceLatencyLevelView: UISwitch!
-    
+    @IBOutlet var avatarView: UIImageView!
+    @IBOutlet var nameView: UILabel!
+    @IBOutlet var nickNameView: UILabel!
+    @IBOutlet var backButton: UIView!
+    @IBOutlet var setNameView: UIView!
+    @IBOutlet var aboutView: UIView!
+    @IBOutlet var audienceLatencyLevelView: UISwitch!
+
     private var account: User = RoomManager.shared().account!
     private var setting: LocalSetting = RoomManager.shared().setting
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         nameView.text = account.name
         nickNameView.text = account.name
         avatarView.image = UIImage(named: account.getLocalAvatar(), in: Utils.bundle, with: nil)
         audienceLatencyLevelView.setOn(setting.audienceLatency, animated: false)
-        
+
         let tapBack = UITapGestureRecognizer()
         backButton.addGestureRecognizer(tapBack)
         tapBack.rx.event
@@ -38,7 +37,7 @@ class MeController: BaseViewContoller {
                 self.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)
-        
+
         let tapSetName = UITapGestureRecognizer()
         setNameView.addGestureRecognizer(tapSetName)
         tapSetName.rx.event
@@ -46,7 +45,7 @@ class MeController: BaseViewContoller {
                 self.navigationController?.pushViewController(ChangeNameController.instance(), animated: true)
             })
             .disposed(by: disposeBag)
-        
+
         let tapAbout = UITapGestureRecognizer()
         aboutView.addGestureRecognizer(tapAbout)
         tapAbout.rx.event
@@ -54,18 +53,18 @@ class MeController: BaseViewContoller {
                 self.navigationController?.pushViewController(AboutController.instance(), animated: true)
             })
             .disposed(by: disposeBag)
-        
+
         audienceLatencyLevelView.rx.isOn
             .asObservable()
             .filter { isOn -> Bool in
-                return isOn != self.setting.audienceLatency
+                isOn != self.setting.audienceLatency
             }
             .flatMap { isOn -> Observable<Result<LocalSetting>> in
                 self.setting.audienceLatency = isOn
                 return AppDataManager.saveSetting(setting: self.setting)
             }
             .subscribe(onNext: { result in
-                if (!result.success) {
+                if !result.success {
                     self.show(message: result.message ?? "unknown error".localized, type: .error)
                 } else {
                     RoomManager.shared().updateSetting()
@@ -73,14 +72,14 @@ class MeController: BaseViewContoller {
             })
             .disposed(by: disposeBag)
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
+
+    override func viewDidAppear(_: Bool) {
         nameView.text = account.name
         nickNameView.text = account.name
     }
-    
+
     static func instance() -> MeController {
-        let storyBoard: UIStoryboard = UIStoryboard(name: "Main", bundle: Utils.bundle)
+        let storyBoard = UIStoryboard(name: "Main", bundle: Utils.bundle)
         let controller = storyBoard.instantiateViewController(withIdentifier: "MeController") as! MeController
         return controller
     }

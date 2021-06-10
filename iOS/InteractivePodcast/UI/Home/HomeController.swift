@@ -5,48 +5,51 @@
 //  Created by XUCH on 2021/3/3.
 //
 
-import Foundation
-import UIKit
-import RxSwift
-import RxCocoa
 import Core
+import Foundation
+import RxCocoa
+import RxSwift
+import UIKit
 
 public class HomeController: BaseViewContoller, DialogDelegate {
-    @IBOutlet weak var emptyView: UIView!
-    @IBOutlet weak var avatarView: RoundImageView!
-    @IBOutlet weak var backView: UIView! {
+    @IBOutlet var emptyView: UIView!
+    @IBOutlet var avatarView: RoundImageView!
+    @IBOutlet var backView: UIView! {
         didSet {
             backView.isHidden = navigationController?.viewControllers.count == 1
         }
     }
-    @IBOutlet weak var listView: UICollectionView! {
+
+    @IBOutlet var listView: UICollectionView! {
         didSet {
             let layout = WaterfallLayout()
             layout.delegate = self
             layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 0, right: 16)
             layout.minimumLineSpacing = 10.0
             layout.minimumInteritemSpacing = 10.0
-            
+
             listView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 70, right: 0)
             listView.collectionViewLayout = layout
             listView.register(HomeCardView.self, forCellWithReuseIdentifier: NSStringFromClass(HomeCardView.self))
             listView.dataSource = self
         }
     }
+
     @IBOutlet var handsupTap: UITapGestureRecognizer!
-    @IBOutlet weak var createRoomButton: UIButton!
+    @IBOutlet var createRoomButton: UIButton!
     @IBOutlet var meTap: UITapGestureRecognizer!
-    @IBOutlet weak var reloadButton: UIButton!
-    
-    private var createRoomDialog: CreateRoomDialog? = nil
+    @IBOutlet var reloadButton: UIButton!
+
+    private var createRoomDialog: CreateRoomDialog?
     private let refreshControl: UIRefreshControl = {
         let view = UIRefreshControl()
         view.tintColor = UIColor(hex: Colors.White)
         return view
     }()
+
     private var viewModel: HomeViewModel!
-    private var miniRoomView: MiniRoomView? = nil
-    
+    private var miniRoomView: MiniRoomView?
+
     private func subcribeUIEvent() {
         meTap.rx.event
             .throttle(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance)
@@ -60,7 +63,7 @@ public class HomeController: BaseViewContoller, DialogDelegate {
                 )
             })
             .disposed(by: disposeBag)
-        
+
         createRoomButton.rx.tap
             .throttle(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance)
             .filter { [unowned self] _ in
@@ -73,26 +76,26 @@ public class HomeController: BaseViewContoller, DialogDelegate {
             }
             .subscribe()
             .disposed(by: disposeBag)
-        
+
         viewModel
             .showMiniRoom
             .startWith(false)
-            //.distinctUntilChanged()
+            // .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [unowned self] showMiniRoom in
                 self.showCreatRoomView(!showMiniRoom)
                 self.showMiniRoom(showMiniRoom)
             })
             .disposed(by: disposeBag)
-        
+
         refreshControl
             .rx.controlEvent(.valueChanged)
             .flatMapLatest { [unowned self] _ in
-                return self.viewModel.dataSource()
+                self.viewModel.dataSource()
             }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [unowned self] result in
-                if (result.success) {
+                if result.success {
                     self.emptyView.isHidden = self.viewModel.roomList.count != 0
                     self.listView.reloadData()
                 } else {
@@ -100,12 +103,12 @@ public class HomeController: BaseViewContoller, DialogDelegate {
                 }
             })
             .disposed(by: disposeBag)
-        
+
         viewModel.activityIndicator
-            .drive(self.refreshControl.rx.isRefreshing)
+            .drive(refreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
     }
-    
+
     private func initAppData() {
         viewModel.setup()
             .do(onSubscribe: {
@@ -118,7 +121,7 @@ public class HomeController: BaseViewContoller, DialogDelegate {
                 if let user = self.viewModel.account() {
                     self.avatarView.image = UIImage(named: user.getLocalAvatar(), in: Utils.bundle, with: nil)
                 }
-                if (result.success) {
+                if result.success {
                     // UIRefreshControl bug?
                     self.refreshControl.tintColor = UIColor(hex: Colors.White)
                     self.refreshControl.refreshManually()
@@ -128,8 +131,8 @@ public class HomeController: BaseViewContoller, DialogDelegate {
             })
             .disposed(by: disposeBag)
     }
-    
-    public override func viewDidLoad() {
+
+    override public func viewDidLoad() {
         super.viewDidLoad()
         backView.onTap().rx.event
             .subscribe(onNext: { [unowned self] _ in
@@ -137,17 +140,17 @@ public class HomeController: BaseViewContoller, DialogDelegate {
                 self.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)
-        
+
         listView.refreshControl = refreshControl
         viewModel = HomeViewModel()
-        
-        if (Utils.checkNetworkPermission()) {
+
+        if Utils.checkNetworkPermission() {
             initAppData()
         } else {
             reloadButton.isHidden = false
             reloadButton.rx.tap
                 .subscribe(onNext: {
-                    if (Utils.checkNetworkPermission()) {
+                    if Utils.checkNetworkPermission() {
                         self.reloadButton.isHidden = true
                         self.initAppData()
                     } else {
@@ -156,12 +159,12 @@ public class HomeController: BaseViewContoller, DialogDelegate {
                 })
                 .disposed(by: disposeBag)
         }
-        
+
         subcribeUIEvent()
     }
-    
+
     private func showCreatRoomView(_ show: Bool) {
-        if (show) {
+        if show {
             createRoomButton.alpha = 0
             UIView.animate(withDuration: TimeInterval(0.3), delay: TimeInterval(0.3), options: .curveEaseInOut, animations: {
                 self.createRoomButton.alpha = 1
@@ -173,13 +176,13 @@ public class HomeController: BaseViewContoller, DialogDelegate {
             })
         }
     }
-        
+
     private func showMiniRoom(_ show: Bool) {
         Logger.log(message: "showMiniRoom \(show)", level: .info)
-        if (show) {
-            if (miniRoomView == nil) {
+        if show {
+            if miniRoomView == nil {
                 miniRoomView = MiniRoomView()
-                miniRoomView!.leaveAction = self.onLeaveRoomController
+                miniRoomView!.leaveAction = onLeaveRoomController
                 miniRoomView!.show(with: self)
             }
         } else {
@@ -188,20 +191,20 @@ public class HomeController: BaseViewContoller, DialogDelegate {
             miniRoomView = nil
         }
     }
-    
+
     private func refresh() {
         refreshControl.sendActions(for: .valueChanged)
     }
-    
+
     func onLeaveRoomController(action: LeaveRoomAction, room: PodcastRoom?) {
-        //self.refresh()
+        // self.refresh()
         switch action {
         case .closeRoom:
             show(message: "Room closed".localized, type: .error)
             viewModel.showMiniRoom.accept(false)
             refresh()
         case .leave:
-            if (room != nil) {
+            if room != nil {
                 show(message: "Room closed".localized, type: .error)
                 refresh()
             }
@@ -210,45 +213,45 @@ public class HomeController: BaseViewContoller, DialogDelegate {
             viewModel.showMiniRoom.accept(true)
         }
     }
-    
+
     deinit {
-        Logger.log(message: "HomeController deinit", level: .info)
-        let _ = RoomManager.shared().leave().subscribe()
+        Logger.log(self, message: "deinit", level: .info)
+        _ = RoomManager.shared().leave().subscribe()
         RoomManager.shared().destory()
     }
 }
 
 extension HomeController: UICollectionViewDataSource {
-    public func numberOfSections(in collectionView: UICollectionView) -> Int {
+    public func numberOfSections(in _: UICollectionView) -> Int {
         return 1
     }
-    
+
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let card: HomeCardView = collectionView.dequeueReusableCell(withReuseIdentifier: NSStringFromClass(HomeCardView.self), for: indexPath) as! HomeCardView
         card.delegate = self
         card.room = viewModel.roomList[indexPath.item]
         return card
     }
-    
-    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+
+    public func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
         return viewModel.roomList.count
     }
 }
 
 extension HomeController: WaterfallLayoutDelegate {
-    public func collectionView(_ collectionView: UICollectionView, layout: WaterfallLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    public func collectionView(_: UICollectionView, layout: WaterfallLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = (layout.collectionViewContentSize.width - 16 * 2 - 10) / 2
         return HomeCardView.sizeForItem(room: viewModel.roomList[indexPath.item], width: width)
     }
-    
-    public func collectionViewLayout(for section: Int) -> WaterfallLayout.Layout {
+
+    public func collectionViewLayout(for _: Int) -> WaterfallLayout.Layout {
         return .waterfall(column: 2, distributionMethod: .balanced)
     }
-    
+
     func checkMiniRoom(with room: PodcastRoom) -> Observable<Bool> {
         if let miniRoom = miniRoomView {
             return miniRoom.onChange(room: room).map { [unowned self] close in
-                if (close) { self.viewModel.showMiniRoom.accept(false) }
+                if close { self.viewModel.showMiniRoom.accept(false) }
                 return close
             }
         }
@@ -264,10 +267,10 @@ extension HomeController: HomeCardDelegate {
                 return self.viewModel.join(room: room)
             }
             .observe(on: MainScheduler.instance)
-            .subscribe() { [unowned self] result in
-                if (result.success) {
+            .subscribe { [unowned self] result in
+                if result.success {
                     let roomController = RoomController.instance(leaveAction: self.onLeaveRoomController)
-                    //roomController.navigationController = self.navigationController
+                    // roomController.navigationController = self.navigationController
                     self.push(controller: roomController)
                 } else {
                     self.show(message: result.message ?? "unknown error".localized, type: .error)
@@ -290,17 +293,17 @@ extension HomeController: CreateRoomDelegate {
                 .disposed(by: disposeBag)
         }
     }
-    
+
     func createRoom(with name: String?) -> Observable<Result<PodcastRoom>> {
-        if (name?.isEmpty == false) {
+        if name?.isEmpty == false {
             return viewModel.createRoom(with: name!)
         } else {
             return Observable.just(Result<PodcastRoom>(success: false, message: "Enter a room name".localized))
         }
     }
-    
+
     public static func instance() -> HomeController {
-        let storyBoard: UIStoryboard = UIStoryboard(name: "Main", bundle: Utils.bundle)
+        let storyBoard = UIStoryboard(name: "Main", bundle: Utils.bundle)
         let controller = storyBoard.instantiateViewController(withIdentifier: "HomeController") as! HomeController
         return controller
     }

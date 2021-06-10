@@ -9,14 +9,13 @@ import Foundation
 import UIKit
 
 class SettingController: UIViewController {
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
     }
-    
+
     static func instance() -> SettingController {
-        let storyBoard: UIStoryboard = UIStoryboard(name: "Main", bundle: nil)
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
         let controller = storyBoard.instantiateViewController(withIdentifier: "SettingController") as! SettingController
         return controller
     }

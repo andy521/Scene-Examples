@@ -18,11 +18,11 @@ protocol ServiceFactory {
 
 struct BasicServiceFactory<ServiceType>: ServiceFactory {
     private let factory: (Resolver) -> ServiceType
-    
-    init(_ type: ServiceType.Type, factory: @escaping (Resolver) -> ServiceType) {
+
+    init(_: ServiceType.Type, factory: @escaping (Resolver) -> ServiceType) {
         self.factory = factory
     }
-    
+
     func resolve(_ resolver: Resolver) -> ServiceType {
         return factory(resolver)
     }
@@ -31,42 +31,42 @@ struct BasicServiceFactory<ServiceType>: ServiceFactory {
 final class AnyServiceFactory {
     private let _resolve: (Resolver) -> Any
     private let _supports: (Any.Type) -> Bool
-    
+
     init<T: ServiceFactory>(_ serviceFactory: T) {
-        self._resolve = { resolver in
+        _resolve = { resolver in
             serviceFactory.resolve(resolver)
         }
-        self._supports = { type in
+        _supports = { type in
             type == T.ServiceType.self
         }
     }
-    
+
     func resolve<ServiceType>(_ resolver: Resolver) -> ServiceType {
         return _resolve(resolver) as! ServiceType
     }
-    
+
     func supports<ServiceType>(_ type: ServiceType.Type) -> Bool {
-        return self._supports(type)
+        return _supports(type)
     }
 }
 
 struct Container: Resolver {
     let factories: [AnyServiceFactory]
-    
+
     init() {
-        self.factories = []
+        factories = []
     }
-    
+
     private init(factories: [AnyServiceFactory]) {
         self.factories = factories
     }
-    
+
     func register<T>(_ type: T.Type, instance: T) -> Container {
         return register(type) { _ in
             instance
         }
     }
-    
+
     func register<ServiceType>(_ type: ServiceType.Type, _ factory: @escaping (Resolver) -> ServiceType) -> Container {
         assert(!factories.contains(where: { $0.supports(type) }))
         let newFactory = BasicServiceFactory<ServiceType>(type) { resolver in
@@ -74,7 +74,7 @@ struct Container: Resolver {
         }
         return .init(factories: factories + [AnyServiceFactory(newFactory)])
     }
-    
+
     func resolve<ServiceType>(_ type: ServiceType.Type) -> ServiceType {
         guard let factory = factories.first(where: { $0.supports(type) }) else {
             fatalError("No suitable factory found")
@@ -84,21 +84,21 @@ struct Container: Resolver {
 }
 
 public class InjectionService: Resolver {
-    private var container: Container = Container()
+    private var container = Container()
     public static let shared = InjectionService()
-    
+
     private init() {}
-    
+
     public func register<T>(_ type: T.Type, instance: T) -> InjectionService {
-        self.container = self.container.register(type) { _ in instance }
+        container = container.register(type) { _ in instance }
         return self
     }
-    
+
     public func register<ServiceType>(_ type: ServiceType.Type, _ factory: @escaping (Resolver) -> ServiceType) -> InjectionService {
-        self.container = self.container.register(type, factory)
+        container = container.register(type, factory)
         return self
     }
-    
+
     public func resolve<ServiceType>(_ type: ServiceType.Type) -> ServiceType {
         return container.resolve(type)
     }

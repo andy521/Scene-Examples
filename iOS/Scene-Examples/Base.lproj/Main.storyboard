@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="2CR-fY-VYE">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -11,7 +12,7 @@
         <!--设置-->
         <scene sceneID="mAD-Zw-gzT">
             <objects>
-                <viewController storyboardIdentifier="SettingController" id="QwQ-L8-jxA" customClass="SettingController" customModule="Scene_Examples" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SettingController" id="QwQ-L8-jxA" customClass="SettingController" customModule="Scene_Examples_Firebase" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="RzS-Us-fQS">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -39,7 +40,7 @@
         <!--Scene Example-->
         <scene sceneID="Kf2-oB-GUD">
             <objects>
-                <tabBarController id="9vr-La-2ge" customClass="ViewController" customModule="Scene_Examples" customModuleProvider="target" sceneMemberID="viewController">
+                <tabBarController id="9vr-La-2ge" customClass="ViewController" customModule="Scene_Examples_Firebase" customModuleProvider="target" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" title="Scene Example" id="JNO-1w-5Hr"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="7AK-dh-ZHs">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="49"/>
@@ -54,7 +55,7 @@
         <!--Item-->
         <scene sceneID="tFK-EC-vnj">
             <objects>
-                <tableViewController storyboardIdentifier="HomeController" id="KXo-Lu-akT" customClass="HomeController" customModule="Scene_Examples" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="HomeController" id="KXo-Lu-akT" customClass="HomeController" customModule="Scene_Examples_Firebase" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="ekU-P9-YlQ">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

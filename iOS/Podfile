@@ -7,6 +7,7 @@ def commonPods
   pod 'RxCocoa', '6.1.0'
   pod 'RxRelay', '6.1.0'
   pod 'IGListKit', '~> 4.0.0'
+  pod 'SwiftFormat/CLI'
 end
 
 target 'Core' do
@@ -24,6 +25,12 @@ target 'BlindDate' do
   commonPods
   use_frameworks!
   pod 'AgoraRtm_iOS'
+  pod 'AgoraRtcEngine_iOS'
+end
+
+target 'LiveKtv' do
+  commonPods
+  use_frameworks!
   pod 'AgoraRtcEngine_iOS'
 end
 

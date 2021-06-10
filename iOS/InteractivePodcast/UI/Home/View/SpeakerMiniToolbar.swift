@@ -5,22 +5,22 @@
 //  Created by XC on 2021/3/14.
 //
 
+import Core
 import Foundation
+import RxCocoa
 import RxSwift
 import UIKit
-import RxCocoa
-import Core
 
 class SpeakerMiniToolbar: UIStackView {
     weak var delegate: MiniRoomView!
     let disposeBag = DisposeBag()
-    
+
     var isMuted: Bool = false {
         didSet {
             onMicView.icon = isMuted ? "redMic" : "iconMicOn"
         }
     }
-    
+
     var onMicView: IconButton = {
         let view = IconButton()
         view.icon = "iconMicOn"
@@ -31,7 +31,7 @@ class SpeakerMiniToolbar: UIStackView {
             .active()
         return view
     }()
-    
+
     var exitView: IconButton = {
         let view = IconButton()
         view.icon = "iconExit"
@@ -42,22 +42,23 @@ class SpeakerMiniToolbar: UIStackView {
             .active()
         return view
     }()
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         spacing = 16
         addArrangedSubview(exitView)
         addArrangedSubview(onMicView)
     }
-    
-    required init(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
     }
-    
+
     func subcribeUIEvent() {
         exitView.rx.tap
             .throttle(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance)
@@ -65,46 +66,46 @@ class SpeakerMiniToolbar: UIStackView {
                 self.delegate.viewModel.leaveRoom(action: .leave)
             }
             .filter { [unowned self] result in
-                if (!result.success) {
+                if !result.success {
                     self.delegate.show(message: result.message ?? "unknown error".localized, type: .error)
                 }
                 return result.success
             }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] result in
+            .subscribe(onNext: { [unowned self] _ in
                 self.delegate.dismiss()
                 self.delegate.leaveAction?(.leave, nil)
             })
             .disposed(by: disposeBag)
-        
+
         onMicView.rx.tap
             .debounce(RxTimeInterval.microseconds(300), scheduler: MainScheduler.instance)
             .throttle(RxTimeInterval.seconds(1), scheduler: MainScheduler.instance)
             .filter {
-                return !self.delegate.viewModel.member.isMuted
+                !self.delegate.viewModel.member.isMuted
             }
             .flatMap { [unowned self] _ in
-                return self.delegate.viewModel.selfMute(mute: !self.delegate.viewModel.muted())
+                self.delegate.viewModel.selfMute(mute: !self.delegate.viewModel.muted())
             }
             .subscribe(onNext: { [unowned self] result in
-                if (!result.success) {
+                if !result.success {
                     self.delegate.show(message: result.message ?? "unknown error".localized, type: .error)
                 }
             })
             .disposed(by: disposeBag)
-        
-        self.delegate.viewModel.isMuted
-            .startWith(self.delegate.viewModel.muted())
+
+        delegate.viewModel.isMuted
+            .startWith(delegate.viewModel.muted())
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [unowned self] muted in
                 self.isMuted = muted
             })
             .disposed(by: disposeBag)
-        
-        self.delegate.viewModel.syncLocalUIStatus()
+
+        delegate.viewModel.syncLocalUIStatus()
     }
-    
-    func onReceivedAction(_ result: Result<PodcastAction>) {}
+
+    func onReceivedAction(_: Result<PodcastAction>) {}
     func subcribeRoomEvent() {}
 }

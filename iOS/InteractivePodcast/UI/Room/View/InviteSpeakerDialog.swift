@@ -5,11 +5,11 @@
 //  Created by XC on 2021/3/13.
 //
 
-import Foundation
-import UIKit
-import RxSwift
-import RxCocoa
 import Core
+import Foundation
+import RxCocoa
+import RxSwift
+import UIKit
 
 class InviteSpeakerDialog: Dialog {
     weak var delegate: RoomController!
@@ -19,12 +19,12 @@ class InviteSpeakerDialog: Dialog {
             avatar.image = UIImage(named: model.user.getLocalAvatar(), in: Utils.bundle, with: nil)
         }
     }
-    
+
     var avatar: UIImageView = {
         let view = RoundImageView()
         return view
     }()
-    
+
     var name: UILabel = {
         let view = UILabel()
         view.font = UIFont.systemFont(ofSize: 15)
@@ -32,7 +32,7 @@ class InviteSpeakerDialog: Dialog {
         view.textColor = UIColor(hex: Colors.White)
         return view
     }()
-    
+
     var button: UIButton = {
         let view = RoundButton()
         view.borderColor = Colors.Yellow
@@ -42,31 +42,31 @@ class InviteSpeakerDialog: Dialog {
         view.titleLabel?.font = UIFont.systemFont(ofSize: 15)
         return view
     }()
-    
+
     override func setup() {
         backgroundColor = UIColor(hex: Colors.Black)
         addSubview(avatar)
         addSubview(name)
         addSubview(button)
-        
+
         button.rx.tap
             .throttle(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance)
             .flatMap { [unowned self] _ in
-                return self.delegate.viewModel.inviteSpeaker(member: self.model)
+                self.delegate.viewModel.inviteSpeaker(member: self.model)
             }
             .flatMap { [unowned self] result -> Observable<Result<Void>> in
-                return result.onSuccess {
-                    return self.delegate.dismiss(dialog: self).asObservable().map { _ in result }
+                result.onSuccess {
+                    self.delegate.dismiss(dialog: self).asObservable().map { _ in result }
                 }
             }
             .subscribe(onNext: { [unowned self] result in
-                if (!result.success) {
+                if !result.success {
                     self.delegate.show(message: result.message ?? "unknown error".localized, type: .error)
                 }
             })
             .disposed(by: disposeBag)
     }
-    
+
     override func render() {
         roundCorners([.topLeft, .topRight], radius: 30)
         shadow()
@@ -75,12 +75,12 @@ class InviteSpeakerDialog: Dialog {
             .marginTop(anchor: topAnchor, constant: 30)
             .centerX(anchor: centerXAnchor)
             .active()
-        
+
         name.marginTop(anchor: avatar.bottomAnchor, constant: 10)
             .marginLeading(anchor: leadingAnchor, constant: 20, relation: .greaterOrEqual)
             .centerX(anchor: centerXAnchor)
             .active()
-        
+
         button.width(constant: 200)
             .height(constant: 36)
             .marginTop(anchor: name.bottomAnchor, constant: 15)
@@ -88,10 +88,10 @@ class InviteSpeakerDialog: Dialog {
             .marginBottom(anchor: bottomAnchor, constant: safeAreaInsets.bottom + 20)
             .active()
     }
-    
+
     func show(with member: PodcastMember, delegate: RoomController) {
         self.delegate = delegate
-        self.model = member
-        self.show(controller: delegate)
+        model = member
+        show(controller: delegate)
     }
 }
