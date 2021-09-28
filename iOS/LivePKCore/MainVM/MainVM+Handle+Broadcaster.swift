@@ -52,46 +52,41 @@ extension MainVM {
     }
     
     private func joinChannelRemoteInternal(channelName: String) {
-        do {
-            /// get info
-            guard let attributes = manager.getAttributes(channelName: channelName) else {
-                return
-            }
-            let isPking = isPking(attributes: attributes)
-            
-            if isPking,
-               let attr =  attributes.filter({ $0.key == kPKKey }).first,
-               attr.value != channelName { /** check should pk or not **/
-                invokeShouldShowTips(tips: "\(channelName) is pking \(attr.value)")
-                return
-            }
-            
-            /// set pk info remote
-            Log.info(text: "update Attribute", tag: "joinChannelRemoteInternal")
-            let attr = PKSyncManager.Attribute()
-            attr.key = kPKKey
-            attr.value = loginInfo.roomName
-            manager.updateAttribute(channelName: channelName,
-                                    attributes: [attr],
-                                    completed: { _ in })
-            
-            /// set pk info local
-            let attr2 = PKSyncManager.Attribute()
-            attr2.key = kPKKey
-            attr2.value = channelName
-            manager.updateAttribute(channelName: loginInfo.roomName,
-                                    attributes: [attr2],
-                                    completed: { _ in })
-            
-            
-            /// rtc
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                self.joinRtcChannelRemote(channelName: channelName)
-            }
-            
-        } catch let error {
-            invokeShouldShowTips(tips: (error as! SyncError).description)
+        /// get info
+        guard let attributes = manager.getAttributes(channelName: channelName) else {
+            return
+        }
+        let isPking = self.isPking(attributes: attributes)
+        
+        if isPking,
+           let attr =  attributes.filter({ $0.key == kPKKey }).first,
+           attr.value != channelName { /** check should pk or not **/
+            invokeShouldShowTips(tips: "\(channelName) is pking \(attr.value)")
+            return
+        }
+        
+        /// set pk info remote
+        Log.info(text: "update Attribute", tag: "joinChannelRemoteInternal")
+        let attr = PKSyncManager.Attribute()
+        attr.key = kPKKey
+        attr.value = loginInfo.roomName
+        manager.updateAttribute(channelName: channelName,
+                                attributes: [attr],
+                                completed: { _ in })
+        
+        /// set pk info local
+        let attr2 = PKSyncManager.Attribute()
+        attr2.key = kPKKey
+        attr2.value = channelName
+        manager.updateAttribute(channelName: loginInfo.roomName,
+                                attributes: [attr2],
+                                completed: { _ in })
+        
+        
+        /// rtc
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.joinRtcChannelRemote(channelName: channelName)
         }
     }
     

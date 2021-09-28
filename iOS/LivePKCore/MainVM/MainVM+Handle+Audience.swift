@@ -31,7 +31,7 @@ extension MainVM {
             do {
                 try self?.manager.login()
                 try self?.manager.join(channelName: channelName)
-                let attrs = try self?.manager.getAttributes(channelName: channelName)
+                let attrs = self?.manager.getAttributes(channelName: channelName)
                 if let pkName = attrs?.filter({ $0.key == pkKey }).map({ $0.value }).first {
                     DispatchQueue.main.async { [weak self] in
                         self?.makeConnect(roomName: pkName)

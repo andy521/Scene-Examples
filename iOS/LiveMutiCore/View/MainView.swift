@@ -1,8 +1,8 @@
 //
 //  MainView.swift
-//  LivePK
+//  abseil
 //
-//  Created by ZYP on 2021/9/23.
+//  Created by ZYP on 2021/9/28.
 //
 
 import UIKit
@@ -21,6 +21,7 @@ class MainView: UIView {
     }
     
     func setup() {
+        
         collectionView.backgroundColor = .white
         backgroundColor = .white
         addSubview(collectionView)
@@ -43,37 +44,16 @@ class VideoLayout: UICollectionViewFlowLayout {
     override init() {
         super.init()
         sectionInset = .zero
-        minimumLineSpacing = 0
-        minimumInteritemSpacing = 0
-        scrollDirection = .horizontal
+        minimumLineSpacing = 0.5
+        minimumInteritemSpacing = 0.5
+        scrollDirection = .vertical
+        let width = (UIScreen.main.bounds.size.width - 4*0.5)/3
+        let height = width * 4/3
+        itemSize = .init(width: width, height: height)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func prepare() {
-        super.prepare()
-        let count = collectionView?.numberOfItems(inSection: 0) ?? 1
-        for i in 0..<count {
-            let indexPath = IndexPath(row: i, section: 0)
-            if let attr = layoutAttributesForItem(at: indexPath) {
-                attrs.append(attr)
-            }
-        }
-    }
-    
-    override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        let attribute = super.layoutAttributesForItem(at: indexPath)
-        let width = UIScreen.main.bounds.size.width/2 - 0.5
-        attribute?.frame = .init(x: CGFloat(indexPath.row) * width + (indexPath.row > 0 ? 1 : 0),
-                                 y: 0,
-                                 width: width,
-                                 height: width * 16/9 )
-        return attribute
-    }
-    
-    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        return attrs
-    }
 }

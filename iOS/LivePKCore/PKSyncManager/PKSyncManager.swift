@@ -101,24 +101,6 @@ class PKSyncManager: NSObject {
         })
     }
     
-//    func getAttributes(channelName: String) throws -> [Attribute] {
-//        let semp = DispatchSemaphore(value: 0)
-//        var result: AgoraRtmProcessAttributeErrorCode = .attributeOperationErrorOk
-//        var attributes: [Attribute]?
-//        rtm.getChannelAllAttributes(channelName) { attrs, code in
-//            result = code
-//            attributes = attrs
-//            semp.signal()
-//        }
-//
-//        semp.wait()
-//        guard result == .attributeOperationErrorOk, let `attributes` = attributes else {
-//            throw SyncError(domain: .getAttributes, code: result.rawValue)
-//        }
-//
-//        return attributes
-//    }
-    
     func getAttributes(channelName: String) -> [Attribute]? {
         let semp = DispatchSemaphore(value: 0)
         var result: AgoraRtmProcessAttributeErrorCode = .attributeOperationErrorOk
@@ -130,11 +112,11 @@ class PKSyncManager: NSObject {
         }
 
         semp.wait()
-        guard result == .attributeOperationErrorOk, let `attributes` = attributes else {
+        guard result == .attributeOperationErrorOk, let attributesTemp = attributes else {
             return nil
         }
 
-        return attributes
+        return attributesTemp
     }
     
     func deleteAttributes(channelName: String, keys: [String]) {

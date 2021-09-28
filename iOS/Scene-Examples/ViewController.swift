@@ -10,6 +10,7 @@ import RxCocoa
 import RxSwift
 import Core
 import LivePKCore
+import LiveMutiCore
 
 class ViewController: CustomTabBarController {
     
@@ -19,13 +20,16 @@ class ViewController: CustomTabBarController {
     }
     
     override func setupView() {
-        let entryVC = EntryVC()
-        entryVC.appId = BuildConfig.AppId
+        let livePKEntryVC = LivePKCore.EntryVC()
+        livePKEntryVC.appId = BuildConfig.AppId
+        let LiveMutiEntryVC = LiveMutiCore.EntryVC()
+        LiveMutiEntryVC.appId = BuildConfig.AppId
         viewControllers = [
-            entryVC,
+            livePKEntryVC,
             UIViewController(),
             UIViewController(),
-            SettingController.instance()
+            SettingController.instance(),
+            LiveMutiEntryVC
         ]
         setTabBar(items: [
             CustomTabBarItem(icon: UIImage.strokedCheckmark, title: "All".localized),
@@ -36,6 +40,7 @@ class ViewController: CustomTabBarController {
                 AppTargets.getAppMainViewController(app: .BlindDate)
             },
             CustomTabBarItem(icon: UIImage.actions, title: "Settings".localized),
+            CustomTabBarItem(icon: UIImage.actions, title: "MutiHost".localized)
         ])
     }
 }

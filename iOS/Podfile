@@ -7,6 +7,7 @@ def commonPods
   pod 'RxCocoa', '6.1.0'
   pod 'RxRelay', '6.1.0'
   pod 'IGListKit', '~> 4.0.0'
+  pod 'AgoraRtcEngine_iOS',  :path => 'AgoraRtcEngine_iOS/AgoraRtcEngine_iOS.podspec'
 end
 
 target 'Core' do
@@ -17,14 +18,29 @@ end
 target 'InteractivePodcast' do
   commonPods
   use_frameworks!
-  pod 'AgoraRtcEngine_iOS'
+  
 end
 
 target 'BlindDate' do
   commonPods
   use_frameworks!
   pod 'AgoraRtm_iOS'
-  pod 'AgoraRtcEngine_iOS'
+end
+
+target 'LivePKCore' do
+  commonPods
+  use_frameworks!
+  pod 'AgoraMediaPlayer_iOS'
+  pod 'AgoraRtm_iOS'
+  pod 'AgoraLog'
+  pod 'Toast-Swift'
+end
+
+target 'LiveMutiCore' do
+  commonPods
+  use_frameworks!
+  pod 'AgoraLog'
+  pod 'Toast-Swift'
 end
 
 # target with leancloud sdk
@@ -32,7 +48,6 @@ target 'Scene-Examples_LeanCloud' do
   commonPods
   use_frameworks!
   pod 'LeanCloud'
-  pod 'LivePKCore',  :path => 'LivePKCore/LivePKCore.podspec'
 end
 
 # target with firebase sdk
