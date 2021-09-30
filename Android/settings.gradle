@@ -1,3 +1,4 @@
+include ':livemultihost'
 include ':livepk'
 if (!isModule.toBoolean()) {
     include ':app'
