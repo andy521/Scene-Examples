@@ -14,7 +14,7 @@ extension MainVM {
         players[roomName] = player
 
         player.setView(view)
-        player.open("rtmp://mdetest.pull.agoramde.agoraio.cn/live/\(roomName)", startPos: 0)
+        player.open("https://webdemo-pull-hdl.agora.io/lbhd/\(roomName).flv", startPos: 0)
         player.play()
     }
     
