@@ -51,7 +51,7 @@ extension MainVM: AgoraRtcChannelDelegate {
         Log.info(text: "rtcChannelDidJoin  \(rtcChannel.getId() ?? "") with uid \(uid) elapsed \(elapsed)ms",
                  tag: "AgoraRtcChannelDelegate")
         if rtcChannel == channelLocal {
-            channelLocal?.addPublishStreamUrl("rtmp://mdetest.push.agoramde.agoraio.cn/live/\(loginInfo.roomName)", transcodingEnabled: false)
+            channelLocal?.addPublishStreamUrl("rtmp://webdemo-push.agora.io/lbhd/\(loginInfo.roomName)", transcodingEnabled: false)
         }
     }
     
