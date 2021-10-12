@@ -29,6 +29,8 @@ extension MainVM {
         agoraKit.setDefaultAudioRouteToSpeakerphone(true)
         agoraKit.setParameters("{\"che.video.setQuickVideoHighFec\":true}")
         agoraKit.setParameters("{\"rtc.enable_quick_rexfer_keyframe\":true}")
+        agoraKit.setParameters("{\"rtc.min_playout_delay_speaker\":0}")
+        agoraKit.setParameters("{\"rtc.min_playout_delay\":0}")
         
         let mediaOptions = AgoraRtcChannelMediaOptions()
         mediaOptions.autoSubscribeAudio = true
