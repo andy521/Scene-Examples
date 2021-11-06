@@ -19,6 +19,7 @@ import io.agora.rtc.RtcChannel;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.live.LiveTranscoding;
 import io.agora.rtc.models.ChannelMediaOptions;
+import io.agora.rtc.models.ClientRoleOptions;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.rtc.video.VideoEncoderConfiguration;
 
@@ -87,12 +88,26 @@ public class RtcManager {
 
             });
             engine.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING);
+            engine.setParameters("{\"che.video.lowBitRateStreamParameter\": \"{\\\"width\\\":270,\\\"height\\\":480,\\\"frameRate\\\":15,\\\"bitRate\\\":400}\"}");
+            engine.setParameters("{\"rtc.min_playout_delay\":0}");
+            engine.setParameters("{\"che.video.retransDetectEnable\":true}");
+            engine.setParameters("{\"che.video.camera.face_detection\":false}");
+            engine.setParameters("{\"che.video.captureFpsLowPower\":true}");
+            engine.setParameters("{\"che.video.android_zero_copy_mode\":1}");
             engine.setParameters("{\"che.video.setQuickVideoHighFec\":true}");
             engine.setParameters("{\"rtc.enable_quick_rexfer_keyframe\":true}");
+            engine.setParameters("{\"rtc.enable_audio_rsfec_in_video\":true}");
             engine.setParameters("{\"che.audio.opensl\":true}");
-            engine.setParameters("{\"che.video.h264.hwenc\":0}");
-            engine.setParameters("{\"rtc.min_playout_delay_speaker\":0}");
-            engine.setParameters("{\"rtc.min_playout_delay\":0}");
+            engine.setParameters("{\"che.video.enable_new_encode_complexity\":false}");
+            engine.setParameters("{\"che.video.default_encode_complexity\":\"0x403\"}");
+            engine.setParameters("{\"che.video.max_slices\":4}");
+
+//            engine.setParameters("{\"che.video.setQuickVideoHighFec\":true}");
+//            engine.setParameters("{\"rtc.enable_quick_rexfer_keyframe\":true}");
+//            engine.setParameters("{\"che.audio.opensl\":true}");
+//            engine.setParameters("{\"che.video.h264.hwenc\":0}");
+//            engine.setParameters("{\"rtc.min_playout_delay_speaker\":0}");
+//            engine.setParameters("{\"rtc.min_playout_delay\":0}");
             engine.enableVideo();
             engine.enableAudio();
             engine.setDefaultAudioRoutetoSpeakerphone(true);
@@ -126,7 +141,10 @@ public class RtcManager {
         // 1. create channel
         RtcChannel rtcChannel = engine.createRtcChannel(channelId);
         // 2. set role
-        rtcChannel.setClientRole(publish ? Constants.CLIENT_ROLE_BROADCASTER: Constants.CLIENT_ROLE_AUDIENCE);
+        ClientRoleOptions options = new ClientRoleOptions();
+        options.audienceLatencyLevel = Constants.AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
+        rtcChannel.setClientRole(publish ? Constants.CLIENT_ROLE_BROADCASTER: Constants.CLIENT_ROLE_AUDIENCE,
+                options);
         mRtcChannels.put(channelId, rtcChannel);
 
         rtcChannel.setRtcChannelEventHandler(new IRtcChannelEventHandler() {
@@ -256,6 +274,12 @@ public class RtcManager {
 
     private static String getPushRtmpUrl(String pushName) {
         return String.format(Locale.US, "rtmp://webdemo-push.agora.io/lbhd/%s", pushName);
+    }
+
+    public void switchCamera() {
+        if(engine != null){
+            engine.switchCamera();
+        }
     }
 
 

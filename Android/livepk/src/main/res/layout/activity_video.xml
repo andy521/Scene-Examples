@@ -147,14 +147,30 @@
         </LinearLayout>
 
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/start_pk_button"
-            android:layout_width="@dimen/live_pk_start_button_size"
-            android:layout_height="@dimen/live_pk_start_button_size"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:layout_marginBottom="25dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/start_pk_button" />
+            android:layout_marginBottom="25dp">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/switch_camera_button"
+                android:layout_width="@dimen/live_pk_start_button_size"
+                android:layout_height="@dimen/live_pk_start_button_size"
+                android:scaleType="fitXY"
+                android:paddingBottom="18dp"
+                android:paddingTop="6dp"
+                android:visibility="gone"
+                android:paddingHorizontal="12dp"
+                android:src="@drawable/icon_rotate" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/start_pk_button"
+                android:layout_width="@dimen/live_pk_start_button_size"
+                android:layout_height="@dimen/live_pk_start_button_size"
+                android:scaleType="fitXY"
+                android:src="@drawable/start_pk_button" />
+        </LinearLayout>
 
     </FrameLayout>
 </layout>

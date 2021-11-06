@@ -85,6 +85,13 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
                 .into(mDataBinding.ivRoomAvatar);
 
         mDataBinding.tvRoomName.setText(mRoomInfo.roomName);
+        mDataBinding.switchCameraButton.setVisibility(View.VISIBLE);
+        mDataBinding.switchCameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rtcManager.switchCamera();
+            }
+        });
     }
 
     @Override
