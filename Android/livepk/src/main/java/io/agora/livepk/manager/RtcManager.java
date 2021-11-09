@@ -86,31 +86,28 @@ public class RtcManager {
                     }
                 }
 
+                @Override
+                public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
+                    super.onJoinChannelSuccess(channel, uid, elapsed);
+                }
             });
             engine.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING);
-            engine.setParameters("{\"che.video.lowBitRateStreamParameter\": \"{\\\"width\\\":270,\\\"height\\\":480,\\\"frameRate\\\":15,\\\"bitRate\\\":400}\"}");
-            engine.setParameters("{\"rtc.min_playout_delay\":0}");
+            engine.setAudioProfile(Constants.AUDIO_PROFILE_SPEECH_STANDARD, Constants.AUDIO_SCENARIO_CHATROOM_ENTERTAINMENT);
+            engine.setDefaultAudioRoutetoSpeakerphone(true);
+            // 在JoinChannelSuccess后调用
+            // engine.setParameters("{\"che.video.lowBitRateStreamParameter\": \"{\\\"width\\\":270,\\\"height\\\":480,\\\"frameRate\\\":15,\\\"bitRate\\\":400}\"}");
             engine.setParameters("{\"che.video.retransDetectEnable\":true}");
             engine.setParameters("{\"che.video.camera.face_detection\":false}");
             engine.setParameters("{\"che.video.captureFpsLowPower\":true}");
-            engine.setParameters("{\"che.video.android_zero_copy_mode\":1}");
+            engine.setParameters("{\"che.video.android_zero_copy_mode\":2}");
             engine.setParameters("{\"che.video.setQuickVideoHighFec\":true}");
             engine.setParameters("{\"rtc.enable_quick_rexfer_keyframe\":true}");
             engine.setParameters("{\"rtc.enable_audio_rsfec_in_video\":true}");
             engine.setParameters("{\"che.audio.opensl\":true}");
-            engine.setParameters("{\"che.video.enable_new_encode_complexity\":false}");
-            engine.setParameters("{\"che.video.default_encode_complexity\":\"0x403\"}");
-            engine.setParameters("{\"che.video.max_slices\":4}");
+            engine.setParameters("{\"che.audio.specify.codec\":\"OPUSFB\"}");
 
-//            engine.setParameters("{\"che.video.setQuickVideoHighFec\":true}");
-//            engine.setParameters("{\"rtc.enable_quick_rexfer_keyframe\":true}");
-//            engine.setParameters("{\"che.audio.opensl\":true}");
-//            engine.setParameters("{\"che.video.h264.hwenc\":0}");
-//            engine.setParameters("{\"rtc.min_playout_delay_speaker\":0}");
-//            engine.setParameters("{\"rtc.min_playout_delay\":0}");
             engine.enableVideo();
             engine.enableAudio();
-            engine.setDefaultAudioRoutetoSpeakerphone(true);
             engine.setVideoEncoderConfiguration(encoderConfiguration);
             isInitialized = true;
         } catch (Exception e) {
@@ -143,8 +140,7 @@ public class RtcManager {
         // 2. set role
         ClientRoleOptions options = new ClientRoleOptions();
         options.audienceLatencyLevel = Constants.AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
-        rtcChannel.setClientRole(publish ? Constants.CLIENT_ROLE_BROADCASTER: Constants.CLIENT_ROLE_AUDIENCE,
-                options);
+        rtcChannel.setClientRole(Constants.CLIENT_ROLE_BROADCASTER, options);
         mRtcChannels.put(channelId, rtcChannel);
 
         rtcChannel.setRtcChannelEventHandler(new IRtcChannelEventHandler() {
@@ -161,6 +157,7 @@ public class RtcManager {
             @Override
             public void onJoinChannelSuccess(RtcChannel rtcChannel, int uid, int elapsed) {
                 super.onJoinChannelSuccess(rtcChannel, uid, elapsed);
+                engine.setParameters("{\"che.video.lowBitRateStreamParameter\": \"{\\\"width\\\":270,\\\"height\\\":480,\\\"frameRate\\\":15,\\\"bitRate\\\":400}\"}");
                 if(publish){
                     LiveTranscoding transcoding = new LiveTranscoding();
                     LiveTranscoding.TranscodingUser user = new LiveTranscoding.TranscodingUser();
