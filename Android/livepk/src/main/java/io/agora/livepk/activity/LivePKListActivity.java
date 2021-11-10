@@ -3,16 +3,9 @@ package io.agora.livepk.activity;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,7 +14,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -91,7 +83,34 @@ public class LivePKListActivity extends DataBindBaseActivity<ActivityListBinding
         mDataBinding.liveRoomStartBroadcast.setOnClickListener(v -> {
             alertCreateDialog();
         });
-        mAdapter.setItemClickListener(item -> startActivity(AudienceActivity.launch(LivePKListActivity.this, item)));
+        mAdapter.setItemClickListener(new RoomListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RoomInfo item) {
+                startActivity(AudienceActivity.launch(LivePKListActivity.this, item));
+            }
+
+            @Override
+            public void onItemDeleteClicked(RoomInfo item, int index) {
+                new AlertDialog.Builder(LivePKListActivity.this)
+                        .setTitle("Tip")
+                        .setMessage("Sure to delete the room?")
+                        .setPositiveButton(R.string.cmm_ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteRoom(item, () -> {
+                                    mAdapter.remoteItem(item.roomId);
+                                });
+                            }
+                        })
+                        .setNegativeButton(R.string.cmm_cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+            }
+        });
     }
 
     @Override
@@ -110,7 +129,7 @@ public class LivePKListActivity extends DataBindBaseActivity<ActivityListBinding
 
     private void checkNoData() {
         boolean hasData = mAdapter.getItemCount() > 0;
-        mDataBinding.noDataBg.setVisibility(hasData? View.GONE: View.VISIBLE);
+        mDataBinding.noDataBg.setVisibility(hasData ? View.GONE : View.VISIBLE);
     }
 
     private void alertCreateDialog() {
@@ -136,7 +155,7 @@ public class LivePKListActivity extends DataBindBaseActivity<ActivityListBinding
     private String syncUserId;
 
 
-    private void initSyncManager(){
+    private void initSyncManager() {
         HashMap<String, String> params = new HashMap<>();
         params.put("appid", getString(R.string.agora_app_id));
         SyncManager.Instance().init(this, params);
@@ -149,7 +168,7 @@ public class LivePKListActivity extends DataBindBaseActivity<ActivityListBinding
         SyncManager.Instance().joinScene(room);
     }
 
-    private void loadRoomList(DataListCallback<RoomInfo> callback){
+    private void loadRoomList(DataListCallback<RoomInfo> callback) {
         SceneReference livePK = SyncManager.Instance().getScene(SYNC_SCENE_ID);
         livePK.collection(SYNC_COLLECTION_ROOM_INFO).get(new SyncManager.DataListCallback() {
             @Override
@@ -170,7 +189,7 @@ public class LivePKListActivity extends DataBindBaseActivity<ActivityListBinding
         });
     }
 
-    private void createRoom(RoomInfo roomInfo){
+    private void createRoom(RoomInfo roomInfo) {
         SyncManager.Instance().getScene(SYNC_SCENE_ID).collection(SYNC_COLLECTION_ROOM_INFO).add(roomInfo.toMap(), new SyncManager.DataItemCallback() {
             @Override
             public void onSuccess(IObject result) {
@@ -179,11 +198,28 @@ public class LivePKListActivity extends DataBindBaseActivity<ActivityListBinding
 
             @Override
             public void onFail(SyncManagerException exception) {
-                Toast.makeText(LivePKListActivity.this, "Room create failed -- " + exception.toString(), Toast.LENGTH_SHORT).show();
+                runOnUiThread(() -> Toast.makeText(LivePKListActivity.this, "Room create failed -- " + exception.toString(), Toast.LENGTH_SHORT).show());
             }
         });
     }
 
+    private void deleteRoom(RoomInfo roomInfo, Runnable successRun) {
+        SyncManager.Instance()
+                .getScene(LivePKListActivity.SYNC_SCENE_ID)
+                .collection(LivePKListActivity.SYNC_COLLECTION_ROOM_INFO)
+                .document(roomInfo.roomId)
+                .delete(new SyncManager.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        runOnUiThread(successRun);
+                    }
+
+                    @Override
+                    public void onFail(SyncManagerException exception) {
+                        runOnUiThread(() -> Toast.makeText(LivePKListActivity.this, "deleteRoomInfo failed exception: " + exception.toString(), Toast.LENGTH_LONG).show());
+                    }
+                });
+    }
 
 
 }

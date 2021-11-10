@@ -26,6 +26,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import io.agora.baselibrary.base.DataBindBaseActivity;
 import io.agora.livepk.R;
@@ -84,7 +85,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
                 .apply(RequestOptions.bitmapTransform(new CircleCrop()))
                 .into(mDataBinding.ivRoomAvatar);
 
-        mDataBinding.tvRoomName.setText(mRoomInfo.roomName);
+        mDataBinding.tvRoomName.setText(String.format(Locale.US, "%s(%s)", mRoomInfo.roomName, mRoomInfo.roomId) );
         mDataBinding.switchCameraButton.setVisibility(View.VISIBLE);
         mDataBinding.switchCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override

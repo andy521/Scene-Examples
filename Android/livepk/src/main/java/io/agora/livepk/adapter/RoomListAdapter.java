@@ -3,6 +3,7 @@ package io.agora.livepk.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -37,6 +38,11 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
         holder.itemView.setOnClickListener((view) -> {
             if (itemClickListener != null) {
                 itemClickListener.onItemClicked(info);
+            }
+        });
+        holder.ivDelete.setOnClickListener(v -> {
+            if(itemClickListener != null){
+                itemClickListener.onItemDeleteClicked(info, position);
             }
         });
     }
@@ -90,15 +96,19 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.RoomLi
     static class RoomListItemViewHolder extends RecyclerView.ViewHolder {
         AppCompatTextView name;
         SquareRelativeLayout layout;
+        ImageView ivDelete;
 
         RoomListItemViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.live_room_list_item_room_name);
             layout = itemView.findViewById(R.id.live_room_list_item_background);
+            ivDelete = itemView.findViewById(R.id.iv_delete);
         }
     }
 
     public interface OnItemClickListener {
         void onItemClicked(RoomInfo item);
+
+        void onItemDeleteClicked(RoomInfo item, int index);
     }
 }

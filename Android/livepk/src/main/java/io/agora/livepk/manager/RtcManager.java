@@ -94,10 +94,8 @@ public class RtcManager {
             engine.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING);
             engine.setAudioProfile(Constants.AUDIO_PROFILE_SPEECH_STANDARD, Constants.AUDIO_SCENARIO_CHATROOM_ENTERTAINMENT);
             engine.setDefaultAudioRoutetoSpeakerphone(true);
-            // 在JoinChannelSuccess后调用
-            // engine.setParameters("{\"che.video.lowBitRateStreamParameter\": \"{\\\"width\\\":270,\\\"height\\\":480,\\\"frameRate\\\":15,\\\"bitRate\\\":400}\"}");
+            engine.enableDualStreamMode(false);
             engine.setParameters("{\"che.video.retransDetectEnable\":true}");
-            engine.setParameters("{\"che.video.camera.face_detection\":false}");
             engine.setParameters("{\"che.video.captureFpsLowPower\":true}");
             engine.setParameters("{\"che.video.android_zero_copy_mode\":2}");
             engine.setParameters("{\"che.video.setQuickVideoHighFec\":true}");
@@ -157,7 +155,6 @@ public class RtcManager {
             @Override
             public void onJoinChannelSuccess(RtcChannel rtcChannel, int uid, int elapsed) {
                 super.onJoinChannelSuccess(rtcChannel, uid, elapsed);
-                engine.setParameters("{\"che.video.lowBitRateStreamParameter\": \"{\\\"width\\\":270,\\\"height\\\":480,\\\"frameRate\\\":15,\\\"bitRate\\\":400}\"}");
                 if(publish){
                     LiveTranscoding transcoding = new LiveTranscoding();
                     LiveTranscoding.TranscodingUser user = new LiveTranscoding.TranscodingUser();
