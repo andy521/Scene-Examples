@@ -9,6 +9,7 @@ import Foundation
 import AgoraRtcKit
 
 extension MainVM {
+    /// 本地加入自己的频道
     func joinRtcChannelLocal(channelName: String) {
         let config = AgoraRtcEngineConfig()
         config.appId = appId
@@ -17,20 +18,26 @@ extension MainVM {
         let logConfig = AgoraLogConfig()
         logConfig.level = .info
         config.logConfig = logConfig
-        
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: config, delegate: self)
         agoraKit.enableVideo()
         agoraKit.setVideoEncoderConfiguration(AgoraVideoEncoderConfiguration(size: CGSize(width: 360, height: 640),
                                                                              frameRate: .fps15,
                                                                              bitrate: AgoraVideoBitrateStandard,
                                                                              orientationMode: .fixedPortrait))
-        
         agoraKit.setChannelProfile(.liveBroadcasting)
         agoraKit.setDefaultAudioRouteToSpeakerphone(true)
+        agoraKit.setAudioProfile(.speechStandard, scenario:.chatRoomEntertainment)
+        //agoraKit.setParameters("{\"che.video.lowBitRateStreamParameter\": \"{\\\"width\\\":270,\\\"height\\\":480,\\\"frameRate\\\":15,\\\"bitRate\\\":400}\"}");
+        agoraKit.enableDualStreamMode(false)
+        agoraKit.setParameters("{\"che.video.retransDetectEnable\":true}")
+        //agoraKit.setParameters("{\"che.video.camera.face_detection\":false}")
+        agoraKit.setParameters("{\"che.video.captureFpsLowPower\":true}")
         agoraKit.setParameters("{\"che.video.setQuickVideoHighFec\":true}")
         agoraKit.setParameters("{\"rtc.enable_quick_rexfer_keyframe\":true}")
-        agoraKit.setParameters("{\"rtc.min_playout_delay_speaker\":0}")
-        agoraKit.setParameters("{\"rtc.min_playout_delay\":0}")
+        agoraKit.setParameters("{\"rtc.enable_audio_rsfec_in_video\":true}")
+        agoraKit.setParameters("{\"che.audio.specify.codec\":\"OPUSFB\"}")
+        agoraKit.setParameters("{\"che.video.default_encode_complexity\":\"0x403\"}")
+        agoraKit.setParameters("{\"che.video.max_slices\":4}")
         
         let mediaOptions = AgoraRtcChannelMediaOptions()
         mediaOptions.autoSubscribeAudio = true
@@ -51,6 +58,7 @@ extension MainVM {
         Log.info(text: "launchLocalChannel success", tag: "joinRtcChannelLocal")
     }
     
+    /// 加入远程的频道
     func joinRtcChannelRemote(channelName: String) {
         let mediaOptions = AgoraRtcChannelMediaOptions()
         mediaOptions.autoSubscribeAudio = true
@@ -59,7 +67,7 @@ extension MainVM {
         mediaOptions.publishLocalVideo = false
         
         channelRemote = agoraKit.createRtcChannel(channelName)
-        channelRemote?.setClientRole(.audience)
+        channelRemote?.setClientRole(.broadcaster)
         channelRemote?.setRtcChannelDelegate(self)
         let result = channelRemote?.join(byToken: nil, info: nil, uid: 0, options: mediaOptions) ?? -1
         if result != 0 {
@@ -69,5 +77,9 @@ extension MainVM {
             return
         }
         Log.info(text: "joinRtcChannelRemote success \(channelName)", tag: "joinRtcChannelRemote")
+    }
+    
+    func switchCamera() {
+        agoraKit.switchCamera()
     }
 }

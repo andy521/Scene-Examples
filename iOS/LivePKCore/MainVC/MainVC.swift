@@ -15,6 +15,7 @@ class MainVC: UIViewController {
     var closeItem: UIBarButtonItem!
     var pkItem: UIBarButtonItem!
     var exitPkItem: UIBarButtonItem!
+    var cameraItem: UIBarButtonItem!
     
     init(loginInfo: LoginInfo,
          appId: String) {
@@ -38,6 +39,7 @@ class MainVC: UIViewController {
         closeItem = UIBarButtonItem(title: "Close", style: .plain, target: self, action: #selector(closeOnClick))
         pkItem = UIBarButtonItem(title: "PK", style: .plain, target: self, action: #selector(pkOnClick))
         exitPkItem = UIBarButtonItem(title: "Exit PK", style: .plain, target: self, action: #selector(exitPkOnClick))
+        cameraItem = UIBarButtonItem(title: "Camera", style: .plain, target: self, action: #selector(cameraOnclick))
         view.addSubview(mainView)
         mainView.translatesAutoresizingMaskIntoConstraints = false
         mainView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
@@ -76,6 +78,10 @@ class MainVC: UIViewController {
     @objc func exitPkOnClick() {
         vm.exitPk()
     }
+    
+    @objc func cameraOnclick() {
+        vm.switchCamera()
+    }
 }
 
 extension MainVC: UICollectionViewDataSource, UICollectionViewDelegate {
@@ -109,7 +115,7 @@ extension MainVC: MainVMDelegate {
             navigationItem.rightBarButtonItems =  [closeItem]
         }
         else {
-            navigationItem.rightBarButtonItems = renders.count == 1 ? [closeItem, pkItem] : [closeItem, exitPkItem]
+            navigationItem.rightBarButtonItems = renders.count == 1 ? [closeItem, pkItem, cameraItem] : [closeItem, exitPkItem, cameraItem]
         }
         
         self.renderInfos = renders

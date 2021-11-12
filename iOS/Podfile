@@ -47,7 +47,7 @@ end
 target 'Scene-Examples_LeanCloud' do
   commonPods
   use_frameworks!
-  pod 'LeanCloud'
+  pod 'LeanCloud', "17.10.0"
 end
 
 # target with firebase sdk

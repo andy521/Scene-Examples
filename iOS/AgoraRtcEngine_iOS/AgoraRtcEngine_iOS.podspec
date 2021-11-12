@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'AgoraRtcEngine_iOS'
-  s.version          = '3.4.10'
+  s.version          = '3.5.1.201'
   s.summary          = 'AgoraRtcEngine_iOS'
   
   s.description      = <<-DESC

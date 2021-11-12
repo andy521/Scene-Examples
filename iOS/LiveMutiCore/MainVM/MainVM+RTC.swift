@@ -52,8 +52,18 @@ extension MainVM {
         agoraKit.setVideoEncoderConfiguration(videoEncodeConfig)
         agoraKit.setChannelProfile(.liveBroadcasting)
         agoraKit.setDefaultAudioRouteToSpeakerphone(true)
+        agoraKit.setAudioProfile(.speechStandard, scenario:.chatRoomEntertainment)
+        //agoraKit.setParameters("{\"che.video.lowBitRateStreamParameter\": \"{\\\"width\\\":270,\\\"height\\\":480,\\\"frameRate\\\":15,\\\"bitRate\\\":400}\"}");
+        agoraKit.enableDualStreamMode(false)
+        agoraKit.setParameters("{\"che.video.retransDetectEnable\":true}")
+        //agoraKit.setParameters("{\"che.video.camera.face_detection\":false}")
+        agoraKit.setParameters("{\"che.video.captureFpsLowPower\":true}")
         agoraKit.setParameters("{\"che.video.setQuickVideoHighFec\":true}")
         agoraKit.setParameters("{\"rtc.enable_quick_rexfer_keyframe\":true}")
+        agoraKit.setParameters("{\"rtc.enable_audio_rsfec_in_video\":true}")
+        agoraKit.setParameters("{\"che.audio.specify.codec\":\"OPUSFB\"}")
+        agoraKit.setParameters("{\"che.video.default_encode_complexity\":\"0x403\"}")
+        agoraKit.setParameters("{\"che.video.max_slices\":4}")
         
         let mediaOptions = AgoraRtcChannelMediaOptions()
         mediaOptions.autoSubscribeAudio = true
