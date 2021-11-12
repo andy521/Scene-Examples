@@ -28,5 +28,14 @@
             android:textColor="@android:color/white"
             android:background="@drawable/mask_background"/>
 
+
+        <ImageView
+            android:id="@+id/iv_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:padding="@dimen/room_list_item_corner"
+            android:src="@drawable/ic_baseline_close_24"/>
+
     </io.agora.superapp.widget.SquareRelativeLayout>
 </androidx.cardview.widget.CardView>

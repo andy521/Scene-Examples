@@ -3,6 +3,7 @@ package io.agora.superapp.manager;
 import android.content.Context;
 import android.util.Log;
 import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -40,7 +41,7 @@ public class RtcManager {
     private static final String TAG = "RtcManager";
     private static final int LOCAL_RTC_UID = 0;
     private static final String AGORA_CDN_CHANNEL_PUSH_PREFIX = "rtmp://mdetest.push.agoramde.agoraio.cn/live/%s";
-    private static final String AGORA_CDN_CHANNEL_PULL_PREFIX = "rtmp://mdetest2.pull.agoramde.agoraio.cn/live/%s";
+    private static final String AGORA_CDN_CHANNEL_PULL_PREFIX = "http://mdetest2.pull.agoramde.agoraio.cn/live/%s.flv";
 
     private static CameraCapturerConfiguration.CAMERA_DIRECTION currCameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT;
     public static boolean isMuteLocalAudio = false;
@@ -311,7 +312,7 @@ public class RtcManager {
             return;
         }
         // 4. render video
-        View videoView = RtcEngine.CreateRendererView(mContext);
+        TextureView videoView = new TextureView(container.getContext());
         container.addView(videoView);
         firstVideoFramePendingRuns.put(uid, firstFrame);
         engine.setupRemoteVideo(new VideoCanvas(videoView, RENDER_MODE_HIDDEN, uid));

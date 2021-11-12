@@ -1,10 +1,13 @@
 package io.agora.superapp.view;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -19,6 +22,7 @@ import java.util.UUID;
 import io.agora.baselibrary.base.DataBindBaseActivity;
 import io.agora.livepk.R;
 import io.agora.livepk.databinding.RoomListActivityBinding;
+import io.agora.superapp.Constants;
 import io.agora.superapp.model.RoomInfo;
 import io.agora.superapp.util.DataListCallback;
 import io.agora.superapp.util.PreferenceUtil;
@@ -82,12 +86,27 @@ public class RoomListActivity extends DataBindBaseActivity<RoomListActivityBindi
         mDataBinding.liveRoomStartBroadcast.setOnClickListener(v -> {
             alertCreateDialog();
         });
-        mAdapter.setItemClickListener(item -> {
-            if (EasyPermissions.hasPermissions(this, PERMISSTION)) {
-                startActivity(AudienceActivity.launch(RoomListActivity.this, item));
-            } else {
-                EasyPermissions.requestPermissions(this, getString(R.string.error_leak_permission),
-                        TAG_PERMISSTION_REQUESTCODE, PERMISSTION);
+        mAdapter.setItemClickListener(new RoomListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RoomInfo item) {
+                if (EasyPermissions.hasPermissions(RoomListActivity.this, PERMISSTION)) {
+                    startActivity(AudienceActivity.launch(RoomListActivity.this, item));
+                } else {
+                    EasyPermissions.requestPermissions(RoomListActivity.this, getString(R.string.error_leak_permission),
+                            TAG_PERMISSTION_REQUESTCODE, PERMISSTION);
+                }
+            }
+
+            @Override
+            public void onItemDeleteClicked(RoomInfo item, int position) {
+                new AlertDialog.Builder(RoomListActivity.this)
+                        .setTitle(R.string.cmm_tip)
+                        .setMessage("Sure to delete the room?")
+                        .setPositiveButton(R.string.cmm_ok, (dialog, which) -> deleteRoom(item, () -> {
+                            mAdapter.remoteItem(item.roomId);
+                        }))
+                        .setNegativeButton(R.string.cmm_cancel, (dialog, which) -> dialog.dismiss())
+                        .show();
             }
         });
         mDataBinding.ivHead.setOnClickListener(v -> {
@@ -172,7 +191,23 @@ public class RoomListActivity extends DataBindBaseActivity<RoomListActivityBindi
         });
     }
 
+    private void deleteRoom(RoomInfo roomInfo, Runnable successRun) {
+        SyncManager.Instance()
+                .getScene(Constants.SYNC_SCENE_ID)
+                .collection(Constants.SYNC_COLLECTION_ROOM_INFO)
+                .document(roomInfo.roomId)
+                .delete(new SyncManager.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        runOnUiThread(successRun);
+                    }
 
+                    @Override
+                    public void onFail(SyncManagerException exception) {
+                        runOnUiThread(() -> Toast.makeText(RoomListActivity.this, "deleteRoomInfo failed exception: " + exception.toString(), Toast.LENGTH_LONG).show());
+                    }
+                });
+    }
 
 
 
