@@ -88,7 +88,7 @@ public class PreviewActivity extends DataBindBaseActivity<ActivityPreviewBinding
             @Override
             public void onSuccess(IObject result) {
                 rtcManager.release();
-                startActivity(HostPKActivity.launch(PreviewActivity.this, roomInfo));
+                startActivity(HostActivity.launch(PreviewActivity.this, roomInfo));
                 finish();
             }
             @Override

@@ -18,7 +18,7 @@ import java.util.UUID;
 
 import io.agora.baselibrary.base.DataBindBaseActivity;
 import io.agora.livepk.R;
-import io.agora.livepk.databinding.ActivityListBinding;
+import io.agora.livepk.databinding.RoomListActivityBinding;
 import io.agora.superapp.model.RoomInfo;
 import io.agora.superapp.util.DataListCallback;
 import io.agora.superapp.util.PreferenceUtil;
@@ -32,8 +32,8 @@ import pub.devrel.easypermissions.EasyPermissions;
 import static io.agora.superapp.Constants.SYNC_COLLECTION_ROOM_INFO;
 import static io.agora.superapp.Constants.SYNC_SCENE_ID;
 
-public class LivePKListActivity extends DataBindBaseActivity<ActivityListBinding> {
-    private static final String TAG = LivePKListActivity.class.getSimpleName();
+public class RoomListActivity extends DataBindBaseActivity<RoomListActivityBinding> {
+    private static final String TAG = RoomListActivity.class.getSimpleName();
     private static final int RECYCLER_VIEW_SPAN_COUNT = 2;
     private static final int TAG_PERMISSTION_REQUESTCODE = 1000;
     private static final String[] PERMISSTION = new String[]{
@@ -46,7 +46,7 @@ public class LivePKListActivity extends DataBindBaseActivity<ActivityListBinding
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_list;
+        return R.layout.room_list_activity;
     }
 
     @Override
@@ -84,14 +84,14 @@ public class LivePKListActivity extends DataBindBaseActivity<ActivityListBinding
         });
         mAdapter.setItemClickListener(item -> {
             if (EasyPermissions.hasPermissions(this, PERMISSTION)) {
-                startActivity(AudienceActivity.launch(LivePKListActivity.this, item));
+                startActivity(AudienceActivity.launch(RoomListActivity.this, item));
             } else {
                 EasyPermissions.requestPermissions(this, getString(R.string.error_leak_permission),
                         TAG_PERMISSTION_REQUESTCODE, PERMISSTION);
             }
         });
         mDataBinding.ivHead.setOnClickListener(v -> {
-            startActivity(new Intent(LivePKListActivity.this, UserProfileActivity.class));
+            startActivity(new Intent(RoomListActivity.this, UserProfileActivity.class));
         });
     }
 

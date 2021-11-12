@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -49,13 +48,13 @@ import static io.agora.superapp.Constants.SYNC_COLLECTION_ROOM_INFO;
 import static io.agora.superapp.Constants.SYNC_COLLECTION_USER_INFO;
 import static io.agora.superapp.Constants.SYNC_SCENE_ID;
 
-public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
+public class HostActivity extends DataBindBaseActivity<ActivityVideoBinding> {
     private static final String TAG = "HostPKActivity";
 
     private static final String EXTRA_ROOM_INFO = "roomInfo";
 
     public static Intent launch(Context context, RoomInfo roomInfo) {
-        Intent intent = new Intent(context, HostPKActivity.class);
+        Intent intent = new Intent(context, HostActivity.class);
         intent.putExtra(EXTRA_ROOM_INFO, roomInfo);
         return intent;
     }
@@ -291,7 +290,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
     }
 
     private void showPKEndDialog() {
-        new AlertDialog.Builder(HostPKActivity.this)
+        new AlertDialog.Builder(HostActivity.this)
                 .setTitle("PK")
                 .setMessage("Currently in PK, whether to stop PK?")
                 .setPositiveButton(R.string.cmm_ok, (dialog, which) -> {
@@ -348,7 +347,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
             public void onError(int code, String message) {
                 if (!TextUtils.isEmpty(message)) {
                     runOnUiThread(() -> {
-                        Toast.makeText(HostPKActivity.this, message, Toast.LENGTH_LONG).show();
+                        Toast.makeText(HostActivity.this, message, Toast.LENGTH_LONG).show();
                         finish();
                     });
                 }
@@ -436,7 +435,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
 
                     @Override
                     public void onSubscribeError(SyncManagerException ex) {
-                        Toast.makeText(HostPKActivity.this, "initSyncManager subscribe error: " + ex.toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HostActivity.this, "initSyncManager subscribe error: " + ex.toString(), Toast.LENGTH_SHORT).show();
                     }
                 });
         SyncManager.Instance()
@@ -512,7 +511,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
         int oldUserCount = oldRoomInfo.userCount;
         if (newUserCount != oldUserCount) {
             // 更新房间内人数
-            runOnUiThread(HostPKActivity.this::updateRoomUserCountTv);
+            runOnUiThread(HostActivity.this::updateRoomUserCountTv);
         }
     }
 
@@ -537,7 +536,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
 
                     @Override
                     public void onFail(SyncManagerException ex) {
-                        Toast.makeText(HostPKActivity.this, "loadRoomUserInfoList get error: " + ex.toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HostActivity.this, "loadRoomUserInfoList get error: " + ex.toString(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -565,7 +564,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
                             });
 
                 },
-                data -> Toast.makeText(HostPKActivity.this, "The host " + pkUserId + " is kping with " + data, Toast.LENGTH_LONG).show());
+                data -> Toast.makeText(HostActivity.this, "The host " + pkUserId + " is kping with " + data, Toast.LENGTH_LONG).show());
     }
 
     private void stopPK() {
@@ -628,7 +627,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
 
                         @Override
                         public void onFail(SyncManagerException exception) {
-                            Toast.makeText(HostPKActivity.this, exception.toString(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(HostActivity.this, exception.toString(), Toast.LENGTH_LONG).show();
                         }
                     });
         }
@@ -649,7 +648,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
 
                     @Override
                     public void onFail(SyncManagerException exception) {
-                        Toast.makeText(HostPKActivity.this, "deleteRoomInfo failed exception: " + exception.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(HostActivity.this, "deleteRoomInfo failed exception: " + exception.toString(), Toast.LENGTH_LONG).show();
                     }
                 });
     }

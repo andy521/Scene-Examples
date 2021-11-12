@@ -22,14 +22,14 @@
             android:name="android.max_aspect"
             android:value="2.4" />
 
-        <activity android:name="io.agora.superapp.view.LivePKListActivity">
+        <activity android:name="io.agora.superapp.view.RoomListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name="io.agora.superapp.view.HostPKActivity"
+        <activity android:name="io.agora.superapp.view.HostActivity"
             android:launchMode="singleTop"/>
         <activity android:name="io.agora.superapp.view.AudienceActivity"
             android:launchMode="singleTop"/>
