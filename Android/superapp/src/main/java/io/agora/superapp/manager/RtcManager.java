@@ -40,8 +40,8 @@ import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_640x360;
 public class RtcManager {
     private static final String TAG = "RtcManager";
     private static final int LOCAL_RTC_UID = 0;
-    private static final String AGORA_CDN_CHANNEL_PUSH_PREFIX = "rtmp://mdetest.push.agoramde.agoraio.cn/live/%s";
-    private static final String AGORA_CDN_CHANNEL_PULL_PREFIX = "http://mdetest2.pull.agoramde.agoraio.cn/live/%s.flv";
+    private static final String AGORA_CDN_CHANNEL_PUSH_PREFIX = "rtmp://examplepush.agoramde.agoraio.cn/live/%s";
+    private static final String AGORA_CDN_CHANNEL_PULL_PREFIX = "http://examplepull.agoramde.agoraio.cn/live/%s.flv";
 
     private static CameraCapturerConfiguration.CAMERA_DIRECTION currCameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT;
     public static boolean isMuteLocalAudio = false;
