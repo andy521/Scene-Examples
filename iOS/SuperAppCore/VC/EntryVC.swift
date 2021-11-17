@@ -82,7 +82,9 @@ extension EntryVC: EntryViewDelegate, EntryVMDelegate {
 }
 
 extension EntryVC: CreateLiveVCDelegate {
-    func createLiveVC(_ vc: CreateLiveVC, didSart roomName: String) {
+    func createLiveVC(_ vc: CreateLiveVC,
+                      didSart roomName: String,
+                      sellectedType: CreateLiveVC.SelectedType) {
         
     }
 }

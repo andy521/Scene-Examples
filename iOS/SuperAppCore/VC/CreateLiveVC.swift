@@ -8,7 +8,9 @@
 import UIKit
 
 protocol CreateLiveVCDelegate: NSObjectProtocol {
-    func createLiveVC(_ vc: CreateLiveVC, didSart roomName: String)
+    func createLiveVC(_ vc: CreateLiveVC,
+                      didSart roomName: String,
+                      sellectedType: CreateLiveVC.SelectedType)
 }
 
 class CreateLiveVC: UIViewController {
@@ -59,9 +61,12 @@ extension CreateLiveVC: CreateLiveViewDelegate {
     
     func createLiveViewDidTapStartButton(_ view: CreateLiveView) {
         let text = createLiveView.text
+        let sellectedType: SelectedType = createLiveView.currentSelectedType == .value1 ? .value1 : .value2
         dismiss(animated: true) { [weak self] in
             if self != nil {
-                self?.delegate?.createLiveVC(self!, didSart: text)
+                self?.delegate?.createLiveVC(self!,
+                                             didSart: text,
+                                             sellectedType: sellectedType)
             }
         }
     }
@@ -74,5 +79,14 @@ extension CreateLiveVC: CreateLiveViewDelegate {
 extension CreateLiveVC: CreateLiveVMDelegate {
     func createLiveVM(_ vm: CreateLiveVM, didUpdate roomName: String) {
         createLiveView.set(text: roomName)
+    }
+}
+
+extension CreateLiveVC {
+    enum SelectedType {
+        case value1
+        case value2
+        
+        
     }
 }
