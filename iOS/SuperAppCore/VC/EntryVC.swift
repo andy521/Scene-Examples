@@ -57,10 +57,14 @@ extension EntryVC: EntryViewDelegate, EntryVMDelegate {
     }
     
     func entryViewDidTapCreateButton(_ view: EntryView) {
-        let vc = CreateLiveVC(appId: appId)
-        vc.delegate = self
+        let vc = MainVC(appId: "")
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true, completion: nil)
+        
+//        let vc = CreateLiveVC(appId: appId)
+//        vc.delegate = self
+//        vc.modalPresentationStyle = .fullScreen
+//        present(vc, animated: true, completion: nil)
     }
     
     func entryView(_ view: EntryView, didSelected info: EntryView.Info) {
@@ -85,6 +89,8 @@ extension EntryVC: CreateLiveVCDelegate {
     func createLiveVC(_ vc: CreateLiveVC,
                       didSart roomName: String,
                       sellectedType: CreateLiveVC.SelectedType) {
-        
+        let vc = MainVC(appId: "")
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true, completion: nil)
     }
 }

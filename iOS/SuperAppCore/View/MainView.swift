@@ -1,0 +1,127 @@
+//
+//  MainView.swift
+//  SuperAppCore
+//
+//  Created by ZYP on 2021/11/17.
+//
+
+import UIKit
+
+protocol MainViewDelegate: NSObjectProtocol {
+    func mainView(_ view: MainView, didTap action: MainView.Action)
+}
+
+class MainView: UIView {
+    private let personCountView = EntryViewCell.IconTextView()
+    private let leftView = LeftView()
+    private let moreButton = UIButton()
+    private let closeButton = UIButton()
+    private let localView = UIButton()
+    private let remoteView = UIView()
+    private let personCountButton = UIButton()
+    weak var delegate: MainViewDelegate?
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setup()
+        commonInit()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setup() {
+        backgroundColor = .white
+        localView.backgroundColor = .clear
+        personCountButton.backgroundColor = .clear
+        moreButton.setImage(.init(named: "icon-more"), for: .normal)
+        closeButton.setImage(.init(named: "icon-round-close"), for: .normal)
+        personCountView.imageView.image = UIImage(named: "icon-audience")
+        personCountView.label.textColor = .white
+        leftView.imageView.layer.cornerRadius = 8
+        leftView.imageView.layer.masksToBounds = true
+        
+        
+        addSubview(localView)
+        addSubview(remoteView)
+        addSubview(personCountView)
+        addSubview(leftView)
+        addSubview(moreButton)
+        addSubview(closeButton)
+        addSubview(personCountButton)
+        
+        localView.translatesAutoresizingMaskIntoConstraints = false
+        remoteView.translatesAutoresizingMaskIntoConstraints = false
+        personCountView.translatesAutoresizingMaskIntoConstraints = false
+        leftView.translatesAutoresizingMaskIntoConstraints = false
+        moreButton.translatesAutoresizingMaskIntoConstraints = false
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        localView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+        localView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
+        localView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        localView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        
+        personCountView.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+        personCountView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 5).isActive = true
+        personCountView.widthAnchor.constraint(equalToConstant: 55).isActive = true
+        personCountView.heightAnchor.constraint(equalToConstant: 22).isActive = true
+        
+        personCountButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
+        personCountButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 6).isActive = true
+        personCountButton.widthAnchor.constraint(equalToConstant: 55).isActive = true
+        personCountButton.heightAnchor.constraint(equalToConstant: 22).isActive = true
+        
+        leftView.leftAnchor.constraint(equalTo: leftAnchor, constant: 10).isActive = true
+        leftView.centerYAnchor.constraint(equalTo: personCountView.centerYAnchor).isActive = true
+        leftView.widthAnchor.constraint(equalToConstant: 160).isActive = true
+        leftView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        
+        closeButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
+        closeButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -15).isActive = true
+        
+        moreButton.rightAnchor.constraint(equalTo: closeButton.leftAnchor, constant: -6).isActive = true
+        moreButton.centerYAnchor.constraint(equalTo: closeButton.centerYAnchor).isActive = true
+        
+        remoteView.bottomAnchor.constraint(equalTo: closeButton.topAnchor, constant: -6).isActive = true
+        remoteView.rightAnchor.constraint(equalTo: closeButton.rightAnchor).isActive = true
+        remoteView.widthAnchor.constraint(equalToConstant: 90).isActive = true
+        remoteView.heightAnchor.constraint(equalToConstant: 160).isActive = true
+    }
+    
+    private func commonInit() {
+        personCountButton.addTarget(self, action: #selector(buttonTap(_:)), for: .touchUpInside)
+        moreButton.addTarget(self, action: #selector(buttonTap(_:)), for: .touchUpInside)
+        closeButton.addTarget(self, action: #selector(buttonTap(_:)), for: .touchUpInside)
+        
+        leftView.imageView.image = UIImage(named: "pic-11")
+        leftView.titleLabel.text = "agdfuiafajkfjauhfakdfjahflkahi"
+        personCountView.label.text = "0"
+    }
+    
+    @objc func buttonTap(_ sender: UIButton) {
+        if sender == moreButton {
+            delegate?.mainView(self, didTap: .more)
+            return
+        }
+        
+        if sender == closeButton {
+            delegate?.mainView(self, didTap: .close)
+            return
+        }
+        
+        if sender == personCountButton {
+            delegate?.mainView(self, didTap: .member)
+            return
+        }
+    }
+}
+
+extension MainView {
+    enum Action {
+        case close
+        case more
+        case member
+    }
+}

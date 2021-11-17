@@ -25,7 +25,7 @@ class EntryViewCell: UICollectionViewCell {
         personCountView.offsetLeftX = -4.0
         personCountView.offsetRightX = 4.0
         personCountView.imageView.image = UIImage(named: "icon-audience")
-        personCountView.label.textColor = UIColor.white
+        personCountView.label.textColor = .white
         personCountView.label.font = UIFont.systemFont(ofSize: 10)
         
         briefView.imageView.layer.cornerRadius = 8
