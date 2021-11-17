@@ -11,7 +11,7 @@ import AgoraLog
 class LogProvider {
     static let `default` = LogProvider()
     private static let folderPath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!.appending("/Logs")
-    private let logger = AgoraLogger(folderPath: folderPath, filePrefix: "SuperApp", maximumNumberOfFiles: 5)
+    private let logger = AgoraLogger(folderPath: folderPath, filePrefix: "PKLive", maximumNumberOfFiles: 5)
     
     init() {
         logger.setPrintOnConsoleType(.all)

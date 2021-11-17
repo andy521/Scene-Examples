@@ -43,6 +43,14 @@ target 'LiveMutiCore' do
   pod 'Toast-Swift'
 end
 
+target 'SuperAppCore' do
+  commonPods
+  use_frameworks!
+  pod 'AgoraLog'
+  pod 'Toast-Swift'
+  pod 'SyncManager', :path => '../../../syncmanager/iOS/RtmSyncManager/SyncManager.podspec'
+end
+
 # target with leancloud sdk
 target 'Scene-Examples_LeanCloud' do
   commonPods

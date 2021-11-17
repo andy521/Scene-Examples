@@ -8,6 +8,24 @@
 
 /* Begin PBXBuildFile section */
 		03E501265176C586A8892D3C /* Pods_LivePKCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7A62FBF6227AA17288036E9 /* Pods_LivePKCore.framework */; };
+		261A0B34273E19DC002B93ED /* SuperAppCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 261A0B32273E19DC002B93ED /* SuperAppCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		261A0B37273E19DC002B93ED /* SuperAppCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 261A0B30273E19DB002B93ED /* SuperAppCore.framework */; };
+		261A0B38273E19DC002B93ED /* SuperAppCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 261A0B30273E19DB002B93ED /* SuperAppCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		26301E05273E747A0025C4DC /* EntryViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26301E04273E747A0025C4DC /* EntryViewCell.swift */; };
+		26301E08273E8CEF0025C4DC /* MineVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26301E07273E8CEF0025C4DC /* MineVC.swift */; };
+		26301E0A273E8D380025C4DC /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26301E09273E8D380025C4DC /* UIView+Extension.swift */; };
+		26301E0C273E8D6C0025C4DC /* MineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26301E0B273E8D6C0025C4DC /* MineView.swift */; };
+		26301E1027420B300025C4DC /* MineVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26301E0F27420B300025C4DC /* MineVM.swift */; };
+		26301E1227420BCE0025C4DC /* StrorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26301E1127420BCE0025C4DC /* StrorageManager.swift */; };
+		26301E14274212940025C4DC /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26301E13274212940025C4DC /* String+Extension.swift */; };
+		26301E1627423CA40025C4DC /* EntryVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26301E1527423CA40025C4DC /* EntryVM.swift */; };
+		263A80FE2743C76C0067E868 /* RoomInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A80FD2743C76C0067E868 /* RoomInfo.swift */; };
+		263A81002743C7C40067E868 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A80FF2743C7C40067E868 /* UserInfo.swift */; };
+		263A81022743D8490067E868 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A81012743D8490067E868 /* UIViewController+Extension.swift */; };
+		263A81042743DAD20067E868 /* CreateLiveVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A81032743DAD20067E868 /* CreateLiveVC.swift */; };
+		263A81062743DAF50067E868 /* CreateLiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A81052743DAF50067E868 /* CreateLiveView.swift */; };
+		263A81082744AC000067E868 /* CreateLiveVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A81072744AC000067E868 /* CreateLiveVM.swift */; };
+		263A810A2744DBF00067E868 /* CreateLiveView+CenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A81092744DBF00067E868 /* CreateLiveView+CenterView.swift */; };
 		268FCD622703199200ABC1D1 /* LivePKCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 268FCD5A2703199200ABC1D1 /* LivePKCore.framework */; };
 		268FCD632703199200ABC1D1 /* LivePKCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 268FCD5A2703199200ABC1D1 /* LivePKCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		268FCD7F270319D900ABC1D1 /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCD68270319D900ABC1D1 /* VideoCell.swift */; };
@@ -41,6 +59,10 @@
 		268FCDBB27031C9F00ABC1D1 /* LogProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCDAF27031C9F00ABC1D1 /* LogProvider.swift */; };
 		268FCDBC27031C9F00ABC1D1 /* MainVC+Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCDB127031C9F00ABC1D1 /* MainVC+Log.swift */; };
 		268FCDBD27031C9F00ABC1D1 /* MainVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCDB227031C9F00ABC1D1 /* MainVC.swift */; };
+		26D0E548273E451D00041D3F /* EntryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D0E547273E451D00041D3F /* EntryVC.swift */; };
+		26D0E54C273E49E100041D3F /* EntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D0E54B273E49E100041D3F /* EntryView.swift */; };
+		26D0E554273E695100041D3F /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D0E552273E695100041D3F /* UIColor+Extension.swift */; };
+		26D0E555273E695100041D3F /* LogProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D0E553273E695100041D3F /* LogProvider.swift */; };
 		570997CB265756EC00B87998 /* AppDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570997CA265756EC00B87998 /* AppDataManager.swift */; };
 		571AA46E2629862700B82B35 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571AA46D2629862700B82B35 /* AppDelegate.swift */; };
 		571AA4702629862700B82B35 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571AA46F2629862700B82B35 /* SceneDelegate.swift */; };
@@ -200,11 +222,19 @@
 		708F0B0AA56A9659BD4F9147 /* Pods_BlindDate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 253F33EA56921C98B6B241DD /* Pods_BlindDate.framework */; };
 		761402B6C292295B451C235C /* Pods_Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0D7AE253FD40BFF3FC44E37 /* Pods_Core.framework */; };
 		917BBACC59687A4BD27212CE /* Pods_InteractivePodcast.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5FE012B5E62F935B0D0BE37 /* Pods_InteractivePodcast.framework */; };
+		943E684F6339D3F44BAB37BE /* Pods_SuperAppCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C099A071680DBFEDC6C4988 /* Pods_SuperAppCore.framework */; };
 		AF40CAA4E35CEA96DE9E621D /* Pods_LiveMutiCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3842C7E995C12B3E4DE496D7 /* Pods_LiveMutiCore.framework */; };
 		ED820D1AD716D2F4BD117805 /* Pods_Scene_Examples_Firebase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 265F2928DE70FF94936B9226 /* Pods_Scene_Examples_Firebase.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		261A0B35273E19DC002B93ED /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 571AA4622629862700B82B35 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 261A0B2F273E19DB002B93ED;
+			remoteInfo = SuperAppCore;
+		};
 		268FCD602703199200ABC1D1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 571AA4622629862700B82B35 /* Project object */;
@@ -289,6 +319,7 @@
 				57E8D546264A31B2007001BC /* Core.framework in Embed Frameworks */,
 				5757D085262DA46700B4A785 /* InteractivePodcast.framework in Embed Frameworks */,
 				268FCD632703199200ABC1D1 /* LivePKCore.framework in Embed Frameworks */,
+				261A0B38273E19DC002B93ED /* SuperAppCore.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -337,6 +368,24 @@
 		12C164832E8787C9C96C002B /* Pods-BlindDate.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlindDate.debug.xcconfig"; path = "Target Support Files/Pods-BlindDate/Pods-BlindDate.debug.xcconfig"; sourceTree = "<group>"; };
 		15A2E68AA95F4351506F2576 /* Pods-InteractivePodcast_Firebase.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-InteractivePodcast_Firebase.release.xcconfig"; path = "Target Support Files/Pods-InteractivePodcast_Firebase/Pods-InteractivePodcast_Firebase.release.xcconfig"; sourceTree = "<group>"; };
 		253F33EA56921C98B6B241DD /* Pods_BlindDate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlindDate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		261A0B30273E19DB002B93ED /* SuperAppCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SuperAppCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		261A0B32273E19DC002B93ED /* SuperAppCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SuperAppCore.h; sourceTree = "<group>"; };
+		261A0B33273E19DC002B93ED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		26301E04273E747A0025C4DC /* EntryViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryViewCell.swift; sourceTree = "<group>"; };
+		26301E07273E8CEF0025C4DC /* MineVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MineVC.swift; sourceTree = "<group>"; };
+		26301E09273E8D380025C4DC /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
+		26301E0B273E8D6C0025C4DC /* MineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MineView.swift; sourceTree = "<group>"; };
+		26301E0F27420B300025C4DC /* MineVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MineVM.swift; sourceTree = "<group>"; };
+		26301E1127420BCE0025C4DC /* StrorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrorageManager.swift; sourceTree = "<group>"; };
+		26301E13274212940025C4DC /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
+		26301E1527423CA40025C4DC /* EntryVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryVM.swift; sourceTree = "<group>"; };
+		263A80FD2743C76C0067E868 /* RoomInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomInfo.swift; sourceTree = "<group>"; };
+		263A80FF2743C7C40067E868 /* UserInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
+		263A81012743D8490067E868 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
+		263A81032743DAD20067E868 /* CreateLiveVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateLiveVC.swift; sourceTree = "<group>"; };
+		263A81052743DAF50067E868 /* CreateLiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateLiveView.swift; sourceTree = "<group>"; };
+		263A81072744AC000067E868 /* CreateLiveVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateLiveVM.swift; sourceTree = "<group>"; };
+		263A81092744DBF00067E868 /* CreateLiveView+CenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreateLiveView+CenterView.swift"; sourceTree = "<group>"; };
 		265F2928DE70FF94936B9226 /* Pods_Scene_Examples_Firebase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Scene_Examples_Firebase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		268FCD5A2703199200ABC1D1 /* LivePKCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LivePKCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		268FCD68270319D900ABC1D1 /* VideoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
@@ -369,11 +418,16 @@
 		268FCDAF27031C9F00ABC1D1 /* LogProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogProvider.swift; sourceTree = "<group>"; };
 		268FCDB127031C9F00ABC1D1 /* MainVC+Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainVC+Log.swift"; sourceTree = "<group>"; };
 		268FCDB227031C9F00ABC1D1 /* MainVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainVC.swift; sourceTree = "<group>"; };
+		26D0E547273E451D00041D3F /* EntryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryVC.swift; sourceTree = "<group>"; };
+		26D0E54B273E49E100041D3F /* EntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryView.swift; sourceTree = "<group>"; };
+		26D0E552273E695100041D3F /* UIColor+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
+		26D0E553273E695100041D3F /* LogProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogProvider.swift; sourceTree = "<group>"; };
 		2A8F295F68F52286E70D8202 /* Pods_Database_LeanCloud.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Database_LeanCloud.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F2E9D9950E2E75E750E77D4 /* Pods_Database_Firebase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Database_Firebase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		30620657B35E2E50F3F3BE60 /* Pods_Scene_Examples_LeanCloud.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Scene_Examples_LeanCloud.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3842C7E995C12B3E4DE496D7 /* Pods_LiveMutiCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_LiveMutiCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4970F4FEDBE05B422D4F2534 /* Pods_InteractivePodcast_LeanCloud.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_InteractivePodcast_LeanCloud.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C099A071680DBFEDC6C4988 /* Pods_SuperAppCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SuperAppCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E7CA52467C27A6A39401A7F /* Pods_BlindDate_LeanCloud.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlindDate_LeanCloud.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		506CF18D26D33A2258104251 /* Pods-BlindDate_LeanCloud.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlindDate_LeanCloud.debug.xcconfig"; path = "Target Support Files/Pods-BlindDate_LeanCloud/Pods-BlindDate_LeanCloud.debug.xcconfig"; sourceTree = "<group>"; };
 		51F8C0547106EBD253E46381 /* Pods-InteractivePodcast_Firebase.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-InteractivePodcast_Firebase.debug.xcconfig"; path = "Target Support Files/Pods-InteractivePodcast_Firebase/Pods-InteractivePodcast_Firebase.debug.xcconfig"; sourceTree = "<group>"; };
@@ -484,6 +538,7 @@
 		5783FEC526673A0B000B39F3 /* UserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
 		5783FEC726673BC5000B39F3 /* PodcastModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastModelManager.swift; sourceTree = "<group>"; };
 		5783FECA26676453000B39F3 /* BlindDateModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlindDateModelManager.swift; sourceTree = "<group>"; };
+		579241209BD8A91AE40F74B6 /* Pods-SuperAppCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SuperAppCore.debug.xcconfig"; path = "Target Support Files/Pods-SuperAppCore/Pods-SuperAppCore.debug.xcconfig"; sourceTree = "<group>"; };
 		57E8D519264A2C03007001BC /* Scene-Examples_Firebase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Scene-Examples_Firebase.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		57E8D60C264A5904007001BC /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		57E8D623264A6FDC007001BC /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -536,6 +591,7 @@
 		80F9FBF2379051DE7ACF3E04 /* Pods-LivePKCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LivePKCore.release.xcconfig"; path = "Target Support Files/Pods-LivePKCore/Pods-LivePKCore.release.xcconfig"; sourceTree = "<group>"; };
 		87BA292B4C3C38D451E19D70 /* Pods_InteractivePodcast_Firebase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_InteractivePodcast_Firebase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		87C0C09B110C805F55A2EA35 /* Pods-BlindDate_LeanCloud.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlindDate_LeanCloud.release.xcconfig"; path = "Target Support Files/Pods-BlindDate_LeanCloud/Pods-BlindDate_LeanCloud.release.xcconfig"; sourceTree = "<group>"; };
+		91D88EB97142FF76C513313D /* Pods-SuperAppCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SuperAppCore.release.xcconfig"; path = "Target Support Files/Pods-SuperAppCore/Pods-SuperAppCore.release.xcconfig"; sourceTree = "<group>"; };
 		9E1E16F362FBD9C432044155 /* Pods-Database_LeanCloud.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Database_LeanCloud.debug.xcconfig"; path = "Target Support Files/Pods-Database_LeanCloud/Pods-Database_LeanCloud.debug.xcconfig"; sourceTree = "<group>"; };
 		A0D7AE253FD40BFF3FC44E37 /* Pods_Core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A300EF4BE9C48A56E82162EA /* Pods-LiveMutiCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LiveMutiCore.debug.xcconfig"; path = "Target Support Files/Pods-LiveMutiCore/Pods-LiveMutiCore.debug.xcconfig"; sourceTree = "<group>"; };
@@ -559,6 +615,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		261A0B2D273E19DB002B93ED /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				943E684F6339D3F44BAB37BE /* Pods_SuperAppCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		268FCD572703199200ABC1D1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -581,6 +645,7 @@
 			files = (
 				268FCD9E27031C7300ABC1D1 /* LiveMutiCore.framework in Frameworks */,
 				57F639872630098A00B45C0B /* BlindDate.framework in Frameworks */,
+				261A0B37273E19DC002B93ED /* SuperAppCore.framework in Frameworks */,
 				5757D084262DA46700B4A785 /* InteractivePodcast.framework in Frameworks */,
 				61F4CF8C8AF21996945CCF97 /* Pods_Scene_Examples_LeanCloud.framework in Frameworks */,
 				57E8D545264A31B2007001BC /* Core.framework in Frameworks */,
@@ -628,6 +693,49 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		261A0B31273E19DC002B93ED /* SuperAppCore */ = {
+			isa = PBXGroup;
+			children = (
+				263A80FC2743C75B0067E868 /* Model */,
+				26301E0E27420B230025C4DC /* VM */,
+				26301E0D2742099B0025C4DC /* VC */,
+				26D0E551273E695100041D3F /* Other */,
+				26D0E54A273E49C300041D3F /* View */,
+				261A0B32273E19DC002B93ED /* SuperAppCore.h */,
+				261A0B33273E19DC002B93ED /* Info.plist */,
+			);
+			path = SuperAppCore;
+			sourceTree = "<group>";
+		};
+		26301E0D2742099B0025C4DC /* VC */ = {
+			isa = PBXGroup;
+			children = (
+				26D0E547273E451D00041D3F /* EntryVC.swift */,
+				26301E07273E8CEF0025C4DC /* MineVC.swift */,
+				263A81032743DAD20067E868 /* CreateLiveVC.swift */,
+			);
+			path = VC;
+			sourceTree = "<group>";
+		};
+		26301E0E27420B230025C4DC /* VM */ = {
+			isa = PBXGroup;
+			children = (
+				26301E0F27420B300025C4DC /* MineVM.swift */,
+				26301E1527423CA40025C4DC /* EntryVM.swift */,
+				263A81072744AC000067E868 /* CreateLiveVM.swift */,
+			);
+			path = VM;
+			sourceTree = "<group>";
+		};
+		263A80FC2743C75B0067E868 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				263A80FD2743C76C0067E868 /* RoomInfo.swift */,
+				263A80FF2743C7C40067E868 /* UserInfo.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		268FCD5B2703199200ABC1D1 /* LivePKCore */ = {
 			isa = PBXGroup;
 			children = (
@@ -759,6 +867,31 @@
 			path = MainVC;
 			sourceTree = "<group>";
 		};
+		26D0E54A273E49C300041D3F /* View */ = {
+			isa = PBXGroup;
+			children = (
+				26D0E54B273E49E100041D3F /* EntryView.swift */,
+				26301E04273E747A0025C4DC /* EntryViewCell.swift */,
+				26301E0B273E8D6C0025C4DC /* MineView.swift */,
+				263A81052743DAF50067E868 /* CreateLiveView.swift */,
+				263A81092744DBF00067E868 /* CreateLiveView+CenterView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		26D0E551273E695100041D3F /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				26D0E552273E695100041D3F /* UIColor+Extension.swift */,
+				26D0E553273E695100041D3F /* LogProvider.swift */,
+				26301E09273E8D380025C4DC /* UIView+Extension.swift */,
+				26301E1127420BCE0025C4DC /* StrorageManager.swift */,
+				26301E13274212940025C4DC /* String+Extension.swift */,
+				263A81012743D8490067E868 /* UIViewController+Extension.swift */,
+			);
+			path = Other;
+			sourceTree = "<group>";
+		};
 		571AA4612629862700B82B35 = {
 			isa = PBXGroup;
 			children = (
@@ -768,6 +901,7 @@
 				57F639812630098A00B45C0B /* BlindDate */,
 				268FCD5B2703199200ABC1D1 /* LivePKCore */,
 				268FCD9727031C7300ABC1D1 /* LiveMutiCore */,
+				261A0B31273E19DC002B93ED /* SuperAppCore */,
 				571AA46B2629862700B82B35 /* Products */,
 				956B5ECA0381DF39035305A1 /* Pods */,
 				A63338D10A92F3710B84E0ED /* Frameworks */,
@@ -784,6 +918,7 @@
 				57E8D519264A2C03007001BC /* Scene-Examples_Firebase.app */,
 				268FCD5A2703199200ABC1D1 /* LivePKCore.framework */,
 				268FCD9627031C7300ABC1D1 /* LiveMutiCore.framework */,
+				261A0B30273E19DB002B93ED /* SuperAppCore.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1238,6 +1373,8 @@
 				80F9FBF2379051DE7ACF3E04 /* Pods-LivePKCore.release.xcconfig */,
 				A300EF4BE9C48A56E82162EA /* Pods-LiveMutiCore.debug.xcconfig */,
 				B1AD35F2A73572978BDEFDB9 /* Pods-LiveMutiCore.release.xcconfig */,
+				579241209BD8A91AE40F74B6 /* Pods-SuperAppCore.debug.xcconfig */,
+				91D88EB97142FF76C513313D /* Pods-SuperAppCore.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -1262,6 +1399,7 @@
 				A5FE012B5E62F935B0D0BE37 /* Pods_InteractivePodcast.framework */,
 				F7A62FBF6227AA17288036E9 /* Pods_LivePKCore.framework */,
 				3842C7E995C12B3E4DE496D7 /* Pods_LiveMutiCore.framework */,
+				4C099A071680DBFEDC6C4988 /* Pods_SuperAppCore.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1269,6 +1407,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		261A0B2B273E19DB002B93ED /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				261A0B34273E19DC002B93ED /* SuperAppCore.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		268FCD552703199200ABC1D1 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1310,6 +1456,25 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		261A0B2F273E19DB002B93ED /* SuperAppCore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 261A0B39273E19DC002B93ED /* Build configuration list for PBXNativeTarget "SuperAppCore" */;
+			buildPhases = (
+				33B7D7A1554AD8E9F93D7643 /* [CP] Check Pods Manifest.lock */,
+				261A0B2B273E19DB002B93ED /* Headers */,
+				261A0B2C273E19DB002B93ED /* Sources */,
+				261A0B2D273E19DB002B93ED /* Frameworks */,
+				261A0B2E273E19DB002B93ED /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SuperAppCore;
+			productName = SuperAppCore;
+			productReference = 261A0B30273E19DB002B93ED /* SuperAppCore.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		268FCD592703199200ABC1D1 /* LivePKCore */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 268FCD642703199200ABC1D1 /* Build configuration list for PBXNativeTarget "LivePKCore" */;
@@ -1367,6 +1532,7 @@
 				57F639862630098A00B45C0B /* PBXTargetDependency */,
 				268FCD612703199200ABC1D1 /* PBXTargetDependency */,
 				268FCD9D27031C7300ABC1D1 /* PBXTargetDependency */,
+				261A0B36273E19DC002B93ED /* PBXTargetDependency */,
 			);
 			name = "Scene-Examples_LeanCloud";
 			productName = "Scene-Examples";
@@ -1466,6 +1632,10 @@
 				LastSwiftUpdateCheck = 1300;
 				LastUpgradeCheck = 1240;
 				TargetAttributes = {
+					261A0B2F273E19DB002B93ED = {
+						CreatedOnToolsVersion = 12.5.1;
+						LastSwiftMigration = 1250;
+					};
 					268FCD592703199200ABC1D1 = {
 						CreatedOnToolsVersion = 13.0;
 					};
@@ -1510,11 +1680,19 @@
 				5757D047262D834700B4A785 /* Core */,
 				268FCD592703199200ABC1D1 /* LivePKCore */,
 				268FCD9527031C7300ABC1D1 /* LiveMutiCore */,
+				261A0B2F273E19DB002B93ED /* SuperAppCore */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		261A0B2E273E19DB002B93ED /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		268FCD582703199200ABC1D1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1625,6 +1803,28 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-Core-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		33B7D7A1554AD8E9F93D7643 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SuperAppCore-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1778,6 +1978,32 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		261A0B2C273E19DB002B93ED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				263A81022743D8490067E868 /* UIViewController+Extension.swift in Sources */,
+				26301E1227420BCE0025C4DC /* StrorageManager.swift in Sources */,
+				26301E14274212940025C4DC /* String+Extension.swift in Sources */,
+				263A81042743DAD20067E868 /* CreateLiveVC.swift in Sources */,
+				263A81082744AC000067E868 /* CreateLiveVM.swift in Sources */,
+				263A810A2744DBF00067E868 /* CreateLiveView+CenterView.swift in Sources */,
+				26D0E555273E695100041D3F /* LogProvider.swift in Sources */,
+				26301E0A273E8D380025C4DC /* UIView+Extension.swift in Sources */,
+				263A80FE2743C76C0067E868 /* RoomInfo.swift in Sources */,
+				26301E08273E8CEF0025C4DC /* MineVC.swift in Sources */,
+				263A81062743DAF50067E868 /* CreateLiveView.swift in Sources */,
+				26D0E548273E451D00041D3F /* EntryVC.swift in Sources */,
+				26301E1027420B300025C4DC /* MineVM.swift in Sources */,
+				26D0E54C273E49E100041D3F /* EntryView.swift in Sources */,
+				26301E0C273E8D6C0025C4DC /* MineView.swift in Sources */,
+				26301E1627423CA40025C4DC /* EntryVM.swift in Sources */,
+				26D0E554273E695100041D3F /* UIColor+Extension.swift in Sources */,
+				263A81002743C7C40067E868 /* UserInfo.swift in Sources */,
+				26301E05273E747A0025C4DC /* EntryViewCell.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		268FCD562703199200ABC1D1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1975,6 +2201,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		261A0B36273E19DC002B93ED /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 261A0B2F273E19DB002B93ED /* SuperAppCore */;
+			targetProxy = 261A0B35273E19DC002B93ED /* PBXContainerItemProxy */;
+		};
 		268FCD612703199200ABC1D1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 268FCD592703199200ABC1D1 /* LivePKCore */;
@@ -2112,6 +2343,71 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		261A0B3A273E19DC002B93ED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 579241209BD8A91AE40F74B6 /* Pods-SuperAppCore.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = HFDBB878GT;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = SuperAppCore/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = Agora.SuperAppCore;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		261A0B3B273E19DC002B93ED /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 91D88EB97142FF76C513313D /* Pods-SuperAppCore.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 5459N9W32M;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = SuperAppCore/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = Agora.SuperAppCore;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		268FCD652703199200ABC1D1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5A6F54F3DA2E10A85D3B939C /* Pods-LivePKCore.debug.xcconfig */;
@@ -2692,6 +2988,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		261A0B39273E19DC002B93ED /* Build configuration list for PBXNativeTarget "SuperAppCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				261A0B3A273E19DC002B93ED /* Debug */,
+				261A0B3B273E19DC002B93ED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		268FCD642703199200ABC1D1 /* Build configuration list for PBXNativeTarget "LivePKCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
