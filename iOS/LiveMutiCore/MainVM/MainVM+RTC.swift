@@ -64,6 +64,10 @@ extension MainVM {
         agoraKit.setParameters("{\"che.audio.specify.codec\":\"OPUSFB\"}")
         agoraKit.setParameters("{\"che.video.default_encode_complexity\":\"0x403\"}")
         agoraKit.setParameters("{\"che.video.max_slices\":4}")
+        agoraKit.setParameters("{\"rtc.dual_signaling_mode\":2}")
+        agoraKit.setParameters("{\"rtc.work_manager_account_list\":[\"mix-worker-182.18.83.206-30002\"]}")
+        agoraKit.setParameters("{\"rtc.work_manager_addr_list\":[\"182.18.83.206:30002\"]}")
+        agoraKit.setParameters("{\"rtc.enable_crypto_access\":false}")
         
         let mediaOptions = AgoraRtcChannelMediaOptions()
         mediaOptions.autoSubscribeAudio = true
