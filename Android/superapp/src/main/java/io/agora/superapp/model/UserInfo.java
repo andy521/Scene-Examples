@@ -9,6 +9,8 @@ public class UserInfo {
     public String userName;
     public String roomId;
 
+    public String objectId = "";
+
 
     public HashMap<String, Object> toMap(){
         HashMap<String, Object> map = new HashMap<>();

@@ -10,17 +10,17 @@ import androidx.annotation.NonNull;
 import java.util.Objects;
 
 import io.agora.baselibrary.base.DataBindBaseActivity;
-import io.agora.livepk.R;
-import io.agora.livepk.databinding.ActivityPreviewBinding;
+import io.agora.superapp.Constants;
+import io.agora.superapp.R;
+import io.agora.superapp.databinding.ActivityPreviewBinding;
 import io.agora.superapp.manager.RtcManager;
 import io.agora.superapp.model.RoomInfo;
 import io.agora.superapp.util.RandomUtil;
+import io.agora.superapp.util.UUIDUtil;
 import io.agora.syncmanager.rtm.IObject;
+import io.agora.syncmanager.rtm.Scene;
 import io.agora.syncmanager.rtm.SyncManager;
 import io.agora.syncmanager.rtm.SyncManagerException;
-
-import static io.agora.superapp.Constants.SYNC_COLLECTION_ROOM_INFO;
-import static io.agora.superapp.Constants.SYNC_SCENE_ID;
 
 public class PreviewActivity extends DataBindBaseActivity<ActivityPreviewBinding> {
 
@@ -74,7 +74,7 @@ public class PreviewActivity extends DataBindBaseActivity<ActivityPreviewBinding
     protected void iniData() {
         rtcManager = new RtcManager();
         rtcManager.init(this, getString(R.string.agora_app_id), null);
-        rtcManager.renderLocalVideo(mDataBinding.localPreviewLayout, null);
+        rtcManager.renderLocalVideo(mDataBinding.localPreviewLayout);
     }
 
     @Override
@@ -84,16 +84,50 @@ public class PreviewActivity extends DataBindBaseActivity<ActivityPreviewBinding
     }
 
     private void createRoom(RoomInfo roomInfo){
-        SyncManager.Instance().getScene(SYNC_SCENE_ID).collection(SYNC_COLLECTION_ROOM_INFO).add(roomInfo.toMap(), new SyncManager.DataItemCallback() {
+        Scene room = new Scene();
+        room.setId(roomInfo.roomId);
+        room.setUserId(UUIDUtil.getUUID());
+        room.setProperty(roomInfo.toMap());
+        SyncManager.Instance().createScene(room, new SyncManager.Callback() {
             @Override
-            public void onSuccess(IObject result) {
-                rtcManager.release();
-                startActivity(HostActivity.launch(PreviewActivity.this, roomInfo));
-                finish();
+            public void onSuccess() {
+                SyncManager.Instance()
+                        .getScene(roomInfo.roomId)
+                        .collection(Constants.SYNC_COLLECTION_ROOM_INFO)
+                        .add(roomInfo.toMap(), new SyncManager.DataItemCallback() {
+                            @Override
+                            public void onSuccess(IObject result) {
+                                rtcManager.release();
+                                runOnUiThread(() -> {
+                                    roomInfo.objectId = result.getId();
+                                    startActivity(HostActivity.launch(PreviewActivity.this, roomInfo));
+                                    finish();
+                                });
+                            }
+
+                            @Override
+                            public void onFail(SyncManagerException exception) {
+                                runOnUiThread(() -> Toast.makeText(PreviewActivity.this, "Room create failed -- " + exception.toString(), Toast.LENGTH_SHORT).show());
+
+                                SyncManager.Instance()
+                                        .getScene(roomInfo.roomId).delete(new SyncManager.Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        // do nothing
+                                    }
+
+                                    @Override
+                                    public void onFail(SyncManagerException exception) {
+                                        runOnUiThread(() -> Toast.makeText(PreviewActivity.this, "Room create failed -- " + exception.toString(), Toast.LENGTH_SHORT).show());
+                                    }
+                                });
+                            }
+                        });
             }
+
             @Override
             public void onFail(SyncManagerException exception) {
-                Toast.makeText(PreviewActivity.this, "Room create failed -- " + exception.toString(), Toast.LENGTH_SHORT).show();
+                runOnUiThread(() -> Toast.makeText(PreviewActivity.this, "Room create failed -- " + exception.toString(), Toast.LENGTH_SHORT).show());
             }
         });
     }

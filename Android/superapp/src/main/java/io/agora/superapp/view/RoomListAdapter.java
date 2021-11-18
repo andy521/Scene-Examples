@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.agora.livepk.R;
+import io.agora.superapp.R;
 import io.agora.superapp.model.RoomInfo;
 import io.agora.superapp.util.UserUtil;
 import io.agora.superapp.widget.SquareRelativeLayout;

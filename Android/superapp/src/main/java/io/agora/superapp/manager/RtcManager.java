@@ -47,8 +47,6 @@ public class RtcManager {
     public static boolean isMuteLocalAudio = false;
 
     private volatile boolean isInitialized = false;
-    private final Map<Integer, Runnable> firstVideoFramePendingRuns = new HashMap<>();
-    private Context mContext;
 
     private RtcEngine engine;
 
@@ -89,12 +87,12 @@ public class RtcManager {
     private Runnable pendingJoinChannelRun = null;
 
     private IMediaPlayer mMediaPlayer = null;
+    private IMediaPlayerObserver mediaPlayerObserver;
 
     public void init(Context context, String appId, OnInitializeListener listener) {
         if (isInitialized) {
             return;
         }
-        mContext = context;
         try {
             RtcEngineConfig config = new RtcEngineConfig();
             config.mContext = context.getApplicationContext();
@@ -198,14 +196,13 @@ public class RtcManager {
         }
     }
 
-    public void renderLocalVideo(FrameLayout container, Runnable firstFrame) {
+    public void renderLocalVideo(FrameLayout container) {
         if (engine == null) {
             return;
         }
         engine.setCameraCapturerConfiguration(new CameraCapturerConfiguration(currCameraDirection));
         View videoView = new SurfaceView(container.getContext());
         container.addView(videoView);
-        firstVideoFramePendingRuns.put(LOCAL_RTC_UID, firstFrame);
         int ret = engine.setupLocalVideo(new VideoCanvas(videoView, RENDER_MODE_HIDDEN, LOCAL_RTC_UID));
         Log.d(TAG, "setupLocalVideo ret=" + ret);
         ret = engine.startPreview();
@@ -307,23 +304,26 @@ public class RtcManager {
         engine.stopPreview();
     }
 
-    public void renderRemoteVideo(FrameLayout container, int uid, Runnable firstFrame) {
+    public void renderRemoteVideo(FrameLayout container, int uid) {
         if (engine == null) {
             return;
         }
         // 4. render video
         TextureView videoView = new TextureView(container.getContext());
         container.addView(videoView);
-        firstVideoFramePendingRuns.put(uid, firstFrame);
         engine.setupRemoteVideo(new VideoCanvas(videoView, RENDER_MODE_HIDDEN, uid));
     }
 
     public void release() {
         stopPlayer();
+        if(mMediaPlayer != null){
+            mMediaPlayer.destroy();
+            mMediaPlayer.unRegisterPlayerObserver(mediaPlayerObserver);
+            mMediaPlayer = null;
+        }
 
         pendingDirectCDNStoppedRun = null;
         pendingStreamUnpublishedlRun = null;
-        firstVideoFramePendingRuns.clear();
         if (engine != null) {
             engine.leaveChannel();
             engine.stopDirectCdnStreaming();
@@ -339,10 +339,10 @@ public class RtcManager {
         }
         if(mMediaPlayer == null){
             mMediaPlayer = engine.createMediaPlayer();
-            mMediaPlayer.registerPlayerObserver(new IMediaPlayerObserver() {
+            mediaPlayerObserver = new IMediaPlayerObserver() {
                 @Override
                 public void onPlayerStateChanged(io.agora.mediaplayer.Constants.MediaPlayerState mediaPlayerState, io.agora.mediaplayer.Constants.MediaPlayerError mediaPlayerError) {
-                    Log.d(TAG, "MediaPlayer onPlayerStateChanged -- url=" + mMediaPlayer.getPlaySrc() + "state=" + mediaPlayerState + ", error=" + mediaPlayerError);
+                    Log.d(TAG, "MediaPlayer onPlayerStateChanged -- state=" + mediaPlayerState + ", error=" + mediaPlayerError);
                     if (mediaPlayerState == io.agora.mediaplayer.Constants.MediaPlayerState.PLAYER_STATE_OPEN_COMPLETED) {
                         if (mMediaPlayer != null) {
                             mMediaPlayer.play();
@@ -398,7 +398,8 @@ public class RtcManager {
 
                 }
 
-            });
+            };
+            mMediaPlayer.registerPlayerObserver(mediaPlayerObserver);
             engine.setDefaultAudioRoutetoSpeakerphone(true);
         }
 
@@ -412,7 +413,6 @@ public class RtcManager {
                 mMediaPlayer.getMediaPlayerId(),
                 LOCAL_RTC_UID
         ));
-//        engine.startPreview();
     }
 
     public void openPlayerSrc(String channelId, boolean isCdn){
@@ -432,8 +432,6 @@ public class RtcManager {
     public void stopPlayer(){
         if(mMediaPlayer != null){
             mMediaPlayer.stop();
-            mMediaPlayer.destroy();
-            mMediaPlayer = null;
         }
     }
 

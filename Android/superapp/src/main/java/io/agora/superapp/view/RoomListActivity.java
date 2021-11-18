@@ -2,7 +2,6 @@ package io.agora.superapp.view;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,24 +16,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 import io.agora.baselibrary.base.DataBindBaseActivity;
-import io.agora.livepk.R;
-import io.agora.livepk.databinding.RoomListActivityBinding;
 import io.agora.superapp.Constants;
+import io.agora.superapp.R;
+import io.agora.superapp.databinding.RoomListActivityBinding;
 import io.agora.superapp.model.RoomInfo;
 import io.agora.superapp.util.DataListCallback;
 import io.agora.superapp.util.PreferenceUtil;
 import io.agora.superapp.widget.SpaceItemDecoration;
 import io.agora.syncmanager.rtm.IObject;
-import io.agora.syncmanager.rtm.Scene;
 import io.agora.syncmanager.rtm.SyncManager;
 import io.agora.syncmanager.rtm.SyncManagerException;
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static io.agora.superapp.Constants.SYNC_COLLECTION_ROOM_INFO;
-import static io.agora.superapp.Constants.SYNC_SCENE_ID;
+import static io.agora.superapp.Constants.SYNC_DEFAULT_CHANNEL;
 
 public class RoomListActivity extends DataBindBaseActivity<RoomListActivityBinding> {
     private static final String TAG = RoomListActivity.class.getSimpleName();
@@ -89,12 +85,35 @@ public class RoomListActivity extends DataBindBaseActivity<RoomListActivityBindi
         mAdapter.setItemClickListener(new RoomListAdapter.OnItemClickListener() {
             @Override
             public void onItemClicked(RoomInfo item) {
-                if (EasyPermissions.hasPermissions(RoomListActivity.this, PERMISSTION)) {
-                    startActivity(AudienceActivity.launch(RoomListActivity.this, item));
-                } else {
-                    EasyPermissions.requestPermissions(RoomListActivity.this, getString(R.string.error_leak_permission),
-                            TAG_PERMISSTION_REQUESTCODE, PERMISSTION);
-                }
+                SyncManager.Instance().joinScene(item.roomId);
+                SyncManager.Instance()
+                        .getScene(item.roomId)
+                        .collection(Constants.SYNC_COLLECTION_ROOM_INFO)
+                        .get(new SyncManager.DataListCallback() {
+                            @Override
+                            public void onSuccess(List<IObject> result) {
+                                if(result == null || result.size() <= 0){
+                                    Toast.makeText(RoomListActivity.this, "Room has been destroy", Toast.LENGTH_SHORT).show();
+                                    deleteRoom(item, () -> mAdapter.remoteItem(item.roomId));
+                                    return;
+                                }
+                                IObject iObject = result.get(result.size() - 1);
+                                RoomInfo roomInfo = iObject.toObject(RoomInfo.class);
+                                roomInfo.objectId = iObject.getId();
+                                if (EasyPermissions.hasPermissions(RoomListActivity.this, PERMISSTION)) {
+                                    startActivity(AudienceActivity.launch(RoomListActivity.this, roomInfo));
+                                } else {
+                                    EasyPermissions.requestPermissions(RoomListActivity.this, getString(R.string.error_leak_permission),
+                                            TAG_PERMISSTION_REQUESTCODE, PERMISSTION);
+                                }
+                            }
+
+                            @Override
+                            public void onFail(SyncManagerException exception) {
+                                Toast.makeText(RoomListActivity.this, "Room has been destroy", Toast.LENGTH_SHORT).show();
+                                deleteRoom(item, () -> mAdapter.remoteItem(item.roomId));
+                            }
+                        });
             }
 
             @Override
@@ -145,39 +164,22 @@ public class RoomListActivity extends DataBindBaseActivity<RoomListActivityBindi
 
     // ====== business method ======
 
-    private String syncUserId;
-
-
     private void initSyncManager(){
         HashMap<String, String> params = new HashMap<>();
         params.put("appid", getString(R.string.agora_app_id));
+        params.put("defaultChannel", SYNC_DEFAULT_CHANNEL);
         SyncManager.Instance().init(this, params);
-
-        syncUserId = UUID.randomUUID().toString();
-
-        Scene room = new Scene();
-        room.setId(SYNC_SCENE_ID);
-        room.setUserId(syncUserId);
-        SyncManager.Instance().joinScene(room, new SyncManager.Callback() {
-            @Override
-            public void onSuccess() {
-
-            }
-
-            @Override
-            public void onFail(SyncManagerException exception) {
-
-            }
-        });
     }
 
     private void loadRoomList(DataListCallback<RoomInfo> callback){
-        SyncManager.Instance().getScene(SYNC_SCENE_ID).collection(SYNC_COLLECTION_ROOM_INFO).get(new SyncManager.DataListCallback() {
+        SyncManager.Instance().getScenes(new SyncManager.DataListCallback() {
             @Override
             public void onSuccess(List<IObject> result) {
                 List<RoomInfo> list = new ArrayList<>();
                 for (IObject item : result) {
-                    list.add(item.toObject(RoomInfo.class));
+                    RoomInfo roomInfo = item.toObject(RoomInfo.class);
+                    roomInfo.objectId = item.getId();
+                    list.add(roomInfo);
                 }
                 Collections.sort(list, (o1, o2) -> (int) (o2.createTime - o1.createTime));
                 callback.onSuccess(list);
@@ -189,13 +191,12 @@ public class RoomListActivity extends DataBindBaseActivity<RoomListActivityBindi
                 callback.onSuccess(null);
             }
         });
+
     }
 
     private void deleteRoom(RoomInfo roomInfo, Runnable successRun) {
         SyncManager.Instance()
-                .getScene(Constants.SYNC_SCENE_ID)
-                .collection(Constants.SYNC_COLLECTION_ROOM_INFO)
-                .document(roomInfo.roomId)
+                .getScene(roomInfo.roomId)
                 .delete(new SyncManager.Callback() {
                     @Override
                     public void onSuccess() {
@@ -205,6 +206,7 @@ public class RoomListActivity extends DataBindBaseActivity<RoomListActivityBindi
                     @Override
                     public void onFail(SyncManagerException exception) {
                         runOnUiThread(() -> Toast.makeText(RoomListActivity.this, "deleteRoomInfo failed exception: " + exception.toString(), Toast.LENGTH_LONG).show());
+
                     }
                 });
     }

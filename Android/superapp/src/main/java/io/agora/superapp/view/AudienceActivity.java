@@ -1,7 +1,6 @@
 package io.agora.superapp.view;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -32,19 +30,19 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import java.util.Locale;
 
 import io.agora.baselibrary.base.DataBindBaseActivity;
-import io.agora.livepk.R;
-import io.agora.livepk.databinding.ActivityVideoBinding;
+import io.agora.superapp.Constants;
+import io.agora.superapp.R;
+import io.agora.superapp.databinding.ActivityVideoBinding;
 import io.agora.superapp.manager.RtcManager;
 import io.agora.superapp.model.RoomInfo;
 import io.agora.superapp.model.UserInfo;
+import io.agora.superapp.util.NetworkUtil;
 import io.agora.superapp.util.UserUtil;
 import io.agora.syncmanager.rtm.IObject;
 import io.agora.syncmanager.rtm.SyncManager;
 import io.agora.syncmanager.rtm.SyncManagerException;
 
-import static io.agora.superapp.Constants.SYNC_COLLECTION_ROOM_INFO;
 import static io.agora.superapp.Constants.SYNC_COLLECTION_USER_INFO;
-import static io.agora.superapp.Constants.SYNC_SCENE_ID;
 
 public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding> {
     private static final String TAG = "AudienceActivity";
@@ -63,7 +61,7 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
 
     @Override
     protected void iniBundle(@NonNull Bundle bundle) {
-        mRoomInfo = (RoomInfo)getIntent().getSerializableExtra(EXTRA_ROOM_INFO);
+        mRoomInfo = (RoomInfo) getIntent().getSerializableExtra(EXTRA_ROOM_INFO);
     }
 
     @Override
@@ -92,7 +90,7 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
         updateRoomUserCountTv();
 
         mDataBinding.remoteCallCloseBtn.setOnClickListener(v -> {
-           stopPK();
+            stopPK();
         });
 
     }
@@ -100,7 +98,7 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
     @Override
     protected void iniListener() {
         mDataBinding.liveBottomBtnClose.setOnClickListener(v -> onBackPressed());
-        mDataBinding.liveBottomBtnMore.setOnClickListener(v-> showMoreChoiceDialog());
+        mDataBinding.liveBottomBtnMore.setOnClickListener(v -> showMoreChoiceDialog());
     }
 
     @Override
@@ -120,9 +118,10 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
         };
         final String[] toolNames = getResources().getStringArray(R.array.live_room_action_sheet_tool_names);
 
-        final class ViewHolder extends RecyclerView.ViewHolder{
+        final class ViewHolder extends RecyclerView.ViewHolder {
             final ImageView iconIv;
             final TextView toolNameTv;
+
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 iconIv = itemView.findViewById(R.id.live_room_action_sheet_tool_item_icon);
@@ -145,7 +144,7 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
             public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
                 holder.toolNameTv.setText(toolNames[position]);
                 holder.iconIv.setImageResource(toolIcons[position]);
-                switch (position){
+                switch (position) {
                     case 1:
                         // 静音
                         holder.iconIv.setActivated(!RtcManager.isMuteLocalAudio);
@@ -153,7 +152,7 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
                 }
 
                 holder.iconIv.setOnClickListener(v -> {
-                    switch (position){
+                    switch (position) {
                         case 0:
                             // 翻转摄像头
                             rtcManager.switchCamera();
@@ -202,16 +201,30 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
     }
 
 
-    private void setupVideoPlayer(){
+    private void setupVideoPlayer() {
         mDataBinding.flLocalFullContainer.setVisibility(View.VISIBLE);
         // remove old video view
         mDataBinding.flLocalFullContainer.removeAllViews();
 
-        mDataBinding.ivLoadingBg.setVisibility(View.GONE);
-        rtcManager.renderPlayerView(mDataBinding.flLocalFullContainer,  () -> {
+        mDataBinding.ivLoadingBg.setVisibility(View.VISIBLE);
+        rtcManager.renderPlayerView(mDataBinding.flLocalFullContainer, () -> {
             runOnUiThread(() -> mDataBinding.ivLoadingBg.setVisibility(View.GONE));
         });
-        rtcManager.openPlayerSrc(mRoomInfo.roomId, mRoomInfo.mode == RoomInfo.PUSH_MODE_DIRECT_CDN && !checkRoomIsPKing());
+
+        // 断网重连逻辑
+        Runnable reSetRun = () -> {
+            rtcManager.stopPlayer();
+            rtcManager.openPlayerSrc(mRoomInfo.roomId, mRoomInfo.mode == RoomInfo.PUSH_MODE_DIRECT_CDN && !checkRoomIsPKing());
+        };
+        NetworkUtil.checkNetworkRealTime(this,
+                // wifi
+                reSetRun,
+                // mobile
+                reSetRun,
+                // other
+                reSetRun,
+                // no net
+                () -> Toast.makeText(AudienceActivity.this, "Network is poor.", Toast.LENGTH_SHORT).show());
     }
 
     @Override
@@ -223,14 +236,14 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
-        if(checkMeIsPKing()){
+        if (checkMeIsPKing()) {
             showPKEndDialog();
-        }else{
+        } else {
             leaveRoom(this::finish);
         }
     }
 
-    private void updateRoomUserCountTv(){
+    private void updateRoomUserCountTv() {
         mDataBinding.liveParticipantCountText.setText(mRoomInfo.userCount + "");
     }
 
@@ -250,7 +263,7 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
     //============================RTCManager Logic======================================
 
 
-    private void initRTCManager(){
+    private void initRTCManager() {
         rtcManager.init(this, getAgoraAppId(), new RtcManager.OnInitializeListener() {
             @Override
             public void onError(int code, String message) {
@@ -266,7 +279,7 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
             public void onUserJoined(int uid) {
                 runOnUiThread(() -> {
                     mDataBinding.remoteCallLayout.setVisibility(View.VISIBLE);
-                    rtcManager.renderRemoteVideo(mDataBinding.remoteCallVideoLayout, uid, null);
+                    rtcManager.renderRemoteVideo(mDataBinding.remoteCallVideoLayout, uid);
                 });
             }
 
@@ -283,11 +296,11 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
             mDataBinding.liveBottomBtnMore.setVisibility(View.VISIBLE);
             mDataBinding.flLocalFullContainer.removeAllViews();
             mDataBinding.ivLoadingBg.setVisibility(View.GONE);
-            rtcManager.renderLocalVideo(mDataBinding.flLocalFullContainer, null);
+            rtcManager.renderLocalVideo(mDataBinding.flLocalFullContainer);
         });
     }
 
-    private void stopRTCPK(){
+    private void stopRTCPK() {
         rtcManager.stopRtcStreaming(mRoomInfo.roomId, null);
         runOnUiThread(() -> {
             mDataBinding.liveBottomBtnMore.setVisibility(View.GONE);
@@ -310,77 +323,58 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
 
 
     //============================SyncManager Logic======================================
+    private final SyncManager.EventListener roomEventListener = new SyncManager.EventListener() {
+        @Override
+        public void onCreated(IObject item) {
+            runOnUiThread(() -> onRoomInfoChanged(item));
+        }
 
+        @Override
+        public void onUpdated(IObject item) {
+            runOnUiThread(() -> onRoomInfoChanged(item));
+        }
 
-    private void initSyncManager(){
-        SyncManager.Instance()
-                .getScene(SYNC_SCENE_ID)
-                .collection(SYNC_COLLECTION_ROOM_INFO)
-                .subcribe(new SyncManager.EventListener() {
-                    @Override
-                    public void onCreated(IObject item) {
-
-                    }
-
-                    @Override
-                    public void onUpdated(IObject item) {
-
-                    }
-
-                    @Override
-                    public void onDeleted(IObject item) {
-                        RoomInfo roomInfo = item.toObject(RoomInfo.class);
-                        if(roomInfo.roomId.equals(mRoomInfo.roomId)){
-                            runOnUiThread(() -> {
-                                new AlertDialog.Builder(AudienceActivity.this)
-                                        .setTitle(R.string.cmm_tip)
-                                        .setMessage(R.string.audience_leave_tip)
-                                        .setPositiveButton(R.string.cmm_leave, (dialog, which) -> {
-                                            dialog.dismiss();
-                                            finish();
-                                        })
-                                        .setNegativeButton(R.string.cmm_cancel, (dialog, which) -> dialog.dismiss())
-                                        .show();
-                            });
-                        }
-                    }
-
-                    @Override
-                    public void onSubscribeError(SyncManagerException ex) {
-
-                    }
+        @Override
+        public void onDeleted(IObject item) {
+            RoomInfo roomInfo = item.toObject(RoomInfo.class);
+            if (roomInfo.roomId.equals(mRoomInfo.roomId)) {
+                runOnUiThread(() -> {
+                    new AlertDialog.Builder(AudienceActivity.this)
+                            .setTitle(R.string.cmm_tip)
+                            .setMessage(R.string.audience_leave_tip)
+                            .setPositiveButton(R.string.cmm_leave, (dialog, which) -> {
+                                dialog.dismiss();
+                                finish();
+                            })
+                            .setNegativeButton(R.string.cmm_cancel, (dialog, which) -> dialog.dismiss())
+                            .show();
                 });
+            }
+        }
+
+        @Override
+        public void onSubscribeError(SyncManagerException ex) {
+
+        }
+    };
+
+    private void initSyncManager() {
+        SyncManager.Instance().joinScene(mRoomInfo.roomId);
         SyncManager.Instance()
-                .getScene(SYNC_SCENE_ID)
-                .collection(SYNC_COLLECTION_ROOM_INFO)
-                .document(mRoomInfo.roomId)
-                .subscribe(new SyncManager.EventListener() {
-                    @Override
-                    public void onCreated(IObject item) {
-                        runOnUiThread(() -> onRoomInfoChanged(item));
-                    }
-
-                    @Override
-                    public void onUpdated(IObject item) {
-                        runOnUiThread(() -> onRoomInfoChanged(item));
-                    }
-
-                    @Override
-                    public void onDeleted(IObject item) {
-
-                    }
-
-                    @Override
-                    public void onSubscribeError(SyncManagerException ex) {
-
-                    }
-                });
+                .getScene(mRoomInfo.roomId)
+                .collection(Constants.SYNC_COLLECTION_ROOM_INFO)
+                .document(mRoomInfo.objectId)
+                .subscribe(roomEventListener);
     }
 
     private void onRoomInfoChanged(IObject item) {
         RoomInfo roomInfo = item.toObject(RoomInfo.class);
+        if(!roomInfo.roomId.equals(mRoomInfo.roomId)){
+            return;
+        }
         RoomInfo oldRoomInfo = mRoomInfo;
         mRoomInfo = roomInfo;
+        mRoomInfo.objectId = item.getId();
         boolean newPkStatue = !TextUtils.isEmpty(roomInfo.userIdPK);
         boolean oldPkStatue = !TextUtils.isEmpty(oldRoomInfo.userIdPK);
 
@@ -393,7 +387,7 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
                 }
             } else {
                 // 停止PK
-                if(mUserInfo != null && mUserInfo.userId.equals(oldRoomInfo.userIdPK)){
+                if (mUserInfo != null && mUserInfo.userId.equals(oldRoomInfo.userIdPK)) {
                     Toast.makeText(this, "Stop PK", Toast.LENGTH_LONG).show();
                     stopRTCPK();
                 }
@@ -402,7 +396,7 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
 
         int newUserCount = roomInfo.userCount;
         int oldUserCount = oldRoomInfo.userCount;
-        if(newUserCount != oldUserCount){
+        if (newUserCount != oldUserCount) {
             // 更新房间内人数
             runOnUiThread(this::updateRoomUserCountTv);
         }
@@ -414,12 +408,12 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
         mUserInfo.userId = UserUtil.getLocalUserId();
         mUserInfo.userName = UserUtil.getLocalUserName(this);
         SyncManager.Instance()
-                .getScene(SYNC_SCENE_ID)
+                .getScene(mRoomInfo.roomId)
                 .collection(SYNC_COLLECTION_USER_INFO)
                 .add(mUserInfo.toMap(), new SyncManager.DataItemCallback() {
                     @Override
                     public void onSuccess(IObject result) {
-
+                        mUserInfo.objectId = result.getId();
                     }
 
                     @Override
@@ -429,21 +423,23 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
                 });
     }
 
-    private void leaveRoom(Runnable success){
-        if(mUserInfo == null){
-            if(success != null){
+    private void leaveRoom(Runnable success) {
+        SyncManager.Instance()
+                .unsubscribe(roomEventListener);
+        if (mUserInfo == null) {
+            if (success != null) {
                 success.run();
             }
             return;
         }
         SyncManager.Instance()
-                .getScene(SYNC_SCENE_ID)
+                .getScene(mRoomInfo.roomId)
                 .collection(SYNC_COLLECTION_USER_INFO)
-                .document(mUserInfo.userId)
+                .document(mUserInfo.objectId)
                 .delete(new SyncManager.Callback() {
                     @Override
                     public void onSuccess() {
-                        if(success != null){
+                        if (success != null) {
                             success.run();
                         }
                     }
@@ -459,9 +455,9 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
         RoomInfo newRoomInfo = new RoomInfo(mRoomInfo);
         newRoomInfo.userIdPK = "";
         SyncManager.Instance()
-                .getScene(SYNC_SCENE_ID)
-                .collection(SYNC_COLLECTION_ROOM_INFO)
-                .document(mRoomInfo.roomId)
+                .getScene(mRoomInfo.roomId)
+                .collection(Constants.SYNC_COLLECTION_ROOM_INFO)
+                .document(mRoomInfo.objectId)
                 .update(newRoomInfo.toMap(), new SyncManager.DataItemCallback() {
                     @Override
                     public void onSuccess(IObject result) {

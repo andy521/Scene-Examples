@@ -165,7 +165,7 @@ public class LivePKListActivity extends DataBindBaseActivity<ActivityListBinding
         Scene room = new Scene();
         room.setId(SYNC_SCENE_ID);
         room.setUserId(syncUserId);
-        SyncManager.Instance().joinScene(room);
+        SyncManager.Instance().createScene(room, null);
     }
 
     private void loadRoomList(DataListCallback<RoomInfo> callback) {

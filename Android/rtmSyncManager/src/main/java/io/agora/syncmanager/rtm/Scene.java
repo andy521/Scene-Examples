@@ -9,7 +9,7 @@ public class Scene {
     Gson gson = new Gson();
     private String id;
     private String userId;
-    private Map<String, String> property;
+    private Map<String, Object> property;
 
     public String toJson() {
         Map res = new HashMap();
@@ -21,11 +21,11 @@ public class Scene {
         return gson.toJson(res);
     }
 
-    public Map<String, String> getProperty() {
+    public Map<String, Object> getProperty() {
         return property;
     }
 
-    public void setProperty(Map<String, String> property) {
+    public void setProperty(Map<String, Object> property) {
         this.property = property;
     }
 

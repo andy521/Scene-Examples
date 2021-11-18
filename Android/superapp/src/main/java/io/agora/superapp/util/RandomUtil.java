@@ -2,7 +2,8 @@ package io.agora.superapp.util;
 
 import android.content.Context;
 
-import io.agora.livepk.R;
+import io.agora.superapp.R;
+
 
 public class RandomUtil {
     private static int sLastIndex;

@@ -102,15 +102,19 @@ public class DataSyncImpl implements ISyncManager {
         }
     }
 
+
+
     @Override
-    public Scene joinScene(Scene room, SyncManager.Callback callback) {
+    public void createScene(Scene room, SyncManager.Callback callback) {
         String channel = room.getId();
         assert channel != null;
         this.majorChannel = channel;
-        NamedChannelListener listener = new NamedChannelListener(channel);
-        RtmChannel rtmChannel = client.createChannel(channel, listener);
-        rtmChannel.join(null);
-        channelListeners.put(channel, listener);
+        if(!channelListeners.containsKey(channel)){
+            NamedChannelListener listener = new NamedChannelListener(channel);
+            RtmChannel rtmChannel = client.createChannel(channel, listener);
+            rtmChannel.join(null);
+            channelListeners.put(channel, listener);
+        }
         // Update Scenes List
         RtmChannelAttribute attribute = new RtmChannelAttribute();
         attribute.setKey(room.getId());
@@ -129,7 +133,17 @@ public class DataSyncImpl implements ISyncManager {
                 if(callback!=null) callback.onFail(new SyncManagerException(-1, errorInfo.toString()));
             }
         });
-        return null;
+    }
+
+    @Override
+    public void joinScene(String majorChannel) {
+        this.majorChannel = majorChannel;
+        if(!channelListeners.containsKey(majorChannel)){
+            NamedChannelListener listener = new NamedChannelListener(majorChannel);
+            RtmChannel rtmChannel = client.createChannel(majorChannel, listener);
+            rtmChannel.join(null);
+            channelListeners.put(majorChannel, listener);
+        }
     }
 
     @Override
@@ -156,15 +170,46 @@ public class DataSyncImpl implements ISyncManager {
     }
 
     @Override
+    public void subscribe(SyncManager.EventListener listener) {
+        if (this.majorChannel != null) {
+            String channel = mDefaultChannel;
+            eventListeners.put(channel, listener);
+
+            if (!channelListeners.containsKey(channel)) {
+                NamedChannelListener clistener = new NamedChannelListener(channel);
+                RtmChannel rtmChannel = client.createChannel(channel, clistener);
+                rtmChannel.join(null);
+                channelListeners.put(channel, clistener);
+            }
+
+            List<RtmChannelAttribute> rtmChannelAttributes = cachedAttrs.get(channel);
+            if(rtmChannelAttributes == null){
+                rtmChannelAttributes = new ArrayList<>();
+                cachedAttrs.put(channel, rtmChannelAttributes);
+            }
+        }
+        else{
+            listener.onSubscribeError(new SyncManagerException(-1, "yet join channel"));
+        }
+    }
+
+    @Override
     public void get(DocumentReference reference, SyncManager.DataItemCallback callback) {
         if (this.majorChannel != null) {
-            String channel = reference.getId().equals(majorChannel) ? majorChannel : majorChannel + reference.getId();
+            String channel = reference.getParent().getKey().equals(majorChannel) ? majorChannel : majorChannel + reference.getParent().getKey();
             client.getChannelAttributes(channel, new ResultCallback<List<RtmChannelAttribute>>() {
                 @Override
                 public void onSuccess(List<RtmChannelAttribute> rtmChannelAttributes) {
-                    if (rtmChannelAttributes != null && rtmChannelAttributes.size() > 0) {
-                        callback.onSuccess(new Attribute(rtmChannelAttributes.get(0).getKey(), rtmChannelAttributes.get(0).getValue()));
-                    } else {
+                    if (rtmChannelAttributes != null) {
+                        for (RtmChannelAttribute rtmChannelAttribute : rtmChannelAttributes) {
+                            if(rtmChannelAttribute.getKey().equals(reference.getId())){
+                                callback.onSuccess(new Attribute(rtmChannelAttribute.getKey(), rtmChannelAttribute.getValue()));
+                                return;
+                            }
+
+                        }
+                        callback.onFail(new SyncManagerException(-1, "empty attributes"));
+                    }else{
                         callback.onFail(new SyncManagerException(-1, "empty attributes"));
                     }
                 }
@@ -247,7 +292,7 @@ public class DataSyncImpl implements ISyncManager {
                         rtmChannelAttributes.add(attribute);
                         cachedAttrs.put(channel, rtmChannelAttributes);
                     }
-                    IObject item = new Attribute(reference.getKey(), json);
+                    IObject item = new Attribute(attribute.getKey(), json);
                     SyncManager.EventListener listener = eventListeners.get(channel);
                     if(listener !=null){
                         listener.onCreated(item);
@@ -268,7 +313,7 @@ public class DataSyncImpl implements ISyncManager {
     @Override
     public void delete(DocumentReference reference, SyncManager.Callback callback) {
         if (this.majorChannel != null) {
-            if(reference.getId().equals(majorChannel)){
+            if(reference.getParent().getKey().equals(mDefaultChannel)){
                 // remove the scene itself, remove it from scene list
                 List<String> list = new ArrayList<>();
                 list.add(majorChannel);
@@ -292,7 +337,7 @@ public class DataSyncImpl implements ISyncManager {
                 List<String> list = new ArrayList<>();
                 List<RtmChannelAttribute> attrs = cachedAttrs.get(channel);
                 for(RtmChannelAttribute item : attrs){
-                    if(item.getValue().contains(reference.getId())){
+                    if(item.getKey().contains(reference.getId())){
                         list.add(item.getKey());
                     }
                 }
@@ -340,7 +385,7 @@ public class DataSyncImpl implements ISyncManager {
     @Override
     public void update(DocumentReference reference, String key, Object data, SyncManager.DataItemCallback callback) {
         if (this.majorChannel != null) {
-            String channel = reference.getId().equals(majorChannel) ? majorChannel : majorChannel + reference.getId();
+            String channel = reference.getParent().getKey().equals(majorChannel) ? majorChannel : majorChannel + reference.getParent().getKey();
             RtmChannelAttribute attribute = new RtmChannelAttribute();
             attribute.setKey(key);
             String json = gson.toJson(data);
@@ -373,7 +418,7 @@ public class DataSyncImpl implements ISyncManager {
     @Override
     public void update(DocumentReference reference, HashMap<String, Object> data, SyncManager.DataItemCallback callback) {
         if (this.majorChannel != null) {
-            String channel = reference.getId().equals(majorChannel) ? majorChannel : majorChannel + reference.getId();
+            String channel = reference.getParent().getKey().equals(majorChannel) ? majorChannel : majorChannel + reference.getParent().getKey();
             RtmChannelAttribute attribute = new RtmChannelAttribute();
             attribute.setKey(reference.getId());
             String json = gson.toJson(data);
@@ -401,8 +446,8 @@ public class DataSyncImpl implements ISyncManager {
     @Override
     public void subscribe(DocumentReference reference, SyncManager.EventListener listener) {
         if (this.majorChannel != null) {
-            String channel = reference.getId().equals(majorChannel) ? majorChannel : majorChannel + reference.getId();
-            eventListeners.put(channel, listener);
+            String channel = reference.getParent().getKey().equals(majorChannel) ? majorChannel : majorChannel + reference.getParent().getKey();
+            eventListeners.put(channel, new DocumentWrapEventListener(reference.getId(), listener));
 
             if (!channelListeners.containsKey(channel)) {
                 NamedChannelListener clistener = new NamedChannelListener(channel);
@@ -474,10 +519,9 @@ public class DataSyncImpl implements ISyncManager {
             for(Map.Entry<String, SyncManager.EventListener> entry : eventListeners.entrySet()){
                 if(listener == entry.getValue()){
                     eventListeners.remove(entry.getKey());
-                    if(channelListeners.containsKey(entry.getKey())){
-
-                    }
                     return;
+                }else if( listener instanceof DocumentWrapEventListener && ((DocumentWrapEventListener) listener).listener == listener){
+                    eventListeners.remove(entry.getKey());
                 }
             }
         }
@@ -582,13 +626,32 @@ public class DataSyncImpl implements ISyncManager {
                             onlyA.add(new Attribute(i.getKey(), i.getValue()));
                         }
                         for(IObject i : both){
-                            callback.onUpdated(i);
+                            if(callback instanceof DocumentWrapEventListener){
+                                if(((DocumentWrapEventListener) callback).documentId.equals(i.getId())){
+                                    ((DocumentWrapEventListener) callback).listener.onUpdated(i);
+                                }
+                            }else{
+                                callback.onUpdated(i);
+                            }
+
                         }
                         for(IObject i : onlyB){
-                            callback.onCreated(i);
+                            if(callback instanceof DocumentWrapEventListener){
+                                if(((DocumentWrapEventListener) callback).documentId.equals(i.getId())){
+                                    ((DocumentWrapEventListener) callback).listener.onCreated(i);
+                                }
+                            }else{
+                                callback.onCreated(i);
+                            }
                         }
                         for(IObject i : onlyA){
-                            callback.onDeleted(i);
+                            if(callback instanceof DocumentWrapEventListener){
+                                if(((DocumentWrapEventListener) callback).documentId.equals(i.getId())){
+                                    ((DocumentWrapEventListener) callback).listener.onDeleted(i);
+                                }
+                            }else{
+                                callback.onDeleted(i);
+                            }
                         }
                         cachedAttrs.put(channelName, list);
                     }
@@ -620,6 +683,37 @@ public class DataSyncImpl implements ISyncManager {
         @Override
         public void onMemberLeft(RtmChannelMember rtmChannelMember) {
 
+        }
+    }
+
+    class DocumentWrapEventListener implements SyncManager.EventListener{
+
+        String documentId;
+        private SyncManager.EventListener listener;
+
+        DocumentWrapEventListener(String documentId, SyncManager.EventListener listener){
+            this.documentId = documentId;
+            this.listener = listener;
+        }
+
+        @Override
+        public void onCreated(IObject item) {
+            listener.onCreated(item);
+        }
+
+        @Override
+        public void onUpdated(IObject item) {
+            listener.onUpdated(item);
+        }
+
+        @Override
+        public void onDeleted(IObject item) {
+            listener.onDeleted(item);
+        }
+
+        @Override
+        public void onSubscribeError(SyncManagerException ex) {
+            listener.onSubscribeError(ex);
         }
     }
 

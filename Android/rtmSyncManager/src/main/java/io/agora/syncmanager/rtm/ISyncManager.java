@@ -3,9 +3,13 @@ package io.agora.syncmanager.rtm;
 import java.util.HashMap;
 
 public interface ISyncManager {
-    Scene joinScene(Scene room, SyncManager.Callback callback);
+    void createScene(Scene room, SyncManager.Callback callback);
+
+    void joinScene(String majorChannel);
 
     void getScenes(SyncManager.DataListCallback callback);
+
+    void subscribe(SyncManager.EventListener listener);
 
     void get(DocumentReference reference, SyncManager.DataItemCallback callback);
 

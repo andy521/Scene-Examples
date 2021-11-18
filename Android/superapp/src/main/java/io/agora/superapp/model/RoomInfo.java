@@ -3,6 +3,8 @@ package io.agora.superapp.model;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import io.agora.syncmanager.rtm.Scene;
+
 public class RoomInfo implements Serializable {
     public static final long EXPIRED_DURATION_MS = 5 * 60 * 1000;
 
@@ -16,6 +18,8 @@ public class RoomInfo implements Serializable {
     public int mode;
     public String userIdPK;
     public int userCount = 1;
+
+    public String objectId = "";
 
     public RoomInfo() {
     }

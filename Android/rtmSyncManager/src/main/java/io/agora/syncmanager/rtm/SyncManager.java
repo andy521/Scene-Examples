@@ -55,13 +55,23 @@ public final class SyncManager implements ISyncManager {
     }
 
     @Override
-    public Scene joinScene(Scene room, SyncManager.Callback callback) {
-        return mISyncManager.joinScene(room, callback);
+    public void createScene(Scene room, SyncManager.Callback callback) {
+        mISyncManager.createScene(room, callback);
+    }
+
+    @Override
+    public void joinScene(String majorChannel) {
+        mISyncManager.joinScene(majorChannel);
     }
 
     @Override
     public void getScenes(SyncManager.DataListCallback callback) {
         mISyncManager.getScenes(callback);
+    }
+
+    @Override
+    public void subscribe(EventListener listener) {
+        mISyncManager.subscribe(listener);
     }
 
     @Override

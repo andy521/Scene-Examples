@@ -16,8 +16,8 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 
 import io.agora.baselibrary.base.DataBindBaseActivity;
-import io.agora.livepk.R;
-import io.agora.livepk.databinding.ActivityUserProfileBinding;
+import io.agora.superapp.R;
+import io.agora.superapp.databinding.ActivityUserProfileBinding;
 import io.agora.superapp.util.UserUtil;
 
 public class UserProfileActivity extends DataBindBaseActivity<ActivityUserProfileBinding> {

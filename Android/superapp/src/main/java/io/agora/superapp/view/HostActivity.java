@@ -33,8 +33,9 @@ import java.util.List;
 import java.util.Locale;
 
 import io.agora.baselibrary.base.DataBindBaseActivity;
-import io.agora.livepk.R;
-import io.agora.livepk.databinding.ActivityVideoBinding;
+import io.agora.superapp.Constants;
+import io.agora.superapp.R;
+import io.agora.superapp.databinding.ActivityVideoBinding;
 import io.agora.superapp.manager.RtcManager;
 import io.agora.superapp.model.RoomInfo;
 import io.agora.superapp.model.UserInfo;
@@ -46,7 +47,7 @@ import io.agora.syncmanager.rtm.SyncManagerException;
 
 import static io.agora.superapp.Constants.SYNC_COLLECTION_ROOM_INFO;
 import static io.agora.superapp.Constants.SYNC_COLLECTION_USER_INFO;
-import static io.agora.superapp.Constants.SYNC_SCENE_ID;
+import static io.agora.superapp.Constants.SYNC_DEFAULT_CHANNEL;
 
 public class HostActivity extends DataBindBaseActivity<ActivityVideoBinding> {
     private static final String TAG = "HostPKActivity";
@@ -92,7 +93,7 @@ public class HostActivity extends DataBindBaseActivity<ActivityVideoBinding> {
         updateRoomUserCountTv();
 
         mDataBinding.liveBottomBtnMore.setOnClickListener(v -> {
-                showMoreChoiceDialog();
+            showMoreChoiceDialog();
         });
 
     }
@@ -107,7 +108,7 @@ public class HostActivity extends DataBindBaseActivity<ActivityVideoBinding> {
         mDataBinding.llParticipant.setOnClickListener(v -> {
             if (TextUtils.isEmpty(mRoomInfo.userIdPK)) {
                 loadRoomUserInfoList();
-            }else{
+            } else {
                 Toast.makeText(this, "The current room is linking", Toast.LENGTH_SHORT).show();
             }
         });
@@ -125,8 +126,7 @@ public class HostActivity extends DataBindBaseActivity<ActivityVideoBinding> {
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
-        checkIsPKing(getLocalRoomId(),
-                () -> cleanCurrRoomInfo(this::finish),
+        checkIsPKing(() -> cleanCurrRoomInfo(this::finish),
                 data -> showPKEndDialog());
     }
 
@@ -148,9 +148,10 @@ public class HostActivity extends DataBindBaseActivity<ActivityVideoBinding> {
         };
         final String[] toolNames = getResources().getStringArray(R.array.live_room_action_sheet_tool_names);
 
-        final class ViewHolder extends RecyclerView.ViewHolder{
+        final class ViewHolder extends RecyclerView.ViewHolder {
             final ImageView iconIv;
             final TextView toolNameTv;
+
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 iconIv = itemView.findViewById(R.id.live_room_action_sheet_tool_item_icon);
@@ -173,7 +174,7 @@ public class HostActivity extends DataBindBaseActivity<ActivityVideoBinding> {
             public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
                 holder.toolNameTv.setText(toolNames[position]);
                 holder.iconIv.setImageResource(toolIcons[position]);
-                switch (position){
+                switch (position) {
                     case 1:
                         // 静音
                         holder.iconIv.setActivated(!RtcManager.isMuteLocalAudio);
@@ -181,7 +182,7 @@ public class HostActivity extends DataBindBaseActivity<ActivityVideoBinding> {
                 }
 
                 holder.iconIv.setOnClickListener(v -> {
-                    switch (position){
+                    switch (position) {
                         case 0:
                             // 翻转摄像头
                             rtcManager.switchCamera();
@@ -308,19 +309,17 @@ public class HostActivity extends DataBindBaseActivity<ActivityVideoBinding> {
         // remove old video view
         mDataBinding.flLocalFullContainer.removeAllViews();
         mDataBinding.ivLoadingBg.setVisibility(View.GONE);
-        rtcManager.renderLocalVideo(mDataBinding.flLocalFullContainer, () -> mDataBinding.ivLoadingBg.setVisibility(View.GONE));
+        rtcManager.renderLocalVideo(mDataBinding.flLocalFullContainer);
     }
 
     private void setupRemoteView(int uid) {
         runOnUiThread(() -> {
             mDataBinding.remoteCallLayout.setVisibility(View.VISIBLE);
-            rtcManager.renderRemoteVideo(mDataBinding.remoteCallVideoLayout, uid, () -> runOnUiThread(() -> {
-
-            }));
+            rtcManager.renderRemoteVideo(mDataBinding.remoteCallVideoLayout, uid);
         });
     }
 
-    private void resetRemoteView(){
+    private void resetRemoteView() {
         runOnUiThread(() -> {
             mDataBinding.remoteCallLayout.setVisibility(View.GONE);
             mDataBinding.remoteCallVideoLayout.removeAllViews();
@@ -332,7 +331,7 @@ public class HostActivity extends DataBindBaseActivity<ActivityVideoBinding> {
         return mRoomInfo.roomId;
     }
 
-    private void resetRemoteViewLayout(String remoteUserName){
+    private void resetRemoteViewLayout(String remoteUserName) {
         runOnUiThread(() -> {
             mDataBinding.remoteCallPeerName.setText(remoteUserName);
             mDataBinding.remoteCallCloseBtn.setOnClickListener(v -> stopPK());
@@ -388,13 +387,13 @@ public class HostActivity extends DataBindBaseActivity<ActivityVideoBinding> {
     }
 
     private void startRTCPK() {
-        if(mRoomInfo.mode == RoomInfo.PUSH_MODE_DIRECT_CDN){
+        if (mRoomInfo.mode == RoomInfo.PUSH_MODE_DIRECT_CDN) {
             rtcManager.stopDirectCDNStreaming(this::startStreamingByRtc);
         }
     }
 
     private void stopRTCPK() {
-        if(mRoomInfo.mode == RoomInfo.PUSH_MODE_DIRECT_CDN){
+        if (mRoomInfo.mode == RoomInfo.PUSH_MODE_DIRECT_CDN) {
             rtcManager.stopRtcStreaming(mRoomInfo.roomId, this::startStreamingByCDN);
         }
     }
@@ -410,84 +409,87 @@ public class HostActivity extends DataBindBaseActivity<ActivityVideoBinding> {
 
     //=========================SyncManager Logic===========================================
 
+    private final SyncManager.EventListener roomEventListener = new SyncManager.EventListener() {
+        @Override
+        public void onCreated(IObject item) {
+            runOnUiThread(() -> onRoomInfoChanged(item));
+        }
+
+        @Override
+        public void onUpdated(IObject item) {
+            runOnUiThread(() -> onRoomInfoChanged(item));
+        }
+
+        @Override
+        public void onDeleted(IObject item) {
+
+        }
+
+        @Override
+        public void onSubscribeError(SyncManagerException ex) {
+            Toast.makeText(HostActivity.this, "initSyncManager subscribe error: " + ex.toString(), Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    private final SyncManager.EventListener userCollectionEventListener = new SyncManager.EventListener() {
+        @Override
+        public void onCreated(IObject item) {
+            UserInfo info = item.toObject(UserInfo.class);
+            if (info.roomId.equals(mRoomInfo.roomId)) {
+                // 用户进来
+                RoomInfo roomInfo = new RoomInfo(mRoomInfo);
+                roomInfo.userCount++;
+                SyncManager.Instance()
+                        .getScene(SYNC_DEFAULT_CHANNEL)
+                        .collection(SYNC_COLLECTION_ROOM_INFO)
+                        .document(mRoomInfo.objectId)
+                        .update(roomInfo.toMap(), null);
+            }
+        }
+
+        @Override
+        public void onUpdated(IObject item) {
+
+        }
+
+        @Override
+        public void onDeleted(IObject item) {
+            UserInfo info = item.toObject(UserInfo.class);
+            if (info.roomId.equals(mRoomInfo.roomId)) {
+                // 用户离开
+                RoomInfo roomInfo = new RoomInfo(mRoomInfo);
+                roomInfo.userCount--;
+                SyncManager.Instance()
+                        .getScene(SYNC_DEFAULT_CHANNEL)
+                        .collection(SYNC_COLLECTION_ROOM_INFO)
+                        .document(mRoomInfo.objectId)
+                        .update(roomInfo.toMap(), null);
+            }
+        }
+
+        @Override
+        public void onSubscribeError(SyncManagerException ex) {
+
+        }
+    };
 
     private void initSyncManager() {
         SyncManager.Instance()
-                .getScene(SYNC_SCENE_ID)
+                .getScene(mRoomInfo.roomId)
                 .collection(SYNC_COLLECTION_ROOM_INFO)
-                .document(getLocalRoomId())
-                .subscribe(new SyncManager.EventListener() {
-                    @Override
-                    public void onCreated(IObject item) {
-                        runOnUiThread(() -> onRoomInfoChanged(item));
-
-                    }
-
-                    @Override
-                    public void onUpdated(IObject item) {
-                        runOnUiThread(() -> onRoomInfoChanged(item));
-                    }
-
-                    @Override
-                    public void onDeleted(IObject item) {
-
-                    }
-
-                    @Override
-                    public void onSubscribeError(SyncManagerException ex) {
-                        Toast.makeText(HostActivity.this, "initSyncManager subscribe error: " + ex.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                .document(mRoomInfo.objectId)
+                .subscribe(roomEventListener);
         SyncManager.Instance()
-                .getScene(SYNC_SCENE_ID)
+                .getScene(mRoomInfo.roomId)
                 .collection(SYNC_COLLECTION_USER_INFO)
-                .subcribe(new SyncManager.EventListener() {
-                    @Override
-                    public void onCreated(IObject item) {
-                        UserInfo info = item.toObject(UserInfo.class);
-                        if (info.roomId.equals(mRoomInfo.roomId)) {
-                            // 用户进来
-                            RoomInfo roomInfo = new RoomInfo(mRoomInfo);
-                            roomInfo.userCount++;
-                            SyncManager.Instance()
-                                    .getScene(SYNC_SCENE_ID)
-                                    .collection(SYNC_COLLECTION_ROOM_INFO)
-                                    .document(getLocalRoomId())
-                                    .update(roomInfo.toMap(), null);
-                        }
-                    }
-
-                    @Override
-                    public void onUpdated(IObject item) {
-
-                    }
-
-                    @Override
-                    public void onDeleted(IObject item) {
-                        UserInfo info = item.toObject(UserInfo.class);
-                        if (info.roomId.equals(mRoomInfo.roomId)) {
-                            // 用户离开
-                            RoomInfo roomInfo = new RoomInfo(mRoomInfo);
-                            roomInfo.userCount--;
-                            SyncManager.Instance()
-                                    .getScene(SYNC_SCENE_ID)
-                                    .collection(SYNC_COLLECTION_ROOM_INFO)
-                                    .document(getLocalRoomId())
-                                    .update(roomInfo.toMap(), null);
-                        }
-                    }
-
-                    @Override
-                    public void onSubscribeError(SyncManagerException ex) {
-
-                    }
-                });
+                .subcribe(userCollectionEventListener);
     }
 
     private void onRoomInfoChanged(IObject item) {
         RoomInfo roomInfo = item.toObject(RoomInfo.class);
         RoomInfo oldRoomInfo = mRoomInfo;
         mRoomInfo = roomInfo;
+        mRoomInfo.objectId = item.getId();
         boolean newPkStatue = !TextUtils.isEmpty(roomInfo.userIdPK);
         boolean oldPkStatue = !TextUtils.isEmpty(oldRoomInfo.userIdPK);
 
@@ -517,7 +519,7 @@ public class HostActivity extends DataBindBaseActivity<ActivityVideoBinding> {
 
     private void loadRoomUserInfoList() {
         SyncManager.Instance()
-                .getScene(SYNC_SCENE_ID)
+                .getScene(mRoomInfo.roomId)
                 .collection(SYNC_COLLECTION_USER_INFO)
                 .get(new SyncManager.DataListCallback() {
                     @Override
@@ -543,37 +545,32 @@ public class HostActivity extends DataBindBaseActivity<ActivityVideoBinding> {
 
 
     private void startPKWith(String pkUserId) {
-        checkIsPKing(pkUserId,
-                () -> {
-                    RoomInfo newRoomInfo = new RoomInfo(mRoomInfo);
-                    newRoomInfo.userIdPK = pkUserId;
-                    SyncManager.Instance()
-                            .getScene(SYNC_SCENE_ID)
-                            .collection(SYNC_COLLECTION_ROOM_INFO)
-                            .document(getLocalRoomId())
-                            .update(newRoomInfo.toMap(), new SyncManager.DataItemCallback() {
-                                @Override
-                                public void onSuccess(IObject result) {
+        RoomInfo newRoomInfo = new RoomInfo(mRoomInfo);
+        newRoomInfo.userIdPK = pkUserId;
+        SyncManager.Instance()
+                .getScene(mRoomInfo.roomId)
+                .collection(SYNC_COLLECTION_ROOM_INFO)
+                .document(mRoomInfo.objectId)
+                .update(newRoomInfo.toMap(), new SyncManager.DataItemCallback() {
+                    @Override
+                    public void onSuccess(IObject result) {
 
-                                }
+                    }
 
-                                @Override
-                                public void onFail(SyncManagerException exception) {
+                    @Override
+                    public void onFail(SyncManagerException exception) {
 
-                                }
-                            });
-
-                },
-                data -> Toast.makeText(HostActivity.this, "The host " + pkUserId + " is kping with " + data, Toast.LENGTH_LONG).show());
+                    }
+                });
     }
 
     private void stopPK() {
         RoomInfo newRoomInfo = new RoomInfo(mRoomInfo);
         newRoomInfo.userIdPK = "";
         SyncManager.Instance()
-                .getScene(SYNC_SCENE_ID)
+                .getScene(mRoomInfo.roomId)
                 .collection(SYNC_COLLECTION_ROOM_INFO)
-                .document(getLocalRoomId())
+                .document(mRoomInfo.objectId)
                 .update(newRoomInfo.toMap(), new SyncManager.DataItemCallback() {
                     @Override
                     public void onSuccess(IObject result) {
@@ -588,62 +585,48 @@ public class HostActivity extends DataBindBaseActivity<ActivityVideoBinding> {
     }
 
 
-    private void checkIsPKing(String channelId, Runnable idle, DataCallback<String> pking) {
-        if (channelId.equals(mRoomInfo.roomId)) {
-            if (!TextUtils.isEmpty(mRoomInfo.userIdPK)) {
-                if (pking != null) {
-                    pking.onSuccess(mRoomInfo.userIdPK);
-                }
-            } else {
-                if (idle != null) {
-                    idle.run();
-                }
+    private void checkIsPKing(Runnable idle, DataCallback<String> pking) {
+        if (!TextUtils.isEmpty(mRoomInfo.userIdPK)) {
+            if (pking != null) {
+                pking.onSuccess(mRoomInfo.userIdPK);
             }
         } else {
-            SyncManager.Instance()
-                    .getScene(SYNC_SCENE_ID)
-                    .collection(SYNC_COLLECTION_ROOM_INFO)
-                    .get(new SyncManager.DataListCallback() {
-                        @Override
-                        public void onSuccess(List<IObject> result) {
-                            RoomInfo pkItem = null;
-                            for (IObject iObject : result) {
-                                RoomInfo item = iObject.toObject(RoomInfo.class);
-                                if (channelId.equals(item.userIdPK)) {
-                                    pkItem = item;
-                                    break;
-                                }
-                            }
-                            if (pkItem != null) {
-                                if (pking != null) {
-                                    pking.onSuccess(pkItem.roomId);
-                                }
-                            } else {
-                                if (idle != null) {
-                                    idle.run();
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onFail(SyncManagerException exception) {
-                            Toast.makeText(HostActivity.this, exception.toString(), Toast.LENGTH_LONG).show();
-                        }
-                    });
+            if (idle != null) {
+                idle.run();
+            }
         }
     }
 
     private void cleanCurrRoomInfo(Runnable success) {
         SyncManager.Instance()
-                .getScene(SYNC_SCENE_ID)
-                .collection(SYNC_COLLECTION_ROOM_INFO)
-                .document(getLocalRoomId())
+                .unsubscribe(roomEventListener);
+        SyncManager.Instance()
+                .unsubscribe(userCollectionEventListener);
+        SyncManager.Instance()
+                .getScene(mRoomInfo.roomId)
                 .delete(new SyncManager.Callback() {
                     @Override
                     public void onSuccess() {
-                        if (success != null) {
-                            success.run();
-                        }
+                        SyncManager.Instance()
+                                .getScene(mRoomInfo.roomId)
+                                .collection(SYNC_COLLECTION_ROOM_INFO)
+                                .document(mRoomInfo.objectId)
+                                .delete(new SyncManager.Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        if (success != null) {
+                                            success.run();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFail(SyncManagerException exception) {
+                                        if (success != null) {
+                                            success.run();
+                                        }
+                                        Toast.makeText(HostActivity.this, "deleteRoomInfo failed exception: " + exception.toString(), Toast.LENGTH_LONG).show();
+                                    }
+                                });
                     }
 
                     @Override
@@ -655,7 +638,7 @@ public class HostActivity extends DataBindBaseActivity<ActivityVideoBinding> {
 
     private void getUserInfoById(String userId, DataCallback<UserInfo> callback) {
         SyncManager.Instance()
-                .getScene(SYNC_SCENE_ID)
+                .getScene(SYNC_DEFAULT_CHANNEL)
                 .collection(SYNC_COLLECTION_USER_INFO)
                 .get(new SyncManager.DataListCallback() {
                     @Override

@@ -123,6 +123,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"/>
 
+                    <ImageView
+                        android:id="@+id/remote_call_video_overlay"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone"/>
+
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/remote_call_peer_name"
                         android:layout_width="match_parent"
