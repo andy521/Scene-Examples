@@ -9,8 +9,6 @@ import Foundation
 import SyncManager
 
 let defaultChannelName = "PKByCDN"
-let sync_collection_room_info = "RoomInfoCollection"
-let sync_collection_user_info = "UserInfoCollection"
 
 protocol EntryVMDelegate: NSObjectProtocol {
     func entryVMShouldUpdateInfos(infos: [EntryView.Info])
@@ -20,9 +18,9 @@ protocol EntryVMDelegate: NSObjectProtocol {
 
 class EntryVM: NSObject {
     private let appId: String
-    private var syncManager: SyncManager!
-    private var sceneRef: SceneReference?
-    private var syncSceneId = defaultChannelName
+    var syncManager: SyncManager!
+    var sceneRef: SceneReference?
+    var rooms = [RoomInfo]()
     weak var delegate: EntryVMDelegate?
     
     init(appId: String) {
@@ -33,24 +31,11 @@ class EntryVM: NSObject {
     
     func commonInit() {
         let config = SyncManager.RtmConfig.init(appId: appId,
-                                             channelName: syncSceneId)
+                                                channelName: defaultChannelName)
         self.syncManager = SyncManager(config: config,
                                        complete: { [weak self](code) in
-                                        self?.join()
+                                        self?.getRooms()
                                        })
-    }
-    
-    func join() {
-        let userId = StorageManager.uuid
-        let scene = Scene(id: syncSceneId,
-                          userId: userId,
-                          property: [:])
-        sceneRef = syncManager.joinScene(scene: scene,
-                                         success: { [weak self](obj) in
-                                            self?.getRooms()
-                                         }, fail: { [weak self](error) in
-                                            self?.delegate?.entryVMShouldShowTip(msg: error.description)
-                                         })
     }
     
     func getRooms() {
@@ -70,7 +55,12 @@ class EntryVM: NSObject {
         let infos = rooms.map({ EntryView.Info(imageName: $0.roomId.headImageName,
                                                title: $0.roomName,
                                                count: $0.userCount) })
+        self.rooms = rooms
         delegate?.entryVMShouldUpdateInfos(infos: infos)
+    }
+    
+    func getRoomInfo(index: Int) -> RoomInfo? {
+        rooms[index]
     }
 }
 

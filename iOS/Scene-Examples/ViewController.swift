@@ -9,8 +9,6 @@ import UIKit
 import RxCocoa
 import RxSwift
 import Core
-import LivePKCore
-import LiveMutiCore
 import SuperAppCore
 
 class ViewController: CustomTabBarController {
@@ -21,15 +19,13 @@ class ViewController: CustomTabBarController {
     }
     
     override func setupView() {
-        let livePKEntryVC = SuperAppCore.EntryVC(appId: BuildConfig.AppId)
-        let LiveMutiEntryVC = LiveMutiCore.EntryVC()
-        LiveMutiEntryVC.appId = BuildConfig.AppId
+        let superAppCoreEntryVC = SuperAppCore.EntryVC(appId: BuildConfig.AppId)
         viewControllers = [
-            livePKEntryVC,
+            superAppCoreEntryVC,
             UIViewController(),
             UIViewController(),
             SettingController.instance(),
-            LiveMutiEntryVC
+            UIViewController()
         ]
         setTabBar(items: [
             CustomTabBarItem(icon: UIImage.strokedCheckmark, title: "All".localized),

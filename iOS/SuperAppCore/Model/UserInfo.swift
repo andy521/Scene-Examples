@@ -12,4 +12,11 @@ struct UserInfo: Codable {
     let userId: String
     let userName: String
     let roomId: String
+    
+    var dict: [String : String] {
+        return ["expiredTime" : "\(expiredTime)",
+                "userId" : userId,
+                "userName" : userName,
+                "roomId" : roomId]
+    }
 }

@@ -16,10 +16,19 @@ class MainView: UIView {
     private let leftView = LeftView()
     private let moreButton = UIButton()
     private let closeButton = UIButton()
-    private let localView = UIButton()
+    private let localView = UIView()
     private let remoteView = UIView()
     private let personCountButton = UIButton()
     weak var delegate: MainViewDelegate?
+    private var info = Info.empty
+    
+    var renderViewLocal: UIView {
+        return localView
+    }
+    
+    var renderViewRemote: UIView {
+        return remoteView
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -42,14 +51,13 @@ class MainView: UIView {
         leftView.imageView.layer.cornerRadius = 8
         leftView.imageView.layer.masksToBounds = true
         
-        
         addSubview(localView)
         addSubview(remoteView)
         addSubview(personCountView)
+        addSubview(personCountButton)
         addSubview(leftView)
         addSubview(moreButton)
         addSubview(closeButton)
-        addSubview(personCountButton)
         
         localView.translatesAutoresizingMaskIntoConstraints = false
         remoteView.translatesAutoresizingMaskIntoConstraints = false
@@ -57,6 +65,7 @@ class MainView: UIView {
         leftView.translatesAutoresizingMaskIntoConstraints = false
         moreButton.translatesAutoresizingMaskIntoConstraints = false
         closeButton.translatesAutoresizingMaskIntoConstraints = false
+        personCountButton.translatesAutoresizingMaskIntoConstraints = false
         
         localView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
         localView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
@@ -69,7 +78,7 @@ class MainView: UIView {
         personCountView.heightAnchor.constraint(equalToConstant: 22).isActive = true
         
         personCountButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -10).isActive = true
-        personCountButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 6).isActive = true
+        personCountButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 5).isActive = true
         personCountButton.widthAnchor.constraint(equalToConstant: 55).isActive = true
         personCountButton.heightAnchor.constraint(equalToConstant: 22).isActive = true
         
@@ -91,13 +100,15 @@ class MainView: UIView {
     }
     
     private func commonInit() {
-        personCountButton.addTarget(self, action: #selector(buttonTap(_:)), for: .touchUpInside)
-        moreButton.addTarget(self, action: #selector(buttonTap(_:)), for: .touchUpInside)
-        closeButton.addTarget(self, action: #selector(buttonTap(_:)), for: .touchUpInside)
-        
-        leftView.imageView.image = UIImage(named: "pic-11")
-        leftView.titleLabel.text = "agdfuiafajkfjauhfakdfjahflkahi"
-        personCountView.label.text = "0"
+        personCountButton.addTarget(self,
+                                    action: #selector(buttonTap(_:)),
+                                    for: .touchUpInside)
+        moreButton.addTarget(self,
+                             action: #selector(buttonTap(_:)),
+                             for: .touchUpInside)
+        closeButton.addTarget(self,
+                              action: #selector(buttonTap(_:)),
+                              for: .touchUpInside)
     }
     
     @objc func buttonTap(_ sender: UIButton) {
@@ -116,6 +127,13 @@ class MainView: UIView {
             return
         }
     }
+    
+    func update(info: Info) {
+        self.info = info
+        leftView.imageView.image = UIImage(named: info.imageName)
+        leftView.titleLabel.text = info.title
+        personCountView.label.text = "\(info.userCount)"
+    }
 }
 
 extension MainView {
@@ -123,5 +141,17 @@ extension MainView {
         case close
         case more
         case member
+    }
+    
+    struct Info {
+        let title: String
+        let imageName: String
+        let userCount: Int
+        
+        static var empty: Info {
+            return Info(title: "",
+                        imageName: "pic-11",
+                        userCount: 0)
+        }
     }
 }

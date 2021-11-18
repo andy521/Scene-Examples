@@ -6,11 +6,17 @@
 //
 
 import UIKit
+import SyncManager
 
 class MainVC: UIViewController {
+    typealias Config = MainVM.Config
     let mainView = MainView()
+    let vm: MainVM
     
-    public init(appId: String) {
+    public init(config: Config,
+                syncManager: SyncManager) {
+        vm = MainVM(config: config,
+                    syncManager: syncManager)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -30,6 +36,48 @@ class MainVC: UIViewController {
     }
     
     private func commonInit() {
-        
+        mainView.delegate = self
+        vm.delegate = self
+        vm.start()
+    }
+}
+
+extension MainVC: MainViewDelegate {
+    func mainView(_ view: MainView, didTap action: MainView.Action) {
+        switch action {
+        case .member:
+            let vc = InvitationVC(sceneRef: vm.sceneRef)
+            vc.show(in: self)
+            return
+        case .more:
+            let vc = ToolVC()
+            vc.show(in: self)
+            return
+        default:
+            return
+        }
+    }
+}
+
+extension MainVC: MainVMDelegate {
+    func mainVMShouldGetLocalRender(_ vm: MainVM) -> UIView {
+        return mainView.renderViewLocal
+    }
+    
+    func mainVMShouldGetRemoteRender(_ vm: MainVM) -> UIView {
+        return mainView.renderViewRemote
+    }
+    
+    func mainVM(_ vm: MainVM,
+                didJoinRoom info: RoomInfo) {
+        let info = MainView.Info(title: info.roomName,
+                                 imageName: "pic-11",
+                                 userCount: info.userCount)
+        mainView.update(info: info)
+    }
+    
+    func mainVM(_ vm: MainVM,
+                shouldShow tips: String) {
+        show(tips)
     }
 }

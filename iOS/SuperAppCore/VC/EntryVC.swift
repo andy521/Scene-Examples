@@ -57,18 +57,30 @@ extension EntryVC: EntryViewDelegate, EntryVMDelegate {
     }
     
     func entryViewDidTapCreateButton(_ view: EntryView) {
-        let vc = MainVC(appId: "")
+        let vc = CreateLiveVC(appId: appId)
+        vc.delegate = self
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true, completion: nil)
-        
-//        let vc = CreateLiveVC(appId: appId)
-//        vc.delegate = self
-//        vc.modalPresentationStyle = .fullScreen
-//        present(vc, animated: true, completion: nil)
     }
     
-    func entryView(_ view: EntryView, didSelected info: EntryView.Info) {
-        
+    func entryView(_ view: EntryView,
+                   didSelected info: EntryView.Info,
+                   at index: Int) {
+        guard let roomInfo = vm.getRoomInfo(index: index) else {
+            return
+        }
+        let createTime = roomInfo.createTime
+        let roomId = roomInfo.roomId
+        let roomName = roomInfo.roomName
+        let config = MainVC.Config(appId: appId,
+                                   roomName: roomName,
+                                   entryType: .asAttend,
+                                   roomId: roomId,
+                                   createdTime: createTime)
+        let vc = MainVC(config: config,
+                        syncManager: vm.syncManager)
+        vc.modalPresentationStyle = .fullScreen
+        present(vc, animated: true, completion: nil)
     }
     
     func entryVMShouldUpdateInfos(infos: [EntryView.Info]) {
@@ -89,7 +101,14 @@ extension EntryVC: CreateLiveVCDelegate {
     func createLiveVC(_ vc: CreateLiveVC,
                       didSart roomName: String,
                       sellectedType: CreateLiveVC.SelectedType) {
-        let vc = MainVC(appId: "")
+        let createTime = Double(Int(Date().timeIntervalSince1970 * 1000) )
+        let config = MainVC.Config(appId: appId,
+                                   roomName: roomName,
+                                   entryType: .asCreator,
+                                   roomId: "\(createTime)",
+                                   createdTime: createTime)
+        let vc = MainVC(config: config,
+                        syncManager: vm.syncManager)
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true, completion: nil)
     }

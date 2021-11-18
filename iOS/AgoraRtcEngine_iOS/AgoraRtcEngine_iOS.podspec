@@ -23,6 +23,10 @@ Pod::Spec.new do |s|
       "AgoraSoundTouch.xcframework",
       "AgoraVideoSegmentationExtension.xcframework",
       "Agorafdkaac.xcframework",
-      "Agoraffmpeg.xcframework"
+      "Agoraffmpeg.xcframework",
+      "BeQuic.xcframework",
+      "AgoraRtcCryptoLoader.xcframework",
+      "AgoraRTE.xcframework",
+      "AgoraVideoProcess.xcframework"
   s.platform = :ios
 end

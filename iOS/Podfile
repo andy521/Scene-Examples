@@ -48,7 +48,8 @@ target 'SuperAppCore' do
   use_frameworks!
   pod 'AgoraLog'
   pod 'Toast-Swift'
-  pod 'SyncManager', :path => '../../../syncmanager/iOS/RtmSyncManager/SyncManager.podspec'
+  pod 'Presentr'
+  pod 'SyncManager', :path => '~/Agora/syncmanager/iOS/RtmSyncManager/SyncManager.podspec'
 end
 
 # target with leancloud sdk

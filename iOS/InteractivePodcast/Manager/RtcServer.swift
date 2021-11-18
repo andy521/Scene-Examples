@@ -28,7 +28,7 @@ class RtcServer: NSObject {
     var members: [UInt] = []
     var speakers = [UInt: Bool]()
     var role: AgoraClientRole? = nil
-    var audienceLatencyLevel: AgoraAudienceLatencyLevelType? = nil
+//    var audienceLatencyLevel: AgoraAudienceLatencyLevelType? = nil
     var muted: Bool = false
     
     var isJoinChannel: Bool {
@@ -48,61 +48,62 @@ class RtcServer: NSObject {
             config.areaCode = AgoraAreaCode.GLOB.rawValue
         #endif
         rtcEngine = AgoraRtcEngineKit.sharedEngine(with: config, delegate: self)
-        if let engine = rtcEngine {
-            engine.setChannelProfile(.liveBroadcasting)
-            engine.setAudioProfile(.musicHighQualityStereo, scenario: .chatRoomEntertainment)
-            engine.enableAudioVolumeIndication(500, smooth: 3, report_vad: false)
-        }
+//        if let engine = rtcEngine {
+//            engine.setChannelProfile(.liveBroadcasting)
+//            engine.setAudioProfile(.musicHighQualityStereo, scenario: .chatRoomEntertainment)
+//            engine.enableAudioVolumeIndication(500, smooth: 3, report_vad: false)
+//        }
     }
     
     func setClientRole(_ role: AgoraClientRole, _ audienceLatencyLevel: Bool) {
-        Logger.log(message: "rtc setClientRole \(role.rawValue)", level: .info)
-        let _audienceLatencyLevel: AgoraAudienceLatencyLevelType = audienceLatencyLevel ? .lowLatency : .ultraLowLatency
-        if (self.role == role && self.audienceLatencyLevel == _audienceLatencyLevel) {
-            return
-        }
-        self.role = role
-        self.audienceLatencyLevel = _audienceLatencyLevel
-        guard let rtc = self.rtcEngine else {
-            return
-        }
-        let option = AgoraClientRoleOptions()
-        option.audienceLatencyLevel = _audienceLatencyLevel
-        Logger.log(message: "setClientRole audienceLatencyLevel: \(_audienceLatencyLevel.rawValue)", level: .info)
-        rtc.setClientRole(role, options: option)
+//        Logger.log(message: "rtc setClientRole \(role.rawValue)", level: .info)
+//        let _audienceLatencyLevel: AgoraAudienceLatencyLevelType = audienceLatencyLevel ? .lowLatency : .ultraLowLatency
+//        if (self.role == role && self.audienceLatencyLevel == _audienceLatencyLevel) {
+//            return
+//        }
+//        self.role = role
+//        self.audienceLatencyLevel = _audienceLatencyLevel
+//        guard let rtc = self.rtcEngine else {
+//            return
+//        }
+//        let option = AgoraClientRoleOptions()
+//        option.audienceLatencyLevel = _audienceLatencyLevel
+//        Logger.log(message: "setClientRole audienceLatencyLevel: \(_audienceLatencyLevel.rawValue)", level: .info)
+//        rtc.setClientRole(role, options: option)
     }
     
     func joinChannel(member: PodcastMember, channel: String, setting: LocalSetting) -> Observable<Result<Void>> {
-        guard let rtc = self.rtcEngine else {
-            return Observable.just(Result(success: false, message: "rtcEngine is nil!"))
-        }
-        self.role = nil
-        self.audienceLatencyLevel = nil
-        
-        self.members.removeAll()
-        self.isManager = member.isManager
-        if (member.isSpeaker) {
-            setClientRole(.broadcaster, setting.audienceLatency)
-        } else {
-            setClientRole(.audience, setting.audienceLatency)
-        }
-        muteLocalMicrophone(mute: member.isSelfMuted)
-        return Single.create { single in
-            let code = rtc.joinChannel(byToken: BuildConfig.Token, channelId: channel, info: nil, uid: 0, options: AgoraRtcChannelMediaOptions())
-            single(.success(code))
-            return Disposables.create()
-        }.asObservable().subscribe(on: MainScheduler.instance)
-        .concatMap { (code: Int32) -> Observable<Result<Void>> in
-            if (code != 0) {
-                return Observable.just(Result(success: false, message: RtcServer.toErrorString(type: .join, code: code)))
-            } else {
-                return self.statePublisher.filter { (state) -> Bool in
-                    return state.data == RtcServerStateType.join || state.data == RtcServerStateType.error
-                }.take(1).map { (state) -> Result<Void> in
-                    return Result(success: state.success, message: state.message)
-                }
-            }
-        }
+        return .empty()
+//        guard let rtc = self.rtcEngine else {
+//            return Observable.just(Result(success: false, message: "rtcEngine is nil!"))
+//        }
+//        self.role = nil
+//        self.audienceLatencyLevel = nil
+//
+//        self.members.removeAll()
+//        self.isManager = member.isManager
+//        if (member.isSpeaker) {
+//            setClientRole(.broadcaster, setting.audienceLatency)
+//        } else {
+//            setClientRole(.audience, setting.audienceLatency)
+//        }
+//        muteLocalMicrophone(mute: member.isSelfMuted)
+//        return Single.create { single in
+//            let code = rtc.joinChannel(byToken: BuildConfig.Token, channelId: channel, info: nil, uid: 0, options: AgoraRtcChannelMediaOptions())
+//            single(.success(code))
+//            return Disposables.create()
+//        }.asObservable().subscribe(on: MainScheduler.instance)
+//        .concatMap { (code: Int32) -> Observable<Result<Void>> in
+//            if (code != 0) {
+//                return Observable.just(Result(success: false, message: RtcServer.toErrorString(type: .join, code: code)))
+//            } else {
+//                return self.statePublisher.filter { (state) -> Bool in
+//                    return state.data == RtcServerStateType.join || state.data == RtcServerStateType.error
+//                }.take(1).map { (state) -> Result<Void> in
+//                    return Result(success: state.success, message: state.message)
+//                }
+//            }
+//        }
     }
     
     func leaveChannel() -> Observable<Result<Void>> {

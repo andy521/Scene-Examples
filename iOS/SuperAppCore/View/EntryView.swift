@@ -9,7 +9,9 @@ import UIKit
 
 protocol EntryViewDelegate: NSObjectProtocol {
     func entryViewDidTapCreateButton(_ view: EntryView)
-    func entryView(_ view: EntryView, didSelected info: EntryView.Info)
+    func entryView(_ view: EntryView,
+                   didSelected info: EntryView.Info,
+                   at index: Int)
     func entryViewdidPull(_ view: EntryView)
 }
 
@@ -77,9 +79,15 @@ class EntryView: UIView {
         collectionView.register(EntryViewCell.self, forCellWithReuseIdentifier: "EntryViewCell")
         collectionView.dataSource = self
         collectionView.delegate = self
-        createButton.addTarget(self, action: #selector(buttonTap(_:)), for: .touchUpInside)
-        centerButton.addTarget(self, action: #selector(buttonTap(_:)), for: .touchUpInside)
-        refreshControl.addTarget(self, action: #selector(refreshPull), for: .touchUpInside)
+        createButton.addTarget(self,
+                               action: #selector(buttonTap(_:)),
+                               for: .touchUpInside)
+        centerButton.addTarget(self,
+                               action: #selector(buttonTap(_:)),
+                               for: .touchUpInside)
+        refreshControl.addTarget(self,
+                                 action: #selector(refreshPull),
+                                 for: .valueChanged)
     }
     
     @objc func buttonTap(_ button: UIButton) {
@@ -118,10 +126,12 @@ extension EntryView: UICollectionViewDataSource, UICollectionViewDelegate {
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView,
+                        didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         let info = infos[indexPath.row]
-        delegate?.entryView(self, didSelected: info)
+        delegate?.entryView(self,
+                            didSelected: info,
+                            at: indexPath.row)
     }
-    
 }
