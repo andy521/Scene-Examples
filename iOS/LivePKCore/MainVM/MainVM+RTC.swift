@@ -20,26 +20,15 @@ extension MainVM {
         config.logConfig = logConfig
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: config, delegate: self)
         agoraKit.enableVideo()
-        agoraKit.setVideoEncoderConfiguration(AgoraVideoEncoderConfiguration(size: CGSize(width: 360, height: 640),
-                                                                             frameRate: .fps15,
-                                                                             bitrate: AgoraVideoBitrateStandard,
-                                                                             orientationMode: .fixedPortrait))
+        let videoEncodeConfig = AgoraVideoEncoderConfiguration(size: CGSize(width: 360, height: 640),
+                                                               frameRate: .fps15,
+                                                               bitrate: AgoraVideoBitrateStandard,
+                                                               orientationMode: .fixedPortrait)
+        agoraKit.setVideoEncoderConfiguration(videoEncodeConfig)
         agoraKit.setChannelProfile(.liveBroadcasting)
         agoraKit.setDefaultAudioRouteToSpeakerphone(true)
         agoraKit.setAudioProfile(.speechStandard, scenario:.chatRoomEntertainment)
         agoraKit.enableDualStreamMode(false)
-        agoraKit.setParameters("{\"che.video.retransDetectEnable\":true}")
-        agoraKit.setParameters("{\"che.video.captureFpsLowPower\":true}")
-        agoraKit.setParameters("{\"che.video.setQuickVideoHighFec\":true}")
-        agoraKit.setParameters("{\"rtc.enable_quick_rexfer_keyframe\":true}")
-        agoraKit.setParameters("{\"rtc.enable_audio_rsfec_in_video\":true}")
-        agoraKit.setParameters("{\"che.audio.specify.codec\":\"OPUSFB\"}")
-        agoraKit.setParameters("{\"che.video.default_encode_complexity\":\"0x403\"}")
-        agoraKit.setParameters("{\"che.video.max_slices\":4}")
-        agoraKit.setParameters("{\"rtc.dual_signaling_mode\":2}")
-        agoraKit.setParameters("{\"rtc.work_manager_account_list\":[\"mix-worker-182.18.83.206-30002\"]}")
-        agoraKit.setParameters("{\"rtc.work_manager_addr_list\":[\"182.18.83.206:30002\"]}")
-        agoraKit.setParameters("{\"rtc.enable_crypto_access\":false}")
         
         let mediaOptions = AgoraRtcChannelMediaOptions()
         mediaOptions.autoSubscribeAudio = true
