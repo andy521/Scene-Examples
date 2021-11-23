@@ -2,6 +2,7 @@ package io.agora.livepk.manager;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -10,39 +11,45 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
-import io.agora.rtc.Constants;
-import io.agora.rtc.IRtcChannelEventHandler;
-import io.agora.rtc.IRtcEngineEventHandler;
-import io.agora.rtc.RtcChannel;
-import io.agora.rtc.RtcEngine;
-import io.agora.rtc.live.LiveTranscoding;
-import io.agora.rtc.models.ChannelMediaOptions;
-import io.agora.rtc.models.ClientRoleOptions;
-import io.agora.rtc.video.VideoCanvas;
-import io.agora.rtc.video.VideoEncoderConfiguration;
+import io.agora.mediaplayer.IMediaPlayer;
+import io.agora.rtc2.ChannelMediaOptions;
+import io.agora.rtc2.ClientRoleOptions;
+import io.agora.rtc2.Constants;
+import io.agora.rtc2.IRtcEngineEventHandler;
+import io.agora.rtc2.LeaveChannelOptions;
+import io.agora.rtc2.RtcConnection;
+import io.agora.rtc2.RtcEngine;
+import io.agora.rtc2.RtcEngineConfig;
+import io.agora.rtc2.RtcEngineEx;
+import io.agora.rtc2.live.LiveTranscoding;
+import io.agora.rtc2.video.VideoCanvas;
+import io.agora.rtc2.video.VideoEncoderConfiguration;
 
-import static io.agora.rtc.video.VideoCanvas.RENDER_MODE_HIDDEN;
-import static io.agora.rtc.video.VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15;
-import static io.agora.rtc.video.VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_ADAPTIVE;
-import static io.agora.rtc.video.VideoEncoderConfiguration.VD_640x360;
+import static io.agora.rtc2.video.VideoCanvas.RENDER_MODE_HIDDEN;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_FIXED_PORTRAIT;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_640x360;
 
 public class RtcManager {
     private static final String TAG = "RtcManager";
-    private static final int LOCAL_RTC_UID = 0;
+    private int publishUid = 0;
+    private String publishChannelId = "";
 
     private volatile boolean isInitialized = false;
-    private RtcEngine engine;
-    private final Map<String, RtcChannel> mRtcChannels = new HashMap<>();
+    private RtcEngineEx engine;
+    private final Map<String, RtcConnection> mRtcChannels = new HashMap<>();
     private final Map<Integer, Runnable> firstVideoFramePendingRuns = new HashMap<>();
     private Context mContext;
+    private OnChannelListener publishChannelListener = null;
 
     private final VideoEncoderConfiguration encoderConfiguration = new VideoEncoderConfiguration(
             VD_640x360,
             FRAME_RATE_FPS_15,
-            700,
-            ORIENTATION_MODE_ADAPTIVE
+            600,
+            ORIENTATION_MODE_FIXED_PORTRAIT
     );
 
     public void init(Context context, String appId, OnInitializeListener listener){
@@ -52,7 +59,11 @@ public class RtcManager {
         mContext = context;
         try {
             // 0. create engine
-            engine = RtcEngine.create(mContext.getApplicationContext(), appId, new IRtcEngineEventHandler() {
+            RtcEngineConfig config = new RtcEngineConfig();
+            config.mContext = context;
+            config.mAppId = appId;
+            config.mChannelProfile =Constants.CHANNEL_PROFILE_LIVE_BROADCASTING;
+            config.mEventHandler = new IRtcEngineEventHandler() {
                 @Override
                 public void onWarning(int warn) {
                     super.onWarning(warn);
@@ -77,36 +88,59 @@ public class RtcManager {
                 @Override
                 public void onFirstLocalVideoFrame(int width, int height, int elapsed) {
                     super.onFirstLocalVideoFrame(width, height, elapsed);
-
                     Log.d(TAG, "onFirstLocalVideoFrame");
-                    Runnable runnable = firstVideoFramePendingRuns.get(LOCAL_RTC_UID);
-                    if(runnable != null){
-                        runnable.run();
-                        firstVideoFramePendingRuns.remove(LOCAL_RTC_UID);
-                    }
                 }
 
                 @Override
                 public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
                     super.onJoinChannelSuccess(channel, uid, elapsed);
+                    Log.d(TAG, "onJoinChannelSuccess channel=" + channel + ",uid=" + uid);
+                    if(channel.equals(publishChannelId)){
+                        publishUid = uid;
+                        if(publishChannelListener != null){
+                            publishChannelListener.onJoinSuccess(uid);
+                        }
+                    }
                 }
-            });
-            engine.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING);
-            engine.setAudioProfile(Constants.AUDIO_PROFILE_SPEECH_STANDARD, Constants.AUDIO_SCENARIO_CHATROOM_ENTERTAINMENT);
-            engine.setDefaultAudioRoutetoSpeakerphone(true);
-            engine.enableDualStreamMode(false);
-            engine.setParameters("{\"che.video.retransDetectEnable\":true}");
-            engine.setParameters("{\"che.video.captureFpsLowPower\":true}");
-            engine.setParameters("{\"che.video.android_zero_copy_mode\":2}");
-            engine.setParameters("{\"che.video.setQuickVideoHighFec\":true}");
-            engine.setParameters("{\"rtc.enable_quick_rexfer_keyframe\":true}");
-            engine.setParameters("{\"rtc.enable_audio_rsfec_in_video\":true}");
-            engine.setParameters("{\"che.audio.opensl\":true}");
-            engine.setParameters("{\"che.audio.specify.codec\":\"OPUSFB\"}");
 
+                @Override
+                public void onUserJoined(int uid, int elapsed) {
+                    super.onUserJoined(uid, elapsed);
+                    Log.d(TAG, "onUserJoined uid=" + uid);
+                    if(publishChannelListener != null){
+                        publishChannelListener.onUserJoined(publishChannelId, uid);
+                    }
+                }
+
+                @Override
+                public void onUserOffline(int uid, int reason) {
+                    super.onUserOffline(uid, reason);
+                    Log.d(TAG, "onUserOffline uid=" + uid);
+                }
+
+            };
+            config.mAudioScenario = Constants.AudioScenario.getValue(Constants.AudioScenario.GAME_STREAMING);
+            engine = (RtcEngineEx)RtcEngineEx.create(config);
+            engine.setDefaultAudioRoutetoSpeakerphone(true);
             engine.enableVideo();
             engine.enableAudio();
-            engine.setVideoEncoderConfiguration(encoderConfiguration);
+
+
+            //engine.setParameters("{\"che.video.retransDetectEnable\":true}");
+            //engine.setParameters("{\"che.video.captureFpsLowPower\":true}");
+            //engine.setParameters("{\"che.video.android_zero_copy_mode\":2}");
+            //engine.setParameters("{\"che.video.setQuickVideoHighFec\":true}");
+            //engine.setParameters("{\"rtc.enable_quick_rexfer_keyframe\":true}");
+            //engine.setParameters("{\"rtc.enable_audio_rsfec_in_video\":true}");
+            //engine.setParameters("{\"che.audio.opensl\":true}");
+            //engine.setParameters("{\"che.audio.specify.codec\":\"OPUSFB\"}");
+            //engine.setParameters("{\"rtc.log_size\":999999999}");
+            //engine.setParameters("{\"rtc.log_filter\":65535}");
+            //engine.setParameters("{\"rtc.dual_signaling_mode\":2}");
+            //engine.setParameters("{\"rtc.work_manager_account_list\":[\"mix-worker-182.18.83.206-30002\"]}");
+            //engine.setParameters("{\"rtc.work_manager_addr_list\":[\"182.18.83.206:30002\"]}");
+            //engine.setParameters("{\"rtc.enable_crypto_access\":false}");
+
             isInitialized = true;
         } catch (Exception e) {
             if(listener != null){
@@ -119,10 +153,12 @@ public class RtcManager {
         if (engine == null) {
             return;
         }
-        View videoView = RtcEngine.CreateTextureView(mContext);
+        View videoView = new SurfaceView(container.getContext());
         container.addView(videoView);
-        firstVideoFramePendingRuns.put(LOCAL_RTC_UID, firstFrame);
-        engine.setupLocalVideo(new VideoCanvas(videoView, RENDER_MODE_HIDDEN, LOCAL_RTC_UID));
+        if(firstFrame != null){
+            firstFrame.run();
+        }
+        engine.setupLocalVideo(new VideoCanvas(videoView, RENDER_MODE_HIDDEN, publishUid));
         engine.startPreview();
     }
 
@@ -130,91 +166,179 @@ public class RtcManager {
         if (engine == null) {
             return;
         }
+        if(publish){
+            ClientRoleOptions clientRoleOptions = new ClientRoleOptions();
+            clientRoleOptions.audienceLatencyLevel = Constants.AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
+            engine.setClientRole(IRtcEngineEventHandler.ClientRole.CLIENT_ROLE_BROADCASTER, clientRoleOptions);
+            engine.setVideoEncoderConfiguration(encoderConfiguration);
+            publishChannelListener = new OnChannelListener() {
+                @Override
+                public void onError(int code, String message) {
+                    if(listener != null){
+                        listener.onError(code, message);
+                    }
+                }
+
+                @Override
+                public void onJoinSuccess(int uid) {
+                    //LiveTranscoding transcoding = new LiveTranscoding();
+                    //LiveTranscoding.TranscodingUser user = new LiveTranscoding.TranscodingUser();
+                    //user.uid = uid;
+                    //user.width = encoderConfiguration.dimensions.height;
+                    //user.height = encoderConfiguration.dimensions.width;
+                    //transcoding.addUser(user);
+                    //engine.setLiveTranscoding(transcoding);
+                    int publishCode = engine.addPublishStreamUrl(getPushRtmpUrl(channelId), false);
+                    Log.i(TAG, String.format("onJoinChannelSuccess channel %s uid %d publishCode %d", channelId, uid, publishCode));
+                    if(listener != null){
+                        listener.onJoinSuccess(uid);
+                    }
+                }
+
+                @Override
+                public void onUserJoined(String channelId, int uid) {
+                    if(listener != null){
+                        listener.onUserJoined(channelId, uid);
+                    }
+                }
+
+            };
+            publishChannelId = channelId;
+            ChannelMediaOptions option = new ChannelMediaOptions();
+            option.autoSubscribeAudio = true;
+            option.autoSubscribeVideo = true;
+            int ret = engine.joinChannel(null, channelId, publishUid, option);
+            Log.i(TAG, String.format("joinChannel channel %s ret %d", channelId, ret));
+            return;
+        }
+
         if(mRtcChannels.get(channelId) != null){
             return;
         }
         // 1. create channel
-        RtcChannel rtcChannel = engine.createRtcChannel(channelId);
-        // 2. set role
-        ClientRoleOptions options = new ClientRoleOptions();
-        options.audienceLatencyLevel = Constants.AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
-        rtcChannel.setClientRole(Constants.CLIENT_ROLE_BROADCASTER, options);
-        mRtcChannels.put(channelId, rtcChannel);
+        RtcConnection connection = new RtcConnection();
+        connection.channelId = channelId;
+        connection.localUid = new Random().nextInt(512)+512;
+        mRtcChannels.put(channelId, connection);
+        if(publish){
+            publishUid = connection.localUid;
+        }
+        engine.setVideoEncoderConfigurationEx(encoderConfiguration, connection);
 
-        rtcChannel.setRtcChannelEventHandler(new IRtcChannelEventHandler() {
+        // 2. set role
+        ChannelMediaOptions channelMediaOptions = new ChannelMediaOptions();
+        channelMediaOptions.autoSubscribeAudio = true;
+        channelMediaOptions.autoSubscribeVideo = true;
+
+        channelMediaOptions.publishAudioTrack = publish;
+        channelMediaOptions.publishCameraTrack = publish;
+        channelMediaOptions.clientRoleType = Constants.CLIENT_ROLE_BROADCASTER;
+        int ret = engine.joinChannelEx(null, connection, channelMediaOptions, new IRtcEngineEventHandler() {
             @Override
-            public void onChannelError(RtcChannel rtcChannel, int err) {
-                super.onChannelError(rtcChannel, err);
+            public void onError(int err) {
+                super.onError(err);
                 Log.e(TAG, String.format("onChannelError code %d", err));
-                if(listener != null){
+                if (listener != null) {
                     listener.onError(err,
-                            err == IRtcEngineEventHandler.ErrorCode.ERR_INVALID_TOKEN ? "invalid token -- channelId " + channelId : "");
+                            err == ErrorCode.ERR_INVALID_TOKEN ? "invalid token -- channelId " + channelId : "");
                 }
             }
 
             @Override
-            public void onJoinChannelSuccess(RtcChannel rtcChannel, int uid, int elapsed) {
-                super.onJoinChannelSuccess(rtcChannel, uid, elapsed);
-                if(publish){
+            public void onFirstRemoteVideoFrame(int uid, int width, int height, int elapsed) {
+                super.onFirstRemoteVideoFrame(uid, width, height, elapsed);
+                Log.e(TAG, String.format("onFirstRemoteVideoFrame uid=%d, width=%d, height=%d", uid, width, height));
+                Runnable runnable = firstVideoFramePendingRuns.get(uid);
+                if(runnable != null){
+                    runnable.run();
+                    firstVideoFramePendingRuns.remove(uid);
+                }
+            }
+
+            @Override
+            public void onEncryptionError(ENCRYPTION_ERROR_TYPE errorType) {
+                super.onEncryptionError(errorType);
+                Log.e(TAG, String.format("onEncryptionError errorType %d", errorType));
+            }
+
+            @Override
+            public void onPermissionError(PERMISSION permission) {
+                super.onPermissionError(permission);
+                Log.e(TAG, String.format("onPermissionError permission %d", permission));
+            }
+
+            @Override
+            public void onStreamMessageError(int uid, int streamId, int error, int missed, int cached) {
+                super.onStreamMessageError(uid, streamId, error, missed, cached);
+                Log.e(TAG, String.format("onStreamMessageError error %d", error));
+            }
+
+            @Override
+            public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
+                super.onJoinChannelSuccess(channel, uid, elapsed);
+                if (publish) {
                     LiveTranscoding transcoding = new LiveTranscoding();
                     LiveTranscoding.TranscodingUser user = new LiveTranscoding.TranscodingUser();
                     user.uid = uid;
                     user.width = encoderConfiguration.dimensions.height;
                     user.height = encoderConfiguration.dimensions.width;
                     transcoding.addUser(user);
-
-                    rtcChannel.setLiveTranscoding(transcoding);
-                    int publishCode = rtcChannel.addPublishStreamUrl(getPushRtmpUrl(channelId), true);
+                    engine.setLiveTranscoding(transcoding);
+                    int publishCode = engine.addPublishStreamUrl(getPushRtmpUrl(channelId), false);
                     Log.i(TAG, String.format("onJoinChannelSuccess channel %s uid %d publishCode %d", channelId, uid, publishCode));
-
                 }
-                if(listener != null){
+                if (listener != null) {
                     listener.onJoinSuccess(uid);
                 }
             }
 
             @Override
-            public void onRtmpStreamingEvent(RtcChannel rtcChannel, String url, int errCode) {
-                super.onRtmpStreamingEvent(rtcChannel, url, errCode);
-                Log.i(TAG, String.format("onRtmpStreamingEvent url=%s, errorCode=%d", url, errCode));
-            }
-
-            @Override
-            public void onRtmpStreamingStateChanged(RtcChannel rtcChannel, String url, int state, int errCode) {
-                super.onRtmpStreamingStateChanged(rtcChannel, url, state, errCode);
+            public void onRtmpStreamingStateChanged(String url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode) {
+                super.onRtmpStreamingStateChanged(url, state, errCode);
                 Log.i(TAG, String.format("onRtmpStreamingStateChanged url=%s, state=%d, errorCode=%d", url, state, errCode));
             }
 
             @Override
-            public void onUserJoined(RtcChannel rtcChannel, int uid, int elapsed) {
-                super.onUserJoined(rtcChannel, uid, elapsed);
-                if(listener != null){
+            public void onUserJoined(int uid, int elapsed) {
+                super.onUserJoined(uid, elapsed);
+                if (listener != null) {
                     listener.onUserJoined(channelId, uid);
                 }
             }
 
             @Override
-            public void onRemoteVideoStateChanged(RtcChannel rtcChannel, int uid, int state, int reason, int elapsed) {
-                super.onRemoteVideoStateChanged(rtcChannel, uid, state, reason, elapsed);
-                Log.d(TAG, "onRemoteVideoStateChanged uid=" + uid + ", state=" + state);
-                if(state == Constants.REMOTE_VIDEO_STATE_DECODING){
+            public void onRemoteVideoStateChanged(int uid, int state, int reason, int elapsed) {
+                super.onRemoteVideoStateChanged(uid, state, reason, elapsed);
+                Log.e(TAG, String.format("onRemoteVideoStateChanged uid=%d, state=%d, reason=%d", uid, state, reason));
+
+                if (state == Constants.REMOTE_VIDEO_STATE_PLAYING) {
                     Runnable runnable = firstVideoFramePendingRuns.get(uid);
-                    if(runnable != null){
+                    if (runnable != null) {
                         runnable.run();
                         firstVideoFramePendingRuns.remove(uid);
                     }
                 }
             }
 
-        });
+            @Override
+            public void onLocalVideoStats(LocalVideoStats stats) {
+                super.onLocalVideoStats(stats);
+                Log.e(TAG, String.format("onLocalVideoStats stats=%s", stats.toString()));
+            }
 
-        ChannelMediaOptions mediaOptions = new ChannelMediaOptions();
-        mediaOptions.autoSubscribeAudio = true;
-        mediaOptions.autoSubscribeVideo = true;
-        mediaOptions.publishLocalAudio = publish;
-        mediaOptions.publishLocalVideo = publish;
-        // 3. Join channel
-        int ret = rtcChannel.joinChannel("", "", 0, mediaOptions);
+            @Override
+            public void onRemoteVideoStats(RemoteVideoStats stats) {
+                super.onRemoteVideoStats(stats);
+                Log.e(TAG, String.format("onRemoteVideoStats stats=%s", stats.toString()));
+
+            }
+
+            @Override
+            public void onLeaveChannel(RtcStats stats) {
+                super.onLeaveChannel(stats);
+                Log.e(TAG, String.format("joinChannelEx onLeaveChannel stats=%s", stats.toString()));
+            }
+        });
         Log.i(TAG, String.format("joinChannel channel %s ret %d", channelId, ret));
     }
 
@@ -222,25 +346,16 @@ public class RtcManager {
         if (engine == null) {
             return;
         }
+        if(mRtcChannels.get(channelId) == null){
+            return;
+        }
         // 4. render video
-        View videoView = RtcEngine.CreateRendererView(mContext);
+        View videoView = new SurfaceView(container.getContext());
         container.addView(videoView);
         firstVideoFramePendingRuns.put(uid, firstFrame);
-        engine.setupRemoteVideo(new VideoCanvas(videoView, RENDER_MODE_HIDDEN, channelId, uid));
-
+        engine.setupRemoteVideoEx(new VideoCanvas(videoView, RENDER_MODE_HIDDEN, uid), mRtcChannels.get(channelId));
     }
 
-    public void leaveChannel(String channelId){
-        if (engine == null) {
-            return;
-        }
-        RtcChannel rtcChannel = mRtcChannels.get(channelId);
-        if(rtcChannel != null){
-            return;
-        }
-        rtcChannel.leaveChannel();
-        mRtcChannels.remove(channelId);
-    }
 
     public void leaveChannelExcept(String channelId){
         if (engine == null) {
@@ -249,18 +364,34 @@ public class RtcManager {
         List<String> keys = new ArrayList<>(mRtcChannels.keySet());
         for (String key : keys) {
             if(!key.equals(channelId)){
-                mRtcChannels.get(key).leaveChannel();
+                engine.leaveChannelEx(mRtcChannels.get(key));
                 mRtcChannels.remove(key);
             }
         }
+        if(!channelId.equals(publishChannelId)){
+            engine.leaveChannel();
+        }
+    }
+
+
+    public IMediaPlayer createPlayer(){
+        if(engine == null){
+            return null;
+        }
+        return engine.createMediaPlayer();
     }
 
     public void release() {
+        publishChannelListener = null;
+        mRtcChannels.clear();
+        firstVideoFramePendingRuns.clear();
+
         Set<String> keys = mRtcChannels.keySet();
         for (String key : keys) {
-            mRtcChannels.get(key).leaveChannel();
+            engine.leaveChannelEx(mRtcChannels.get(key));
         }
-        mRtcChannels.clear();
+        engine.leaveChannel();
+
         if (engine != null) {
             RtcEngine.destroy();
         }
@@ -275,7 +406,6 @@ public class RtcManager {
             engine.switchCamera();
         }
     }
-
 
     public interface OnInitializeListener {
         void onError(int code, String message);

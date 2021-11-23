@@ -23,14 +23,13 @@ import java.util.UUID;
 import io.agora.baselibrary.base.DataBindBaseActivity;
 import io.agora.livepk.R;
 import io.agora.livepk.databinding.ActivityVideoBinding;
+import io.agora.livepk.manager.RtcManager;
 import io.agora.livepk.manager.RtmManager;
 import io.agora.livepk.model.RoomInfo;
 import io.agora.livepk.util.UserUtil;
-import io.agora.mediaplayer.AgoraMediaPlayerKit;
 import io.agora.mediaplayer.Constants;
-import io.agora.mediaplayer.MediaPlayerObserver;
-import io.agora.mediaplayer.VideoFrameObserver;
-import io.agora.mediaplayer.data.VideoFrame;
+import io.agora.mediaplayer.IMediaPlayer;
+import io.agora.mediaplayer.IMediaPlayerObserver;
 import io.agora.rtm.ErrorInfo;
 import io.agora.rtm.ResultCallback;
 import io.agora.rtm.RtmChannelAttribute;
@@ -42,8 +41,9 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
 
     private static final String EXTRA_ROOM_INFO = "roomInfo";
 
-    private AgoraMediaPlayerKit agoraMediaPlayerKitA, agoraMediaPlayerKitB;
+    private IMediaPlayer agoraMediaPlayerKitA, agoraMediaPlayerKitB;
     private final RtmManager rtmManager = new RtmManager();
+    private final RtcManager rtcManager = new RtcManager();
     private RoomInfo mRoomInfo;
 
     public static Intent launch(Context context, RoomInfo roomInfo) {
@@ -91,6 +91,17 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
 
     @Override
     protected void iniData() {
+        rtcManager.init(this, getAgoraAppId(), new RtcManager.OnInitializeListener() {
+            @Override
+            public void onError(int code, String message) {
+
+            }
+
+            @Override
+            public void onSuccess() {
+
+            }
+        });
         initRtmManager(mRoomInfo.roomId);
     }
 
@@ -224,21 +235,16 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
     }
 
 
-    private AgoraMediaPlayerKit playUrl(FrameLayout container, String url, Runnable complete) {
-        AgoraMediaPlayerKit mediaPlayer = new AgoraMediaPlayerKit(this);
-        SurfaceView videoView = new SurfaceView(this);
-        container.addView(videoView);
-        mediaPlayer.setView(videoView);
-        mediaPlayer.setRenderMode(PLAYER_RENDER_MODE_HIDDEN);
-        mediaPlayer.open(url, 0);
-        mediaPlayer.registerPlayerObserver(new MediaPlayerObserver() {
+    private IMediaPlayer playUrl(FrameLayout container, String url, Runnable complete) {
+        IMediaPlayer player = rtcManager.createPlayer();
+        player.registerPlayerObserver(new IMediaPlayerObserver() {
             @Override
             public void onPlayerStateChanged(Constants.MediaPlayerState state, Constants.MediaPlayerError error) {
                 Log.i(TAG, "agoraMediaPlayerKit1 onPlayerStateChanged:" + state + " " + error);
                 if (state == Constants.MediaPlayerState.PLAYER_STATE_OPEN_COMPLETED) {
-                    mediaPlayer.play();
+                    player.play();
                     if(complete != null){
-                        complete.run();
+                        runOnUiThread(complete);
                     }
                 }
             }
@@ -264,24 +270,17 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
             }
 
             @Override
-            public void onPreloadEvent(String s, Constants.MediaPlayerPreloadEvent mediaPlayerPreloadEvent) {
+            public void onCompleted() {
 
             }
 
         });
-        mediaPlayer.unregisterVideoFrameObserver(new VideoFrameObserver() {
-            private volatile boolean firstFrame = false;
-            @Override
-            public void onFrame(VideoFrame videoFrame) {
-                if(!firstFrame){
-                    firstFrame = true;
-
-                    mediaPlayer.unregisterVideoFrameObserver(this);
-                }
-            }
-        });
-
-        return mediaPlayer;
+        SurfaceView videoView = new SurfaceView(this);
+        container.addView(videoView);
+        player.setView(videoView);
+        player.setRenderMode(PLAYER_RENDER_MODE_HIDDEN);
+        player.open(url, 0);
+        return player;
     }
 
     private String getPkNameFromChannelAttr(List<RtmChannelAttribute> attributes) {
@@ -313,6 +312,7 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
             agoraMediaPlayerKitB.destroy();
         }
         rtmManager.release();
+        rtcManager.release();
     }
 
     private String getVideoPullUrl(String roomName) {

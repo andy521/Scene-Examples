@@ -26,6 +26,7 @@ import io.agora.livepk.model.RoomInfo;
 import io.agora.livepk.util.DataListCallback;
 import io.agora.livepk.widget.CreateRoomDialog;
 import io.agora.livepk.widget.SpaceItemDecoration;
+import io.agora.rtc2.RtcEngine;
 import io.agora.syncmanager.rtm.IObject;
 import io.agora.syncmanager.rtm.Scene;
 import io.agora.syncmanager.rtm.SceneReference;
@@ -64,6 +65,7 @@ public class LivePKListActivity extends DataBindBaseActivity<ActivityListBinding
         mDataBinding.hostInRoomListRecycler.setAdapter(mAdapter);
         mDataBinding.hostInRoomListRecycler.addItemDecoration(new SpaceItemDecoration(getResources()
                 .getDimensionPixelSize(R.dimen.activity_horizontal_margin), RECYCLER_VIEW_SPAN_COUNT));
+        mDataBinding.tvVersion.setText(RtcEngine.getSdkVersion());
     }
 
     @Override

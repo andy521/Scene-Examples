@@ -22,6 +22,14 @@
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />
 
+            <TextView
+                android:id="@+id/tvVersion"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:gravity="end|center_vertical"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+
         </FrameLayout>
 
         <FrameLayout
