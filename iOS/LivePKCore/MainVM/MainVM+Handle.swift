@@ -18,10 +18,16 @@ extension MainVM {
     }
     
     func handleAttributiesForRemoveRemote() {
+        guard let channel = channelRemote else {
+            return
+        }
         removeAllRemoteRenders()
         invokeDidUpdateRenderInfos(renders: renderInfos)
-        channelRemote?.leave()
+        agoraKit.leaveChannelEx(channel) { stats in
+            Log.info(text: "channelRemote leave \(stats.description)",
+                     tag: "pkSyncDidUpdateAttribute")
+        }
         channelRemote = nil
-        Log.info(text: "channelRemote leave", tag: "pkSyncDidUpdateAttribute")
+        Log.info(text: "channelRemote has leave", tag: "pkSyncDidUpdateAttribute")
     }
 }

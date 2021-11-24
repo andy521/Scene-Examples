@@ -51,17 +51,17 @@ class RtcServer: NSObject {
         rtcEngine = AgoraRtcEngineKit.sharedEngine(with: config, delegate: self)
         if let engine = rtcEngine {
             engine.setChannelProfile(.liveBroadcasting)
-            engine.setAudioProfile(.musicHighQualityStereo, scenario: .chatRoomEntertainment)
-            engine.enableAudioVolumeIndication(500, smooth: 3, report_vad: false)
+//            engine.setAudioProfile(.musicHighQualityStereo, scenario: .chatRoomEntertainment)
+//            engine.enableAudioVolumeIndication(500, smooth: 3, report_vad: false)
             
             engine.enableVideo()
-            engine.setVideoEncoderConfiguration(
-                AgoraVideoEncoderConfiguration(
-                    size: CGSize(width: 480, height: 480),
-                    frameRate: .fps15,
-                    bitrate: AgoraVideoBitrateStandard,
-                    orientationMode: .fixedPortrait)
-            )
+//            engine.setVideoEncoderConfiguration(
+//                AgoraVideoEncoderConfiguration(
+//                    size: CGSize(width: 480, height: 480),
+//                    frameRate: .fps15,
+//                    bitrate: AgoraVideoBitrateStandard,
+//                    orientationMode: .fixedPortrait)
+//            )
         }
     }
     
@@ -179,8 +179,8 @@ class RtcServer: NSObject {
         muteLocalMicrophone(mute: member.isSelfMuted)
         
         return Single.create { single in
-            let code = rtc.joinChannel(byToken: BuildConfig.Token, channelId: channel, info: nil, uid: 0, options: AgoraRtcChannelMediaOptions())
-            single(.success(code))
+//            let code = rtc.joinChannel(byToken: BuildConfig.Token, channelId: channel, info: nil, uid: 0, options: AgoraRtcChannelMediaOptions())
+            single(.success(0))
             return Disposables.create()
         }.asObservable().subscribe(on: MainScheduler.instance)
         .concatMap { (code: Int32) -> Observable<Result<Void>> in

@@ -10,7 +10,6 @@ import RxCocoa
 import RxSwift
 import Core
 import LivePKCore
-import LiveMutiCore
 
 class ViewController: CustomTabBarController {
     
@@ -22,8 +21,7 @@ class ViewController: CustomTabBarController {
     override func setupView() {
         let livePKEntryVC = LivePKCore.EntryVC()
         livePKEntryVC.appId = BuildConfig.AppId
-        let LiveMutiEntryVC = LiveMutiCore.EntryVC()
-        LiveMutiEntryVC.appId = BuildConfig.AppId
+        let LiveMutiEntryVC = UIViewController()
         viewControllers = [
             livePKEntryVC,
             UIViewController(),

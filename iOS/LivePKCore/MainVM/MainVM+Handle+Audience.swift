@@ -5,14 +5,25 @@
 //  Created by ZYP on 2021/9/27.
 //
 
-import Foundation
-import AgoraMediaPlayer
+import UIKit
+import AgoraRtcKit
 
 extension MainVM {
     func subscribeMedia(view: UIView, roomName: String) {
-        let player = players[roomName] ?? AgoraMediaPlayer(delegate: self)
-        players[roomName] = player
-
+        if players[roomName] == nil {
+            let config = AgoraRtcEngineConfig()
+            let logConfig = AgoraLogConfig()
+            config.appId = appId
+            logConfig.level = .info
+            config.logConfig = logConfig
+            let engine = AgoraRtcEngineKit.sharedEngine(with: config,
+                                                        delegate: nil)
+            let mp = engine.createMediaPlayer(with: self)
+        
+            players[roomName] = mp
+        }
+        
+        let player = players[roomName]!
         player.setView(view)
         player.open("https://webdemo-pull-hdl.agora.io/lbhd/\(roomName).flv", startPos: 0)
         player.play()

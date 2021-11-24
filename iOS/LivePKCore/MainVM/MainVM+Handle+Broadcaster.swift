@@ -107,8 +107,7 @@ extension MainVM {
         videoCanvas.uid = uid
         videoCanvas.view = view
         videoCanvas.renderMode = .hidden
-        videoCanvas.channelId = channel.getId()
-        agoraKit.setupRemoteVideo(videoCanvas)
+        agoraKit.setupRemoteVideoEx(videoCanvas, connection: channel)
     }
     
     func exitPk() {
@@ -116,20 +115,16 @@ extension MainVM {
             manager.deleteAttributes(channelName: remoteChannelName, keys: [kPKKey])
         }
         
-        
         Log.info(text: "channelRemote leave", tag: "exitPk")
-        channelRemote?.leave()
-        channelRemote = nil
         removeAllRemoteRenders()
         invokeDidUpdateRenderInfos(renders: renderInfos)
-        
-        
-        if let channelName = channelLocal?.getId() {
+    
+        if let channel = channelLocal {
+            let channelName = channel.channelId
             manager.deleteAttributes(channelName: channelName, keys: [kPKKey])
             removeAllRemoteRenders()
             invokeDidUpdateRenderInfos(renders: renderInfos)
         }
-        
     }
 }
 

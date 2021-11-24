@@ -11,63 +11,100 @@ import AgoraRtcKit
 extension MainVM {
     /// 本地加入自己的频道
     func joinRtcChannelLocal(channelName: String) {
+        guard channelLocal == nil else {
+            return
+        }
+        
         let config = AgoraRtcEngineConfig()
         config.appId = appId
-        config.areaCode = AgoraAreaCode.GLOB.rawValue
 
         let logConfig = AgoraLogConfig()
         logConfig.level = .info
         config.logConfig = logConfig
-        agoraKit = AgoraRtcEngineKit.sharedEngine(with: config, delegate: self)
+        agoraKit = AgoraRtcEngineKit.sharedEngine(with: config, delegate: nil)
         agoraKit.enableVideo()
+        
+        let channel = AgoraRtcConnection()
+        channel.channelId = channelName
+        channelLocal = channel
+        
         let videoEncodeConfig = AgoraVideoEncoderConfiguration(size: CGSize(width: 360, height: 640),
                                                                frameRate: .fps15,
                                                                bitrate: AgoraVideoBitrateStandard,
-                                                               orientationMode: .fixedPortrait)
-        agoraKit.setVideoEncoderConfiguration(videoEncodeConfig)
+                                                               orientationMode: .fixedPortrait,
+                                                               mirrorMode: .disabled)
+        agoraKit.setVideoEncoderConfigurationEx(videoEncodeConfig,
+                                                connection: channel)
         agoraKit.setChannelProfile(.liveBroadcasting)
         agoraKit.setDefaultAudioRouteToSpeakerphone(true)
-        agoraKit.setAudioProfile(.speechStandard, scenario:.chatRoomEntertainment)
+        agoraKit.setAudioProfile(.speechStandard, scenario: .chatRoom)
         agoraKit.enableDualStreamMode(false)
+        agoraKit.setClientRole(.broadcaster)
         
         let mediaOptions = AgoraRtcChannelMediaOptions()
-        mediaOptions.autoSubscribeAudio = true
-        mediaOptions.autoSubscribeVideo = true
-        mediaOptions.publishLocalAudio = true
-        mediaOptions.publishLocalVideo = true
+        mediaOptions.clientRoleType = AgoraRtcIntOptional.of(1)
+        mediaOptions.autoSubscribeAudio = AgoraRtcBoolOptional.of(true)
+        mediaOptions.autoSubscribeVideo = AgoraRtcBoolOptional.of(true)
+        mediaOptions.publishAudioTrack = AgoraRtcBoolOptional.of(true)
+        mediaOptions.publishCameraTrack = AgoraRtcBoolOptional.of(true)
         
-        channelLocal = agoraKit.createRtcChannel(channelName)
-        channelLocal?.setClientRole(.broadcaster)
-        channelLocal?.setRtcChannelDelegate(self)
-        let result = channelLocal?.join(byToken: nil, info: nil, uid: 0, options: mediaOptions) ?? -1
+        let result =  agoraKit.joinChannel(byToken: nil,
+                                           channelId: channel.channelId,
+                                           uid: 0,
+                                           mediaOptions: mediaOptions,
+                                           joinSuccess: { [weak self](_, _, _) in
+                                            guard let channelName = self?.loginInfo.roomName else {
+                                                return
+                                            }
+                                            let url = "rtmp://webdemo-push.agora.io/lbhd/\(channelName)"
+                                            self?.agoraKit.addPublishStreamUrl(url,
+                                                                               transcodingEnabled: false)
+                                           })
+
         if result != 0 {
             let text = "launchLocalChannel error: \(result)"
             Log.errorText(text: text, tag: "joinRtcChannelLocal")
             invokeShouldShowTips(tips: text)
             return
         }
-        Log.info(text: "launchLocalChannel success", tag: "joinRtcChannelLocal")
     }
     
     /// 加入远程的频道
     func joinRtcChannelRemote(channelName: String) {
-        let mediaOptions = AgoraRtcChannelMediaOptions()
-        mediaOptions.autoSubscribeAudio = true
-        mediaOptions.autoSubscribeVideo = true
-        mediaOptions.publishLocalAudio = false
-        mediaOptions.publishLocalVideo = false
+        guard channelRemote == nil else {
+            return
+        }
         
-        channelRemote = agoraKit.createRtcChannel(channelName)
-        channelRemote?.setClientRole(.broadcaster)
-        channelRemote?.setRtcChannelDelegate(self)
-        let result = channelRemote?.join(byToken: nil, info: nil, uid: 0, options: mediaOptions) ?? -1
+        let mediaOptions = AgoraRtcChannelMediaOptions()
+        mediaOptions.clientRoleType = AgoraRtcIntOptional.of(1)
+        mediaOptions.autoSubscribeAudio = AgoraRtcBoolOptional.of(true)
+        mediaOptions.autoSubscribeVideo = AgoraRtcBoolOptional.of(true)
+        mediaOptions.publishAudioTrack = AgoraRtcBoolOptional.of(false)
+        mediaOptions.publishCameraTrack = AgoraRtcBoolOptional.of(false)
+        
+        agoraKit.enableVideo()
+        
+        let channel = AgoraRtcConnection()
+        channel.channelId = channelName
+        channel.localUid = UInt.random(in: 0...200)
+        channelRemote = channel
+        
+        let remoteHandler = RemoteChannelHandler()
+        remoteHandler.delegate = self
+        
+        let result = agoraKit.joinChannelEx(byToken: nil,
+                                            connection: channel,
+                                            delegate: remoteHandler,
+                                            mediaOptions: mediaOptions,
+                                            joinSuccess: nil)
         if result != 0 {
-            let text = "joinRtcChannelRemote error: \(result)"
+            let text = "joinRtcChannelRemote channel:\(channelName) error: \(result)"
             Log.errorText(text: text)
             invokeShouldShowTips(tips: text)
             return
         }
-        Log.info(text: "joinRtcChannelRemote success \(channelName)", tag: "joinRtcChannelRemote")
+        Log.info(text: "joinRtcChannelRemote success \(channelName)",
+                 tag: "joinRtcChannelRemote")
     }
     
     func switchCamera() {

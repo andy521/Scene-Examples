@@ -24,7 +24,7 @@ class MainVM: NSObject {
     let baseUid = 10000
     
     deinit {
-        agoraKit.leaveChannel(nil)
+        
     }
     
     init(roomName: String,

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		03E501265176C586A8892D3C /* Pods_LivePKCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7A62FBF6227AA17288036E9 /* Pods_LivePKCore.framework */; };
+		263A813D274DDC440067E868 /* MainVM+RemoteChannelHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A813C274DDC440067E868 /* MainVM+RemoteChannelHandler.swift */; };
 		268FCD622703199200ABC1D1 /* LivePKCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 268FCD5A2703199200ABC1D1 /* LivePKCore.framework */; };
 		268FCD632703199200ABC1D1 /* LivePKCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 268FCD5A2703199200ABC1D1 /* LivePKCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		268FCD7F270319D900ABC1D1 /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCD68270319D900ABC1D1 /* VideoCell.swift */; };
@@ -28,8 +29,6 @@
 		268FCD8E270319D900ABC1D1 /* MainVC+Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCD7B270319D900ABC1D1 /* MainVC+Log.swift */; };
 		268FCD8F270319D900ABC1D1 /* MainVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCD7C270319D900ABC1D1 /* MainVC.swift */; };
 		268FCD90270319D900ABC1D1 /* EntryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCD7E270319D900ABC1D1 /* EntryVC.swift */; };
-		268FCD9E27031C7300ABC1D1 /* LiveMutiCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 268FCD9627031C7300ABC1D1 /* LiveMutiCore.framework */; };
-		268FCD9F27031C7300ABC1D1 /* LiveMutiCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 268FCD9627031C7300ABC1D1 /* LiveMutiCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		268FCDB327031C9F00ABC1D1 /* EntryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCDA427031C9F00ABC1D1 /* EntryVC.swift */; };
 		268FCDB427031C9F00ABC1D1 /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCDA627031C9F00ABC1D1 /* VideoCell.swift */; };
 		268FCDB527031C9F00ABC1D1 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCDA727031C9F00ABC1D1 /* MainView.swift */; };
@@ -212,13 +211,6 @@
 			remoteGlobalIDString = 268FCD592703199200ABC1D1;
 			remoteInfo = LivePKCore;
 		};
-		268FCD9C27031C7300ABC1D1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 571AA4622629862700B82B35 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 268FCD9527031C7300ABC1D1;
-			remoteInfo = LiveMutiCore;
-		};
 		574C9C9A26689AE200822A95 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 571AA4622629862700B82B35 /* Project object */;
@@ -285,7 +277,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				57F639882630098A00B45C0B /* BlindDate.framework in Embed Frameworks */,
-				268FCD9F27031C7300ABC1D1 /* LiveMutiCore.framework in Embed Frameworks */,
 				57E8D546264A31B2007001BC /* Core.framework in Embed Frameworks */,
 				5757D085262DA46700B4A785 /* InteractivePodcast.framework in Embed Frameworks */,
 				268FCD632703199200ABC1D1 /* LivePKCore.framework in Embed Frameworks */,
@@ -337,6 +328,7 @@
 		12C164832E8787C9C96C002B /* Pods-BlindDate.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BlindDate.debug.xcconfig"; path = "Target Support Files/Pods-BlindDate/Pods-BlindDate.debug.xcconfig"; sourceTree = "<group>"; };
 		15A2E68AA95F4351506F2576 /* Pods-InteractivePodcast_Firebase.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-InteractivePodcast_Firebase.release.xcconfig"; path = "Target Support Files/Pods-InteractivePodcast_Firebase/Pods-InteractivePodcast_Firebase.release.xcconfig"; sourceTree = "<group>"; };
 		253F33EA56921C98B6B241DD /* Pods_BlindDate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BlindDate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		263A813C274DDC440067E868 /* MainVM+RemoteChannelHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVM+RemoteChannelHandler.swift"; sourceTree = "<group>"; };
 		265F2928DE70FF94936B9226 /* Pods_Scene_Examples_Firebase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Scene_Examples_Firebase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		268FCD5A2703199200ABC1D1 /* LivePKCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LivePKCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		268FCD68270319D900ABC1D1 /* VideoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
@@ -579,7 +571,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				268FCD9E27031C7300ABC1D1 /* LiveMutiCore.framework in Frameworks */,
 				57F639872630098A00B45C0B /* BlindDate.framework in Frameworks */,
 				5757D084262DA46700B4A785 /* InteractivePodcast.framework in Frameworks */,
 				61F4CF8C8AF21996945CCF97 /* Pods_Scene_Examples_LeanCloud.framework in Frameworks */,
@@ -660,6 +651,7 @@
 				268FCD6F270319D900ABC1D1 /* MainVM+Handle+Broadcaster.swift */,
 				268FCD70270319D900ABC1D1 /* MainVM+Handle.swift */,
 				268FCD71270319D900ABC1D1 /* MainVM+Event.swift */,
+				263A813C274DDC440067E868 /* MainVM+RemoteChannelHandler.swift */,
 			);
 			path = MainVM;
 			sourceTree = "<group>";
@@ -1366,7 +1358,6 @@
 				5757D083262DA46700B4A785 /* PBXTargetDependency */,
 				57F639862630098A00B45C0B /* PBXTargetDependency */,
 				268FCD612703199200ABC1D1 /* PBXTargetDependency */,
-				268FCD9D27031C7300ABC1D1 /* PBXTargetDependency */,
 			);
 			name = "Scene-Examples_LeanCloud";
 			productName = "Scene-Examples";
@@ -1789,6 +1780,7 @@
 				268FCD8A270319D900ABC1D1 /* PKSyncManager.swift in Sources */,
 				268FCD87270319D900ABC1D1 /* MainVM+Event.swift in Sources */,
 				268FCD83270319D900ABC1D1 /* MainVM.swift in Sources */,
+				263A813D274DDC440067E868 /* MainVM+RemoteChannelHandler.swift in Sources */,
 				268FCD8D270319D900ABC1D1 /* LogProvider.swift in Sources */,
 				268FCD8E270319D900ABC1D1 /* MainVC+Log.swift in Sources */,
 				268FCD82270319D900ABC1D1 /* MainVM+Invoke.swift in Sources */,
@@ -1979,11 +1971,6 @@
 			isa = PBXTargetDependency;
 			target = 268FCD592703199200ABC1D1 /* LivePKCore */;
 			targetProxy = 268FCD602703199200ABC1D1 /* PBXContainerItemProxy */;
-		};
-		268FCD9D27031C7300ABC1D1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 268FCD9527031C7300ABC1D1 /* LiveMutiCore */;
-			targetProxy = 268FCD9C27031C7300ABC1D1 /* PBXContainerItemProxy */;
 		};
 		574C9C9B26689AE200822A95 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2383,7 +2370,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				DEVELOPMENT_TEAM = HFDBB878GT;
 				INFOPLIST_FILE = "Scene-Examples/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -2409,7 +2396,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				DEVELOPMENT_TEAM = 5459N9W32M;
 				INFOPLIST_FILE = "Scene-Examples/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;

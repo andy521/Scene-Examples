@@ -57,6 +57,7 @@ class MainVC: UIViewController {
     }
     
     @objc func closeOnClick() {
+        vm.destory()
         dismiss(animated: true, completion: nil)
     }
     

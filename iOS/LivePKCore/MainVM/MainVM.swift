@@ -7,7 +7,6 @@
 
 import Foundation
 import AgoraRtcKit
-import AgoraMediaPlayer
 
 protocol MainVMDelegate: NSObjectProtocol {
     func mainVMDidUpdateRenderInfos(renders: [RenderInfo])
@@ -17,20 +16,19 @@ protocol MainVMDelegate: NSObjectProtocol {
 class MainVM: NSObject {
     var loginInfo: LoginInfo!
     var agoraKit: AgoraRtcEngineKit!
-    var channelLocal: AgoraRtcChannel?
-    var channelRemote: AgoraRtcChannel?
+    var channelLocal: AgoraRtcConnection?
+    var channelRemote: AgoraRtcConnection?
     weak var delegate: MainVMDelegate?
     var renderInfos = [RenderInfo]()
     var pkRoomName: String?
-    var players = [String : AgoraMediaPlayer]()
+    var players = [String : AgoraRtcMediaPlayerProtocol]()
     var manager: PKSyncManager!
     let queue = DispatchQueue(label: "MainVM.queue")
     var appId: String!
     let kPKKey = "PK"
     
     deinit {
-        channelLocal?.leave()
-        channelRemote?.leave()
+        Log.info(text: "deinit", tag: "MainVM")
     }
     
     init(loginInfo: LoginInfo,
@@ -54,4 +52,18 @@ class MainVM: NSObject {
         }
     }
     
+    func destory() {
+        if let localChannel = channelLocal {
+            agoraKit.leaveChannelEx(localChannel, leaveChannelBlock: nil)
+            channelLocal = nil
+        }
+        
+        if let remoteChannel = channelRemote {
+            agoraKit.leaveChannelEx(remoteChannel, leaveChannelBlock: nil)
+            channelRemote = nil
+        }
+        
+        agoraKit = nil
+        manager = nil
+    }
 }

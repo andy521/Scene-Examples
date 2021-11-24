@@ -30,7 +30,6 @@ end
 target 'LivePKCore' do
   commonPods
   use_frameworks!
-  pod 'AgoraMediaPlayer_iOS'
   pod 'AgoraRtm_iOS'
   pod 'AgoraLog'
   pod 'Toast-Swift'
