@@ -40,8 +40,8 @@ import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_640x360;
 public class RtcManager {
     private static final String TAG = "RtcManager";
     private static final int LOCAL_RTC_UID = 0;
-    private static final String AGORA_CDN_CHANNEL_PUSH_PREFIX = "rtmp://examplepush.agoramde.agoraio.cn/live/%s";
-    private static final String AGORA_CDN_CHANNEL_PULL_PREFIX = "http://examplepull.agoramde.agoraio.cn/live/%s.flv";
+    private static final String AGORA_CDN_CHANNEL_PUSH_PREFIX = "rtmp://webdemo-push.agora.io/lbhd/%s";
+    private static final String AGORA_CDN_CHANNEL_PULL_PREFIX = "http://webdemo-pull.agora.io/lbhd/%s.flv";
 
     private static CameraCapturerConfiguration.CAMERA_DIRECTION currCameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT;
     public static boolean isMuteLocalAudio = false;
@@ -50,7 +50,7 @@ public class RtcManager {
 
     private RtcEngine engine;
 
-    private final VideoEncoderConfiguration encoderConfiguration = new VideoEncoderConfiguration(
+    private VideoEncoderConfiguration encoderConfiguration = new VideoEncoderConfiguration(
             VD_640x360,
             FRAME_RATE_FPS_15,
             700,
@@ -179,6 +179,9 @@ public class RtcManager {
             canvas_width = Math.min(encoderConfiguration.dimensions.height, encoderConfiguration.dimensions.width);
             engine.setVideoEncoderConfiguration(encoderConfiguration);
             engine.setDirectCdnStreamingVideoConfiguration(encoderConfiguration);
+
+            engine.setParameters("{\"rtc.audio.opensl.mode\": 0}");
+
             isInitialized = true;
         } catch (Exception e) {
             if (listener != null) {

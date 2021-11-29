@@ -20,25 +20,14 @@ android {
         dataBinding = true
     }
 
-    signingConfigs {
-        release {
-            storeFile new File('/Users/xcz/Documents/AgoraAD.jks')
-            storePassword 'io.agora.ad'
-            keyAlias 'meeting'
-            keyPassword 'io.agora.meeting'
-        }
-    }
-
 
     buildTypes {
         release {
             minifyEnabled false
-            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
             minifyEnabled false
-            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

@@ -12,8 +12,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -515,14 +517,15 @@ public class DataSyncImpl implements ISyncManager {
 
     @Override
     public void unsubscribe(SyncManager.EventListener listener) {
-        if(eventListeners.containsValue(listener)){
-            for(Map.Entry<String, SyncManager.EventListener> entry : eventListeners.entrySet()){
-                if(listener == entry.getValue()){
-                    eventListeners.remove(entry.getKey());
-                    return;
-                }else if( listener instanceof DocumentWrapEventListener && ((DocumentWrapEventListener) listener).listener == listener){
-                    eventListeners.remove(entry.getKey());
-                }
+        Iterator<Map.Entry<String, SyncManager.EventListener>> iterator = eventListeners.entrySet().iterator();
+        while (iterator.hasNext()){
+            Map.Entry<String, SyncManager.EventListener> entry = iterator.next();
+            if (listener == entry.getValue()) {
+                iterator.remove();
+                break;
+            } else if (entry.getValue() instanceof DocumentWrapEventListener && ((DocumentWrapEventListener) entry.getValue()).listener == listener) {
+                iterator.remove();
+                break;
             }
         }
     }
