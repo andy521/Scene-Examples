@@ -21,6 +21,7 @@ class InvitationCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
+        commonInit()
     }
     
     required init?(coder: NSCoder) {
@@ -30,8 +31,10 @@ class InvitationCell: UITableViewCell {
     private func setup() {
         inviteButton.backgroundColor = .white
         inviteButton.layer.borderWidth = 2
-        inviteButton.layer.borderColor = UIColor(rgb: 0xCCCCCC).cgColor
+        inviteButton.layer.borderColor = UIColor.systemBlue.cgColor
         inviteButton.layer.cornerRadius = 16
+        inviteButton.setTitleColor(.systemBlue, for: .normal)
+        inviteButton.setTitle("邀请", for: .normal)
         headImageView.layer.cornerRadius = 20
         headImageView.layer.masksToBounds = true
         
@@ -43,7 +46,7 @@ class InvitationCell: UITableViewCell {
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         inviteButton.translatesAutoresizingMaskIntoConstraints = false
         
-        headImageView.leftAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
+        headImageView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 16).isActive = true
         headImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         headImageView.widthAnchor.constraint(equalToConstant: 40).isActive = true
         headImageView.heightAnchor.constraint(equalToConstant: 40).isActive = true
@@ -52,13 +55,25 @@ class InvitationCell: UITableViewCell {
         nameLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         
         inviteButton.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -15).isActive = true
+        inviteButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
         inviteButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
+    }
+    
+    func commonInit() {
+        inviteButton.addTarget(self,
+                               action: #selector(buttonTap(_:)),
+                               for: .touchUpInside)
+    }
+    
+    @objc func buttonTap(_ sender: UIButton) {
+        delegate?.cell(self, on: info.idnex)
     }
     
     func udpate(info: Info) {
         self.info = info
         headImageView.image = UIImage(named: info.imageName)
         nameLabel.text = info.title
+        inviteButton.isHidden = info.isInvited
     }
 }
 

@@ -20,7 +20,7 @@ class EntryVM: NSObject {
     private let appId: String
     var syncManager: SyncManager!
     var sceneRef: SceneReference?
-    var rooms = [RoomInfo]()
+    var rooms = [RoomItem]()
     weak var delegate: EntryVMDelegate?
     
     init(appId: String) {
@@ -42,7 +42,7 @@ class EntryVM: NSObject {
         syncManager.getScenes { [weak self](objs) in
             let decoder = JSONDecoder()
             let rooms = objs.compactMap({ $0.toJson()?.data(using: .utf8) })
-                .compactMap({ try? decoder.decode(RoomInfo.self, from: $0) })
+                .compactMap({ try? decoder.decode(RoomItem.self, from: $0) })
             self?.udpateRooms(rooms: rooms)
             self?.delegate?.entryVMShouldEndRefreshing()
         } fail: { [weak self](error) in
@@ -51,15 +51,15 @@ class EntryVM: NSObject {
         }
     }
     
-    func udpateRooms(rooms: [RoomInfo]) {
-        let infos = rooms.map({ EntryView.Info(imageName: $0.roomId.headImageName,
+    func udpateRooms(rooms: [RoomItem]) {
+        let infos = rooms.map({ EntryView.Info(imageName: $0.id.headImageName,
                                                title: $0.roomName,
-                                               count: $0.userCount) })
+                                               count: 0) })
         self.rooms = rooms
         delegate?.entryVMShouldUpdateInfos(infos: infos)
     }
     
-    func getRoomInfo(index: Int) -> RoomInfo? {
+    func getRoomInfo(index: Int) -> RoomItem? {
         rooms[index]
     }
 }

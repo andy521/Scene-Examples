@@ -9,9 +9,9 @@ import AgoraRtcKit
 
 extension MainVM {
     func initMediaPlayer(config: Config) {
-        let config = AgoraRtcEngineConfig()
-        config.appId = config.appId
-        agoraKit = AgoraRtcEngineKit.sharedEngine(with: config,
+        let rtcConfig = AgoraRtcEngineConfig()
+        rtcConfig.appId = config.appId
+        agoraKit = AgoraRtcEngineKit.sharedEngine(with: rtcConfig,
                                                   delegate: self)
         mediaPlayer = agoraKit.createMediaPlayer(with: self)
         if let localView = delegate?.mainVMShouldGetLocalRender(self) {

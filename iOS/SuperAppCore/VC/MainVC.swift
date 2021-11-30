@@ -47,13 +47,15 @@ extension MainVC: MainViewDelegate {
         switch action {
         case .member:
             let vc = InvitationVC(sceneRef: vm.sceneRef)
+            vc.delegate = self
             vc.show(in: self)
             return
         case .more:
             let vc = ToolVC()
             vc.show(in: self)
             return
-        default:
+        case .close:
+            dismiss(animated: true, completion: nil)
             return
         }
     }
@@ -70,8 +72,9 @@ extension MainVC: MainVMDelegate {
     
     func mainVM(_ vm: MainVM,
                 didJoinRoom info: RoomInfo) {
+        let imageName = StorageManager.uuid.headImageName
         let info = MainView.Info(title: info.roomName,
-                                 imageName: "pic-11",
+                                 imageName: imageName,
                                  userCount: info.userCount)
         mainView.update(info: info)
     }
@@ -79,5 +82,11 @@ extension MainVC: MainVMDelegate {
     func mainVM(_ vm: MainVM,
                 shouldShow tips: String) {
         show(tips)
+    }
+}
+
+extension MainVC: InvitationVCDelegate {
+    func invitationVC(_ vc: InvitationVC, didInvited user: UserInfo) {
+        vm.updatePKInfo(userIdPK: user.userId)
     }
 }

@@ -55,6 +55,7 @@ class InvitationView: UIView {
     
     func update(infos: [InvitationCell.Info]) {
         self.infos = infos
+        tableView.reloadData()
     }
     
 }
@@ -66,6 +67,7 @@ extension InvitationView: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "InvitationCell", for: indexPath) as! InvitationCell
+        cell.selectionStyle = .none
         cell.delegate = self
         let info = infos[indexPath.row]
         cell.udpate(info: info)

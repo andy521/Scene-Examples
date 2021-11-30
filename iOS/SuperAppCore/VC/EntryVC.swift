@@ -69,14 +69,15 @@ extension EntryVC: EntryViewDelegate, EntryVMDelegate {
         guard let roomInfo = vm.getRoomInfo(index: index) else {
             return
         }
-        let createTime = roomInfo.createTime
-        let roomId = roomInfo.roomId
+        let createTime = 0.0
+        let roomId = roomInfo.id
         let roomName = roomInfo.roomName
         let config = MainVC.Config(appId: appId,
                                    roomName: roomName,
                                    entryType: .asAttend,
                                    roomId: roomId,
-                                   createdTime: createTime)
+                                   createdTime: createTime,
+                                   mode: .pull)
         let vc = MainVC(config: config,
                         syncManager: vm.syncManager)
         vc.modalPresentationStyle = .fullScreen
@@ -106,7 +107,8 @@ extension EntryVC: CreateLiveVCDelegate {
                                    roomName: roomName,
                                    entryType: .asCreator,
                                    roomId: "\(createTime)",
-                                   createdTime: createTime)
+                                   createdTime: createTime,
+                                   mode: sellectedType == .value1 ? .push : .bypassPush)
         let vc = MainVC(config: config,
                         syncManager: vm.syncManager)
         vc.modalPresentationStyle = .fullScreen

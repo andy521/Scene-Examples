@@ -9,11 +9,16 @@ import UIKit
 import Presentr
 import SyncManager
 
+protocol InvitationVCDelegate: NSObjectProtocol {
+    func invitationVC(_ vc: InvitationVC, didInvited user: UserInfo)
+}
+
 class InvitationVC: UIViewController {
     typealias Info = InvitationCell.Info
     let invitedView = InvitationView()
     private let presenter = Presentr(presentationType: .bottomHalf)
     private var vm: InvitationVM!
+    weak var delegate: InvitationVCDelegate?
     
     init(sceneRef: SceneReference) {
         vm = InvitationVM(sceneRef: sceneRef)
@@ -38,6 +43,8 @@ class InvitationVC: UIViewController {
     
     private func commonInit() {
         invitedView.delegate = self
+        vm.delegate = self
+        vm.start()
     }
     
     func show(in vc: UIViewController) {
@@ -56,6 +63,22 @@ class InvitationVC: UIViewController {
 extension InvitationVC: InvitationViewDelegate {
     func invitationView(_ view: InvitationView,
                         didSelectedAt index: Int) {
+        guard let userInfo = vm.getUserInfo(index: index) else {
+            return
+        }
+        delegate?.invitationVC(self, didInvited: userInfo)
+    }
+}
+
+extension InvitationVC: InvitationVMDelegate {
+    func invitationVM(_ vm: InvitationVM,
+                      didUpdate infos: [InvitationVM.Info],
+                      errorMsg: String?) {
+        if let text = errorMsg {
+            show(text)
+            return
+        }
         
+        update(infos: infos)
     }
 }
