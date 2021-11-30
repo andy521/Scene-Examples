@@ -66,7 +66,10 @@ extension InvitationVC: InvitationViewDelegate {
         guard let userInfo = vm.getUserInfo(index: index) else {
             return
         }
-        delegate?.invitationVC(self, didInvited: userInfo)
+        dismiss(animated: true, completion: { [weak self] in
+            guard let `self` = self else { return }
+            self.delegate?.invitationVC(self, didInvited: userInfo)
+        })
     }
 }
 

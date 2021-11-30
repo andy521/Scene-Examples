@@ -9,14 +9,23 @@ import UIKit
 import SyncManager
 
 class MainVC: UIViewController {
-    typealias Config = MainVM.Config
-    let mainView = MainView()
-    let vm: MainVM
+    typealias ConfigHost = MainVMHost.Config
+    typealias ConfigAudience = MainVMAudience.Config
     
-    public init(config: Config,
+    let mainView = MainView()
+    var vm: MainVMProtocol
+    
+    public init(config: ConfigAudience,
                 syncManager: SyncManager) {
-        vm = MainVM(config: config,
-                    syncManager: syncManager)
+        vm = MainVMAudience(config: config,
+                            syncManager: syncManager)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    public init(config: ConfigHost,
+                syncManager: SyncManager) {
+        vm = MainVMHost(config: config,
+                        syncManager: syncManager)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -46,7 +55,7 @@ extension MainVC: MainViewDelegate {
     func mainView(_ view: MainView, didTap action: MainView.Action) {
         switch action {
         case .member:
-            let vc = InvitationVC(sceneRef: vm.sceneRef)
+            let vc = InvitationVC(sceneRef: vm.getSceneRef())
             vc.delegate = self
             vc.show(in: self)
             return
@@ -62,15 +71,19 @@ extension MainVC: MainViewDelegate {
 }
 
 extension MainVC: MainVMDelegate {
-    func mainVMShouldGetLocalRender(_ vm: MainVM) -> UIView {
+    func mainVMShouldDidStartRenderRemoteView(_ vm: MainVMProtocol) {
+        
+    }
+    
+    func mainVMShouldGetLocalRender(_ vm: MainVMProtocol) -> UIView {
         return mainView.renderViewLocal
     }
     
-    func mainVMShouldGetRemoteRender(_ vm: MainVM) -> UIView {
+    func mainVMShouldGetRemoteRender(_ vm: MainVMProtocol) -> UIView {
         return mainView.renderViewRemote
     }
     
-    func mainVM(_ vm: MainVM,
+    func mainVM(_ vm: MainVMProtocol,
                 didJoinRoom info: RoomInfo) {
         let imageName = StorageManager.uuid.headImageName
         let info = MainView.Info(title: info.roomName,
@@ -79,7 +92,7 @@ extension MainVC: MainVMDelegate {
         mainView.update(info: info)
     }
     
-    func mainVM(_ vm: MainVM,
+    func mainVM(_ vm: MainVMProtocol,
                 shouldShow tips: String) {
         show(tips)
     }
@@ -87,6 +100,6 @@ extension MainVC: MainVMDelegate {
 
 extension MainVC: InvitationVCDelegate {
     func invitationVC(_ vc: InvitationVC, didInvited user: UserInfo) {
-        vm.updatePKInfo(userIdPK: user.userId)
+        vm.invite(userIdPK: user.userId)
     }
 }

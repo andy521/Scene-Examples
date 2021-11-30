@@ -34,13 +34,8 @@
 		263A8133274630B50067E868 /* InvitationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A8132274630B50067E868 /* InvitationView.swift */; };
 		263A813527464D5C0067E868 /* ToolView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A813427464D5C0067E868 /* ToolView.swift */; };
 		263A8137274651470067E868 /* ToolVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A8136274651470067E868 /* ToolVC.swift */; };
-		263A8139274662FC0067E868 /* MainVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A8138274662FC0067E868 /* MainVM.swift */; };
-		263A813F274F36440067E868 /* MainVM+Invoke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A813E274F36440067E868 /* MainVM+Invoke.swift */; };
-		263A81422750CBDC0067E868 /* MainVM+Info.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A81412750CBDC0067E868 /* MainVM+Info.swift */; };
-		263A81442750CC1C0067E868 /* MainVM+Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A81432750CC1C0067E868 /* MainVM+Event.swift */; };
-		263A81462750CE000067E868 /* MainVM+Handle+Audience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A81452750CE000067E868 /* MainVM+Handle+Audience.swift */; };
-		263A81482750CEF30067E868 /* MainVM+Handle+Broadcaster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A81472750CEF30067E868 /* MainVM+Handle+Broadcaster.swift */; };
 		263A814A2750DE4E0067E868 /* InvitationVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A81492750DE4E0067E868 /* InvitationVM.swift */; };
+		263A814C2754DB950067E868 /* RoomItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263A814B2754DB950067E868 /* RoomItem.swift */; };
 		268FCD7F270319D900ABC1D1 /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCD68270319D900ABC1D1 /* VideoCell.swift */; };
 		268FCD80270319D900ABC1D1 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCD69270319D900ABC1D1 /* MainView.swift */; };
 		268FCD81270319D900ABC1D1 /* MainVM+RTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCD6B270319D900ABC1D1 /* MainVM+RTC.swift */; };
@@ -70,6 +65,22 @@
 		268FCDBB27031C9F00ABC1D1 /* LogProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCDAF27031C9F00ABC1D1 /* LogProvider.swift */; };
 		268FCDBC27031C9F00ABC1D1 /* MainVC+Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCDB127031C9F00ABC1D1 /* MainVC+Log.swift */; };
 		268FCDBD27031C9F00ABC1D1 /* MainVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 268FCDB227031C9F00ABC1D1 /* MainVC.swift */; };
+		26C3F4B72755FB9F00C2C41C /* MainVMAudience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3F4B62755FB9F00C2C41C /* MainVMAudience.swift */; };
+		26C3F4B92755FFA600C2C41C /* MainVMAudience+Invoke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3F4B82755FFA600C2C41C /* MainVMAudience+Invoke.swift */; };
+		26C3F4BB2756044C00C2C41C /* MainVMAudience+RTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3F4BA2756044C00C2C41C /* MainVMAudience+RTC.swift */; };
+		26C3F4BD275604FF00C2C41C /* MainVMAudience+Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3F4BC275604FF00C2C41C /* MainVMAudience+Event.swift */; };
+		26C3F4BF2756076100C2C41C /* MainVMAudience+SYNC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3F4BE2756076100C2C41C /* MainVMAudience+SYNC.swift */; };
+		26C3F4C1275608EA00C2C41C /* MainVMAudience+Info.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3F4C0275608EA00C2C41C /* MainVMAudience+Info.swift */; };
+		26C3F4C327560AE200C2C41C /* MainVMAudience+Handle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3F4C227560AE200C2C41C /* MainVMAudience+Handle.swift */; };
+		26C3F4C5275611DC00C2C41C /* MainVMHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3F4C4275611DC00C2C41C /* MainVMHost.swift */; };
+		26C3F4C7275612B500C2C41C /* MainVMHost+SYNC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3F4C6275612B500C2C41C /* MainVMHost+SYNC.swift */; };
+		26C3F4C9275612DA00C2C41C /* MainVMHost+Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3F4C8275612DA00C2C41C /* MainVMHost+Event.swift */; };
+		26C3F4CB2756145000C2C41C /* MainVMHost+Invoke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3F4CA2756145000C2C41C /* MainVMHost+Invoke.swift */; };
+		26C3F4CD2756149F00C2C41C /* MainVMHost+RTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3F4CC2756149F00C2C41C /* MainVMHost+RTC.swift */; };
+		26C3F4CF2756159500C2C41C /* MainVMHost+Handle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3F4CE2756159500C2C41C /* MainVMHost+Handle.swift */; };
+		26C3F4D12756171D00C2C41C /* MainVMHost+Info.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3F4D02756171D00C2C41C /* MainVMHost+Info.swift */; };
+		26C3F4D327561B1C00C2C41C /* MainVMProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3F4D227561B1C00C2C41C /* MainVMProtocol.swift */; };
+		26C3F4D527563F9E00C2C41C /* MainView+RemoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26C3F4D427563F9E00C2C41C /* MainView+RemoteView.swift */; };
 		26D0E548273E451D00041D3F /* EntryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D0E547273E451D00041D3F /* EntryVC.swift */; };
 		26D0E54C273E49E100041D3F /* EntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D0E54B273E49E100041D3F /* EntryView.swift */; };
 		26D0E554273E695100041D3F /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D0E552273E695100041D3F /* UIColor+Extension.swift */; };
@@ -389,13 +400,8 @@
 		263A8132274630B50067E868 /* InvitationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitationView.swift; sourceTree = "<group>"; };
 		263A813427464D5C0067E868 /* ToolView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolView.swift; sourceTree = "<group>"; };
 		263A8136274651470067E868 /* ToolVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolVC.swift; sourceTree = "<group>"; };
-		263A8138274662FC0067E868 /* MainVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainVM.swift; sourceTree = "<group>"; };
-		263A813E274F36440067E868 /* MainVM+Invoke.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVM+Invoke.swift"; sourceTree = "<group>"; };
-		263A81412750CBDC0067E868 /* MainVM+Info.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVM+Info.swift"; sourceTree = "<group>"; };
-		263A81432750CC1C0067E868 /* MainVM+Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVM+Event.swift"; sourceTree = "<group>"; };
-		263A81452750CE000067E868 /* MainVM+Handle+Audience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVM+Handle+Audience.swift"; sourceTree = "<group>"; };
-		263A81472750CEF30067E868 /* MainVM+Handle+Broadcaster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVM+Handle+Broadcaster.swift"; sourceTree = "<group>"; };
 		263A81492750DE4E0067E868 /* InvitationVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvitationVM.swift; sourceTree = "<group>"; };
+		263A814B2754DB950067E868 /* RoomItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomItem.swift; sourceTree = "<group>"; };
 		265F2928DE70FF94936B9226 /* Pods_Scene_Examples_Firebase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Scene_Examples_Firebase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		268FCD5A2703199200ABC1D1 /* LivePKCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LivePKCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		268FCD68270319D900ABC1D1 /* VideoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
@@ -428,6 +434,22 @@
 		268FCDAF27031C9F00ABC1D1 /* LogProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogProvider.swift; sourceTree = "<group>"; };
 		268FCDB127031C9F00ABC1D1 /* MainVC+Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainVC+Log.swift"; sourceTree = "<group>"; };
 		268FCDB227031C9F00ABC1D1 /* MainVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainVC.swift; sourceTree = "<group>"; };
+		26C3F4B62755FB9F00C2C41C /* MainVMAudience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainVMAudience.swift; sourceTree = "<group>"; };
+		26C3F4B82755FFA600C2C41C /* MainVMAudience+Invoke.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVMAudience+Invoke.swift"; sourceTree = "<group>"; };
+		26C3F4BA2756044C00C2C41C /* MainVMAudience+RTC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVMAudience+RTC.swift"; sourceTree = "<group>"; };
+		26C3F4BC275604FF00C2C41C /* MainVMAudience+Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVMAudience+Event.swift"; sourceTree = "<group>"; };
+		26C3F4BE2756076100C2C41C /* MainVMAudience+SYNC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVMAudience+SYNC.swift"; sourceTree = "<group>"; };
+		26C3F4C0275608EA00C2C41C /* MainVMAudience+Info.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVMAudience+Info.swift"; sourceTree = "<group>"; };
+		26C3F4C227560AE200C2C41C /* MainVMAudience+Handle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVMAudience+Handle.swift"; sourceTree = "<group>"; };
+		26C3F4C4275611DC00C2C41C /* MainVMHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainVMHost.swift; sourceTree = "<group>"; };
+		26C3F4C6275612B500C2C41C /* MainVMHost+SYNC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVMHost+SYNC.swift"; sourceTree = "<group>"; };
+		26C3F4C8275612DA00C2C41C /* MainVMHost+Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVMHost+Event.swift"; sourceTree = "<group>"; };
+		26C3F4CA2756145000C2C41C /* MainVMHost+Invoke.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVMHost+Invoke.swift"; sourceTree = "<group>"; };
+		26C3F4CC2756149F00C2C41C /* MainVMHost+RTC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVMHost+RTC.swift"; sourceTree = "<group>"; };
+		26C3F4CE2756159500C2C41C /* MainVMHost+Handle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVMHost+Handle.swift"; sourceTree = "<group>"; };
+		26C3F4D02756171D00C2C41C /* MainVMHost+Info.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainVMHost+Info.swift"; sourceTree = "<group>"; };
+		26C3F4D227561B1C00C2C41C /* MainVMProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainVMProtocol.swift; sourceTree = "<group>"; };
+		26C3F4D427563F9E00C2C41C /* MainView+RemoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainView+RemoteView.swift"; sourceTree = "<group>"; };
 		26D0E547273E451D00041D3F /* EntryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryVC.swift; sourceTree = "<group>"; };
 		26D0E54B273E49E100041D3F /* EntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryView.swift; sourceTree = "<group>"; };
 		26D0E552273E695100041D3F /* UIColor+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
@@ -745,6 +767,7 @@
 			children = (
 				263A80FD2743C76C0067E868 /* RoomInfo.swift */,
 				263A80FF2743C7C40067E868 /* UserInfo.swift */,
+				263A814B2754DB950067E868 /* RoomItem.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -752,12 +775,21 @@
 		263A81402750CBC50067E868 /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				263A8138274662FC0067E868 /* MainVM.swift */,
-				263A81452750CE000067E868 /* MainVM+Handle+Audience.swift */,
-				263A81472750CEF30067E868 /* MainVM+Handle+Broadcaster.swift */,
-				263A81412750CBDC0067E868 /* MainVM+Info.swift */,
-				263A81432750CC1C0067E868 /* MainVM+Event.swift */,
-				263A813E274F36440067E868 /* MainVM+Invoke.swift */,
+				26C3F4D227561B1C00C2C41C /* MainVMProtocol.swift */,
+				26C3F4B62755FB9F00C2C41C /* MainVMAudience.swift */,
+				26C3F4C227560AE200C2C41C /* MainVMAudience+Handle.swift */,
+				26C3F4BE2756076100C2C41C /* MainVMAudience+SYNC.swift */,
+				26C3F4BA2756044C00C2C41C /* MainVMAudience+RTC.swift */,
+				26C3F4BC275604FF00C2C41C /* MainVMAudience+Event.swift */,
+				26C3F4B82755FFA600C2C41C /* MainVMAudience+Invoke.swift */,
+				26C3F4C0275608EA00C2C41C /* MainVMAudience+Info.swift */,
+				26C3F4C4275611DC00C2C41C /* MainVMHost.swift */,
+				26C3F4CE2756159500C2C41C /* MainVMHost+Handle.swift */,
+				26C3F4C6275612B500C2C41C /* MainVMHost+SYNC.swift */,
+				26C3F4CC2756149F00C2C41C /* MainVMHost+RTC.swift */,
+				26C3F4C8275612DA00C2C41C /* MainVMHost+Event.swift */,
+				26C3F4CA2756145000C2C41C /* MainVMHost+Invoke.swift */,
+				26C3F4D02756171D00C2C41C /* MainVMHost+Info.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -902,6 +934,7 @@
 				263A81052743DAF50067E868 /* CreateLiveView.swift */,
 				263A81092744DBF00067E868 /* CreateLiveView+CenterView.swift */,
 				263A810B2744EC3C0067E868 /* MainView.swift */,
+				26C3F4D427563F9E00C2C41C /* MainView+RemoteView.swift */,
 				263A810F274502060067E868 /* MainView+LeftView.swift */,
 				263A81112745081D0067E868 /* InvitationCell.swift */,
 				263A8132274630B50067E868 /* InvitationView.swift */,
@@ -2011,6 +2044,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				26C3F4CF2756159500C2C41C /* MainVMHost+Handle.swift in Sources */,
+				26C3F4D12756171D00C2C41C /* MainVMHost+Info.swift in Sources */,
 				263A813527464D5C0067E868 /* ToolView.swift in Sources */,
 				263A814A2750DE4E0067E868 /* InvitationVM.swift in Sources */,
 				263A81022743D8490067E868 /* UIViewController+Extension.swift in Sources */,
@@ -2018,33 +2053,42 @@
 				26301E14274212940025C4DC /* String+Extension.swift in Sources */,
 				263A81042743DAD20067E868 /* CreateLiveVC.swift in Sources */,
 				263A81082744AC000067E868 /* CreateLiveVM.swift in Sources */,
+				26C3F4BF2756076100C2C41C /* MainVMAudience+SYNC.swift in Sources */,
 				263A81122745081D0067E868 /* InvitationCell.swift in Sources */,
-				263A8139274662FC0067E868 /* MainVM.swift in Sources */,
+				26C3F4CD2756149F00C2C41C /* MainVMHost+RTC.swift in Sources */,
+				26C3F4C1275608EA00C2C41C /* MainVMAudience+Info.swift in Sources */,
+				26C3F4BD275604FF00C2C41C /* MainVMAudience+Event.swift in Sources */,
 				263A810A2744DBF00067E868 /* CreateLiveView+CenterView.swift in Sources */,
-				263A81442750CC1C0067E868 /* MainVM+Event.swift in Sources */,
-				263A81482750CEF30067E868 /* MainVM+Handle+Broadcaster.swift in Sources */,
+				26C3F4C7275612B500C2C41C /* MainVMHost+SYNC.swift in Sources */,
+				26C3F4C9275612DA00C2C41C /* MainVMHost+Event.swift in Sources */,
+				26C3F4BB2756044C00C2C41C /* MainVMAudience+RTC.swift in Sources */,
 				26D0E555273E695100041D3F /* LogProvider.swift in Sources */,
 				26301E0A273E8D380025C4DC /* UIView+Extension.swift in Sources */,
+				26C3F4C327560AE200C2C41C /* MainVMAudience+Handle.swift in Sources */,
 				263A8133274630B50067E868 /* InvitationView.swift in Sources */,
-				263A813F274F36440067E868 /* MainVM+Invoke.swift in Sources */,
 				263A80FE2743C76C0067E868 /* RoomInfo.swift in Sources */,
 				26301E08273E8CEF0025C4DC /* MineVC.swift in Sources */,
 				263A8131274630290067E868 /* InvitationVC.swift in Sources */,
+				26C3F4CB2756145000C2C41C /* MainVMHost+Invoke.swift in Sources */,
 				263A81062743DAF50067E868 /* CreateLiveView.swift in Sources */,
 				26D0E548273E451D00041D3F /* EntryVC.swift in Sources */,
 				26301E1027420B300025C4DC /* MineVM.swift in Sources */,
 				263A810E2744F6310067E868 /* MainVC.swift in Sources */,
+				26C3F4C5275611DC00C2C41C /* MainVMHost.swift in Sources */,
 				263A810C2744EC3C0067E868 /* MainView.swift in Sources */,
 				26D0E54C273E49E100041D3F /* EntryView.swift in Sources */,
 				263A8137274651470067E868 /* ToolVC.swift in Sources */,
 				26301E0C273E8D6C0025C4DC /* MineView.swift in Sources */,
 				26301E1627423CA40025C4DC /* EntryVM.swift in Sources */,
 				26D0E554273E695100041D3F /* UIColor+Extension.swift in Sources */,
+				26C3F4D327561B1C00C2C41C /* MainVMProtocol.swift in Sources */,
 				263A8110274502060067E868 /* MainView+LeftView.swift in Sources */,
 				263A81002743C7C40067E868 /* UserInfo.swift in Sources */,
+				263A814C2754DB950067E868 /* RoomItem.swift in Sources */,
+				26C3F4B72755FB9F00C2C41C /* MainVMAudience.swift in Sources */,
+				26C3F4D527563F9E00C2C41C /* MainView+RemoteView.swift in Sources */,
 				26301E05273E747A0025C4DC /* EntryViewCell.swift in Sources */,
-				263A81422750CBDC0067E868 /* MainVM+Info.swift in Sources */,
-				263A81462750CE000067E868 /* MainVM+Handle+Audience.swift in Sources */,
+				26C3F4B92755FFA600C2C41C /* MainVMAudience+Invoke.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

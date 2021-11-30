@@ -17,7 +17,7 @@ class MainView: UIView {
     private let moreButton = UIButton()
     private let closeButton = UIButton()
     private let localView = UIView()
-    private let remoteView = UIView()
+    private let remoteView = RemoteView()
     private let personCountButton = UIButton()
     weak var delegate: MainViewDelegate?
     private var info = Info.empty
@@ -27,7 +27,7 @@ class MainView: UIView {
     }
     
     var renderViewRemote: UIView {
-        return remoteView
+        return remoteView.renderView
     }
     
     override init(frame: CGRect) {
@@ -95,8 +95,8 @@ class MainView: UIView {
         
         remoteView.bottomAnchor.constraint(equalTo: closeButton.topAnchor, constant: -6).isActive = true
         remoteView.rightAnchor.constraint(equalTo: closeButton.rightAnchor).isActive = true
-        remoteView.widthAnchor.constraint(equalToConstant: 90).isActive = true
-        remoteView.heightAnchor.constraint(equalToConstant: 160).isActive = true
+        remoteView.widthAnchor.constraint(equalToConstant: 130).isActive = true
+        remoteView.heightAnchor.constraint(equalToConstant: 231).isActive = true
     }
     
     private func commonInit() {

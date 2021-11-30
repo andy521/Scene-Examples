@@ -69,15 +69,11 @@ extension EntryVC: EntryViewDelegate, EntryVMDelegate {
         guard let roomInfo = vm.getRoomInfo(index: index) else {
             return
         }
-        let createTime = 0.0
         let roomId = roomInfo.id
         let roomName = roomInfo.roomName
-        let config = MainVC.Config(appId: appId,
-                                   roomName: roomName,
-                                   entryType: .asAttend,
-                                   roomId: roomId,
-                                   createdTime: createTime,
-                                   mode: .pull)
+        let config = MainVMAudience.Config(appId: appId,
+                                           roomName: roomName,
+                                           roomId: roomId)
         let vc = MainVC(config: config,
                         syncManager: vm.syncManager)
         vc.modalPresentationStyle = .fullScreen
@@ -103,12 +99,13 @@ extension EntryVC: CreateLiveVCDelegate {
                       didSart roomName: String,
                       sellectedType: CreateLiveVC.SelectedType) {
         let createTime = Double(Int(Date().timeIntervalSince1970 * 1000) )
-        let config = MainVC.Config(appId: appId,
-                                   roomName: roomName,
-                                   entryType: .asCreator,
-                                   roomId: "\(createTime)",
-                                   createdTime: createTime,
-                                   mode: sellectedType == .value1 ? .push : .bypassPush)
+        let roomId = "\(createTime)"
+        let mode: MainVMHost.Mode = sellectedType == .value1 ? .push : .byPassPush
+        let config = MainVMHost.Config(appId: appId,
+                                       roomName: roomName,
+                                       roomId: roomId,
+                                       createdTime: createTime,
+                                       mode: mode)
         let vc = MainVC(config: config,
                         syncManager: vm.syncManager)
         vc.modalPresentationStyle = .fullScreen

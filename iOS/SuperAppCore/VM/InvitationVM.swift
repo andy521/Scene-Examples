@@ -33,7 +33,7 @@ class InvitationVM: NSObject {
                 let userInfos = objs.compactMap({ $0.toJson() })
                     .compactMap({ $0.data(using: .utf8) })
                     .compactMap({ try? decoder.decode(UserInfo.self, from: $0) })
-//                    .filter({ $0.userId != localUserId })
+                    .filter({ $0.userId != localUserId })
                 self.userInfos = userInfos
                 
                 var infos = [Info]()
