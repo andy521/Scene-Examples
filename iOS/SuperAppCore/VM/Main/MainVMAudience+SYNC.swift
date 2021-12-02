@@ -76,9 +76,6 @@ extension MainVMAudience {
                 semp.signal()
             }
         semp.wait()
-        
-        let _ = sceneRef.subscribe(observer: self)
-        
         if let e = error {
             throw e
         }
@@ -88,6 +85,16 @@ extension MainVMAudience {
         if let error = sceneRef.subscribe(observer: self) {
             let text = "subscribePKInfo fail: \(error.errorDescription ?? "")"
             Log.info(text: text,
+                     tag: "MainVM")
+        }
+    }
+    
+    func resetPKInfo() {
+        sceneRef.update(data: ["userIdPK" : ""]) { _ in
+            Log.info(text: "updatePK success)",
+                     tag: "MainVM")
+        } fail: { error in
+            Log.info(text: "updatePK fail: \(error.errorDescription ?? "")",
                      tag: "MainVM")
         }
     }

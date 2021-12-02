@@ -11,8 +11,8 @@ extension MainVMAudience {
     enum Mode {
         /// 拉流模式
         case pull
-        /// 旁路推流
-        case byPassPush
+        /// rtc模式
+        case rtc
     }
     
     struct Config {

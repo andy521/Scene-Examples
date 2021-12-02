@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AgoraRtcKit
 
 extension MainVMHost {
     func handleByPKInfo(userIdPK: String) {
@@ -34,6 +35,7 @@ extension MainVMHost {
     private func changeToPush() {
         mode = .push
         leaveRtcByPassPush()
+        invokeMainVMShouldStopRenderRemoteView(self)
     }
     
     func handleLeaveEvent() {
@@ -49,6 +51,27 @@ extension MainVMHost {
             DispatchQueue.main.async { [weak self] in
                 self?.joinRtcByPassPush()
             }
+        }
+    }
+    
+    func closeInternal() {
+        if mode == .push {
+            sceneRef.unsubscribe()
+            agoraKit.delegate = nil
+            leaveRtcByPush()
+            agoraKit = nil
+            syncManager = nil
+            sceneRef = nil
+            AgoraRtcEngineKit.destroy()
+        }
+        else {
+            sceneRef.unsubscribe()
+            agoraKit.delegate = nil
+            leaveRtcByPassPush()
+            agoraKit = nil
+            syncManager = nil
+            sceneRef = nil
+            AgoraRtcEngineKit.destroy()
         }
     }
 }

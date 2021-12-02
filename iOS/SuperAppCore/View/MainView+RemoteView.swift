@@ -22,7 +22,7 @@ extension MainView {
         }
         
         func setup() {
-            button.isHidden = true
+            isHidden = true
             backgroundColor = .clear
             let image = UIImage(named: "icon-round-close")
             button.setImage(image, for: .normal)
@@ -46,10 +46,10 @@ extension MainView {
                 .isActive = true
             
             renderView.topAnchor
-                .constraint(equalTo: button.bottomAnchor)
+                .constraint(equalTo: button.bottomAnchor, constant: -5)
                 .isActive = true
             renderView.leftAnchor
-                .constraint(equalTo: button.rightAnchor)
+                .constraint(equalTo: button.rightAnchor, constant: -5)
                 .isActive = true
             renderView.bottomAnchor
                 .constraint(equalTo: bottomAnchor)

@@ -19,6 +19,7 @@ class MainVC: UIViewController {
                 syncManager: SyncManager) {
         vm = MainVMAudience(config: config,
                             syncManager: syncManager)
+        mainView.setPersonViewHidden(hidden: true)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -64,15 +65,23 @@ extension MainVC: MainViewDelegate {
             vc.show(in: self)
             return
         case .close:
+            vm.close()
             dismiss(animated: true, completion: nil)
+            return
+        case .closeRemote:
+            vm.cancleConnect()
             return
         }
     }
 }
 
 extension MainVC: MainVMDelegate {
-    func mainVMShouldDidStartRenderRemoteView(_ vm: MainVMProtocol) {
-        
+    func mainVMShouldStopRenderRemoteView(_ vm: MainVMProtocol) {
+        mainView.setRemoteViewHidden(hidden: true)
+    }
+    
+    func mainVMShouldStartRenderRemoteView(_ vm: MainVMProtocol) {
+        mainView.setRemoteViewHidden(hidden: false)
     }
     
     func mainVMShouldGetLocalRender(_ vm: MainVMProtocol) -> UIView {

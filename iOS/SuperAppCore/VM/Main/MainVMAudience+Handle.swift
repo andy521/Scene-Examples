@@ -25,17 +25,30 @@ extension MainVMAudience {
         }
     }
     
-    func changeToByPassPush() { /** 切换到旁路推流模式 **/
-        /// stop mediaPlayer
+    func changeToByPassPush() { /** 切换rtc模式 **/
+        mode = .rtc
         mediaPlayer.stop()
         agoraKit.destroyMediaPlayer(mediaPlayer)
         mediaPlayer = nil
         
-        joinRtcByPassPush()
+        joinRtc()
     }
     
     func changeToPull() { /** 切换到拉流模式 **/
+        mode = .pull
         leaveRtcByPassPush()
         initMediaPlayer()
+        invokeMainVMShouldStoptRenderRemoteView(self)
+    }
+    
+    func closeInternal() {
+        if mode == .pull {
+            mediaPlayer.stop()
+            agoraKit.destroyMediaPlayer(mediaPlayer)
+            mediaPlayer = nil
+        }
+        else {
+            agoraKit.leaveChannel(nil)
+        }
     }
 }

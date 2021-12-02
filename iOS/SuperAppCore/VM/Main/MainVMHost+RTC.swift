@@ -26,8 +26,9 @@ extension MainVMHost {
         agoraKit.setDefaultAudioRouteToSpeakerphone(true)
         agoraKit.setVideoEncoderConfiguration(videoConfig)
         
+        let channelId = self.config.roomId
         let ret = agoraKit.joinChannel(byToken: nil,
-                                       channelId: self.config.roomId,
+                                       channelId: channelId,
                                        info: nil,
                                        uid: 0,
                                        joinSuccess: nil)
@@ -44,6 +45,7 @@ extension MainVMHost {
     }
     
     func leaveRtcByPassPush() { /** 离开旁推方式 **/
+        agoraKit.removePublishStreamUrl(pushUrlString)
         agoraKit.leaveChannel(nil)
     }
     
@@ -79,6 +81,7 @@ extension MainVMHost {
     }
     
     func leaveRtcByPush() { /** 离开直推方式 **/
+        Log.debug(text: "leaveRtcByPush", tag: "MainVM")
         agoraKit.stopDirectCdnStreaming()
     }
     

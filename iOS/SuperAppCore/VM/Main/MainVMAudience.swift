@@ -35,7 +35,11 @@ class MainVMAudience: NSObject, MainVMProtocol {
         super.init()
     }
     
-    public func start() {
+    deinit {
+        Log.info(text: "deinit", tag: "MainVMAudience")
+    }
+    
+    func start() {
         queue.async { [weak self] in
             guard let `self` = self else { return }
             do {
@@ -55,5 +59,16 @@ class MainVMAudience: NSObject, MainVMProtocol {
     
     func getSceneRef() -> SceneReference {
         return sceneRef
+    }
+    
+    func cancleConnect() {
+        if mode == .rtc {
+            resetPKInfo()
+        }
+    }
+    
+    func close() {
+        sceneRef.unsubscribe()
+        closeInternal()
     }
 }

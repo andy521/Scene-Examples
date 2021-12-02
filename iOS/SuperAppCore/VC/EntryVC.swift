@@ -99,7 +99,7 @@ extension EntryVC: CreateLiveVCDelegate {
                       didSart roomName: String,
                       sellectedType: CreateLiveVC.SelectedType) {
         let createTime = Double(Int(Date().timeIntervalSince1970 * 1000) )
-        let roomId = "\(createTime)"
+        let roomId = "\(Int(createTime))"
         let mode: MainVMHost.Mode = sellectedType == .value1 ? .push : .byPassPush
         let config = MainVMHost.Config(appId: appId,
                                        roomName: roomName,

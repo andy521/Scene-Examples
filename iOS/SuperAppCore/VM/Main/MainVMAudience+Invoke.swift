@@ -30,4 +30,26 @@ extension MainVMAudience {
         }
         
     }
+    
+    func invokeMainVMShouldStartRenderRemoteView(_ vm: MainVMProtocol) {
+        if Thread.isMainThread {
+            delegate?.mainVMShouldStartRenderRemoteView(self)
+            return
+        }
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.delegate?.mainVMShouldStartRenderRemoteView(vm)
+        }
+    }
+    
+    func invokeMainVMShouldStoptRenderRemoteView(_ vm: MainVMProtocol) {
+        if Thread.isMainThread {
+            delegate?.mainVMShouldStopRenderRemoteView(vm)
+            return
+        }
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.delegate?.mainVMShouldStopRenderRemoteView(vm)
+        }
+    }
 }

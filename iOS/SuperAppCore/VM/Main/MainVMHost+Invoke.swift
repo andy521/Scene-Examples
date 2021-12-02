@@ -30,14 +30,25 @@ extension MainVMHost {
         }
     }
     
-    func mainVMShouldDidStartRenderRemoteView(_ vm: MainVMProtocol) {
+    func invokeMainVMShouldStartRenderRemoteView(_ vm: MainVMProtocol) {
         if Thread.isMainThread {
-            delegate?.mainVMShouldDidStartRenderRemoteView(self)
+            delegate?.mainVMShouldStartRenderRemoteView(self)
             return
         }
         
         DispatchQueue.main.async { [weak self] in
-            self?.delegate?.mainVMShouldDidStartRenderRemoteView(vm)
+            self?.delegate?.mainVMShouldStartRenderRemoteView(vm)
+        }
+    }
+    
+    func invokeMainVMShouldStopRenderRemoteView(_ vm: MainVMProtocol) {
+        if Thread.isMainThread {
+            delegate?.mainVMShouldStopRenderRemoteView(vm)
+            return
+        }
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.delegate?.mainVMShouldStopRenderRemoteView(vm)
         }
     }
 }

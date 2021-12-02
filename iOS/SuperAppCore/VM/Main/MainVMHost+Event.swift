@@ -23,6 +23,7 @@ extension MainVMHost: AgoraRtcEngineDelegate {
         guard let view = delegate?.mainVMShouldGetRemoteRender(self) else {
             return
         }
+        invokeMainVMShouldStartRenderRemoteView(self)
         subscribeVideoRemote(view: view,
                              uid: uid)
     }

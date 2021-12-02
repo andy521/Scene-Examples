@@ -109,6 +109,9 @@ class MainView: UIView {
         closeButton.addTarget(self,
                               action: #selector(buttonTap(_:)),
                               for: .touchUpInside)
+        remoteView.button.addTarget(self,
+                                    action: #selector(buttonTap(_:)),
+                                    for: .touchUpInside)
     }
     
     @objc func buttonTap(_ sender: UIButton) {
@@ -126,6 +129,11 @@ class MainView: UIView {
             delegate?.mainView(self, didTap: .member)
             return
         }
+        
+        if sender == remoteView.button {
+            delegate?.mainView(self, didTap: .closeRemote)
+            return
+        }
     }
     
     func update(info: Info) {
@@ -134,6 +142,15 @@ class MainView: UIView {
         leftView.titleLabel.text = info.title
         personCountView.label.text = "\(info.userCount)"
     }
+    
+    func setRemoteViewHidden(hidden: Bool) {
+        remoteView.isHidden = hidden
+    }
+    
+    func setPersonViewHidden(hidden: Bool) {
+        personCountView.isHidden = hidden
+        personCountButton.isHidden = hidden
+    }
 }
 
 extension MainView {
@@ -141,6 +158,7 @@ extension MainView {
         case close
         case more
         case member
+        case closeRemote
     }
     
     struct Info {

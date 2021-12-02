@@ -13,16 +13,17 @@ extension MainVMAudience {
         rtcConfig.appId = config.appId
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: rtcConfig,
                                                   delegate: self)
-        mediaPlayer = agoraKit.createMediaPlayer(with: self)
+            mediaPlayer = agoraKit.createMediaPlayer(with: self)
         if let localView = delegate?.mainVMShouldGetLocalRender(self) {
             Log.info(text: pullUrlString)
             mediaPlayer.setView(localView)
+            mediaPlayer.setRenderMode(.hidden)
             mediaPlayer.open(withAgoraCDNSrc: pullUrlString,
                              startPos: 0)
         }
     }
     
-    func joinRtcByPassPush() { /** 旁推方式加入 **/
+    func joinRtc() { 
         let config = AgoraRtcEngineConfig()
         config.appId = config.appId
         let size = CGSize(width: 640, height: 360)
@@ -39,8 +40,6 @@ extension MainVMAudience {
         agoraKit.setClientRole(.broadcaster)
         agoraKit.setDefaultAudioRouteToSpeakerphone(true)
         agoraKit.setVideoEncoderConfiguration(videoConfig)
-        agoraKit.addPublishStreamUrl(pushUrlString,
-                                     transcodingEnabled: true)
         let ret = agoraKit.joinChannel(byToken: nil,
                                        channelId: self.config.roomId,
                                        info: nil,
@@ -58,7 +57,7 @@ extension MainVMAudience {
         }
     }
     
-    func leaveRtcByPassPush() { /** 离开旁推方式 **/
+    func leaveRtcByPassPush() { /** 离开RTC方式 **/
         agoraKit.leaveChannel(nil)
     }
     

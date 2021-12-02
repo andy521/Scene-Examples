@@ -9,9 +9,9 @@ import SyncManager
 import AgoraRtcKit
 
 class MainVMHost: NSObject, MainVMProtocol {
-    var delegate: MainVMDelegate?
+    weak var delegate: MainVMDelegate?
     let config: Config
-    let syncManager: SyncManager
+    var syncManager: SyncManager!
     let pushUrlString: String
     
     var mode: Mode!
@@ -30,7 +30,12 @@ class MainVMHost: NSObject, MainVMProtocol {
         super.init()
     }
     
+    deinit {
+        Log.info(text: "deinit", tag: "MainVMHost")
+    }
+    
     func start() {
+        Log.info(text: pushUrlString, tag: "url")
         queue.async { [weak self] in
             guard let `self` = self else { return }
             do {
@@ -50,5 +55,15 @@ class MainVMHost: NSObject, MainVMProtocol {
     
     func getSceneRef() -> SceneReference {
         return sceneRef
+    }
+    
+    func cancleConnect() {
+        if mode == .byPassPush {
+            updatePKInfo(userIdPK: "")
+        }
+    }
+    
+    func close() {
+        closeInternal()
     }
 }

@@ -70,7 +70,7 @@ extension MainVMHost {
         var error: SyncError?
         
         let property = info.dict
-        sceneRef.update(data: property) { obj in
+        sceneRef.update(data: property) { _ in
             Log.info(text: "addRoomInfo success",
                      tag: "MainVM")
             semp.signal()
@@ -110,8 +110,6 @@ extension MainVMHost {
                 semp.signal()
             }
         semp.wait()
-        
-        let _ = sceneRef.subscribe(observer: self)
         
         if let e = error {
             throw e
