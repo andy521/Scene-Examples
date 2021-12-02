@@ -3,6 +3,8 @@ package io.agora.livepk.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -57,6 +59,8 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
     private final RtmManager rtmManager = new RtmManager();
     private final RtcManager rtcManager = new RtcManager();
     private RoomInfo mRoomInfo;
+    
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void iniBundle(@NonNull Bundle bundle) {
@@ -140,7 +144,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
         mDataBinding.flLocalContainer.removeAllViews();
         if(renderView == null){
             mDataBinding.ivLoadingBg.setVisibility(View.VISIBLE);
-            rtcManager.renderLocalVideo(mDataBinding.flLocalFullContainer, () -> mDataBinding.ivLoadingBg.setVisibility(View.GONE));
+            rtcManager.renderLocalVideo(mDataBinding.flLocalFullContainer, () -> mHandler.post(() -> mDataBinding.ivLoadingBg.setVisibility(View.GONE)));
         }else{
             mDataBinding.flLocalFullContainer.addView(renderView);
         }
@@ -165,7 +169,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
 
         if(renderView == null){
             mDataBinding.ivLocalCover.setVisibility(View.VISIBLE);
-            rtcManager.renderLocalVideo(mDataBinding.flLocalContainer, () -> mDataBinding.ivLocalCover.setVisibility(View.GONE));
+            rtcManager.renderLocalVideo(mDataBinding.flLocalContainer, () -> mHandler.post(() -> mDataBinding.ivLocalCover.setVisibility(View.GONE)));
         }else{
             mDataBinding.flLocalContainer.addView(renderView);
         }
@@ -189,7 +193,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
                     return;
                 }
 
-                runOnUiThread(() -> {
+                mHandler.post(() -> {
                     showRoomListDialog(list);
                 });
             }
@@ -270,7 +274,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
     }
 
     private void setupPkVideo(String channelId, int uid) {
-        rtcManager.renderRemoteVideo(mDataBinding.flRemoteContainer, channelId, uid, () -> runOnUiThread(() -> {
+        rtcManager.renderRemoteVideo(mDataBinding.flRemoteContainer, channelId, uid, () -> mHandler.post(() -> {
             ImageView ivCover = mDataBinding.ivRemoteCover;
             ivCover.setVisibility(View.GONE);
         }));
@@ -281,7 +285,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
             @Override
             public void onError(int code, String message) {
                 if(!TextUtils.isEmpty(message)){
-                    runOnUiThread(() -> {
+                    mHandler.post(() -> {
                         Toast.makeText(HostPKActivity.this, message, Toast.LENGTH_LONG).show();
                         finish();
                     });
@@ -297,7 +301,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
             @Override
             public void onError(int code, String message) {
                 if(!TextUtils.isEmpty(message)){
-                    runOnUiThread(() -> {
+                    mHandler.post(() -> {
                         Toast.makeText(HostPKActivity.this, message, Toast.LENGTH_LONG).show();
                     });
                 }
@@ -319,7 +323,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
                     @Override
                     public void onError(int code, String message) {
                         if(!TextUtils.isEmpty(message)){
-                            runOnUiThread(() -> {
+                            mHandler.post(() -> {
                                 Toast.makeText(HostPKActivity.this, message, Toast.LENGTH_LONG).show();
                             });
                         }
@@ -340,12 +344,17 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
                         String pkName = getPkNameFromChannelAttr(list);
                         if (!TextUtils.isEmpty(pkName)) {
                             // 正在PK
-                            runOnUiThread(HostPKActivity.this::setupLocalVideo);
+                            mHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    setupLocalVideo();
+                                }
+                            });
                             joinPKChannel(pkName);
                         } else {
                             // 不在PK，只渲染自己的全屏画面
                             leavePKChannel();
-                            runOnUiThread(HostPKActivity.this::setupLocalFullVideo);
+                            mHandler.post(HostPKActivity.this::setupLocalFullVideo);
                         }
                     }
                 });
@@ -354,7 +363,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
             @Override
             public void onFailure(ErrorInfo errorInfo) {
                 if(errorInfo != null && !TextUtils.isEmpty(errorInfo.getErrorDescription())){
-                    runOnUiThread(() -> {
+                    mHandler.post(() -> {
                         Toast.makeText(HostPKActivity.this, errorInfo.getErrorDescription(), Toast.LENGTH_LONG).show();
                     });
                 }
@@ -382,7 +391,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
             @Override
             public void onError(int code, String message) {
                 if(!TextUtils.isEmpty(message)){
-                    runOnUiThread(() -> {
+                    mHandler.post(() -> {
                         Toast.makeText(HostPKActivity.this, message, Toast.LENGTH_LONG).show();
                         finish();
                     });
@@ -409,11 +418,11 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
                 String pkName = getPkNameFromChannelAttr(attributes);
                 if (!TextUtils.isEmpty(pkName)) {
                     if(pking != null){
-                        runOnUiThread(() -> pking.onSuccess(pkName));
+                        mHandler.post(() -> pking.onSuccess(pkName));
                     }
                 } else {
                     if (idle != null) {
-                        runOnUiThread(idle);
+                        mHandler.post(idle);
                     }
                 }
             }
@@ -421,7 +430,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
             @Override
             public void onFailure(ErrorInfo errorInfo) {
                 if (errorInfo != null && TextUtils.isEmpty(errorInfo.getErrorDescription())) {
-                    runOnUiThread(()->{
+                    mHandler.post(()->{
                         Toast.makeText(HostPKActivity.this, errorInfo.getErrorDescription(), Toast.LENGTH_LONG).show();
                     });
                 }
@@ -465,7 +474,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
                         @Override
                         public void onFailure(ErrorInfo errorInfo) {
                             if (errorInfo != null && TextUtils.isEmpty(errorInfo.getErrorDescription())) {
-                                runOnUiThread(()->{
+                                mHandler.post(()->{
                                     Toast.makeText(HostPKActivity.this, errorInfo.getErrorDescription(), Toast.LENGTH_LONG).show();
                                 });
                             }
@@ -477,7 +486,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
             @Override
             public void onFailure(ErrorInfo errorInfo) {
                 if (errorInfo != null && TextUtils.isEmpty(errorInfo.getErrorDescription())) {
-                    runOnUiThread(()->{
+                    mHandler.post(()->{
                         Toast.makeText(HostPKActivity.this, errorInfo.getErrorDescription(), Toast.LENGTH_LONG).show();
                     });
                 }
@@ -486,7 +495,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
     }
 
     private void joinPKChannel(String channelId) {
-        runOnUiThread(() -> {
+        mHandler.post(() -> {
             mDataBinding.ivRemoteCover.setVisibility(View.VISIBLE);
             mDataBinding.ivRemoteCover.setImageResource(UserUtil.getUserProfileIcon(channelId));
         });
@@ -494,7 +503,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
             @Override
             public void onError(int code, String message) {
                 if(!TextUtils.isEmpty(message)){
-                    runOnUiThread(() -> {
+                    mHandler.post(() -> {
                         Toast.makeText(HostPKActivity.this, message, Toast.LENGTH_LONG).show();
                     });
                 }
@@ -507,14 +516,14 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
 
             @Override
             public void onUserJoined(String channelId, int uid) {
-                runOnUiThread(() -> setupPkVideo(channelId, uid));
+                mHandler.post(() -> setupPkVideo(channelId, uid));
             }
         });
     }
 
     private void leavePKChannel(){
         rtcManager.leaveChannelExcept(getLocalRoomId());
-        runOnUiThread(() -> mDataBinding.flRemoteContainer.removeAllViews());
+        mHandler.post(() -> mDataBinding.flRemoteContainer.removeAllViews());
     }
 
     private String getLocalRoomId(){
@@ -534,5 +543,6 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
         super.onDestroy();
         rtcManager.release();
         rtmManager.release();
+        mHandler.removeCallbacksAndMessages(null);
     }
 }

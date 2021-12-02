@@ -1,5 +1,7 @@
 package io.agora.livepk.activity;
 
+import static io.agora.mediaplayer.Constants.PLAYER_RENDER_MODE_HIDDEN;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,8 +36,6 @@ import io.agora.mediaplayer.data.VideoFrame;
 import io.agora.rtm.ErrorInfo;
 import io.agora.rtm.ResultCallback;
 import io.agora.rtm.RtmChannelAttribute;
-
-import static io.agora.mediaplayer.Constants.PLAYER_RENDER_MODE_HIDDEN;
 
 public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding> {
     private static final String TAG = "AudienceActivity";
@@ -317,6 +317,6 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
 
     private String getVideoPullUrl(String roomName) {
         //return String.format(Locale.US, "rtmp://mdetest.pull.agoramde.agoraio.cn/live/%s", roomName);
-        return String.format(Locale.US, "https://webdemo-pull-hdl.agora.io/lbhd/%s.flv", roomName);
+        return String.format(Locale.US, "http://webdemo-pull.agora.io/lbhd/%s.flv", roomName);
     }
 }
