@@ -96,4 +96,11 @@
 
     <string name="audience_leave_tip">房主已离开，直播结束</string>
 
+    <!-- Action Sheet -->
+    <string name="live_room_setting_action_sheet_title">设置</string>
+    <string name="live_room_setting_title_resolution">分辨率</string>
+    <string name="live_room_setting_title_framerate">帧率</string>
+    <string name="live_room_setting_title_bitrate">码率</string>
+    <string name="live_room_setting_bitrate_value_default">默认</string>
+
 </resources>

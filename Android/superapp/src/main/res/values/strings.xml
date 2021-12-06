@@ -95,4 +95,12 @@
 
     <string name="audience_leave_tip">The host has left, the live broadcast ends</string>
 
+    <!-- Action Sheet -->
+    <string name="live_room_setting_action_sheet_title">Setting</string>
+    <string name="live_room_setting_title_resolution">Resolution</string>
+    <string name="live_room_setting_title_framerate">Frame Rate</string>
+    <string name="live_room_setting_title_bitrate">Bitrate</string>
+    <string name="live_room_setting_bitrate_value_format" translatable="false">%d kbps</string>
+    <string name="live_room_setting_bitrate_value_default">Default</string>
+
 </resources>

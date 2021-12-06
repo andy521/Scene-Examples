@@ -140,7 +140,7 @@ public class DataSyncImpl implements ISyncManager {
     @Override
     public void joinScene(String majorChannel) {
         this.majorChannel = majorChannel;
-        if(!channelListeners.containsKey(majorChannel)){
+        if(majorChannel != null && !channelListeners.containsKey(majorChannel)){
             NamedChannelListener listener = new NamedChannelListener(majorChannel);
             RtmChannel rtmChannel = client.createChannel(majorChannel, listener);
             rtmChannel.join(null);

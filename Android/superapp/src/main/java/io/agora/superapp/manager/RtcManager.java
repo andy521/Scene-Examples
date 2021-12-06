@@ -50,7 +50,39 @@ public class RtcManager {
 
     private RtcEngine engine;
 
-    private VideoEncoderConfiguration encoderConfiguration = new VideoEncoderConfiguration(
+    public static final VideoEncoderConfiguration.VideoDimensions[] RESOLUTIONS_PK_HOST = {
+            VideoEncoderConfiguration.VD_120x120,
+            VideoEncoderConfiguration.VD_160x120,
+            VideoEncoderConfiguration.VD_180x180,
+            VideoEncoderConfiguration.VD_240x180,
+            VideoEncoderConfiguration.VD_320x180,
+            VideoEncoderConfiguration.VD_240x240,
+            VideoEncoderConfiguration.VD_320x240,
+            VideoEncoderConfiguration.VD_424x240,
+            VideoEncoderConfiguration.VD_360x360,
+            VideoEncoderConfiguration.VD_480x360,
+            VideoEncoderConfiguration.VD_640x360,
+            VideoEncoderConfiguration.VD_480x480,
+            VideoEncoderConfiguration.VD_640x480,
+            VideoEncoderConfiguration.VD_840x480,
+            VideoEncoderConfiguration.VD_960x720,
+            VideoEncoderConfiguration.VD_1280x720,
+            VideoEncoderConfiguration.VD_1920x1080,
+            VideoEncoderConfiguration.VD_2540x1440,
+            VideoEncoderConfiguration.VD_3840x2160
+    };
+    public static final VideoEncoderConfiguration.FRAME_RATE[] FRAME_RATES_PK_HOST = {
+            VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_1,
+            VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_7,
+            VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_10,
+            VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15,
+            VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_24,
+            VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_30,
+            VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_60,
+            VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15,
+    };
+
+    public static final VideoEncoderConfiguration encoderConfiguration = new VideoEncoderConfiguration(
             VD_640x360,
             FRAME_RATE_FPS_15,
             700,
@@ -336,7 +368,7 @@ public class RtcManager {
         }
     }
 
-    public void renderPlayerView(FrameLayout container, Runnable completedRun) {
+    public void renderPlayerView(FrameLayout container, Runnable firstFrameRun) {
         if (engine == null) {
             return;
         }
@@ -350,10 +382,10 @@ public class RtcManager {
                         if (mMediaPlayer != null) {
                             mMediaPlayer.play();
                         }
-                        if (completedRun != null) {
-                            completedRun.run();
-                        }
+
                     }
+
+
                 }
 
                 @Override
@@ -363,7 +395,11 @@ public class RtcManager {
 
                 @Override
                 public void onPlayerEvent(io.agora.mediaplayer.Constants.MediaPlayerEvent mediaPlayerEvent, long l, String s) {
-
+                    if(mediaPlayerEvent == io.agora.mediaplayer.Constants.MediaPlayerEvent.PLAYER_EVENT_FIRST_DISPLAYED){
+                        if (firstFrameRun != null) {
+                            firstFrameRun.run();
+                        }
+                    }
                 }
 
                 @Override

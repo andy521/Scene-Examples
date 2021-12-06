@@ -125,7 +125,7 @@
                 android:layout_toEndOf="@id/live_prepare_go_live_btn"
                 android:background="@drawable/round_dark_gray_bg"
                 android:scaleType="fitXY"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:src="@drawable/setting_button" />
         </RelativeLayout>
 

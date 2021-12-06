@@ -98,4 +98,6 @@
     <dimen name="modify_user_name_done_btn_corner">4dp</dimen>
     <dimen name="about_activity_title_height">54dp</dimen>
 
+    <dimen name="live_room_action_sheet_seek_bar_radius">2dp</dimen>
+
 </resources>
