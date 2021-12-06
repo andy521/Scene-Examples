@@ -79,7 +79,6 @@ public class RtcManager {
             VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_24,
             VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_30,
             VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_60,
-            VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15,
     };
 
     public static final VideoEncoderConfiguration encoderConfiguration = new VideoEncoderConfiguration(
