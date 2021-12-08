@@ -11,7 +11,7 @@ import AgoraLog
 class LogProvider {
     static let `default` = LogProvider()
     private static let folderPath = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!.appending("/Logs")
-    private let logger = AgoraLogger(folderPath: folderPath, filePrefix: "PKLive", maximumNumberOfFiles: 5)
+    private let logger = AgoraLogger(folderPath: folderPath, filePrefix: "SuperApp", maximumNumberOfFiles: 5)
     
     init() {
         logger.setPrintOnConsoleType(.all)
@@ -129,28 +129,28 @@ class Log {
                           tag: String? = nil) {
         LogProvider.default.errorText(text: text,
                                       tag: tag,
-                                      domainName: "pkLive")
+                                      domainName: "SuperApp")
     }
     
     static func error(error: CustomStringConvertible,
                       tag: String? = nil) {
         LogProvider.default.errorText(text: error.description,
                                       tag: tag,
-                                      domainName: "pkLive")
+                                      domainName: "SuperApp")
     }
     
     static func info(text: String,
                      tag: String? = nil) {
         LogProvider.default.info(text: text,
                                  tag: tag,
-                                 domainName: "pkLive")
+                                 domainName: "SuperApp")
     }
     
     static func debug(text: String,
                       tag: String? = nil) {
         LogProvider.default.debug(text: text,
                                   tag: tag,
-                                  domainName: "pkLive")
+                                  domainName: "SuperApp")
     }
 }
 

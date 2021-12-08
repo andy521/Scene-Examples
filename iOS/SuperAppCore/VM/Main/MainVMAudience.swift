@@ -23,6 +23,7 @@ class MainVMAudience: NSObject, MainVMProtocol {
     var mediaPlayer: AgoraRtcMediaPlayerProtocol!
     let queue = DispatchQueue(label: "queue.MainVMAudience")
     var lastUserIdPKValue = ""
+    let videoSize = CGSize(width: 640, height: 360)
     
     init(config: Config,
          syncManager: SyncManager) {
@@ -70,5 +71,15 @@ class MainVMAudience: NSObject, MainVMProtocol {
     func close() {
         sceneRef.unsubscribe()
         closeInternal()
+    }
+    
+    func switchCamera() {
+        agoraKit.switchCamera()
+    }
+    
+    func muteLocalAudio(mute: Bool) {
+        if mode == .rtc {
+            agoraKit.muteLocalAudioStream(mute)
+        }
     }
 }

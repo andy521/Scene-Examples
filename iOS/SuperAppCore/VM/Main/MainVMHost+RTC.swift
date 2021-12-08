@@ -11,8 +11,8 @@ extension MainVMHost {
     func joinRtcByPassPush() { /** 旁推方式加入 **/
         let config = AgoraRtcEngineConfig()
         config.appId = config.appId
-        let size = CGSize(width: 640, height: 360)
-        let videoConfig = AgoraVideoEncoderConfiguration(size: size,
+        
+        let videoConfig = AgoraVideoEncoderConfiguration(size: videoSize, /* CGSize(width: 640, height: 360) **/
                                                          frameRate: .fps15,
                                                          bitrate: 700,
                                                          orientationMode: .fixedPortrait,
@@ -20,12 +20,14 @@ extension MainVMHost {
         
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: config,
                                                   delegate: self)
+        agoraKit.setParameters("{\"engine.video.enable_hw_encoder\":\"true\"}")
+        
         agoraKit.enableVideo()
         agoraKit.setChannelProfile(.liveBroadcasting)
         agoraKit.setClientRole(.broadcaster)
         agoraKit.setDefaultAudioRouteToSpeakerphone(true)
         agoraKit.setVideoEncoderConfiguration(videoConfig)
-        
+
         let channelId = self.config.roomId
         let ret = agoraKit.joinChannel(byToken: nil,
                                        channelId: channelId,
@@ -53,15 +55,16 @@ extension MainVMHost {
         let config = AgoraRtcEngineConfig()
         config.appId = config.appId
         
-        let size = CGSize(width: 640, height: 360)
-        let videoConfig = AgoraVideoEncoderConfiguration(size: size,
+        let videoConfig = AgoraVideoEncoderConfiguration(size: videoSize,
                                                          frameRate: .fps15,
                                                          bitrate: 700,
                                                          orientationMode: .fixedPortrait,
-                                                         mirrorMode: .auto)
+                                                         mirrorMode: .disabled)
         
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: config,
                                                   delegate: self)
+        
+        
         agoraKit.enableVideo()
         agoraKit.setChannelProfile(.liveBroadcasting)
         agoraKit.setClientRole(.broadcaster)

@@ -26,8 +26,7 @@ extension MainVMAudience {
     func joinRtc() { 
         let config = AgoraRtcEngineConfig()
         config.appId = config.appId
-        let size = CGSize(width: 640, height: 360)
-        let videoConfig = AgoraVideoEncoderConfiguration(size: size,
+        let videoConfig = AgoraVideoEncoderConfiguration(size: videoSize,
                                                          frameRate: .fps15,
                                                          bitrate: 700,
                                                          orientationMode: .fixedPortrait,
@@ -75,7 +74,6 @@ extension MainVMAudience {
         videoCanvas.uid = uid
         videoCanvas.view = view
         videoCanvas.renderMode = .hidden
-        // videoCanvas.channelId = channel.getId()
         agoraKit.setupRemoteVideo(videoCanvas)
     }
 }

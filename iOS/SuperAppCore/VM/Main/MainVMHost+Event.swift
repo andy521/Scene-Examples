@@ -13,8 +13,19 @@ extension MainVMHost: AgoraRtcEngineDelegate {
                    didJoinChannel channel: String,
                    withUid uid: UInt,
                    elapsed: Int) {
-        agoraKit.addPublishStreamUrl(pushUrlString,
-                                     transcodingEnabled: false)
+        let user = AgoraLiveTranscodingUser()
+        user.rect = CGRect(x: 0,
+                           y: 0,
+                           width: videoSize.width,
+                           height: videoSize.height)
+        user.uid = uid
+        user.zOrder = 1
+        liveTranscoding.size = videoSize
+        liveTranscoding.videoFramerate = 15
+        liveTranscoding.add(user)
+        engine.setLiveTranscoding(liveTranscoding)
+        engine.addPublishStreamUrl(pushUrlString,
+                                   transcodingEnabled: true)
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit,
@@ -23,6 +34,16 @@ extension MainVMHost: AgoraRtcEngineDelegate {
         guard let view = delegate?.mainVMShouldGetRemoteRender(self) else {
             return
         }
+
+        let user = AgoraLiveTranscodingUser()
+        user.rect = CGRect(x: 0.5 * videoSize.width,
+                           y: 0.1 * videoSize.height,
+                           width: 0.5 * videoSize.width,
+                           height: 0.5 * videoSize.height)
+        user.uid = uid
+        user.zOrder = 2
+        liveTranscoding.add(user)
+        engine.setLiveTranscoding(liveTranscoding)
         invokeMainVMShouldStartRenderRemoteView(self)
         subscribeVideoRemote(view: view,
                              uid: uid)

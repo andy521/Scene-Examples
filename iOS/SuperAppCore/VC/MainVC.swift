@@ -62,6 +62,7 @@ extension MainVC: MainViewDelegate {
             return
         case .more:
             let vc = ToolVC()
+            vc.delegate = self
             vc.show(in: self)
             return
         case .close:
@@ -95,7 +96,7 @@ extension MainVC: MainVMDelegate {
     func mainVM(_ vm: MainVMProtocol,
                 didJoinRoom info: RoomInfo) {
         let imageName = StorageManager.uuid.headImageName
-        let info = MainView.Info(title: info.roomName,
+        let info = MainView.Info(title: info.roomName + "(\(info.roomId))",
                                  imageName: imageName,
                                  userCount: info.userCount)
         mainView.update(info: info)
@@ -110,5 +111,16 @@ extension MainVC: MainVMDelegate {
 extension MainVC: InvitationVCDelegate {
     func invitationVC(_ vc: InvitationVC, didInvited user: UserInfo) {
         vm.invite(userIdPK: user.userId)
+    }
+}
+
+extension MainVC: ToolVCDelegate {
+    func toolVC(_ vc: ToolVC, didTap action: ToolVC.Action) {
+        switch action {
+        case .camera:
+            vm.switchCamera()
+        case .mic:
+            vm.muteLocalAudio(mute: false)
+        }
     }
 }

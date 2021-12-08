@@ -17,15 +17,6 @@ class CreateLiveVM: NSObject {
     private let rtcKit: AgoraRtcEngineKit
     weak var delegate: CreateLiveVMDelegate?
     
-    var defaultNameList: [String] {
-        ["陌上花开等你来", "天天爱你", "我爱你们",
-                "有人可以", "风情万种", "强势归来",
-                "哈哈哈", "聊聊", "美人舞江山",
-                "最美的回忆", "遇见你", "最长情的告白",
-                "全力以赴", "简单点", "早上好",
-                "春风十里不如你"]
-    }
-    
     init(appId: String) {
         self.appId = appId
         self.rtcKit = AgoraRtcEngineKit.sharedEngine(withAppId: appId,
@@ -35,7 +26,7 @@ class CreateLiveVM: NSObject {
     }
     
     func genRandomName() {
-        let text = defaultNameList.randomElement() ?? defaultNameList.first!
+        let text: String = .randomRoomName
         delegate?.createLiveVM(self, didUpdate: text)
     }
     

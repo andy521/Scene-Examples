@@ -9,7 +9,7 @@ import UIKit
 
 public class EntryVC: UIViewController {
     var rightBarButtonItem: UIBarButtonItem!
-    let entryView = EntryView(frame: .zero)
+    let entryView = EntryView()
     var vm: EntryVM!
     let appId: String
     
@@ -35,9 +35,18 @@ public class EntryVC: UIViewController {
                                                                               style: .plain,
                                                                               target: self,
                                                                               action: #selector(tapBarButtonItem(_:)))
+        tabBarController?.navigationItem.leftBarButtonItem = UIBarButtonItem(image: .remove,
+                                                                             style: .plain,
+                                                                             target: self,
+                                                                             action: #selector(tapBarButtonItem(_:)))
         
         entryView.frame = view.bounds
         view.addSubview(entryView)
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        vm.getRooms()
     }
     
     private func commonInit() {
@@ -46,8 +55,14 @@ public class EntryVC: UIViewController {
     }
     
     @objc func tapBarButtonItem(_ barButtonItem: UIBarButtonItem) {
-        let vc = MineVC()
-        navigationController?.pushViewController(vc, animated: true)
+        if tabBarController?.navigationItem.rightBarButtonItem == barButtonItem {
+            let vc = MineVC()
+            navigationController?.pushViewController(vc, animated: true)
+            return
+        }
+        if tabBarController?.navigationItem.leftBarButtonItem == barButtonItem {
+            vm.deleteAllRooms()
+        }
     }
 }
 

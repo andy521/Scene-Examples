@@ -27,5 +27,7 @@ protocol MainVMProtocol {
     /// 取消连麦
     func cancleConnect()
     func close()
+    func switchCamera()
+    func muteLocalAudio(mute: Bool)
 }
 

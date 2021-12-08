@@ -14,7 +14,13 @@ class StorageManager {
                                            forKey: "userName")
         }
         get {
-            return (UserDefaults.standard.value(forKey: "userName") as? String) ?? uuid
+            if let name = (UserDefaults.standard.value(forKey: "userName") as? String) {
+                return name
+            }
+            let str: String = .randomUserName
+            UserDefaults.standard.setValue(str,
+                                           forKey: "userName")
+            return str
         }
     }
     

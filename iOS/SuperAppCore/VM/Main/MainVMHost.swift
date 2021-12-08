@@ -20,6 +20,8 @@ class MainVMHost: NSObject, MainVMProtocol {
     var agoraKit: AgoraRtcEngineKit!
     let queue = DispatchQueue(label: "queue.MainVMHost")
     var lastUserIdPKValue = ""
+    let liveTranscoding = AgoraLiveTranscoding.default()
+    let videoSize = CGSize(width: 640, height: 360)
     
     init(config: Config,
          syncManager: SyncManager) {
@@ -65,5 +67,13 @@ class MainVMHost: NSObject, MainVMProtocol {
     
     func close() {
         closeInternal()
+    }
+    
+    func switchCamera() {
+        agoraKit.switchCamera()
+    }
+    
+    func muteLocalAudio(mute: Bool) {
+        agoraKit.muteLocalAudioStream(mute)
     }
 }

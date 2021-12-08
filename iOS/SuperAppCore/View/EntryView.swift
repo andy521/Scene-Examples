@@ -44,15 +44,15 @@ class EntryView: UIView {
         
         collectionView.refreshControl = refreshControl
         collectionView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        collectionView.backgroundColor = .init(rgb: 0x999999)
+        collectionView.backgroundColor = .white
         tipsLabel.textColor = .gray
         createButton.setImage(UIImage(named: "pic-create"), for: .normal)
         centerButton.setImage(UIImage(named: "pic-placeholding"), for: .normal)
         tipsLabel.text = "请创建一个房间"
         
+        addSubview(collectionView)
         addSubview(centerButton)
         addSubview(tipsLabel)
-        addSubview(collectionView)
         addSubview(createButton)
         
         centerButton.translatesAutoresizingMaskIntoConstraints = false
@@ -102,7 +102,6 @@ class EntryView: UIView {
         let shouldHidenCenterButton = infos.count > 0
         centerButton.isHidden = shouldHidenCenterButton
         tipsLabel.isHidden = shouldHidenCenterButton
-        collectionView.isHidden = !shouldHidenCenterButton
         self.infos = infos
         collectionView.reloadData()
     }

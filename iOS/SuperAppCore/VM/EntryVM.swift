@@ -51,6 +51,15 @@ class EntryVM: NSObject {
         }
     }
     
+    func deleteAllRooms() {
+        let keys = rooms.map({ $0.id })
+        syncManager.deleteScenes(attributesByKeys: keys) { [weak self] in
+            self?.udpateRooms(rooms: [])
+        } fail: { error in
+            Log.error(error: error.description, tag: "deleteAllRooms")
+        }
+    }
+    
     func udpateRooms(rooms: [RoomItem]) {
         let infos = rooms.map({ EntryView.Info(imageName: $0.id.headImageName,
                                                title: $0.roomName,
