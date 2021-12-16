@@ -19,13 +19,12 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowInsets;
-import android.view.WindowInsetsAnimation;
 import android.view.inputmethod.EditorInfo;
 import android.webkit.WebView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,11 +38,15 @@ import androidx.lifecycle.Observer;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 
 import java.util.List;
 
@@ -66,7 +69,9 @@ import io.agora.sample.rtegame.service.MediaProjectService;
 import io.agora.sample.rtegame.ui.room.donate.DonateDialog;
 import io.agora.sample.rtegame.ui.room.game.GameModeDialog;
 import io.agora.sample.rtegame.ui.room.tool.MoreDialog;
+import io.agora.sample.rtegame.util.BlurTransformation;
 import io.agora.sample.rtegame.util.EventObserver;
+import io.agora.sample.rtegame.util.GameConstants;
 import io.agora.sample.rtegame.util.GameUtil;
 import io.agora.sample.rtegame.util.GiftUtil;
 import io.agora.sample.rtegame.util.ViewStatus;
@@ -75,7 +80,7 @@ import io.agora.sample.rtegame.view.LiveHostLayout;
 
 public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
 
-    private static final float recyclerViewHeightOnWidthPercent = 116/375f;
+    private static final float recyclerViewHeightOnWidthPercent = 116 / 375f;
 
     private RoomViewModel mViewModel;
 
@@ -247,6 +252,7 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
     private void onGameShareInfoChanged(GameInfo gameInfo) {
         if (gameInfo == null) return;
         if (gameInfo.getStatus() == GameInfo.START) {
+            GameUtil.currentGame = GameRepo.getGameDetail(gameInfo.getGameId());
             insertNewMessage("加载远端游戏画面");
             needGameView(true);
             if (mBinding.hostContainerFgRoom.gameHostView != null) {
@@ -299,10 +305,8 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
         if (currentGame == null) return;
         BaseUtil.logD("game status->" + currentGame.getStatus());
 
-        if (!aMHost) {
-            GameUtil.currentGame = GameRepo.getGameDetail(currentGame.getGameId());
-            return;
-        }
+        GameUtil.currentGame = GameRepo.getGameDetail(currentGame.getGameId());
+        if (!aMHost) { return; }
         if (currentGame.getStatus() == GameApplyInfo.PLAYING) {
             needGameView(true);
             WebView webView = mBinding.hostContainerFgRoom.webViewHostView;
@@ -424,7 +428,7 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
         } else {
             insertNewMessage("正在加载连麦主播【" + subRoomInfo.getTempUserName() + "】视频");
             LiveHostCardView view = container.createSubHostView();
-                container.setType(container.isCurrentlyInGame()? LiveHostLayout.Type.DOUBLE_IN_GAME : LiveHostLayout.Type.DOUBLE);
+            container.setType(container.isCurrentlyInGame() ? LiveHostLayout.Type.DOUBLE_IN_GAME : LiveHostLayout.Type.DOUBLE);
             mViewModel.setupRemoteView(view.renderTextureView, subRoomInfo, false);
         }
     }
@@ -502,13 +506,21 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
         Intent mediaProjectionIntent = new Intent(requireActivity(), MediaProjectService.class);
         requireContext().stopService(mediaProjectionIntent);
     }
+
     private void onLayoutTypeChanged(LiveHostLayout.Type type) {
+        BaseUtil.logD("onLayoutTypeChanged:"+type.ordinal());
         mBinding.hostContainerFgRoom.setType(type);
         adjustMessageWidth(type == LiveHostLayout.Type.HOST_ONLY);
+
+        if (type == LiveHostLayout.Type.DOUBLE_IN_GAME) {
+            if (GameUtil.currentGame != null)
+                setRoomBgd(false, GameUtil.getGameBgdByGameId(GameUtil.currentGame.getGameId()));
+        }else {
+            setRoomBgd(true, GameUtil.getBgdByRoomBgdId(currentRoom.getBackgroundId()));
+        }
         if (aMHost) {
             if (type == LiveHostLayout.Type.HOST_ONLY) {
                 mBinding.btnExitPkFgRoom.setVisibility(View.GONE);
-
             } else if (type == LiveHostLayout.Type.DOUBLE) {
                 mBinding.btnGameFgRoom.setVisibility(View.VISIBLE);
                 mBinding.btnExitGameFgRoom.setVisibility(View.GONE);
@@ -521,13 +533,31 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
         }
     }
 
-    private void adjustMessageWidth(boolean fullWidth){
+    private void adjustMessageWidth(boolean fullWidth) {
         int leftPadding = mBinding.recyclerViewFgRoom.getPaddingLeft();
         int desiredPaddingEnd = fullWidth ? leftPadding : 0;
         mBinding.recyclerViewFgRoom.setPaddingRelative(leftPadding, 0, desiredPaddingEnd, 0);
         ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) mBinding.recyclerViewFgRoom.getLayoutParams();
         lp.matchConstraintPercentWidth = fullWidth ? 1 : 0.5f;
         mBinding.recyclerViewFgRoom.setLayoutParams(lp);
+    }
+
+    private void setRoomBgd(boolean blurring, @DrawableRes int drawableId) {
+        RequestBuilder<Drawable> load = Glide.with(this).asDrawable().load(drawableId);
+        if (blurring) load = load.apply(RequestOptions.bitmapTransform(new BlurTransformation(requireContext())));
+
+        load.into(new CustomTarget<Drawable>() {
+            @Override
+            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                mBinding.getRoot().setBackground(resource);
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) {
+
+            }
+        });
+
     }
 
 }

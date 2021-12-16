@@ -63,7 +63,7 @@ public class GameUtil {
     };
 
     @DrawableRes
-    public static int getBgdFromRoomBgdId(@Nullable String bgdId) {
+    public static int getBgdByRoomBgdId(@Nullable String bgdId) {
         int i = 1;
         try {
             if (bgdId != null)
@@ -100,6 +100,11 @@ public class GameUtil {
             default:
                 return R.drawable.portrait14;
         }
+    }
+
+    @DrawableRes
+    public static int getGameBgdByGameId(int gameId){
+            return R.drawable.pic_bgd_game_1;
     }
 
     @NonNull

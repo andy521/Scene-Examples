@@ -10,10 +10,13 @@ public class GameInfo {
     private int status;
     //        屏幕共享对应的uid
     private final int gameUid;
+    // 游戏ID
+    private final int gameId;
 
-    public GameInfo(int status, int gameUid) {
+    public GameInfo(int status, int gameUid, int gameId) {
         this.status = status;
         this.gameUid = gameUid;
+        this.gameId = gameId;
     }
 
     public void setStatus(int status) {
@@ -28,12 +31,16 @@ public class GameInfo {
         return gameUid;
     }
 
-    @NonNull
+    public int getGameId() {
+        return gameId;
+    }
+
     @Override
     public String toString() {
         return "GameInfo{" +
                 "status=" + status +
                 ", gameUid=" + gameUid +
+                ", gameId='" + gameId + '\'' +
                 '}';
     }
 }

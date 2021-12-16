@@ -16,7 +16,7 @@ public class ItemHostHolder extends BaseRecyclerViewAdapter.BaseViewHolder<ItemD
     @Override
     public void binding(@Nullable RoomInfo roomInfo, int selectedIndex) {
         if (roomInfo != null){
-            mBinding.avatarItemHost.setImageResource(GameUtil.getBgdFromRoomBgdId(roomInfo.getBackgroundId()));
+            mBinding.avatarItemHost.setImageResource(GameUtil.getBgdByRoomBgdId(roomInfo.getBackgroundId()));
             mBinding.nameItemHost.setText(roomInfo.getTempUserName());
             mBinding.buttonItemHost.setOnClickListener(this::onItemClick);
         }

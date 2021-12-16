@@ -178,6 +178,7 @@ public class RoomViewModel extends ViewModel implements RoomApi {
     @Override
     protected void onCleared() {
         super.onCleared();
+        GameUtil.currentGame = null;
         new Thread(() -> {
             // destroy RTE
             RtcEngine engine = _mEngine.getValue();
@@ -239,9 +240,9 @@ public class RoomViewModel extends ViewModel implements RoomApi {
             rtcEngine.joinChannelEx(context.getString(R.string.rtc_app_token), screenShareConnection, options, new IRtcEngineEventHandler() {});
 
             // Step 3
-            if (currentSceneRef != null) {
+            if (currentSceneRef != null && GameUtil.currentGame != null) {
                 BaseUtil.logD("GAME_INFO update->"+ System.currentTimeMillis());
-                GameInfo gameInfo = new GameInfo(GameInfo.START, screenShareUId);
+                GameInfo gameInfo = new GameInfo(GameInfo.START, screenShareUId, GameUtil.currentGame.getGameId());
                 currentSceneRef.update(GameConstants.GAME_INFO, gameInfo, null);
             }
         }
@@ -509,9 +510,8 @@ public class RoomViewModel extends ViewModel implements RoomApi {
         _currentGame.postValue(currentGame);
         if (currentGame.getStatus() == GameInfo.END) {
             exitGame();
-            BaseUtil.logD("after exitgame");
             if (currentSceneRef != null)
-                currentSceneRef.update(GameConstants.GAME_INFO, new GameInfo(GameInfo.END, screenShareUId), null);
+                currentSceneRef.update(GameConstants.GAME_INFO, new GameInfo(GameInfo.END, screenShareUId, currentGame.getGameId()), null);
         }
     }
 
@@ -596,7 +596,6 @@ public class RoomViewModel extends ViewModel implements RoomApi {
     public void startGame(@NonNull GameApplyInfo currentGame, @NonNull WebView webView) {
         PKApplyInfo pkApplyInfo = _applyInfo.getValue();
         if (pkApplyInfo == null) return;
-        GameUtil.currentGame = GameRepo.getGameDetail(currentGame.getGameId());
         boolean isOrganizer = Objects.equals(_applyInfo.getValue().getRoomId(), currentRoom.getId());
         GameRepo.gameStart(webView, localUser, isOrganizer, Integer.parseInt(pkApplyInfo.getTargetRoomId()));
     }

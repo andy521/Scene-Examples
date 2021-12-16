@@ -17,7 +17,7 @@ public class RoomListHolder extends BaseRecyclerViewAdapter.BaseViewHolder<ItemR
     public void binding(@Nullable RoomInfo room, int selectedIndex) {
         if (room != null){
             mBinding.titleItemRoomList.setText(room.getRoomName());
-            mBinding.bgdItemRoomList.setImageResource(GameUtil.getBgdFromRoomBgdId(room.getBackgroundId()));
+            mBinding.bgdItemRoomList.setImageResource(GameUtil.getBgdByRoomBgdId(room.getBackgroundId()));
         }
     }
 }
