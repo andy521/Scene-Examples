@@ -112,23 +112,17 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
             findNavController().navigate(R.id.action_roomFragment_to_roomCreateFragment);
             return null;
         }
+        mViewModel = GameUtil.getViewModel(this, RoomViewModel.class, new RoomViewModelFactory(requireContext(), currentRoom));
+        //  See if current user is the host
+        aMHost = currentRoom.getUserId().equals(GameApplication.getInstance().user.getUserId());
+        if (aMHost) mGlobalModel.focused.observe(getViewLifecycleOwner(), mViewModel::handleScreenCapture);
 
-        mGlobalModel.focused.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean focused) {
-                mViewModel.handleScreenCapture(focused);
-            }
-        });
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mViewModel = GameUtil.getViewModel(this, RoomViewModel.class, new RoomViewModelFactory(requireContext(), currentRoom));
-
-        //  See if current user is the host
-        aMHost = currentRoom.getUserId().equals(GameApplication.getInstance().user.getUserId());
 
         initView();
         initListener();
@@ -136,9 +130,9 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
 
     @Override
     public void onDestroy() {
+        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         stopScreenCaptureService();
         super.onDestroy();
-        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 
     private void initView() {
