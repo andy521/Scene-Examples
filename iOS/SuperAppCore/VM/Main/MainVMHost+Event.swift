@@ -13,17 +13,8 @@ extension MainVMHost: AgoraRtcEngineDelegate {
                    didJoinChannel channel: String,
                    withUid uid: UInt,
                    elapsed: Int) {
-        let user = AgoraLiveTranscodingUser()
-        user.rect = CGRect(x: 0,
-                           y: 0,
-                           width: videoSize.width,
-                           height: videoSize.height)
-        user.uid = uid
-        user.zOrder = 1
-        liveTranscoding.size = videoSize
-        liveTranscoding.videoFramerate = 15
-        liveTranscoding.add(user)
-        engine.setLiveTranscoding(liveTranscoding)
+        Log.info(text: "didJoinChannel", tag: "MainVMHost")
+        setMergeVideoLocal(engine: engine, uid: uid)
         engine.addPublishStreamUrl(pushUrlString,
                                    transcodingEnabled: true)
     }
@@ -31,26 +22,21 @@ extension MainVMHost: AgoraRtcEngineDelegate {
     func rtcEngine(_ engine: AgoraRtcEngineKit,
                    didJoinedOfUid uid: UInt,
                    elapsed: Int) {
+        Log.info(text: "didJoinChannel", tag: "MainVMHost")
         guard let view = delegate?.mainVMShouldGetRemoteRender(self) else {
             return
         }
-
-        let user = AgoraLiveTranscodingUser()
-        user.rect = CGRect(x: 0.5 * videoSize.width,
-                           y: 0.1 * videoSize.height,
-                           width: 0.5 * videoSize.width,
-                           height: 0.5 * videoSize.height)
-        user.uid = uid
-        user.zOrder = 2
-        liveTranscoding.add(user)
-        engine.setLiveTranscoding(liveTranscoding)
+        setMergeVideoRemote(engine: engine, uid: uid)
         invokeMainVMShouldStartRenderRemoteView(self)
         subscribeVideoRemote(view: view,
                              uid: uid)
     }
     
-    func rtcEngine(_ engine: AgoraRtcEngineKit,
-                   didLeaveChannelWith stats: AgoraChannelStats) {
+    func rtcEngine(_ engine: AgoraRtcEngineKit, streamUnpublishedWithUrl url: String) {
+        Log.info(text: "streamUnpublishedWithUrl", tag: "MainVMHost")
+        let option = AgoraLeaveChannelOptions()
+        option.stopMicrophoneRecording = false
+        agoraKit.leaveChannel(option)
         handleLeaveEvent()
     }
 }

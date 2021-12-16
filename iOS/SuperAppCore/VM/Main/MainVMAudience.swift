@@ -24,14 +24,15 @@ class MainVMAudience: NSObject, MainVMProtocol {
     let queue = DispatchQueue(label: "queue.MainVMAudience")
     var lastUserIdPKValue = ""
     let videoSize = CGSize(width: 640, height: 360)
+    var audioIsMute = false
     
     init(config: Config,
          syncManager: SyncManager) {
         self.mode = .pull
         self.config = config
         self.syncManager = syncManager
-        self.pushUrlString = "rtmp://examplepush.agoramde.agoraio.cn/live/" + config.roomId
-        let string = "http://examplepull.agoramde.agoraio.cn/live/\(config.roomId).flv"
+        self.pushUrlString = "rtmp://push.test1.agoramde.agoraio.cn/live/" + config.roomId
+        let string = "http://play2.test1.agoramde.agoraio.cn/live/\(config.roomId).flv"
         self.pullUrlString = string
         super.init()
     }
@@ -77,9 +78,15 @@ class MainVMAudience: NSObject, MainVMProtocol {
         agoraKit.switchCamera()
     }
     
-    func muteLocalAudio(mute: Bool) {
+    func revertMuteLocalAudio() {
         if mode == .rtc {
-            agoraKit.muteLocalAudioStream(mute)
+            audioIsMute = !audioIsMute
+            agoraKit.muteLocalAudioStream(audioIsMute)
         }
+    }
+    
+    /// `true` is mute
+    func getLocalAudioMuteState() -> Bool {
+        return audioIsMute
     }
 }

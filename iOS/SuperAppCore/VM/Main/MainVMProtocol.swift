@@ -28,6 +28,8 @@ protocol MainVMProtocol {
     func cancleConnect()
     func close()
     func switchCamera()
-    func muteLocalAudio(mute: Bool)
+    func revertMuteLocalAudio()
+    /// `true` is mute
+    func getLocalAudioMuteState() -> Bool
 }
 

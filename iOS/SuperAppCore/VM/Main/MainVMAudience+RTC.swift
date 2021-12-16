@@ -13,7 +13,7 @@ extension MainVMAudience {
         rtcConfig.appId = config.appId
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: rtcConfig,
                                                   delegate: self)
-            mediaPlayer = agoraKit.createMediaPlayer(with: self)
+        mediaPlayer = agoraKit.createMediaPlayer(with: self)
         if let localView = delegate?.mainVMShouldGetLocalRender(self) {
             Log.info(text: pullUrlString)
             mediaPlayer.setView(localView)
@@ -56,7 +56,7 @@ extension MainVMAudience {
         }
     }
     
-    func leaveRtcByPassPush() { /** 离开RTC方式 **/
+    func leaveRtc() { /** 离开RTC方式 **/
         agoraKit.leaveChannel(nil)
     }
     

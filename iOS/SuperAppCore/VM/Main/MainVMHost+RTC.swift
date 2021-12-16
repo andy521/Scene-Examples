@@ -20,7 +20,8 @@ extension MainVMHost {
         
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: config,
                                                   delegate: self)
-        agoraKit.setParameters("{\"engine.video.enable_hw_encoder\":\"true\"}")
+//        agoraKit.setParameters("{\"engine.video.enable_hw_encoder\":\"true\"}")
+//        agoraKit.setParameters("{\"rtc.audio.enable_aec_solo\":\"false\"}")
         
         agoraKit.enableVideo()
         agoraKit.setChannelProfile(.liveBroadcasting)
@@ -48,7 +49,6 @@ extension MainVMHost {
     
     func leaveRtcByPassPush() { /** 离开旁推方式 **/
         agoraKit.removePublishStreamUrl(pushUrlString)
-        agoraKit.leaveChannel(nil)
     }
     
     func joinRtcByPush() { /** 直推方式加入 **/
@@ -66,6 +66,7 @@ extension MainVMHost {
         
         
         agoraKit.enableVideo()
+        agoraKit.enableAudio()
         agoraKit.setChannelProfile(.liveBroadcasting)
         agoraKit.setClientRole(.broadcaster)
         agoraKit.setDirectCdnStreamingAudioProfile(.default)
@@ -103,5 +104,33 @@ extension MainVMHost {
         videoCanvas.view = view
         videoCanvas.renderMode = .hidden
         agoraKit.setupRemoteVideo(videoCanvas)
+    }
+    
+    func setMergeVideoLocal(engine: AgoraRtcEngineKit, uid: UInt) { /** 设置旁路推流合图（本地） **/
+        Log.info(text: "设置旁路推流合图（本地）", tag: "MainVMHost")
+        let user = AgoraLiveTranscodingUser()
+        user.rect = CGRect(x: 0,
+                           y: 0,
+                           width: videoSize.height,
+                           height: videoSize.width)
+        user.uid = uid
+        user.zOrder = 1
+        liveTranscoding.size = CGSize(width: videoSize.height, height: videoSize.width)
+        liveTranscoding.videoFramerate = 15
+        liveTranscoding.add(user)
+        engine.setLiveTranscoding(liveTranscoding)
+    }
+    
+    func setMergeVideoRemote(engine: AgoraRtcEngineKit, uid: UInt) { /** 设置旁路推流合图（远程） **/
+        Log.info(text: "旁路合图设置(远程)", tag: "MainVMHost")
+        let user = AgoraLiveTranscodingUser()
+        user.rect = CGRect(x: 0.5 * videoSize.height,
+                           y: 0.1 * videoSize.width,
+                           width: 0.5 * videoSize.height,
+                           height: 0.5 * videoSize.width)
+        user.uid = uid
+        user.zOrder = 2
+        liveTranscoding.add(user)
+        engine.setLiveTranscoding(liveTranscoding)
     }
 }

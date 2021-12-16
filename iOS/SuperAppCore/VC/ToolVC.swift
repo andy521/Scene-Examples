@@ -18,6 +18,7 @@ class ToolVC: UIViewController {
     private let presenter = Presentr(presentationType: .bottomHalf)
     weak var delegate: ToolVCDelegate?
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
@@ -33,6 +34,10 @@ class ToolVC: UIViewController {
     private func commonInit() {
         toolView.delegate = self
     }
+    
+    func setMicState(open: Bool) {
+        toolView.setMicState(open: open)
+    }
 
     func show(in vc: UIViewController) {
         presenter.backgroundTap = .dismiss
@@ -45,6 +50,10 @@ class ToolVC: UIViewController {
 
 extension ToolVC: ToolViewDelegate {
     func toolView(_ view: ToolView, didTap action: ToolView.Action) {
+        if action == .mic {
+            let open = !view.micOpen
+            setMicState(open: open)
+        }
         delegate?.toolVC(self, didTap: action)
     }
 }

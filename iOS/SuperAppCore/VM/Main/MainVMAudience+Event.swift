@@ -25,7 +25,9 @@ extension MainVMAudience: AgoraRtcMediaPlayerDelegate {
     func agoraRtcMediaPlayer(_ playerKit: AgoraRtcMediaPlayerProtocol,
                              didChangedTo state: AgoraMediaPlayerState,
                              error: AgoraMediaPlayerError) {
+        Log.info(text: "agoraRtcMediaPlayer didChangedTo \(state.rawValue) \(error.rawValue)", tag: "MainVMAudience")
         if state == .openCompleted {
+            Log.info(text: "openCompleted", tag: "MainVMAudience")
             playerKit.play()
         }
     }

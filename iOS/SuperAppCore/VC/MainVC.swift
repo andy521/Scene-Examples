@@ -62,6 +62,8 @@ extension MainVC: MainViewDelegate {
             return
         case .more:
             let vc = ToolVC()
+            let open = !vm.getLocalAudioMuteState()
+            vc.setMicState(open: open)
             vc.delegate = self
             vc.show(in: self)
             return
@@ -120,7 +122,7 @@ extension MainVC: ToolVCDelegate {
         case .camera:
             vm.switchCamera()
         case .mic:
-            vm.muteLocalAudio(mute: false)
+            vm.revertMuteLocalAudio()
         }
     }
 }

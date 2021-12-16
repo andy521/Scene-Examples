@@ -30,10 +30,18 @@ class InvitationVM: NSObject {
                 
                 let localUserId = StorageManager.uuid
                 let decoder = JSONDecoder()
-                let userInfos = objs.compactMap({ $0.toJson() })
+                var userInfos = objs.compactMap({ $0.toJson() })
                     .compactMap({ $0.data(using: .utf8) })
                     .compactMap({ try? decoder.decode(UserInfo.self, from: $0) })
                     .filter({ $0.userId != localUserId })
+                
+                /// 查重
+                var dict = [String : UserInfo]()
+                for userInfo in userInfos {
+                    dict[userInfo.userId] = userInfo
+                }
+                userInfos = dict.map({ $0.value })
+                
                 self.userInfos = userInfos
                 
                 var infos = [Info]()
@@ -44,8 +52,7 @@ class InvitationVM: NSObject {
                                     isInvited: false)
                     infos.append(info)
                 }
-                self.delegate?.invitationVM(self, didUpdate: infos,
-                                            errorMsg: nil)
+                self.delegate?.invitationVM(self, didUpdate: infos, errorMsg: nil)
             } fail: { [weak self](error) in
                 guard let `self` = self else { return }
                 self.delegate?.invitationVM(self, didUpdate: [],

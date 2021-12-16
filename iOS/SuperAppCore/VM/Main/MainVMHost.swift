@@ -22,13 +22,14 @@ class MainVMHost: NSObject, MainVMProtocol {
     var lastUserIdPKValue = ""
     let liveTranscoding = AgoraLiveTranscoding.default()
     let videoSize = CGSize(width: 640, height: 360)
+    var audioIsMute = false
     
     init(config: Config,
          syncManager: SyncManager) {
         self.mode = config.mode
         self.config = config
         self.syncManager = syncManager
-        self.pushUrlString = "rtmp://examplepush.agoramde.agoraio.cn/live/" + config.roomId
+        self.pushUrlString = "rtmp://push.test1.agoramde.agoraio.cn/live/" + config.roomId
         super.init()
     }
     
@@ -51,7 +52,7 @@ class MainVMHost: NSObject, MainVMProtocol {
         }
     }
     
-    func invite(userIdPK: String) {
+    func invite(userIdPK: String) { /** 邀请连麦 **/
         updatePKInfo(userIdPK: userIdPK)
     }
     
@@ -59,7 +60,7 @@ class MainVMHost: NSObject, MainVMProtocol {
         return sceneRef
     }
     
-    func cancleConnect() {
+    func cancleConnect() { /** 取消连麦 **/
         if mode == .byPassPush {
             updatePKInfo(userIdPK: "")
         }
@@ -73,7 +74,13 @@ class MainVMHost: NSObject, MainVMProtocol {
         agoraKit.switchCamera()
     }
     
-    func muteLocalAudio(mute: Bool) {
-        agoraKit.muteLocalAudioStream(mute)
+    func revertMuteLocalAudio() {
+        audioIsMute = !audioIsMute
+        agoraKit.muteLocalAudioStream(audioIsMute)
+    }
+    
+    /// `true` is mute
+    func getLocalAudioMuteState() -> Bool {
+        return audioIsMute
     }
 }

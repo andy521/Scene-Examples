@@ -30,6 +30,7 @@ class MineVM: NSObject {
     
     func udpateName(name: String) {
         StorageManager.userName = name
+        updateInfo()
     }
 }
 

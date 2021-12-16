@@ -13,7 +13,7 @@ extension MainVMAudience {
         if lastUserIdPKValue != localUserId,
            userIdPK == localUserId { /** 收到上麦邀请 **/
             lastUserIdPKValue = userIdPK
-            changeToByPassPush()
+            changeToRtc()
             return
         }
         
@@ -25,7 +25,8 @@ extension MainVMAudience {
         }
     }
     
-    func changeToByPassPush() { /** 切换rtc模式 **/
+    func changeToRtc() { /** 切换rtc模式 **/
+        Log.info(text: "切换到rtc模式", tag: "MainVMAudience")
         mode = .rtc
         mediaPlayer.stop()
         agoraKit.destroyMediaPlayer(mediaPlayer)
@@ -35,8 +36,9 @@ extension MainVMAudience {
     }
     
     func changeToPull() { /** 切换到拉流模式 **/
+        Log.info(text: "切换到拉流模式", tag: "MainVMAudience")
         mode = .pull
-        leaveRtcByPassPush()
+        leaveRtc()
         initMediaPlayer()
         invokeMainVMShouldStoptRenderRemoteView(self)
     }

@@ -15,6 +15,7 @@ class ToolView: UIView {
     private let titleLabel = UILabel()
     private let cameraButton = UIButton()
     private let micButton = UIButton()
+    var micOpen = true
     weak var delegate: ToolViewDelegate?
 
     override init(frame: CGRect) {
@@ -30,7 +31,7 @@ class ToolView: UIView {
     private func setup() {
         titleLabel.text = "工具"
         cameraButton.setImage(.init(named: "icon-rotate-circle"), for: .normal)
-        micButton.setImage(.init(named: "icon-speaker on"), for: .normal)
+        setMicState(open: micOpen)
         addSubview(titleLabel)
         addSubview(cameraButton)
         addSubview(micButton)
@@ -68,6 +69,12 @@ class ToolView: UIView {
             delegate?.toolView(self, didTap: .mic)
             return
         }
+    }
+    
+    func setMicState(open: Bool) {
+        micOpen = open
+        let image = open ? UIImage(named: "icon-speaker on") : UIImage(named: "icon-speaker off")
+        micButton.setImage(image, for: .normal)
     }
 }
 

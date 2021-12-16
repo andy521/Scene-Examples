@@ -140,7 +140,7 @@ class MainView: UIView {
         self.info = info
         leftView.imageView.image = UIImage(named: info.imageName)
         leftView.titleLabel.text = info.title
-        personCountView.label.text = "\(info.userCount)"
+        personCountView.label.text = ""
     }
     
     func setRemoteViewHidden(hidden: Bool) {

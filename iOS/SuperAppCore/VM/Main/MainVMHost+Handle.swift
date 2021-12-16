@@ -55,6 +55,13 @@ extension MainVMHost {
     }
     
     func closeInternal() {
+        let roomId = roomInfo.roomId
+        syncManager.deleteScenes(attributesByKeys: [roomId]) {
+            Log.info(text: "deleteScenes success", tag: "MainVMHost")
+        } fail: { error in
+            Log.info(text: "deleteScenes fail: \(error.description)", tag: "MainVMHost")
+        }
+        
         if mode == .push {
             sceneRef.unsubscribe()
             agoraKit.delegate = nil
