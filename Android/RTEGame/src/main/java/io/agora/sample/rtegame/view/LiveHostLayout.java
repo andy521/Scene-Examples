@@ -15,11 +15,14 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
+import io.agora.example.base.BaseUtil;
+
 public class LiveHostLayout extends ConstraintLayout {
 
     public int bottomMarginInGameType = 0;
     public int topMarginForGameView = 0;
     public int heightForGameView = 0;
+    public int paddingForHostViewInGame = 0;
 
     @Nullable
     public LiveHostCardView hostView;
@@ -55,11 +58,12 @@ public class LiveHostLayout extends ConstraintLayout {
         }
     }
 
-    public void initParams(boolean watchGame, int topMarginForGameView, int heightForGameView, int bottomMarginInGameType){
+    public void initParams(boolean watchGame, int topMarginForGameView, int heightForGameView, int bottomMarginInGameType, int paddingForHostViewInGame){
         this.watchGame = watchGame;
         this.topMarginForGameView = topMarginForGameView;
         this.heightForGameView = heightForGameView;
         this.bottomMarginInGameType = bottomMarginInGameType;
+        this.paddingForHostViewInGame = paddingForHostViewInGame;
     }
 
     @NonNull
@@ -130,28 +134,35 @@ public class LiveHostLayout extends ConstraintLayout {
     }
 
     private void onDoubleInGamePerformed() {
-        String dimension = getMeasuredWidth() + ":" + getMeasuredHeight();
+        String dimension = "80:106";
+        float desiredWidthPercent = 80/375f;
         if (subHostView != null && subHostView.getParent() == this) {
             subHostView.setVisibility(VISIBLE);
+
             LayoutParams lp = (LayoutParams) subHostView.getLayoutParams();
             clearRequiredViewParams(lp);
 
             lp.dimensionRatio = dimension;
-            lp.matchConstraintPercentWidth = 0.25f;
+            lp.matchConstraintPercentWidth = desiredWidthPercent;
+
+            lp.rightMargin = paddingForHostViewInGame;
             lp.rightToRight = ConstraintSet.PARENT_ID;
             lp.bottomToBottom = ConstraintSet.PARENT_ID;
             lp.bottomMargin = this.bottomMarginInGameType;
             subHostView.setLayoutParams(lp);
         }
         if (hostView != null && hostView.getParent() == this) {
+            hostView.setVisibility(VISIBLE);
+
             LayoutParams lp = (LayoutParams) hostView.getLayoutParams();
             clearRequiredViewParams(lp);
 
 
             lp.dimensionRatio = dimension;
-            lp.matchConstraintPercentWidth = 0.25f;
+            lp.matchConstraintPercentWidth = desiredWidthPercent;
 
             if (subHostView == null) {
+                lp.rightMargin = paddingForHostViewInGame;
                 lp.rightToRight = ConstraintSet.PARENT_ID;
                 lp.bottomToBottom = ConstraintSet.PARENT_ID;
                 lp.bottomMargin = this.bottomMarginInGameType;
@@ -163,27 +174,24 @@ public class LiveHostLayout extends ConstraintLayout {
         }
 
         if (watchGame){
+            tryRemoveView(webViewHostView);
             if (gameHostView != null && gameHostView.getParent() == this) {
                 gameHostView.setVisibility(VISIBLE);
                 setUpGameView(gameHostView);
             }
-            if (webViewHostView != null)
-                webViewHostView.setVisibility(GONE);
         }else{
+            tryRemoveView(gameHostView);
             if (webViewHostView != null && webViewHostView.getParent() == this)
                 webViewHostView.setVisibility(VISIBLE);
                 setUpGameView(webViewHostView);
-            if (gameHostView != null) {
-                gameHostView.setVisibility(GONE);
-            }
         }
 
     }
 
     private void onDoublePerformed() {
 
-        if (webViewHostView != null) webViewHostView.setVisibility(GONE);
-        if (gameHostView != null) gameHostView.setVisibility(GONE);
+        tryRemoveView(webViewHostView);
+        tryRemoveView(gameHostView);
 
         if (subHostView != null && subHostView.getParent() == this) {
             subHostView.setVisibility(VISIBLE);
@@ -213,9 +221,9 @@ public class LiveHostLayout extends ConstraintLayout {
     }
 
     private void onHostOnlyPerformed() {
-        if (subHostView != null) subHostView.setVisibility(GONE);
-        if (webViewHostView != null) webViewHostView.setVisibility(GONE);
-        if (gameHostView != null) gameHostView.setVisibility(GONE);
+        tryRemoveView(subHostView);
+        tryRemoveView(webViewHostView);
+        tryRemoveView(gameHostView);
 
         if (hostView != null && hostView.getParent() == this) {
             LayoutParams lp = (LayoutParams) hostView.getLayoutParams();
@@ -260,6 +268,12 @@ public class LiveHostLayout extends ConstraintLayout {
 
     public boolean isCurrentlyInGame(){
         return webViewHostView != null || gameHostView != null;
+    }
+
+    public void tryRemoveView(@Nullable View view){
+        if (view == null || view.getParent() != this) return;
+        view.setVisibility(GONE);
+        removeView(view);
     }
 
     @NonNull

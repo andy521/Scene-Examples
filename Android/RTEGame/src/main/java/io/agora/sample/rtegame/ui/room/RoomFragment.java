@@ -30,6 +30,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsAnimationCompat;
@@ -73,6 +74,8 @@ import io.agora.sample.rtegame.view.LiveHostCardView;
 import io.agora.sample.rtegame.view.LiveHostLayout;
 
 public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
+
+    private static final float recyclerViewHeightOnWidthPercent = 116/375f;
 
     private RoomViewModel mViewModel;
 
@@ -142,10 +145,21 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
         // config game view
         new Handler(Looper.getMainLooper()).post(() -> {
             if (mBinding != null) {
+                ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) mBinding.recyclerViewFgRoom.getLayoutParams();
+                lp.matchConstraintPercentHeight = 1F;
+                lp.height = (int) (mBinding.getRoot().getMeasuredWidth() * recyclerViewHeightOnWidthPercent);
+                mBinding.recyclerViewFgRoom.setLayoutParams(lp);
+
+                // GameView = WebView || 屏幕共享View
+                /////
+                int dp12 = (int) BaseUtil.dp2px(12);
+                // 设置 Game View 距离顶部距离
                 int topMargin = (int) (mBinding.containerHostFgRoom.getBottom() + mBinding.containerHostFgRoom.getX());
-                int marginBottom = mBinding.containerOverlayFgRoom.getMeasuredHeight() - mBinding.btnExitFgRoom.getTop() + ((int) BaseUtil.dp2px(12));
-                int height = mBinding.recyclerViewFgRoom.getTop() - topMargin;
-                mBinding.hostContainerFgRoom.initParams(!aMHost, topMargin, height, marginBottom);
+                // Game Mode 下摄像头预览距离底部距离
+                int marginBottom = mBinding.containerOverlayFgRoom.getMeasuredHeight() - mBinding.btnExitFgRoom.getTop() + dp12;
+                // Game View 高度
+                int height = mBinding.btnExitFgRoom.getTop() - lp.height - dp12 * 2 - topMargin;
+                mBinding.hostContainerFgRoom.initParams(!aMHost, topMargin, height, marginBottom, mBinding.recyclerViewFgRoom.getPaddingLeft());
             }
         });
 
@@ -217,8 +231,8 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
         // 主播，监听连麦信息
         if (aMHost) {
             // 游戏开始
-            mViewModel.currentGame().observe(getViewLifecycleOwner(), this::onGameChanged);
             mViewModel.applyInfo().observe(getViewLifecycleOwner(), this::onPKApplyInfoChanged);
+            mViewModel.currentGame().observe(getViewLifecycleOwner(), this::onGameChanged);
         } else {
             mViewModel.gameShareInfo().observe(getViewLifecycleOwner(), this::onGameShareInfoChanged);
             mViewModel.localHostId().observe(getViewLifecycleOwner(), this::onLocalHostJoin);
@@ -290,9 +304,6 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
             return;
         }
         if (currentGame.getStatus() == GameApplyInfo.PLAYING) {
-            mBinding.btnGameFgRoom.setVisibility(View.GONE);
-            mBinding.btnExitGameFgRoom.setVisibility(View.VISIBLE);
-            mBinding.btnExitPkFgRoom.setVisibility(View.GONE);
             needGameView(true);
             WebView webView = mBinding.hostContainerFgRoom.webViewHostView;
             if (webView != null) {
@@ -301,9 +312,6 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
             startScreenCaptureService();
         } else if (currentGame.getStatus() == GameApplyInfo.END) {
             needGameView(false);
-            mBinding.btnGameFgRoom.setVisibility(View.VISIBLE);
-            mBinding.btnExitGameFgRoom.setVisibility(View.GONE);
-            mBinding.btnExitPkFgRoom.setVisibility(View.VISIBLE);
             stopScreenCaptureService();
             mViewModel.endScreenCapture();
         }
@@ -312,10 +320,10 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
     private void needGameView(boolean need) {
         if (need) {
             mBinding.hostContainerFgRoom.createDefaultGameView();
-            mBinding.hostContainerFgRoom.setType(LiveHostLayout.Type.DOUBLE_IN_GAME);
+            onLayoutTypeChanged(LiveHostLayout.Type.DOUBLE_IN_GAME);
         } else {
             mBinding.hostContainerFgRoom.removeGameView();
-            mBinding.hostContainerFgRoom.setType(LiveHostLayout.Type.DOUBLE);
+            onLayoutTypeChanged(LiveHostLayout.Type.DOUBLE);
         }
     }
     //</editor-fold>
@@ -382,7 +390,7 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
     @MainThread
     private void initLocalView() {
         LiveHostCardView view = mBinding.hostContainerFgRoom.createHostView();
-        mBinding.hostContainerFgRoom.setType(LiveHostLayout.Type.HOST_ONLY);
+        onLayoutTypeChanged(LiveHostLayout.Type.HOST_ONLY);
         mViewModel.setupLocalView(view.renderTextureView, GameApplication.getInstance().user);
         insertNewMessage("画面加载完成");
     }
@@ -398,7 +406,7 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
         LiveHostLayout liveHost = mBinding.hostContainerFgRoom;
 
         LiveHostCardView view = liveHost.createHostView();
-        liveHost.setType(liveHost.getChildCount() == 1 ? LiveHostLayout.Type.HOST_ONLY : liveHost.getType());
+        onLayoutTypeChanged(liveHost.getChildCount() == 1 ? LiveHostLayout.Type.HOST_ONLY : liveHost.getType());
         mViewModel.setupRemoteView(view.renderTextureView, currentRoom, true);
     }
 
@@ -412,23 +420,12 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
         // remove subHostView
         if (subRoomInfo == null) {
             insertNewMessage("连麦结束");
-            container.removeView(container.subHostView);
-            container.setType(LiveHostLayout.Type.HOST_ONLY);
-            mBinding.btnExitPkFgRoom.setVisibility(View.GONE);
+            onLayoutTypeChanged(LiveHostLayout.Type.HOST_ONLY);
         } else {
             insertNewMessage("正在加载连麦主播【" + subRoomInfo.getTempUserName() + "】视频");
             LiveHostCardView view = container.createSubHostView();
-            if (container.isCurrentlyInGame())
-                container.setType(LiveHostLayout.Type.DOUBLE_IN_GAME);
-            else
-                container.setType(LiveHostLayout.Type.DOUBLE);
+                container.setType(container.isCurrentlyInGame()? LiveHostLayout.Type.DOUBLE_IN_GAME : LiveHostLayout.Type.DOUBLE);
             mViewModel.setupRemoteView(view.renderTextureView, subRoomInfo, false);
-
-            if (!aMHost) return;
-            if (mBinding.hostContainerFgRoom.isCurrentlyInGame())
-                mBinding.btnExitPkFgRoom.setVisibility(View.GONE);
-            else
-                mBinding.btnExitPkFgRoom.setVisibility(View.VISIBLE);
         }
     }
 
@@ -504,6 +501,33 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
     private void stopScreenCaptureService() {
         Intent mediaProjectionIntent = new Intent(requireActivity(), MediaProjectService.class);
         requireContext().stopService(mediaProjectionIntent);
+    }
+    private void onLayoutTypeChanged(LiveHostLayout.Type type) {
+        mBinding.hostContainerFgRoom.setType(type);
+        adjustMessageWidth(type == LiveHostLayout.Type.HOST_ONLY);
+        if (aMHost) {
+            if (type == LiveHostLayout.Type.HOST_ONLY) {
+                mBinding.btnExitPkFgRoom.setVisibility(View.GONE);
+
+            } else if (type == LiveHostLayout.Type.DOUBLE) {
+                mBinding.btnGameFgRoom.setVisibility(View.VISIBLE);
+                mBinding.btnExitGameFgRoom.setVisibility(View.GONE);
+                mBinding.btnExitPkFgRoom.setVisibility(View.VISIBLE);
+            } else {
+                mBinding.btnGameFgRoom.setVisibility(View.GONE);
+                mBinding.btnExitGameFgRoom.setVisibility(View.VISIBLE);
+                mBinding.btnExitPkFgRoom.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private void adjustMessageWidth(boolean fullWidth){
+        int leftPadding = mBinding.recyclerViewFgRoom.getPaddingLeft();
+        int desiredPaddingEnd = fullWidth ? leftPadding : 0;
+        mBinding.recyclerViewFgRoom.setPaddingRelative(leftPadding, 0, desiredPaddingEnd, 0);
+        ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) mBinding.recyclerViewFgRoom.getLayoutParams();
+        lp.matchConstraintPercentWidth = fullWidth ? 1 : 0.5f;
+        mBinding.recyclerViewFgRoom.setLayoutParams(lp);
     }
 
 }
