@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import io.agora.example.base.BaseUtil;
+import io.agora.sample.rtegame.GlobalViewModelFactory;
 import io.agora.sample.rtegame.R;
 import io.agora.sample.rtegame.bean.AgoraGame;
 import io.agora.sample.rtegame.bean.LocalUser;
@@ -169,7 +170,7 @@ public class GameUtil {
     }
 
     public static <T extends ViewModel> T getViewModel(@NonNull ComponentActivity activity, @NonNull Class<T> viewModelClass) {
-        return new ViewModelProvider(activity, new ViewModelProvider.NewInstanceFactory()).get(viewModelClass);
+        return new ViewModelProvider(activity, new GlobalViewModelFactory(activity)).get(viewModelClass);
     }
 
     public static float lerp(float startValue, float endValue, float fraction) {

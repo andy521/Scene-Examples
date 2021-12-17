@@ -30,19 +30,20 @@ public class GlobalViewModel extends ViewModel implements RoomCreateApi {
         return _user;
     }
 
-    private final MutableLiveData<Boolean> _isRTMInit = new MutableLiveData<>();
+    private final MutableLiveData<Event<Boolean>> _isRTMInit = new MutableLiveData<>();
 
     @NonNull
-    public LiveData<Boolean> isRTMInit() {
+    public LiveData<Event<Boolean>> isRTMInit() {
         return _isRTMInit;
     }
 
     public final MutableLiveData<Event<RoomInfo>> roomInfo = new MutableLiveData<>();
 
-    public GlobalViewModel() {
+    public GlobalViewModel(@NonNull Context context) {
         LocalUser localUser = checkLocalOrGenerate();
         GameApplication.getInstance().user = localUser;
         _user.setValue(localUser);
+        initSyncManager(context);
     }
 
     /**
@@ -95,7 +96,7 @@ public class GlobalViewModel extends ViewModel implements RoomCreateApi {
     }
 
     //<editor-fold desc="SyncManager">
-    public void initSyncManager(@NonNull Context context) {
+    private void initSyncManager(@NonNull Context context) {
         HashMap<String, String> map = new HashMap<>();
         map.put("appid", context.getString(R.string.rtm_app_id));
         map.put("token", context.getString(R.string.rtm_app_token));
@@ -103,12 +104,12 @@ public class GlobalViewModel extends ViewModel implements RoomCreateApi {
         Sync.Instance().init(context, map, new Sync.Callback() {
             @Override
             public void onSuccess() {
-                _isRTMInit.postValue(true);
+                _isRTMInit.postValue(new Event<>(true));
             }
 
             @Override
             public void onFail(SyncManagerException exception) {
-                _isRTMInit.postValue(false);
+                _isRTMInit.postValue(new Event<>(false));
             }
         });
     }

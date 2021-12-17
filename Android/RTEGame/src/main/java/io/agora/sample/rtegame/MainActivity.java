@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.core.view.WindowCompat;
 
 import io.agora.example.base.BaseActivity;
-import io.agora.example.base.BaseUtil;
 import io.agora.rtc2.RtcEngine;
 import io.agora.sample.rtegame.databinding.ActivityMainBinding;
 import io.agora.sample.rtegame.util.GameUtil;
@@ -23,6 +22,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         globalViewModel = GameUtil.getViewModel(this, GlobalViewModel.class);
+
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         getWindow().setBackgroundDrawable(null);
     }
@@ -30,6 +30,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     @Override
     public void finish() {
         super.finish();
+
         new Thread(() -> {
 //        RTMDestroy
             Sync.Instance().destroy();

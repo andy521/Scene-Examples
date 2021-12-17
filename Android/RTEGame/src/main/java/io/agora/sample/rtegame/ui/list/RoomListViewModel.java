@@ -47,39 +47,48 @@ public class RoomListViewModel extends ViewModel implements RoomListApi {
     public void fetchRoomList() {
         _viewStatus.postValue(new ViewStatus.Loading(false));
 
-        Sync.Instance().getScenes(new Sync.DataListCallback() {
-            @Override
-            public void onSuccess(List<IObject> result) {
-                List<RoomInfo> res = new ArrayList<>();
-                RoomInfo roomInfo;
+        try {
+            Sync.Instance().getScenes(new Sync.DataListCallback() {
+                @Override
+                public void onSuccess(List<IObject> result) {
+                    List<RoomInfo> res = new ArrayList<>();
+                    RoomInfo roomInfo;
 
-                for (IObject iObject : result) {
-                    try {
-                        roomInfo = iObject.toObject(RoomInfo.class);
-                    } catch (Exception e) {
-                        roomInfo = null;
-                        e.printStackTrace();
+                    for (IObject iObject : result) {
+                        try {
+                            roomInfo = iObject.toObject(RoomInfo.class);
+                        } catch (Exception e) {
+                            roomInfo = null;
+                            e.printStackTrace();
+                        }
+                        if (roomInfo != null)
+                            res.add(roomInfo);
                     }
-                    if (roomInfo != null)
-                        res.add(roomInfo);
-                }
-                for (RoomInfo re : res) {
-                    BaseUtil.logD(re.toString());
-                }
-                _roomList.postValue(res);
-                _viewStatus.postValue(new ViewStatus.Done());
-            }
-
-            @Override
-            public void onFail(SyncManagerException exception) {
-                if (Objects.equals(exception.getMessage(), "empty scene")) {
-                    _roomList.postValue(new ArrayList<>());
+                    for (RoomInfo re : res) {
+                        BaseUtil.logD(re.toString());
+                    }
+                    _roomList.postValue(res);
                     _viewStatus.postValue(new ViewStatus.Done());
-                }else{
-                    _viewStatus.postValue(new ViewStatus.Error(exception));
                 }
-            }
-        });
+
+                @Override
+                public void onFail(SyncManagerException exception) {
+                    if (Objects.equals(exception.getMessage(), "empty scene")) {
+                        _roomList.postValue(new ArrayList<>());
+                        _viewStatus.postValue(new ViewStatus.Done());
+                    }else{
+                        _viewStatus.postValue(new ViewStatus.Error(exception));
+                    }
+                }
+            });
+        } catch (Exception e) {
+            // knowing issue
+//            java.lang.NullPointerException: Attempt to invoke interface method 'void io.agora.syncmanager.rtm.ISyncManager.getScenes(io.agora.syncmanager.rtm.Sync$DataListCallback)' on a null object reference
+//            at io.agora.syncmanager.rtm.Sync.getScenes(Sync.java:52)
+            BaseUtil.logD("Sync is down, re init it");
+            e.printStackTrace();
+//            Sync.Instance().init();
+        }
     }
 
 }

@@ -1,5 +1,7 @@
 package io.agora.sample.rtegame.ui.list;
 
+import static java.lang.Boolean.TRUE;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -32,6 +34,7 @@ import io.agora.sample.rtegame.bean.RoomInfo;
 import io.agora.sample.rtegame.databinding.FragmentRoomListBinding;
 import io.agora.sample.rtegame.databinding.ItemRoomListBinding;
 import io.agora.sample.rtegame.util.Event;
+import io.agora.sample.rtegame.util.EventObserver;
 import io.agora.sample.rtegame.util.GameUtil;
 import io.agora.sample.rtegame.util.ViewStatus;
 
@@ -42,7 +45,7 @@ public class RoomListFragment extends BaseFragment<FragmentRoomListBinding> impl
     ActivityResultLauncher<String[]> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), res -> {
         List<String> permissionsRefused = new ArrayList<>();
         for (String s : res.keySet()) {
-            if (Boolean.TRUE != res.get(s))
+            if (TRUE != res.get(s))
                 permissionsRefused.add(s);
         }
         if (!permissionsRefused.isEmpty()) {
@@ -62,14 +65,22 @@ public class RoomListFragment extends BaseFragment<FragmentRoomListBinding> impl
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mViewModel = GameUtil.getViewModel(this, RoomListViewModel.class);
+
         mGlobalModel = GameUtil.getViewModel(requireActivity(), GlobalViewModel.class);
         mGlobalModel.clearRoomInfo();
-        mViewModel = GameUtil.getViewModel(this, RoomListViewModel.class);
+        // FIXME To avoid APP be killed in background
+        //       Apparently this is gonna trigger a second request
+        //       Works well, so be it
+        mGlobalModel.isRTMInit().observe(getViewLifecycleOwner(), new EventObserver<>(aBoolean -> {
+            BaseUtil.logD("mGlobalModel");
+            if (aBoolean == TRUE) mViewModel.fetchRoomList();
+        }));
         initView();
         initListener();
     }
 
-//    @Override
+    //    @Override
 //    public void onResume() {
 //        super.onResume();
         // 退出房间 更新列表 FIXME 更好的方式实现监听退出房间更新列表

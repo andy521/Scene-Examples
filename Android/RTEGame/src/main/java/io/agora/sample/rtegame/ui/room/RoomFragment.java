@@ -514,7 +514,6 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
         // 沉浸处理
         ViewCompat.setOnApplyWindowInsetsListener(mBinding.getRoot(), (v, insets) -> {
             Insets inset = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            BaseUtil.logD("inset changed->>" + inset.toString());
             // 整体留白
             mBinding.containerOverlayFgRoom.setPadding(inset.left, inset.top, inset.right, inset.bottom);
             // 输入框显隐及位置偏移
