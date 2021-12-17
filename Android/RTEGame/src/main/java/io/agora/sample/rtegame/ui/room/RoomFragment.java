@@ -75,7 +75,7 @@ import io.agora.sample.rtegame.view.LiveHostLayout;
 
 public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
 
-    private static final float recyclerViewHeightOnWidthPercent = 116 / 375f;
+    private static final float recyclerViewHeightOnWidthPercent = 210 / 375f;
 
     private RoomViewModel mViewModel;
 
@@ -489,13 +489,15 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void adjustMessageWidth(boolean fullWidth) {
         int leftPadding = mBinding.recyclerViewFgRoom.getPaddingLeft();
         int desiredPaddingEnd = fullWidth ? leftPadding : 0;
         mBinding.recyclerViewFgRoom.setPaddingRelative(leftPadding, 0, desiredPaddingEnd, 0);
         ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) mBinding.recyclerViewFgRoom.getLayoutParams();
-        lp.matchConstraintPercentWidth = fullWidth ? 1 : 0.5f;
+        lp.matchConstraintPercentWidth = fullWidth ? 0.6f : 0.44f;
         mBinding.recyclerViewFgRoom.setLayoutParams(lp);
+        mBinding.getRoot().post(()->mBinding.recyclerViewFgRoom.requestLayout());
     }
 
     private void setRoomBgd(boolean blurring, @DrawableRes int drawableId) {

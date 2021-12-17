@@ -135,7 +135,7 @@ public class LiveHostLayout extends ConstraintLayout {
 
     private void onDoubleInGamePerformed() {
         String dimension = "80:106";
-        float desiredWidthPercent = 80/375f;
+        float desiredWidthPercent = 96/375f;
         if (subHostView != null && subHostView.getParent() == this) {
             subHostView.setVisibility(VISIBLE);
 

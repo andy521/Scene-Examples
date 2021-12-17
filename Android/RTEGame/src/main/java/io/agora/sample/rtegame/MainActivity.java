@@ -24,12 +24,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        BaseUtil.logD("onPause");
-    }
-
-    @Override
     public void finish() {
         super.finish();
         new Thread(() -> {
@@ -43,6 +37,7 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        globalViewModel.focused.setValue(hasFocus);
+        if (globalViewModel != null)
+            globalViewModel.focused.setValue(hasFocus);
     }
 }
