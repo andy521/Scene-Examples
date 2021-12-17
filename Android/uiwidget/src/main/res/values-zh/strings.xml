@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--================== Function ==================-->
+    <!-- RoomList -->
+    <string name="room_list_no_data_hint">请创建一个房间</string>
+    <string name="room_list_network_error_title">网络异常</string>
+    <string name="room_list_network_error_message">当前网络连接异常，请稍候再试</string>
+
+
+</resources>

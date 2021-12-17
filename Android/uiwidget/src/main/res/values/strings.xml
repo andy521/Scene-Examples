@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <!--================== Function ==================-->
+    <!-- RoomList -->
+    <string name="room_list_no_data_hint">Please Create a Room</string>
+    <string name="room_list_network_error_title">Network failure</string>
+    <string name="room_list_network_error_message">The network connection is not available, please try later.</string>
+
+</resources>
