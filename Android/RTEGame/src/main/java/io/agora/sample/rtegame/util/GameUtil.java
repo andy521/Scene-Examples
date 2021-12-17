@@ -172,4 +172,8 @@ public class GameUtil {
         return new ViewModelProvider(activity, new ViewModelProvider.NewInstanceFactory()).get(viewModelClass);
     }
 
+    public static float lerp(float startValue, float endValue, float fraction) {
+        return startValue + (fraction * (endValue - startValue));
+    }
+
 }

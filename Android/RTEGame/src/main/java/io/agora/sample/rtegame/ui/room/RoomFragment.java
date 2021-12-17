@@ -32,9 +32,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.lifecycle.Observer;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 
 import com.bumptech.glide.Glide;
@@ -47,8 +45,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
-
-import java.util.List;
 
 import io.agora.example.base.BaseRecyclerViewAdapter;
 import io.agora.example.base.BaseUtil;
@@ -71,7 +67,6 @@ import io.agora.sample.rtegame.ui.room.game.GameModeDialog;
 import io.agora.sample.rtegame.ui.room.tool.MoreDialog;
 import io.agora.sample.rtegame.util.BlurTransformation;
 import io.agora.sample.rtegame.util.EventObserver;
-import io.agora.sample.rtegame.util.GameConstants;
 import io.agora.sample.rtegame.util.GameUtil;
 import io.agora.sample.rtegame.util.GiftUtil;
 import io.agora.sample.rtegame.util.ViewStatus;
@@ -90,7 +85,7 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
     private ActivityResultLauncher<Intent> activityResultLauncher;
     private RoomInfo currentRoom;
     private boolean aMHost;
-    private boolean showInputBox = false;
+    private boolean shouldShowInputBox = false;
     private AlertDialog currentDialog;
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -115,7 +110,8 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
         mViewModel = GameUtil.getViewModel(this, RoomViewModel.class, new RoomViewModelFactory(requireContext(), currentRoom));
         //  See if current user is the host
         aMHost = currentRoom.getUserId().equals(GameApplication.getInstance().user.getUserId());
-        if (aMHost) mGlobalModel.focused.observe(getViewLifecycleOwner(), mViewModel::handleScreenCapture);
+        if (aMHost)
+            mGlobalModel.focused.observe(getViewLifecycleOwner(), mViewModel::handleScreenCapture);
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }
@@ -138,8 +134,8 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
     private void initView() {
         Glide.with(this).load(GameApplication.getInstance().user.getAvatar())
                 .centerCrop()
-                .placeholder(R.mipmap.ic_launcher_round).into(mBinding.avatarHostFgRoom);
-        mBinding.nameHostFgRoom.setText(currentRoom.getTempUserName());
+                .placeholder(R.mipmap.ic_launcher_round).into(mBinding.layoutRoomInfo.avatarHostFgRoom);
+        mBinding.layoutRoomInfo.nameHostFgRoom.setText(currentRoom.getTempUserName());
 
         // config game view
         new Handler(Looper.getMainLooper()).post(() -> {
@@ -152,10 +148,10 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
                 // GameView = WebView || 屏幕共享View
                 /////
                 int dp12 = (int) BaseUtil.dp2px(12);
-                // 设置 Game View 距离顶部距离
-                int topMargin = (int) (mBinding.containerHostFgRoom.getBottom() + mBinding.containerHostFgRoom.getX());
+                // 设置 Game View 距离顶部距离 (+ 12dp)
+                int topMargin = (int) (mBinding.layoutRoomInfo.getRoot().getBottom() + dp12);
                 // Game Mode 下摄像头预览距离底部距离
-                int marginBottom = mBinding.containerOverlayFgRoom.getMeasuredHeight() - mBinding.btnExitFgRoom.getTop() + dp12;
+                int marginBottom = mBinding.getRoot().getMeasuredHeight() - mBinding.btnExitFgRoom.getTop() + dp12;
                 // Game View 高度
                 int height = mBinding.btnExitFgRoom.getTop() - lp.height - dp12 * 2 - topMargin;
                 mBinding.hostContainerFgRoom.initParams(!aMHost, topMargin, height, marginBottom, mBinding.recyclerViewFgRoom.getPaddingLeft());
@@ -215,10 +211,11 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
         mBinding.btnDonateFgRoom.setOnClickListener(v -> new DonateDialog().show(getChildFragmentManager(), DonateDialog.TAG));
         // "退出直播间"按钮点击事件
         mBinding.btnExitFgRoom.setOnClickListener(v -> requireActivity().onBackPressed());
+        mBinding.editTextFgRoom.setShowSoftInputOnFocus(true);
         // 显示键盘按钮
         mBinding.inputFgRoom.setOnClickListener(v -> {
-            showInputBox = true;
-            BaseUtil.showKeyboard(requireActivity().getWindow(), mBinding.editTextFgRoom);
+            shouldShowInputBox = true;
+            BaseUtil.showKeyboardCompat(mBinding.inputLayoutFgRoom);
         });
         // RTC engine 初始化监听
         mViewModel.mEngine().observe(getViewLifecycleOwner(), this::onRTCInit);
@@ -300,7 +297,9 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
         BaseUtil.logD("game status->" + currentGame.getStatus());
 
         GameUtil.currentGame = GameRepo.getGameDetail(currentGame.getGameId());
-        if (!aMHost) { return; }
+        if (!aMHost) {
+            return;
+        }
         if (currentGame.getStatus() == GameApplyInfo.PLAYING) {
             needGameView(true);
             WebView webView = mBinding.hostContainerFgRoom.webViewHostView;
@@ -446,43 +445,6 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
             mBinding.recyclerViewFgRoom.smoothScrollToPosition(count - 1);
     }
 
-    private void handleWindowInset() {
-        ViewCompat.setWindowInsetsAnimationCallback(mBinding.getRoot(), new WindowInsetsAnimationCompat.Callback(WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP) {
-            @NonNull
-            @Override
-            public WindowInsetsCompat onProgress(@NonNull WindowInsetsCompat insets, @NonNull List<WindowInsetsAnimationCompat> runningAnimations) {
-                if (showInputBox) {
-                    int desiredInputBottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom - insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom;
-                    mBinding.inputLayoutFgRoom.setTranslationY(-desiredInputBottom);
-                }
-                return insets;
-            }
-        });
-        // 沉浸处理
-        ViewCompat.setOnApplyWindowInsetsListener(mBinding.getRoot(), (v, insets) -> {
-            Insets inset = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            // 整体留白
-            mBinding.containerOverlayFgRoom.setPadding(inset.left, inset.top, inset.right, inset.bottom);
-            // 输入框显隐及位置偏移
-            boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
-            if (imeVisible) {
-                if (showInputBox) {
-                    mBinding.getRoot().post(() -> {
-                        mBinding.inputLayoutFgRoom.setVisibility(View.VISIBLE);
-                        mBinding.inputLayoutFgRoom.requestFocus();
-                    });
-                }
-            } else {
-                showInputBox = false;
-                mBinding.getRoot().post(() -> {
-                    mBinding.inputLayoutFgRoom.setVisibility(View.GONE);
-                    mBinding.inputLayoutFgRoom.clearFocus();
-                });
-            }
-            return WindowInsetsCompat.CONSUMED;
-        });
-    }
-
     private void startScreenCaptureService() {
         Intent mediaProjectionIntent = new Intent(requireActivity(), MediaProjectService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -502,14 +464,14 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
     }
 
     private void onLayoutTypeChanged(LiveHostLayout.Type type) {
-        BaseUtil.logD("onLayoutTypeChanged:"+type.ordinal());
+        BaseUtil.logD("onLayoutTypeChanged:" + type.ordinal());
         mBinding.hostContainerFgRoom.setType(type);
         adjustMessageWidth(type == LiveHostLayout.Type.HOST_ONLY);
 
         if (type == LiveHostLayout.Type.DOUBLE_IN_GAME) {
             if (GameUtil.currentGame != null)
                 setRoomBgd(false, GameUtil.getGameBgdByGameId(GameUtil.currentGame.getGameId()));
-        }else {
+        } else {
             setRoomBgd(true, GameUtil.getBgdByRoomBgdId(currentRoom.getBackgroundId()));
         }
         if (aMHost) {
@@ -538,7 +500,8 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
 
     private void setRoomBgd(boolean blurring, @DrawableRes int drawableId) {
         RequestBuilder<Drawable> load = Glide.with(this).asDrawable().load(drawableId);
-        if (blurring) load = load.apply(RequestOptions.bitmapTransform(new BlurTransformation(requireContext())));
+        if (blurring)
+            load = load.apply(RequestOptions.bitmapTransform(new BlurTransformation(requireContext())));
 
         load.into(new CustomTarget<Drawable>() {
             @Override
@@ -552,6 +515,33 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
             }
         });
 
+    }
+
+    private void handleWindowInset() {
+        // 沉浸处理
+        ViewCompat.setOnApplyWindowInsetsListener(mBinding.getRoot(), (v, insets) -> {
+            Insets inset = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            BaseUtil.logD("inset changed->>" + inset.toString());
+            // 整体留白
+            mBinding.containerOverlayFgRoom.setPadding(inset.left, inset.top, inset.right, inset.bottom);
+            // 输入框显隐及位置偏移
+            boolean imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
+            if (imeVisible) {
+                if (shouldShowInputBox) {
+                    mBinding.inputLayoutFgRoom.setVisibility(View.VISIBLE);
+                    mBinding.inputLayoutFgRoom.requestFocus();
+                    int desiredY = -insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
+                    mBinding.inputLayoutFgRoom.setTranslationY(desiredY);
+                }
+            } else {
+                shouldShowInputBox = false;
+                if (mBinding.inputLayoutFgRoom.getVisibility() == View.VISIBLE) {
+                    mBinding.inputLayoutFgRoom.setVisibility(View.GONE);
+                    mBinding.inputLayoutFgRoom.clearFocus();
+                }
+            }
+            return WindowInsetsCompat.CONSUMED;
+        });
     }
 
 }
