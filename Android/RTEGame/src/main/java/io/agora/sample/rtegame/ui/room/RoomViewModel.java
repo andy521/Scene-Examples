@@ -67,7 +67,7 @@ public class RoomViewModel extends ViewModel implements RoomApi {
     public boolean isLocalVideoMuted = false;
     public boolean isLocalMicMuted = false;
 
-    private final int screenShareUId = 101024;
+    private final String screenShareUId = "101024";
     private final RtcConnection screenShareConnection = new RtcConnection();
 
     private PKInfo pkInfo = null;
@@ -150,7 +150,7 @@ public class RoomViewModel extends ViewModel implements RoomApi {
     public RoomViewModel(@NonNull Context context, @NonNull RoomInfo roomInfo) {
         this.currentRoom = roomInfo;
         screenShareConnection.channelId = currentRoom.getId();
-        screenShareConnection.localUid = screenShareUId;
+        screenShareConnection.localUid = Integer.parseInt(screenShareUId);
 
         BaseUtil.logD("Create RoomViewModel:"+System.currentTimeMillis());
         this.amHost = Objects.equals(currentRoom.getUserId(), localUser.getUserId());

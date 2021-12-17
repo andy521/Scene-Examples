@@ -247,7 +247,7 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
             insertNewMessage("加载远端游戏画面");
             needGameView(true);
             if (mBinding.hostContainerFgRoom.gameHostView != null) {
-                mViewModel.setupScreenView(mBinding.hostContainerFgRoom.gameHostView.renderTextureView, gameInfo.getGameUid());
+                mViewModel.setupScreenView(mBinding.hostContainerFgRoom.gameHostView.renderTextureView, Integer.parseInt(gameInfo.getGameUid()));
             }
         } else if (gameInfo.getStatus() == GameInfo.END) {
             insertNewMessage("停止远端游戏画面");

@@ -9,11 +9,11 @@ public class GameInfo {
     //        1 - 未开始, 2 - 进行中, 3 - 已结束 (需要游戏有一个加载完成的回调)
     private int status;
     //        屏幕共享对应的uid
-    private final int gameUid;
+    private final String gameUid;
     // 游戏ID
     private final int gameId;
 
-    public GameInfo(int status, int gameUid, int gameId) {
+    public GameInfo(int status, @NonNull String gameUid, int gameId) {
         this.status = status;
         this.gameUid = gameUid;
         this.gameId = gameId;
@@ -27,7 +27,8 @@ public class GameInfo {
         return status;
     }
 
-    public int getGameUid() {
+    @NonNull
+    public String getGameUid() {
         return gameUid;
     }
 
@@ -35,6 +36,7 @@ public class GameInfo {
         return gameId;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "GameInfo{" +
