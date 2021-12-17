@@ -28,6 +28,7 @@
         tools:ignore="AllowBackup">
         <activity
             android:windowSoftInputMode="adjustUnspecified"
+            android:configChanges="orientation|keyboardHidden|screenLayout"
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

@@ -84,11 +84,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/btn_live_fg_create" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_live_fg_create"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="36dp"
+        android:letterSpacing="0"
+        android:textSize="16sp"
+        android:paddingHorizontal="@dimen/space_big"
+        android:paddingVertical="@dimen/space_normal"
+        app:shapeAppearance="@style/roundStyle"
         android:text="@string/live_begin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

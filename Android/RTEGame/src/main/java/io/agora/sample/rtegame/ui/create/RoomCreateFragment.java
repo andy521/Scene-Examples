@@ -28,7 +28,6 @@ public class RoomCreateFragment extends BaseFragment<FragmentCreateRoomBinding> 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         mGlobalModel = GameUtil.getViewModel(requireActivity(), GlobalViewModel.class);
         initListener();
 

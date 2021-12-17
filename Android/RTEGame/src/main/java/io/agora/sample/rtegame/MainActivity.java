@@ -1,5 +1,7 @@
 package io.agora.sample.rtegame;
 
+import android.annotation.SuppressLint;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -15,9 +17,11 @@ import io.agora.syncmanager.rtm.Sync;
 public class MainActivity extends BaseActivity<ActivityMainBinding> {
 
     private GlobalViewModel globalViewModel;
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         globalViewModel = GameUtil.getViewModel(this, GlobalViewModel.class);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         getWindow().setBackgroundDrawable(null);

@@ -88,14 +88,6 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
     private boolean shouldShowInputBox = false;
     private AlertDialog currentDialog;
 
-    @SuppressLint("SourceLockedOrientationActivity")
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // During Live we limit the orientation
-        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -126,7 +118,6 @@ public class RoomFragment extends BaseFragment<FragmentRoomBinding> {
 
     @Override
     public void onDestroy() {
-        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         stopScreenCaptureService();
         super.onDestroy();
     }
