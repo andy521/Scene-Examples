@@ -24,7 +24,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         globalViewModel = GameUtil.getViewModel(this, GlobalViewModel.class);
 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        getWindow().setBackgroundDrawable(null);
     }
 
     @Override

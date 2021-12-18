@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipToPadding="false"
-    tools:background="@drawable/portrait02"
-    android:background="?attr/colorSurface">
+    tools:background="@drawable/portrait02">
 
 <!--    Video Layer-->
     <io.agora.sample.rtegame.view.LiveHostLayout
