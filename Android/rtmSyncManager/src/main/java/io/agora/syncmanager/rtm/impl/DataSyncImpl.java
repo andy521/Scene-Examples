@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.File;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -87,7 +88,7 @@ public class DataSyncImpl implements ISyncManager {
             assert appId != null;
             assert mDefaultChannel != null;
             client = RtmClient.createInstance(context, appId, iEventListener);
-            client.setLogFile(new File(context.getExternalCacheDir(), "agorartm.log").getAbsolutePath());
+            setLogFile(context, client);
             uid = uuid();
             client.login(token, uid, new ResultCallback<Void>() {
                 @Override
@@ -106,6 +107,26 @@ public class DataSyncImpl implements ISyncManager {
             e.printStackTrace();
         }
     }
+
+    private void setLogFile(@NonNull Context context, @NonNull RtmClient client){
+        File cacheDir = context.getExternalCacheDir();
+        boolean cacheExist = cacheDir.exists();
+        if (!cacheExist){
+            cacheExist = cacheDir.mkdir();
+        }
+        if (cacheExist){
+                try {
+                    File logFile = new File(cacheDir, "agorartm.log");
+                    boolean createLogResult = logFile.createNewFile();
+                    if (createLogResult)
+                        client.setLogFile(logFile.getAbsolutePath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+        }
+
+    }
+
 
     @Override
     public void destroy() {
