@@ -48,12 +48,12 @@
         android:textIsSelectable="false"
         android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@id/btn_random_fg_create"
         app:layout_constraintEnd_toStartOf="@id/btn_random_fg_create"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/title_name_fg_create"
         app:layout_constraintTop_toTopOf="@id/btn_random_fg_create"
-        app:layout_constraintWidth_default="wrap"
         tools:text="@string/app_name" />
 
     <ImageButton
