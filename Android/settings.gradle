@@ -1,15 +1,16 @@
-include ':livepk'
+rootProject.name = "SceneExample"
 if (!isModule.toBoolean()) {
     include ':app'
 }
 
-include ':data'
-include ':baselibrary'
-include ':InteractivePodcast'
-include ':MarriageInterview'
-include ':rtmSyncManager'
+include ':libs:data-deprecated'
+include ':libs:data-syncmanager'
+include ':libs:framework'
+include ':libs:framework2'
+include ':libs:ui-widget'
 
-rootProject.name = "SceneExample"
-include ':BreakoutRoom'
-include ':BreakoutRoom:base'
-include ':RTEGame'
+include ':modules:BreakoutRoom'
+include ':modules:InteractivePodcast'
+include ':modules:LivePK'
+include ':modules:Live'
+include ':modules:MarriageInterview'

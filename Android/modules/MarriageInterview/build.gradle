@@ -1,5 +1,12 @@
-plugins {
-    id 'com.android.application'
+if (isModule.toBoolean()) {
+    apply plugin: 'com.android.application'
+} else {
+    apply plugin: 'com.android.library'
+}
+
+if (getGradle().getStartParameter().getTaskRequests()
+        .toString().contains("firebase")) {
+    apply plugin: 'com.google.gms.google-services'
 }
 
 android {
@@ -7,19 +14,23 @@ android {
     buildToolsVersion BUILDTOOLSVERSION
 
     defaultConfig {
-        applicationId "io.agora.scene"
+        if (isModule.toBoolean()) {
+            applicationId "io.agora.marriageinterview"
+        }
         minSdkVersion MINSDKVERSION
         targetSdkVersion TARGETSDKVERSION
         versionCode 1
         versionName "1.0.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
         multiDexEnabled true
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -41,9 +52,11 @@ android {
         }
     }
 
-    applicationVariants.all { variant ->
-        variant.outputs.all {
-            outputFileName = "Demo-${versionName}-${variant.buildType.name}.apk"
+    if (isModule.toBoolean()) {
+        applicationVariants.all { variant ->
+            variant.outputs.all {
+                outputFileName = "Marry-${versionName}-${variant.buildType.name}.apk"
+            }
         }
     }
 }
@@ -54,6 +67,5 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    implementation project(':modules:InteractivePodcast')
-    implementation project(':modules:MarriageInterview')
+    api project(':libs:data-deprecated')
 }

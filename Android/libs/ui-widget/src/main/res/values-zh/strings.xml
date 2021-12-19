@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--================== Function ==================-->
+    <!-- RoomList -->
+    <string name="room_list_no_data_hint">请创建一个房间</string>
+    <string name="room_list_network_error_title">网络异常</string>
+    <string name="room_list_network_error_message">当前网络连接异常，请稍候再试</string>
+
+    <!-- Preview Control -->
+    <string name="preview_control_name_hint">直播间名字</string>
+    <string name="preview_control_go_live_text">开始直播</string>
+    <string name="preview_control_room_restriction">本应用为测试产品，请勿商用。单次直播最长10分钟，每个频道最多10人。</string>
+
+
+</resources>
