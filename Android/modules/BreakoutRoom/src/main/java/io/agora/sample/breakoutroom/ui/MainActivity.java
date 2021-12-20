@@ -10,9 +10,9 @@ import androidx.navigation.Navigation;
 
 import io.agora.example.base.BaseActivity;
 import io.agora.sample.breakoutroom.R;
-import io.agora.sample.breakoutroom.databinding.ActivityMainBinding;
+import io.agora.sample.breakoutroom.databinding.BreakoutRoomActivityMainBinding;
 
-public class MainActivity extends BaseActivity<ActivityMainBinding> {
+public class MainActivity extends BaseActivity<BreakoutRoomActivityMainBinding> {
     private MainViewModel mainViewModel;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">小班课</string>
+    <string name="breakoutroom_app_name">小班课</string>
 
     <string name="fab_add_room">创建房间</string>
     <string name="fab_add_sub_room">添加子房间</string>

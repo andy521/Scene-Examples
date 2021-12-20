@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">LivePK</string>
+    <string name="livepk_app_name">LivePK</string>
     <string name="cmm_tip">提示</string>
     <string name="cmm_ok">确认</string>
     <string name="cmm_cancel">取消</string>

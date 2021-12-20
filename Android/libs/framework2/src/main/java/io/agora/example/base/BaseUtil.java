@@ -160,6 +160,7 @@ public class BaseUtil {
     public static Object getViewBinding(Class<?> bindingClass, LayoutInflater inflater) {
         try {
             Method inflateMethod = bindingClass.getDeclaredMethod("inflate", LayoutInflater.class);
+            inflateMethod.setAccessible(true);
             return inflateMethod.invoke(null, inflater);
         } catch (Exception e) {
             e.printStackTrace();

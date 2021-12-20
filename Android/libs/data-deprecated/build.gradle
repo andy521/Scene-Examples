@@ -1,14 +1,28 @@
 plugins {
     id 'com.android.library'
 }
+def safeExtGetVersion(prop, key, fallback) {
+    if (rootProject.ext.has(prop)) {
+        def map = rootProject.ext.get(prop)
+        if (map.containsKey(key)) {
+            return map.get(key)
+        }
+    }
+    return fallback
+}
+
+def safeExtGetDependence(key, fallback){
+    return "$key:${safeExtGetVersion('dependencies', key, fallback)}"
+}
+
 
 android {
-    compileSdkVersion COMPILESDKVERSION
-    buildToolsVersion BUILDTOOLSVERSION
+    compileSdkVersion safeExtGetVersion('android', 'compileSdkVersion', 30)
+    buildToolsVersion safeExtGetVersion('android', 'buildToolsVersion', '30.0.3')
 
     defaultConfig {
-        minSdkVersion MINSDKVERSION
-        targetSdkVersion TARGETSDKVERSION
+        minSdkVersion safeExtGetVersion('android', 'minSdkVersion', 21)
+        targetSdkVersion safeExtGetVersion('android', 'targetSdkVersion', 30)
         versionCode 1
         versionName "1.0.0"
 
@@ -41,23 +55,29 @@ android {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    testImplementation safeExtGetDependence('junit:junit', '4.+')
+    androidTestImplementation safeExtGetDependence('androidx.test.ext:junit', '1.1.2')
+    androidTestImplementation safeExtGetDependence('androidx.test.espresso:espresso-core', '3.3.0')
+
+    implementation safeExtGetDependence('androidx.preference:preference', '1.1.1')
+    implementation safeExtGetDependence('androidx.multidex:multidex', '2.0.1')
 
     //Arogra SDK
-    api 'io.agora.rtc:full-sdk:3.3.0'
+    implementation safeExtGetDependence('io.agora.rtc:full-sdk', '3.3.0')
 
     //leancloud
-    leancloudImplementation 'cn.leancloud:storage-android:7.2.2'
-    leancloudImplementation 'cn.leancloud:realtime-android:7.2.2'
+    leancloudImplementation safeExtGetDependence('cn.leancloud:storage-android', '7.2.2')
+    leancloudImplementation safeExtGetDependence('cn.leancloud:realtime-android', '7.2.2')
 
     //firebase
-    firebaseImplementation platform('com.google.firebase:firebase-bom:26.7.0')
-    firebaseImplementation 'com.google.firebase:firebase-firestore'
+    firebaseImplementation platform("${safeExtGetDependence('com.google.firebase:firebase-bom', '26.7.0')}")
+    firebaseImplementation safeExtGetDependence('com.google.firebase:firebase-firestore', '')
 
     //RTM
-    implementation 'com.github.agorabuilder:rtm-sdk:1.4.4'
+    implementation safeExtGetDependence('com.github.agorabuilder:rtm-sdk', '1.4.4')
 
-    api project(':libs:framework')
+    //日志
+    implementation safeExtGetDependence('com.elvishew:xlog', '1.6.1')
+
+    implementation project(':libs:framework')
 }

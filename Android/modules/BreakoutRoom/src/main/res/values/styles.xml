@@ -21,7 +21,7 @@
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
     </style>
 
-    <style name="AppTheme" parent="BaseTheme">
+    <style name="BreakoutRoomAppTheme" parent="BaseTheme">
         <item name="android:windowBackground">@android:color/white</item>
     </style>
 

@@ -4,16 +4,30 @@ if (isModule.toBoolean()) {
     apply plugin: 'com.android.library'
 }
 
+def safeExtGetVersion(prop, key, fallback) {
+    if (rootProject.ext.has(prop)) {
+        def map = rootProject.ext.get(prop)
+        if (map.containsKey(key)) {
+            return map.get(key)
+        }
+    }
+    return fallback
+}
+
+def safeExtGetDependence(key, fallback){
+    return "$key:${safeExtGetVersion('dependencies', key, fallback)}"
+}
+
 android {
-    compileSdkVersion COMPILESDKVERSION
-    buildToolsVersion BUILDTOOLSVERSION
+    compileSdkVersion safeExtGetVersion('android', 'compileSdkVersion', 30)
+    buildToolsVersion safeExtGetVersion('android', 'buildToolsVersion', '30.0.3')
 
     defaultConfig {
         if (isModule.toBoolean()) {
             applicationId "io.agora.sample.live"
         }
-        minSdkVersion MINSDKVERSION
-        targetSdkVersion TARGETSDKVERSION
+        minSdkVersion safeExtGetVersion('android', 'minSdkVersion', 21)
+        targetSdkVersion safeExtGetVersion('android', 'targetSdkVersion', 30)
         versionCode 1
         versionName "1.0.0"
 
@@ -58,9 +72,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    testImplementation safeExtGetDependence('junit:junit','4.+')
+    androidTestImplementation safeExtGetDependence('androidx.test.ext:junit','1.1.2')
+    androidTestImplementation safeExtGetDependence('androidx.test.espresso:espresso-core','3.3.0')
 
     implementation project(':libs:ui-widget')
     implementation project(':libs:framework')

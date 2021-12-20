@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LivePK</string>
+    <string name="livepk_app_name">LivePK</string>
     <string name="cmm_tip">Tip</string>
     <string name="cmm_ok">OK</string>
     <string name="cmm_cancel">Cancel</string>

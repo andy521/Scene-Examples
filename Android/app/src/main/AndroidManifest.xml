@@ -21,7 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/BaseAppTheme"
         tools:ignore="GoogleAppIndexingWarning"
-        tools:replace="android:name,android:icon,android:label,android:theme">
+        tools:replace="android:name,android:icon,android:label,android:theme,android:allowBackup">
         <activity
             android:name=".activity.SplashActivity"
             android:launchMode="singleTask">
@@ -31,6 +31,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

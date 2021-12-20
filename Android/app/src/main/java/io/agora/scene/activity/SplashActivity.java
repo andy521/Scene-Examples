@@ -7,6 +7,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import io.agora.baselibrary.base.DataBindBaseActivity;
+import io.agora.livepk.activity.LivePKListActivity;
 import io.agora.scene.R;
 import io.agora.scene.databinding.ActivitySplashBinding;
 
@@ -36,6 +37,8 @@ public class SplashActivity extends DataBindBaseActivity<ActivitySplashBinding> 
     protected void iniListener() {
         mDataBinding.tvLivecast.setOnClickListener(this);
         mDataBinding.tvMerry.setOnClickListener(this);
+        mDataBinding.tvLivePK.setOnClickListener(this);
+        mDataBinding.tvBreakoutRoom.setOnClickListener(this);
     }
 
     @Override
@@ -49,6 +52,12 @@ public class SplashActivity extends DataBindBaseActivity<ActivitySplashBinding> 
             startActivity(intent);
         } else if (v == mDataBinding.tvMerry) {
             Intent intent = new Intent(this, io.agora.marriageinterview.activity.RoomListActivity.class);
+            startActivity(intent);
+        } else if( v == mDataBinding.tvLivePK){
+            Intent intent = new Intent(this, LivePKListActivity.class);
+            startActivity(intent);
+        } else if( v == mDataBinding.tvBreakoutRoom){
+            Intent intent = new Intent(this, io.agora.sample.breakoutroom.ui.MainActivity.class);
             startActivity(intent);
         }
     }
