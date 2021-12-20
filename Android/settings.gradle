@@ -3,14 +3,11 @@ if (!isModule.toBoolean()) {
     include ':app'
 }
 
-include ':libs:data-deprecated'
 include ':libs:data-syncmanager'
 include ':libs:framework'
 include ':libs:framework2'
 include ':libs:ui-widget'
 
 include ':modules:BreakoutRoom'
-include ':modules:InteractivePodcast'
 include ':modules:LivePK'
 include ':modules:Live'
-include ':modules:MarriageInterview'
