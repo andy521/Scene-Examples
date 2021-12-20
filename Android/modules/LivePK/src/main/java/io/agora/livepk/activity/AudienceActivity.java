@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-import io.agora.baselibrary.base.DataBindBaseActivity;
+import io.agora.example.base.BaseActivity;
 import io.agora.livepk.R;
 import io.agora.livepk.databinding.ActivityVideoBinding;
 import io.agora.livepk.manager.RtmManager;
@@ -37,7 +38,7 @@ import io.agora.rtm.ErrorInfo;
 import io.agora.rtm.ResultCallback;
 import io.agora.rtm.RtmChannelAttribute;
 
-public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding> {
+public class AudienceActivity extends BaseActivity<ActivityVideoBinding> {
     private static final String TAG = "AudienceActivity";
 
     private static final String EXTRA_ROOM_INFO = "roomInfo";
@@ -53,44 +54,29 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
     }
 
     @Override
-    protected void iniBundle(@NonNull Bundle bundle) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         mRoomInfo = (RoomInfo)getIntent().getSerializableExtra(EXTRA_ROOM_INFO);
-    }
 
-    @Override
-    protected int getLayoutId() {
-        return R.layout.activity_video;
-    }
-
-    @Override
-    protected void iniView() {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setTitle(mRoomInfo.roomName);
-        setStatusBarStyle(true);
-        setStatusBarTransparent();
 
         int userProfileIcon = UserUtil.getUserProfileIcon(mRoomInfo.roomId);
 
-        mDataBinding.ivLoadingBg.setVisibility(View.VISIBLE);
-        mDataBinding.ivLoadingBg.setImageResource(userProfileIcon);
+        mBinding.ivLoadingBg.setVisibility(View.VISIBLE);
+        mBinding.ivLoadingBg.setImageResource(userProfileIcon);
 
         Glide.with(this)
                 .load(userProfileIcon)
                 .apply(RequestOptions.bitmapTransform(new CircleCrop()))
-                .into(mDataBinding.ivRoomAvatar);
+                .into(mBinding.ivRoomAvatar);
 
-        mDataBinding.tvRoomName.setText(String.format(Locale.US, "%s(%s)", mRoomInfo.roomName, mRoomInfo.roomId));
+        mBinding.tvRoomName.setText(String.format(Locale.US, "%s(%s)", mRoomInfo.roomName, mRoomInfo.roomId));
 
-        mDataBinding.startPkButton.setVisibility(View.GONE);
-    }
+        mBinding.startPkButton.setVisibility(View.GONE);
 
-    @Override
-    protected void iniListener() {
-        mDataBinding.ivClose.setOnClickListener(v -> onBackPressed());
-    }
+        mBinding.ivClose.setOnClickListener(v -> onBackPressed());
 
-    @Override
-    protected void iniData() {
         initRtmManager(mRoomInfo.roomId);
     }
 
@@ -157,24 +143,24 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
 
     private void setupLocalFullVideo(String roomName){
 
-        mDataBinding.flLocalFullContainer.setVisibility(View.VISIBLE);
-        mDataBinding.llPkLayout.setVisibility(View.GONE);
+        mBinding.flLocalFullContainer.setVisibility(View.VISIBLE);
+        mBinding.llPkLayout.setVisibility(View.GONE);
 
         SurfaceView surfaceView = null;
-        if(mDataBinding.flLocalContainer.getChildCount() > 0){
-            surfaceView = (SurfaceView) mDataBinding.flLocalContainer.getChildAt(0);
+        if(mBinding.flLocalContainer.getChildCount() > 0){
+            surfaceView = (SurfaceView) mBinding.flLocalContainer.getChildAt(0);
         }
 
         // remove old video view
-        mDataBinding.flLocalFullContainer.removeAllViews();
-        mDataBinding.flLocalContainer.removeAllViews();
+        mBinding.flLocalFullContainer.removeAllViews();
+        mBinding.flLocalContainer.removeAllViews();
 
         if(agoraMediaPlayerKitA == null){
-            agoraMediaPlayerKitA = playUrl(mDataBinding.flLocalFullContainer, getVideoPullUrl(roomName), () -> {
-                mDataBinding.ivLoadingBg.setVisibility(View.GONE);
+            agoraMediaPlayerKitA = playUrl(mBinding.flLocalFullContainer, getVideoPullUrl(roomName), () -> {
+                mBinding.ivLoadingBg.setVisibility(View.GONE);
             });
         }else if(surfaceView != null){
-            mDataBinding.flLocalFullContainer.addView(surfaceView);
+            mBinding.flLocalFullContainer.addView(surfaceView);
         }else{
             throw new RuntimeException("setupLocalFullVideo failed");
         }
@@ -182,25 +168,25 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
 
     private void setupLocalVideo(String roomId) {
 
-        mDataBinding.flLocalFullContainer.setVisibility(View.GONE);
-        mDataBinding.llPkLayout.setVisibility(View.VISIBLE);
+        mBinding.flLocalFullContainer.setVisibility(View.GONE);
+        mBinding.llPkLayout.setVisibility(View.VISIBLE);
 
         SurfaceView surfaceView = null;
-        if(mDataBinding.flLocalFullContainer.getChildCount() > 0){
-            surfaceView = (SurfaceView) mDataBinding.flLocalFullContainer.getChildAt(0);
+        if(mBinding.flLocalFullContainer.getChildCount() > 0){
+            surfaceView = (SurfaceView) mBinding.flLocalFullContainer.getChildAt(0);
         }
 
         // remove old video view
-        mDataBinding.flLocalFullContainer.removeAllViews();
-        mDataBinding.flLocalContainer.removeAllViews();
+        mBinding.flLocalFullContainer.removeAllViews();
+        mBinding.flLocalContainer.removeAllViews();
 
         if(agoraMediaPlayerKitA == null){
-            mDataBinding.ivLoadingBg.setVisibility(View.VISIBLE);
-            agoraMediaPlayerKitA = playUrl(mDataBinding.flLocalContainer, getVideoPullUrl(roomId), () -> {
-                mDataBinding.ivLoadingBg.setVisibility(View.GONE);
+            mBinding.ivLoadingBg.setVisibility(View.VISIBLE);
+            agoraMediaPlayerKitA = playUrl(mBinding.flLocalContainer, getVideoPullUrl(roomId), () -> {
+                mBinding.ivLoadingBg.setVisibility(View.GONE);
             });
         }else if(surfaceView != null){
-            mDataBinding.flLocalContainer.addView(surfaceView);
+            mBinding.flLocalContainer.addView(surfaceView);
         }else{
             throw new RuntimeException("setupLocalFullVideo failed");
         }
@@ -208,10 +194,10 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
 
     private void setupRemoteVideo(String pkRoomId) {
         removeRemoteVideo();
-        mDataBinding.ivRemoteCover.setVisibility(View.VISIBLE);
-        mDataBinding.ivRemoteCover.setImageResource(UserUtil.getUserProfileIcon(pkRoomId));
-        agoraMediaPlayerKitB = playUrl(mDataBinding.flRemoteContainer, getVideoPullUrl(pkRoomId), () -> {
-            mDataBinding.ivRemoteCover.setVisibility(View.GONE);
+        mBinding.ivRemoteCover.setVisibility(View.VISIBLE);
+        mBinding.ivRemoteCover.setImageResource(UserUtil.getUserProfileIcon(pkRoomId));
+        agoraMediaPlayerKitB = playUrl(mBinding.flRemoteContainer, getVideoPullUrl(pkRoomId), () -> {
+            mBinding.ivRemoteCover.setVisibility(View.GONE);
         });
     }
 
@@ -219,7 +205,7 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
         if(agoraMediaPlayerKitB != null){
             agoraMediaPlayerKitB.destroy();
             agoraMediaPlayerKitB = null;
-            mDataBinding.flRemoteContainer.removeAllViews();
+            mBinding.flRemoteContainer.removeAllViews();
         }
     }
 

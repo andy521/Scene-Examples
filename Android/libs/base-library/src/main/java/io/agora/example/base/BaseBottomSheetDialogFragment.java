@@ -19,9 +19,14 @@ public class BaseBottomSheetDialogFragment<B extends ViewBinding> extends Bottom
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public final View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        onBeforeCreateView();
         mBinding = getViewBindingByReflect(inflater, container);
         return mBinding != null ? mBinding.getRoot() : null;
+    }
+
+    protected void onBeforeCreateView(){
+
     }
 
     @Override

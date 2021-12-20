@@ -15,7 +15,7 @@ import androidx.fragment.app.FragmentManager;
 
 import java.util.Random;
 
-import io.agora.baselibrary.base.DataBindBaseDialog;
+import io.agora.example.base.BaseDialogFragment;
 import io.agora.livepk.R;
 import io.agora.livepk.databinding.DialogCreateRoomBinding;
 
@@ -24,13 +24,11 @@ import io.agora.livepk.databinding.DialogCreateRoomBinding;
  *
  * @author chenhengfei@agora.io
  */
-public class CreateRoomDialog extends DataBindBaseDialog<DialogCreateRoomBinding> implements View.OnClickListener {
+public class CreateRoomDialog extends BaseDialogFragment<DialogCreateRoomBinding> implements View.OnClickListener {
     private static final String TAG = CreateRoomDialog.class.getSimpleName();
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public void onBeforeCreateView() {
         Window win = getDialog().getWindow();
         WindowManager windowManager = win.getWindowManager();
         Display display = windowManager.getDefaultDisplay();
@@ -38,9 +36,8 @@ public class CreateRoomDialog extends DataBindBaseDialog<DialogCreateRoomBinding
         params.width = display.getWidth() * 4 / 5;
         params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         win.setAttributes(params);
-        return super.onCreateView(inflater, container, savedInstanceState);
     }
-
+    
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,31 +45,14 @@ public class CreateRoomDialog extends DataBindBaseDialog<DialogCreateRoomBinding
     }
 
     @Override
-    public void iniBundle(@NonNull Bundle bundle) {
-
-    }
-
-    @Override
-    public int getLayoutId() {
-        return R.layout.dialog_create_room;
-    }
-
-    @Override
-    public void iniView() {
-
-    }
-
-    @Override
-    public void iniListener() {
-        mDataBinding.ivRefresh.setOnClickListener(this);
-        mDataBinding.btCreate.setOnClickListener(this);
-        mDataBinding.ivClose.setOnClickListener(this);
-    }
-
-    @Override
-    public void iniData() {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mBinding.ivRefresh.setOnClickListener(this);
+        mBinding.btCreate.setOnClickListener(this);
+        mBinding.ivClose.setOnClickListener(this);
         refreshName();
     }
+
 
     public void show(@NonNull FragmentManager manager, ICreateCallback mICreateCallback) {
         this.mICreateCallback = mICreateCallback;
@@ -96,11 +76,11 @@ public class CreateRoomDialog extends DataBindBaseDialog<DialogCreateRoomBinding
     }
 
     private void refreshName() {
-        mDataBinding.etInput.setText(radomName());
+        mBinding.etInput.setText(radomName());
     }
 
     private void create() {
-        String roomName = mDataBinding.etInput.getText().toString();
+        String roomName = mBinding.etInput.getText().toString();
         if (TextUtils.isEmpty(roomName)) {
             return;
         }

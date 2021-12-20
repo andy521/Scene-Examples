@@ -35,7 +35,7 @@ android {
     }
 
     buildFeatures {
-        dataBinding = true
+        viewBinding = true
     }
 
     buildTypes {
@@ -79,7 +79,7 @@ dependencies {
     annotationProcessor safeExtGetDependence('com.github.bumptech.glide:compiler','4.12.0')
 
     implementation project(':libs:data-syncmanager')
-    implementation project(':libs:framework')
+    implementation project(':libs:base-library')
 
     implementation safeExtGetDependence('com.yanzhenjie:permission','2.0.3')
     implementation safeExtGetDependence('io.agora.rtc:full-sdk','3.5.0')

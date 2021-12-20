@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,7 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import io.agora.baselibrary.base.DataBindBaseActivity;
+import io.agora.example.base.BaseActivity;
 import io.agora.livepk.R;
 import io.agora.livepk.databinding.ActivityVideoBinding;
 import io.agora.livepk.manager.RtcManager;
@@ -45,7 +46,7 @@ import io.agora.syncmanager.rtm.IObject;
 import io.agora.syncmanager.rtm.SyncManager;
 import io.agora.syncmanager.rtm.SyncManagerException;
 
-public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
+public class HostPKActivity extends BaseActivity<ActivityVideoBinding> {
     private static final String TAG = "HostPKActivity";
 
     private static final String EXTRA_ROOM_INFO = "roomInfo";
@@ -63,50 +64,34 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     @Override
-    protected void iniBundle(@NonNull Bundle bundle) {
-        mRoomInfo = ((RoomInfo)getIntent().getSerializableExtra(EXTRA_ROOM_INFO));
-    }
-
-    @Override
-    protected int getLayoutId() {
-        return R.layout.activity_video;
-    }
-
-    @Override
-    protected void iniView() {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setStatusBarStyle(true);
-        setStatusBarTransparent();
+        mRoomInfo = ((RoomInfo)getIntent().getSerializableExtra(EXTRA_ROOM_INFO));
         setTitle(mRoomInfo.roomName);
 
         int userProfileIcon = UserUtil.getUserProfileIcon(getLocalRoomId());
 
-        mDataBinding.ivLoadingBg.setVisibility(View.VISIBLE);
-        mDataBinding.ivLoadingBg.setImageResource(userProfileIcon);
+        mBinding.ivLoadingBg.setVisibility(View.VISIBLE);
+        mBinding.ivLoadingBg.setImageResource(userProfileIcon);
 
         Glide.with(this)
                 .load(userProfileIcon)
                 .apply(RequestOptions.bitmapTransform(new CircleCrop()))
-                .into(mDataBinding.ivRoomAvatar);
+                .into(mBinding.ivRoomAvatar);
 
-        mDataBinding.tvRoomName.setText(String.format(Locale.US, "%s(%s)", mRoomInfo.roomName, mRoomInfo.roomId) );
-        mDataBinding.switchCameraButton.setVisibility(View.VISIBLE);
-        mDataBinding.switchCameraButton.setOnClickListener(new View.OnClickListener() {
+        mBinding.tvRoomName.setText(String.format(Locale.US, "%s(%s)", mRoomInfo.roomName, mRoomInfo.roomId) );
+        mBinding.switchCameraButton.setVisibility(View.VISIBLE);
+        mBinding.switchCameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 rtcManager.switchCamera();
             }
         });
-    }
 
-    @Override
-    protected void iniListener() {
-        mDataBinding.ivClose.setOnClickListener(v -> onBackPressed());
-        mDataBinding.startPkButton.setOnClickListener(v -> loadRoomInfoList());
-    }
+        mBinding.ivClose.setOnClickListener(v -> onBackPressed());
+        mBinding.startPkButton.setOnClickListener(v -> loadRoomInfoList());
 
-    @Override
-    protected void iniData() {
         initManager();
         joinLocalChannel();
     }
@@ -131,47 +116,47 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
 
     private void setupLocalFullVideo(){
 
-        mDataBinding.flLocalFullContainer.setVisibility(View.VISIBLE);
-        mDataBinding.llPkLayout.setVisibility(View.GONE);
+        mBinding.flLocalFullContainer.setVisibility(View.VISIBLE);
+        mBinding.llPkLayout.setVisibility(View.GONE);
 
         View renderView = null;
-        if(mDataBinding.flLocalContainer.getChildCount() > 0){
-            renderView = mDataBinding.flLocalContainer.getChildAt(0);
+        if(mBinding.flLocalContainer.getChildCount() > 0){
+            renderView = mBinding.flLocalContainer.getChildAt(0);
         }
 
         // remove old video view
-        mDataBinding.flLocalFullContainer.removeAllViews();
-        mDataBinding.flLocalContainer.removeAllViews();
+        mBinding.flLocalFullContainer.removeAllViews();
+        mBinding.flLocalContainer.removeAllViews();
         if(renderView == null){
-            mDataBinding.ivLoadingBg.setVisibility(View.VISIBLE);
-            rtcManager.renderLocalVideo(mDataBinding.flLocalFullContainer, () -> mHandler.post(() -> mDataBinding.ivLoadingBg.setVisibility(View.GONE)));
+            mBinding.ivLoadingBg.setVisibility(View.VISIBLE);
+            rtcManager.renderLocalVideo(mBinding.flLocalFullContainer, () -> mHandler.post(() -> mBinding.ivLoadingBg.setVisibility(View.GONE)));
         }else{
-            mDataBinding.flLocalFullContainer.addView(renderView);
+            mBinding.flLocalFullContainer.addView(renderView);
         }
 
     }
 
     private void setupLocalVideo() {
 
-        mDataBinding.ivLoadingBg.setVisibility(View.GONE);
-        mDataBinding.flLocalFullContainer.setVisibility(View.GONE);
-        mDataBinding.llPkLayout.setVisibility(View.VISIBLE);
+        mBinding.ivLoadingBg.setVisibility(View.GONE);
+        mBinding.flLocalFullContainer.setVisibility(View.GONE);
+        mBinding.llPkLayout.setVisibility(View.VISIBLE);
 
-        mDataBinding.ivLocalCover.setImageResource(UserUtil.getUserProfileIcon(getLocalRoomId()));
+        mBinding.ivLocalCover.setImageResource(UserUtil.getUserProfileIcon(getLocalRoomId()));
 
         View renderView = null;
-        if(mDataBinding.flLocalFullContainer.getChildCount() > 0){
-            renderView = mDataBinding.flLocalFullContainer.getChildAt(0);
+        if(mBinding.flLocalFullContainer.getChildCount() > 0){
+            renderView = mBinding.flLocalFullContainer.getChildAt(0);
         }
 
-        mDataBinding.flLocalFullContainer.removeAllViews();
-        mDataBinding.flLocalContainer.removeAllViews();
+        mBinding.flLocalFullContainer.removeAllViews();
+        mBinding.flLocalContainer.removeAllViews();
 
         if(renderView == null){
-            mDataBinding.ivLocalCover.setVisibility(View.VISIBLE);
-            rtcManager.renderLocalVideo(mDataBinding.flLocalContainer, () -> mHandler.post(() -> mDataBinding.ivLocalCover.setVisibility(View.GONE)));
+            mBinding.ivLocalCover.setVisibility(View.VISIBLE);
+            rtcManager.renderLocalVideo(mBinding.flLocalContainer, () -> mHandler.post(() -> mBinding.ivLocalCover.setVisibility(View.GONE)));
         }else{
-            mDataBinding.flLocalContainer.addView(renderView);
+            mBinding.flLocalContainer.addView(renderView);
         }
 
     }
@@ -274,8 +259,8 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
     }
 
     private void setupPkVideo(String channelId, int uid) {
-        rtcManager.renderRemoteVideo(mDataBinding.flRemoteContainer, channelId, uid, () -> mHandler.post(() -> {
-            ImageView ivCover = mDataBinding.ivRemoteCover;
+        rtcManager.renderRemoteVideo(mBinding.flRemoteContainer, channelId, uid, () -> mHandler.post(() -> {
+            ImageView ivCover = mBinding.ivRemoteCover;
             ivCover.setVisibility(View.GONE);
         }));
     }
@@ -496,8 +481,8 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
 
     private void joinPKChannel(String channelId) {
         mHandler.post(() -> {
-            mDataBinding.ivRemoteCover.setVisibility(View.VISIBLE);
-            mDataBinding.ivRemoteCover.setImageResource(UserUtil.getUserProfileIcon(channelId));
+            mBinding.ivRemoteCover.setVisibility(View.VISIBLE);
+            mBinding.ivRemoteCover.setImageResource(UserUtil.getUserProfileIcon(channelId));
         });
         rtcManager.joinChannel(channelId, false, new RtcManager.OnChannelListener() {
             @Override
@@ -523,7 +508,7 @@ public class HostPKActivity extends DataBindBaseActivity<ActivityVideoBinding> {
 
     private void leavePKChannel(){
         rtcManager.leaveChannelExcept(getLocalRoomId());
-        mHandler.post(() -> mDataBinding.flRemoteContainer.removeAllViews());
+        mHandler.post(() -> mBinding.flRemoteContainer.removeAllViews());
     }
 
     private String getLocalRoomId(){

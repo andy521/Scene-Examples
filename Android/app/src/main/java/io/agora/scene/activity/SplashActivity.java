@@ -5,8 +5,9 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import io.agora.baselibrary.base.DataBindBaseActivity;
+import io.agora.example.base.BaseActivity;
 import io.agora.livepk.activity.LivePKListActivity;
 import io.agora.scene.R;
 import io.agora.scene.databinding.ActivitySplashBinding;
@@ -16,51 +17,26 @@ import io.agora.scene.databinding.ActivitySplashBinding;
  *
  * @author chenhengfei@agora.io
  */
-public class SplashActivity extends DataBindBaseActivity<ActivitySplashBinding> implements View.OnClickListener {
+public class SplashActivity extends BaseActivity<ActivitySplashBinding> implements View.OnClickListener {
 
     @Override
-    protected void iniBundle(@NonNull Bundle bundle) {
-
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mBinding.tvLivePK.setOnClickListener(this);
+        mBinding.tvBreakoutRoom.setOnClickListener(this);
+        mBinding.tvLive.setOnClickListener(this);
     }
 
-    @Override
-    protected int getLayoutId() {
-        return R.layout.activity_splash;
-    }
-
-    @Override
-    protected void iniView() {
-
-    }
-
-    @Override
-    protected void iniListener() {
-        mDataBinding.tvLivecast.setOnClickListener(this);
-        mDataBinding.tvMerry.setOnClickListener(this);
-        mDataBinding.tvLivePK.setOnClickListener(this);
-        mDataBinding.tvBreakoutRoom.setOnClickListener(this);
-        mDataBinding.tvLive.setOnClickListener(this);
-    }
-
-    @Override
-    protected void iniData() {
-    }
 
     @Override
     public void onClick(View v) {
-        if (v == mDataBinding.tvLivecast) {
-            Intent intent = new Intent(this, io.agora.interactivepodcast.activity.RoomListActivity.class);
-            startActivity(intent);
-        } else if (v == mDataBinding.tvMerry) {
-            Intent intent = new Intent(this, io.agora.marriageinterview.activity.RoomListActivity.class);
-            startActivity(intent);
-        } else if( v == mDataBinding.tvLivePK){
+        if (v == mBinding.tvLivePK) {
             Intent intent = new Intent(this, LivePKListActivity.class);
             startActivity(intent);
-        } else if( v == mDataBinding.tvBreakoutRoom){
+        } else if (v == mBinding.tvBreakoutRoom) {
             Intent intent = new Intent(this, io.agora.sample.breakoutroom.ui.MainActivity.class);
             startActivity(intent);
-        } else if( v == mDataBinding.tvLive){
+        } else if (v == mBinding.tvLive) {
             Intent intent = new Intent(this, io.agora.sample.live.RoomListActivity.class);
             startActivity(intent);
         }

@@ -4,8 +4,7 @@ if (!isModule.toBoolean()) {
 }
 
 include ':libs:data-syncmanager'
-include ':libs:framework'
-include ':libs:framework2'
+include ':libs:base-library'
 include ':libs:ui-widget'
 
 include ':modules:BreakoutRoom'

@@ -21,7 +21,7 @@ public abstract class BaseFragment<B extends ViewBinding> extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public final View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = getViewBindingByReflect(inflater, container);
         if (mBinding == null)
             return null;
@@ -52,7 +52,7 @@ public abstract class BaseFragment<B extends ViewBinding> extends Fragment {
     }
 
 
-    public B getViewBindingByReflect(@NonNull LayoutInflater inflater, @Nullable ViewGroup container) {
+    private B getViewBindingByReflect(@NonNull LayoutInflater inflater, @Nullable ViewGroup container) {
         try {
             Class<B> c = BaseUtil.getGenericClass(getClass(), 0);
             return (B) BaseUtil.getViewBinding(c, inflater, container);

@@ -49,7 +49,7 @@ android {
     }
 
     buildFeatures {
-        dataBinding = true
+        viewBinding = true
     }
 
     flavorDimensions "test"
@@ -80,5 +80,4 @@ dependencies {
     implementation safeExtGetDependence('androidx.recyclerview:recyclerview', '1.2.1')
 
     implementation project(':libs:ui-widget')
-    implementation project(':libs:framework')
 }

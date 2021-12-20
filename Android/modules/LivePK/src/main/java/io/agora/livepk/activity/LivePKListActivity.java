@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -18,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import io.agora.baselibrary.base.DataBindBaseActivity;
+import io.agora.example.base.BaseActivity;
 import io.agora.livepk.R;
 import io.agora.livepk.adapter.RoomListAdapter;
 import io.agora.livepk.databinding.ActivityListBinding;
@@ -33,7 +34,7 @@ import io.agora.syncmanager.rtm.SyncManager;
 import io.agora.syncmanager.rtm.SyncManagerException;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class LivePKListActivity extends DataBindBaseActivity<ActivityListBinding> {
+public class LivePKListActivity extends BaseActivity<ActivityListBinding> {
     private static final String TAG = LivePKListActivity.class.getSimpleName();
     private static final int RECYCLER_VIEW_SPAN_COUNT = 2;
     private static final int TAG_PERMISSTION_REQUESTCODE = 1000;
@@ -46,43 +47,30 @@ public class LivePKListActivity extends DataBindBaseActivity<ActivityListBinding
     private RoomListAdapter mAdapter;
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_list;
-    }
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-    @Override
-    protected void iniBundle(@NonNull Bundle bundle) {
-        // do nothing
-    }
-
-    @Override
-    protected void iniView() {
-        mDataBinding.hostInSwipe.setNestedScrollingEnabled(false);
-        mDataBinding.hostInRoomListRecycler.setVisibility(View.VISIBLE);
-        mDataBinding.hostInRoomListRecycler.setLayoutManager(new GridLayoutManager(this, RECYCLER_VIEW_SPAN_COUNT));
+        mBinding.hostInSwipe.setNestedScrollingEnabled(false);
+        mBinding.hostInRoomListRecycler.setVisibility(View.VISIBLE);
+        mBinding.hostInRoomListRecycler.setLayoutManager(new GridLayoutManager(this, RECYCLER_VIEW_SPAN_COUNT));
         mAdapter = new RoomListAdapter();
-        mDataBinding.hostInRoomListRecycler.setAdapter(mAdapter);
-        mDataBinding.hostInRoomListRecycler.addItemDecoration(new SpaceItemDecoration(getResources()
+        mBinding.hostInRoomListRecycler.setAdapter(mAdapter);
+        mBinding.hostInRoomListRecycler.addItemDecoration(new SpaceItemDecoration(getResources()
                 .getDimensionPixelSize(R.dimen.activity_horizontal_margin), RECYCLER_VIEW_SPAN_COUNT));
-    }
 
-    @Override
-    protected void iniListener() {
-        mDataBinding.hostInSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mBinding.hostInSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 loadRoomList(data -> {
                     runOnUiThread(() -> {
                         mAdapter.appendList(data, true);
                         checkNoData();
-                        mDataBinding.hostInSwipe.setRefreshing(false);
+                        mBinding.hostInSwipe.setRefreshing(false);
                     });
                 });
             }
         });
-        mDataBinding.liveRoomStartBroadcast.setOnClickListener(v -> {
-            alertCreateDialog();
-        });
+
         mAdapter.setItemClickListener(new RoomListAdapter.OnItemClickListener() {
             @Override
             public void onItemClicked(RoomInfo item) {
@@ -111,25 +99,28 @@ public class LivePKListActivity extends DataBindBaseActivity<ActivityListBinding
                         .show();
             }
         });
-    }
+        mBinding.liveRoomStartBroadcast.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertCreateDialog();
+            }
+        });
 
-    @Override
-    protected void iniData() {
         initSyncManager();
-        mDataBinding.hostInSwipe.setRefreshing(true);
+        mBinding.hostInSwipe.setRefreshing(true);
         loadRoomList(data -> {
             runOnUiThread(() -> {
                 Log.d(TAG, "initData loadRoomList data=" + data);
                 mAdapter.appendList(data, true);
                 checkNoData();
-                mDataBinding.hostInSwipe.setRefreshing(false);
+                mBinding.hostInSwipe.setRefreshing(false);
             });
         });
     }
 
     private void checkNoData() {
         boolean hasData = mAdapter.getItemCount() > 0;
-        mDataBinding.noDataBg.setVisibility(hasData ? View.GONE : View.VISIBLE);
+        mBinding.noDataBg.setVisibility(hasData ? View.GONE : View.VISIBLE);
     }
 
     private void alertCreateDialog() {

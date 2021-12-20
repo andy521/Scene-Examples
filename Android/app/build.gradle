@@ -43,7 +43,6 @@ android {
 
     buildFeatures {
         viewBinding = true
-        dataBinding = true
     }
 
     flavorDimensions "test"
@@ -72,11 +71,7 @@ dependencies {
     implementation safeExtGetDependence('androidx.multidex:multidex', '2.0.1')
     implementation safeExtGetDependence('androidx.constraintlayout:constraintlayout', '2.0.4')
 
-    implementation project(':libs:framework')
-    implementation project(':libs:data-deprecated')
-
-    implementation project(':modules:InteractivePodcast')
-    implementation project(':modules:MarriageInterview')
+    implementation project(':libs:base-library')
     implementation project(':modules:LivePK')
     implementation project(':modules:BreakoutRoom')
     implementation project(':modules:Live')
