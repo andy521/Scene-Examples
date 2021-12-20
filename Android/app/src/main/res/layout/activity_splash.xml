@@ -53,5 +53,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvLivePK" />
 
+        <TextView
+            android:id="@+id/tvLive"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="?android:selectableItemBackground"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/live_app_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvBreakoutRoom" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

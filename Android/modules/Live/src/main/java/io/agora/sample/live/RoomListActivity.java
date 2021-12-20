@@ -76,7 +76,7 @@ public class RoomListActivity extends AppCompatActivity {
         });
 
         TitleBar titleBar = findViewById(R.id.title_bar);
-        titleBar.setTitleName(getResources().getString(R.string.app_name), 0);
+        titleBar.setTitleName(getResources().getString(R.string.live_app_name), 0);
         titleBar.setBgDrawable(io.agora.uiwidget.R.drawable.title_bar_bg_colorful);
         titleBar.setUserIcon(true, 0, v -> {
             startActivity(new Intent(RoomListActivity.this, UserProfileActivity.class));

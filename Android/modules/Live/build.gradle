@@ -76,6 +76,9 @@ dependencies {
     androidTestImplementation safeExtGetDependence('androidx.test.ext:junit','1.1.2')
     androidTestImplementation safeExtGetDependence('androidx.test.espresso:espresso-core','3.3.0')
 
+    implementation safeExtGetDependence('androidx.appcompat:appcompat', '1.2.0')
+    implementation safeExtGetDependence('androidx.recyclerview:recyclerview', '1.2.1')
+
     implementation project(':libs:ui-widget')
     implementation project(':libs:framework')
 }

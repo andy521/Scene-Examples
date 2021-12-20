@@ -39,6 +39,7 @@ public class SplashActivity extends DataBindBaseActivity<ActivitySplashBinding> 
         mDataBinding.tvMerry.setOnClickListener(this);
         mDataBinding.tvLivePK.setOnClickListener(this);
         mDataBinding.tvBreakoutRoom.setOnClickListener(this);
+        mDataBinding.tvLive.setOnClickListener(this);
     }
 
     @Override
@@ -58,6 +59,9 @@ public class SplashActivity extends DataBindBaseActivity<ActivitySplashBinding> 
             startActivity(intent);
         } else if( v == mDataBinding.tvBreakoutRoom){
             Intent intent = new Intent(this, io.agora.sample.breakoutroom.ui.MainActivity.class);
+            startActivity(intent);
+        } else if( v == mDataBinding.tvLive){
+            Intent intent = new Intent(this, io.agora.sample.live.RoomListActivity.class);
             startActivity(intent);
         }
     }
