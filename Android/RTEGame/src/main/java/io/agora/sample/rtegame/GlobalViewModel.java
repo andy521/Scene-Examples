@@ -3,6 +3,7 @@ package io.agora.sample.rtegame;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -19,6 +20,7 @@ import io.agora.sample.rtegame.util.GameUtil;
 import io.agora.syncmanager.rtm.Sync;
 import io.agora.syncmanager.rtm.SyncManagerException;
 
+@Keep
 public class GlobalViewModel extends ViewModel implements RoomCreateApi {
 
     public final MutableLiveData<Boolean> focused = new MutableLiveData<>(true);

@@ -335,13 +335,7 @@ public class RoomViewModel extends ViewModel implements RoomApi {
             try {
                 PKApplyInfo pkApplyInfo = _applyInfo.getValue();
                 if (pkApplyInfo != null) {
-                    boolean startedByHost = Objects.equals(currentRoom.getUserId(), pkApplyInfo.getUserId());
-    //                游戏roomId为对方房间
-                    if (startedByHost) {// 加入客户端为发起方    《==》
-                        GameRepo.sendGift(localUser, Integer.parseInt(pkApplyInfo.getTargetRoomId()), Integer.parseInt(currentRoom.getUserId()), gift);
-                    }else{ // 加入客户端为接收方
-                        GameRepo.sendGift(localUser, Integer.parseInt(pkApplyInfo.getTargetRoomId()), Integer.parseInt(currentRoom.getUserId()), gift);
-                    }
+                    GameRepo.sendGift(localUser, Integer.parseInt(pkApplyInfo.getTargetRoomId()), Integer.parseInt(currentRoom.getUserId()), gift);
                 }else{  // 有一种情况为本地没有 PKApplyInfo 的信息，说明客户端为发起方
                     // FIXME 临时解决方法
                     RoomInfo roomInfo = _subRoomInfo.getValue();
