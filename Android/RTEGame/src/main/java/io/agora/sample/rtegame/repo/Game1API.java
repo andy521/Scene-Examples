@@ -11,6 +11,9 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
 
+/**
+ * 均在拦截器会添加 sign 字段
+ */
 public interface Game1API {
     /**
      * 简要描述
@@ -166,8 +169,7 @@ public interface Game1API {
             @Field("nonce_str") @NonNull String nonce_str,
             @Field("gift") int gift,
             @Field("count") int count,
-            @Field("player") int player,
-            @Field("sign") @NonNull String sign);
+            @Field("player") int player);
 
     /**
      * 简要描述
@@ -232,6 +234,5 @@ public interface Game1API {
             @Field("nonce_str") @NonNull String nonce_str,
             @Field("barrage") int barrage,
             @Field("count") int count,
-            @Field("player") int player,
-            @Field("sign") @NonNull String sign);
+            @Field("player") int player);
 }

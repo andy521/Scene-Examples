@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 public class AgoraGame {
     private final int gameId;
     @NonNull
-    private String appId;
+    private final String appId;
     @NonNull
     private final String gameName;
     @NonNull
@@ -17,7 +17,7 @@ public class AgoraGame {
     @NonNull
     private final String gameCommentUrl;
 
-    public AgoraGame(int gameId,@NonNull String appId, @NonNull String gameName, @NonNull String gameStartUrl, @NonNull String gameEndUrl, @NonNull String gameGiftUrl, @NonNull String gameCommentUrl) {
+    public AgoraGame(int gameId, @NonNull String appId, @NonNull String gameName, @NonNull String gameStartUrl, @NonNull String gameEndUrl, @NonNull String gameGiftUrl, @NonNull String gameCommentUrl) {
         this.gameId = gameId;
         this.appId = appId;
         this.gameName = gameName;

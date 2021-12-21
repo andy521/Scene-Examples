@@ -286,6 +286,9 @@ public class RoomViewModel extends ViewModel implements RoomApi {
                 sceneRef.get(GameConstants.GAME_APPLY_INFO, (GetAttrCallback) RoomViewModel.this::tryHandleGameApplyInfo);
                 sceneRef.subscribe(GameConstants.GAME_APPLY_INFO, new GamSyncEventListener(GameConstants.GAME_APPLY_INFO, this::tryHandleGameApplyInfo));
             }else{
+                sceneRef.get(GameConstants.PK_APPLY_INFO, (GetAttrCallback) this::justFetchValue);
+                sceneRef.subscribe(GameConstants.PK_APPLY_INFO, new GamSyncEventListener(GameConstants.PK_APPLY_INFO, this::justFetchValue));
+
                 sceneRef.get(GameConstants.GAME_INFO, (GetAttrCallback) this::tryHandleGameInfo);
                 sceneRef.subscribe(GameConstants.GAME_INFO, new GamSyncEventListener(GameConstants.GAME_INFO, this::tryHandleGameInfo));
             }
@@ -322,7 +325,6 @@ public class RoomViewModel extends ViewModel implements RoomApi {
         if (currentSceneRef != null && _gift.getValue() != null) {
             GiftInfo currentGift = _gift.getValue().peekContent();
             if (currentGift != null) {
-                BaseUtil.logD(gift.getCoin() + "+" + currentGift.getCoin());
                 gift.setCoin(currentGift.getCoin() + gift.getCoin());
             }
             currentSceneRef.update(GameConstants.GIFT_INFO, gift, null);
@@ -330,7 +332,25 @@ public class RoomViewModel extends ViewModel implements RoomApi {
         // Currently in game mode, report it
         GameInfo gameInfo = _gameShareInfo.getValue();
         if (gameInfo != null && gameInfo.getStatus() == GameInfo.START){
-            GameRepo.sendGift(localUser, currentRoom, gift);
+            try {
+                PKApplyInfo pkApplyInfo = _applyInfo.getValue();
+                if (pkApplyInfo != null) {
+                    boolean startedByHost = Objects.equals(currentRoom.getUserId(), pkApplyInfo.getUserId());
+    //                游戏roomId为对方房间
+                    if (startedByHost) {// 加入客户端为发起方    《==》
+                        GameRepo.sendGift(localUser, Integer.parseInt(pkApplyInfo.getTargetRoomId()), Integer.parseInt(currentRoom.getUserId()), gift);
+                    }else{ // 加入客户端为接收方
+                        GameRepo.sendGift(localUser, Integer.parseInt(pkApplyInfo.getTargetRoomId()), Integer.parseInt(currentRoom.getUserId()), gift);
+                    }
+                }else{  // 有一种情况为本地没有 PKApplyInfo 的信息，说明客户端为发起方
+                    // FIXME 临时解决方法
+                    RoomInfo roomInfo = _subRoomInfo.getValue();
+                    if (roomInfo != null)
+                        GameRepo.sendGift(localUser, Integer.parseInt(roomInfo.getId()), Integer.parseInt(currentRoom.getUserId()), gift);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
     //</editor-fold>
@@ -341,6 +361,13 @@ public class RoomViewModel extends ViewModel implements RoomApi {
         if (pkApplyInfo != null) {
             if (_applyInfo.getValue() == null || !Objects.equals(_applyInfo.getValue().toString(), pkApplyInfo.toString()))
                 onPKApplyInfoChanged(pkApplyInfo);
+        }
+    }
+
+    private void justFetchValue(IObject item){
+        PKApplyInfo pkApplyInfo = handleIObject(item, PKApplyInfo.class);
+        if (pkApplyInfo != null) {
+            _applyInfo.postValue(pkApplyInfo);
         }
     }
 

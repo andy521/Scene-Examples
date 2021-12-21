@@ -6,6 +6,15 @@ import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import io.agora.example.base.BaseUtil;
 import io.agora.sample.rtegame.GameApplication;
 import io.agora.sample.rtegame.bean.AgoraGame;
@@ -13,6 +22,7 @@ import io.agora.sample.rtegame.bean.GiftInfo;
 import io.agora.sample.rtegame.bean.LocalUser;
 import io.agora.sample.rtegame.bean.RoomInfo;
 import io.agora.sample.rtegame.util.GameUtil;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -58,23 +68,29 @@ public class GameRepo {
         webView.loadUrl(url);
     }
 
-    public static void sendGift(@NonNull LocalUser user, @NonNull RoomInfo currentRoom,@NonNull GiftInfo gift){
+    public static void sendGift(@NonNull LocalUser user, int roomId, int playerId, @NonNull GiftInfo gift){
         if (GameUtil.currentGame == null) return;
         int userId = Integer.parseInt(user.getUserId());
-        int playerId = Integer.parseInt(currentRoom.getUserId());
         int appId = Integer.parseInt(GameUtil.currentGame.getAppId());
-        int roomId = Integer.parseInt(currentRoom.getId());
         String timestamp = String.valueOf(System.currentTimeMillis()/1000);
 
         String giftUrl = GameUtil.currentGame.getGameGiftUrl();
-        YuanQiHttp.getAPI().gameGift(giftUrl, userId, appId,roomId, user.getName(), "token123", timestamp, "123", gift.getGiftType(), 1, playerId, "signed").enqueue(new EmptyRetrofitCallBack<>());
+
+        YuanQiHttp.getAPI().gameGift(giftUrl, userId, appId,roomId, user.getName(), "token123", timestamp, YuanQiHttp.nonStr(), gift.getGiftType(), 1, playerId).enqueue(new EmptyRetrofitCallBack<>());
     }
 
     static class EmptyRetrofitCallBack<T> implements Callback<T>{
 
         @Override
         public void onResponse(@NonNull Call<T> call, Response<T> response) {
-            BaseUtil.logD(response.toString());
+            ResponseBody body = (ResponseBody) response.body();
+            if (body != null) {
+                try {
+                    BaseUtil.logD(body.string());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         @Override
