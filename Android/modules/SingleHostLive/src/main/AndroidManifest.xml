@@ -15,7 +15,7 @@
     <application
         android:allowBackup="false"
         android:icon="@drawable/icon_launcher"
-        android:label="@string/live_app_name"
+        android:label="@string/single_host_live_app_name"
         android:requestLegacyExternalStorage="true"
         android:screenOrientation="portrait"
         android:supportsRtl="true"
@@ -29,7 +29,7 @@
             android:name="io.agora.sample.singlehostlive.SplashActivity"
             android:launchMode="singleTop"
             android:exported="true">
-            <intent-filter>
+            <intent-filter tools:node="remove">
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
