@@ -60,7 +60,7 @@ public class TitleBar extends FrameLayout {
     public void setUserIcon(boolean visible, @DrawableRes int drawableRes, View.OnClickListener onClickListener){
         mUserIv.setOnClickListener(onClickListener);
         mUserIv.setVisibility(visible ? View.VISIBLE : View.GONE);
-        if(drawableRes != 0){
+        if(drawableRes != View.NO_ID){
             mUserIv.setImageResource(drawableRes);
         }
     }
@@ -68,7 +68,7 @@ public class TitleBar extends FrameLayout {
     public void setBackIcon(boolean visible, @DrawableRes int drawableRes, View.OnClickListener onClickListener){
         mBackIv.setOnClickListener(onClickListener);
         mBackIv.setVisibility(visible ? View.VISIBLE : View.GONE);
-        if(drawableRes != 0){
+        if(drawableRes != View.NO_ID){
             mBackIv.setImageResource(drawableRes);
         }
     }

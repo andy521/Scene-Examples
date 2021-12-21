@@ -1,6 +1,9 @@
-plugins {
-    id 'com.android.application'
+if (isModule.toBoolean()) {
+    apply plugin: 'com.android.application'
+} else {
+    apply plugin: 'com.android.library'
 }
+
 def safeExtGetVersion(prop, key, fallback) {
     if (rootProject.ext.has(prop)) {
         def map = rootProject.ext.get(prop)
@@ -20,19 +23,23 @@ android {
     buildToolsVersion safeExtGetVersion('android', 'buildToolsVersion', '30.0.3')
 
     defaultConfig {
-        applicationId "io.agora.scene"
+        if (isModule.toBoolean()) {
+            applicationId "io.agora.sample.live"
+        }
         minSdkVersion safeExtGetVersion('android', 'minSdkVersion', 21)
         targetSdkVersion safeExtGetVersion('android', 'targetSdkVersion', 30)
         versionCode 1
         versionName "1.0.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        multiDexEnabled false
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+        multiDexEnabled true
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -45,9 +52,11 @@ android {
         viewBinding = true
     }
 
-    applicationVariants.all { variant ->
-        variant.outputs.all {
-            outputFileName = "Demo-${versionName}-${variant.buildType.name}.apk"
+    if (isModule.toBoolean()) {
+        applicationVariants.all { variant ->
+            variant.outputs.all {
+                outputFileName = "SingleHostLive-${versionName}-${variant.buildType.name}.apk"
+            }
         }
     }
 }
@@ -59,14 +68,7 @@ dependencies {
     androidTestImplementation safeExtGetDependence('androidx.test.espresso:espresso-core','3.3.0')
 
     implementation safeExtGetDependence('androidx.appcompat:appcompat', '1.2.0')
-    implementation safeExtGetDependence('androidx.multidex:multidex', '2.0.1')
-    implementation safeExtGetDependence('androidx.constraintlayout:constraintlayout', '2.0.4')
     implementation safeExtGetDependence('androidx.recyclerview:recyclerview', '1.2.1')
 
-    implementation project(':libs:base-library')
     implementation project(':libs:ui-widget')
-
-    implementation project(':modules:LivePK')
-    implementation project(':modules:BreakoutRoom')
-    implementation project(':modules:SingleHostLive')
 }

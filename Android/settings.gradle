@@ -9,4 +9,4 @@ include ':libs:ui-widget'
 
 include ':modules:BreakoutRoom'
 include ':modules:LivePK'
-include ':modules:Live'
+include ':modules:SingleHostLive'
