@@ -96,7 +96,7 @@
         app:chipStartPadding="@dimen/space_small"
         app:iconEndPadding="4dp"
         app:iconStartPadding="0dp"
-        app:chipIcon="@mipmap/ic_launcher"
+        app:chipIcon="@drawable/ic_people_count"
         app:chipIconSize="18dp"
         app:chipIconVisible="true"
         app:chipMinTouchTargetSize="0dp"
