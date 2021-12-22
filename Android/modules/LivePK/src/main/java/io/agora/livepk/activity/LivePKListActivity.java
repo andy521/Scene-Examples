@@ -13,6 +13,9 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.yanzhenjie.permission.Action;
+import com.yanzhenjie.permission.AndPermission;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,7 +35,6 @@ import io.agora.syncmanager.rtm.Scene;
 import io.agora.syncmanager.rtm.SceneReference;
 import io.agora.syncmanager.rtm.SyncManager;
 import io.agora.syncmanager.rtm.SyncManagerException;
-import pub.devrel.easypermissions.EasyPermissions;
 
 public class LivePKListActivity extends BaseActivity<ActivityListBinding> {
     private static final String TAG = LivePKListActivity.class.getSimpleName();
@@ -124,19 +126,15 @@ public class LivePKListActivity extends BaseActivity<ActivityListBinding> {
     }
 
     private void alertCreateDialog() {
-        if (EasyPermissions.hasPermissions(this, PERMISSTION)) {
-            new CreateRoomDialog()
-                    .show(getSupportFragmentManager(), new CreateRoomDialog.ICreateCallback() {
-                        @Override
-                        public void onRoomCreate(@NonNull String roomName) {
+        AndPermission.with(this)
+                .runtime()
+                .permission(PERMISSTION)
+                .onGranted(data -> new CreateRoomDialog()
+                        .show(getSupportFragmentManager(), roomName -> {
                             long currTime = System.currentTimeMillis();
                             createRoom(new RoomInfo(currTime, currTime + "", roomName));
-                        }
-                    });
-        } else {
-            EasyPermissions.requestPermissions(this, getString(R.string.error_leak_permission),
-                    TAG_PERMISSTION_REQUESTCODE, PERMISSTION);
-        }
+                        }))
+                .start();
     }
 
     // ====== business method ======

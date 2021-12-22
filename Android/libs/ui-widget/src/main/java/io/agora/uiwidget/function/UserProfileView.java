@@ -2,11 +2,12 @@ package io.agora.uiwidget.function;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class UserProfileView extends BaseFunctionView{
+public class UserProfileView extends FrameLayout {
     public UserProfileView(@NonNull Context context) {
         super(context);
     }

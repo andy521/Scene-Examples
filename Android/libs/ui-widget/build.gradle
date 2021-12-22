@@ -63,9 +63,9 @@ dependencies {
     implementation safeExtGetDependence('androidx.constraintlayout:constraintlayout','2.0.4')
     implementation safeExtGetDependence('androidx.swiperefreshlayout:swiperefreshlayout','1.1.0')
     implementation safeExtGetDependence('androidx.annotation:annotation','1.1.0')
-    implementation safeExtGetDependence('androidx.appcompat:appcompat','1.2.0')
+    api safeExtGetDependence('androidx.appcompat:appcompat','1.2.0')
     implementation safeExtGetDependence('androidx.preference:preference','1.1.1')
-    implementation safeExtGetDependence('com.google.android.material:material','1.3.0')
+    api safeExtGetDependence('com.google.android.material:material','1.3.0')
     implementation safeExtGetDependence('androidx.cardview:cardview','1.0.0')
     implementation safeExtGetDependence('androidx.work:work-runtime','2.5.0')
 }

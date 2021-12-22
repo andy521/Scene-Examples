@@ -25,6 +25,7 @@
 
 
     <!-- Preview Control -->
+    <dimen name="preview_control_shadow_height">120dp</dimen>
     <dimen name="preview_control_btn_height">48dp</dimen>
     <dimen name="preview_control_content_padding">24dp</dimen>
     <dimen name="preview_control_text_content_padding">10dp</dimen>
@@ -36,6 +37,16 @@
     <dimen name="preview_control_policy_padding">6dp</dimen>
     <dimen name="preview_control_policy_sign_size">32dp</dimen>
     <dimen name="preview_control_policy_caution_size">22dp</dimen>
+
+    <!-- Video Setting -->
+    <dimen name="video_setting_dialog_height">243dp</dimen>
+    <dimen name="video_setting_dialog_text_item_height">48dp</dimen>
+    <dimen name="video_setting_dialog_margin">24dp</dimen>
+    <dimen name="video_setting_dialog_arrow_size">30dp</dimen>
+    <dimen name="video_setting_dialog_text_size">16sp</dimen>
+    <dimen name="video_setting_dialog_item_divider_height">1dp</dimen>
+    <dimen name="video_setting_dialog_content_height">243dp</dimen>
+    <dimen name="video_setting_dialog_progress_height">20dp</dimen>
 
 
 </resources>

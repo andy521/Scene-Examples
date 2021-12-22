@@ -5,6 +5,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:background="@android:color/darker_gray">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/preview_control_shadow_height"
+        android:background="@drawable/preview_control_shadow_bg"/>
+
     <RelativeLayout
         android:id="@+id/preview_control_top_btn_layout"
         android:layout_width="match_parent"

@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,7 +20,7 @@ import java.util.List;
 
 import io.agora.uiwidget.R;
 
-public class RoomListView extends BaseFunctionView {
+public class RoomListView extends FrameLayout {
     private static final int SPAN_COUNT = 2;
     private static final int REFRESH_DELAY = 1000 * 60;
 
