@@ -23,6 +23,14 @@
     <string name="video_setting_dialog_bitrate_value_format" translatable="false">%d kbps</string>
 
 
+    <!-- Live Bottom View -->
+    <string name="live_bottom_edit_hint">Say something &#8230;</string>
+
+    <!-- LiveRoomMessageListView -->
+    <string name="live_room_message_user_join_suffix">has joined</string>
+    <string name="live_room_message_user_left_suffix">has left</string>
+    <string name="live_room_message_gift_prefix">has sent out</string>
+
 
     <!--=================== Utils ======================-->
 
@@ -68,5 +76,7 @@
         <item>Kelly</item>
         <item>Lauren</item>
     </string-array>
+
+
 
 </resources>

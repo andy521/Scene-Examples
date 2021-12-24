@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.Arrays;
 import java.util.List;
 
+import io.agora.sample.singlehostlive.RoomManager.RoomInfo;
 import io.agora.uiwidget.basic.TitleBar;
 import io.agora.uiwidget.function.RoomListView;
 
@@ -32,6 +33,8 @@ public class RoomListActivity extends AppCompatActivity {
                 holder.bgView.setBackgroundColor(item.bgColor);
                 holder.participantsCount.setText(String.valueOf(item.userCount));
                 holder.roomName.setText(item.roomName);
+                holder.itemView.setOnClickListener(v ->
+                        startActivity(new Intent(RoomListActivity.this, AudienceDetailActivity.class)));
             }
 
             @Override

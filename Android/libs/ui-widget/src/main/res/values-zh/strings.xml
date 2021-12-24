@@ -19,6 +19,15 @@
     <string name="video_setting_dialog_title_bitrate">码率</string>
     <string name="video_setting_dialog_bitrate_value_default">默认</string>
 
+    <!-- Live Bottom View -->
+    <string name="live_bottom_edit_hint">说点什么 &#8230;</string>
+
+    <!-- LiveRoomMessageListView -->
+    <string name="live_room_message_user_join_suffix">进入房间</string>
+    <string name="live_room_message_user_left_suffix">离开房间</string>
+    <string name="live_room_message_gift_prefix">向主播赠送了一个</string>
+
+
     <!--=================== Utils ======================-->
 
     <!-- RandomUtil -->

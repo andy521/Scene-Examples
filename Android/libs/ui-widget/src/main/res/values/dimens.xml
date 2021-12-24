@@ -48,5 +48,39 @@
     <dimen name="video_setting_dialog_content_height">243dp</dimen>
     <dimen name="video_setting_dialog_progress_height">20dp</dimen>
 
+    <!-- LiveBottomView -->
+    <dimen name="live_bottom_layout_height">42dp</dimen>
+    <dimen name="live_bottom_btn_margin">14dp</dimen>
+    <dimen name="live_bottom_edit_padding">12dp</dimen>
+    <dimen name="live_bottom_text_size">14sp</dimen>
+
+    <!-- LiveHostNameView -->
+    <dimen name="live_host_name_max_width">128dp</dimen>
+    <dimen name="live_host_name_height">40dp</dimen>
+    <dimen name="live_host_name_icon_padding">2dp</dimen>
+    <dimen name="live_host_name_text_size">12dp</dimen>
+
+
+    <!-- LiveRoomUserView -->
+    <dimen name="live_room_user_height">40dp</dimen>
+    <dimen name="live_room_user_content_height">32dp</dimen>
+    <dimen name="live_room_user_notification_point_size">6dp</dimen>
+    <dimen name="live_room_user_notification_point_margin">4dp</dimen>
+    <dimen name="live_room_user_count_icon_size">32dp</dimen>
+    <dimen name="live_room_user_count_text_size">14sp</dimen>
+    <dimen name="live_room_user_count_text_margin_end">12dp</dimen>
+    <dimen name="live_room_user_count_icon_margin_start">8dp</dimen>
+    <dimen name="live_room_user_count_icon_margin_end">4dp</dimen>
+    <dimen name="live_room_user_icon_size">32dp</dimen>
+    <dimen name="live_room_user_icon_margin">4dp</dimen>
+
+    <!-- LiveRoomMessageListView -->
+    <dimen name="live_room_message_item_height">40dp</dimen>
+    <dimen name="live_room_message_item_gift_size">20dp</dimen>
+    <dimen name="live_room_message_item_text_padding_horizontal">16dp</dimen>
+    <dimen name="live_room_message_item_text_padding_vertical">12dp</dimen>
+    <dimen name="live_room_message_item_text_margin">8dp</dimen>
+    <dimen name="live_room_message_item_text_size">14sp</dimen>
+
 
 </resources>

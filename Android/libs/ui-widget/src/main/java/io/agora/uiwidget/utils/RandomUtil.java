@@ -2,6 +2,8 @@ package io.agora.uiwidget.utils;
 
 import android.content.Context;
 
+import androidx.annotation.DrawableRes;
+
 import java.util.Locale;
 import java.util.Random;
 
@@ -10,6 +12,32 @@ import io.agora.uiwidget.R;
 
 public class RandomUtil {
     private static int sLastIndex;
+
+    private static final int[] ICONS = new int[]{
+            R.drawable.random_icon_1,
+            R.drawable.random_icon_2,
+            R.drawable.random_icon_3,
+            R.drawable.random_icon_4,
+            R.drawable.random_icon_5,
+            R.drawable.random_icon_6,
+            R.drawable.random_icon_7,
+            R.drawable.random_icon_8,
+            R.drawable.random_icon_9,
+            R.drawable.random_icon_10,
+            R.drawable.random_icon_11,
+            R.drawable.random_icon_12
+    };
+
+    public static @DrawableRes int randomLiveRoomIcon() {
+        int length = ICONS.length;
+        int thisIndex = sLastIndex;
+        while (thisIndex == sLastIndex) {
+            thisIndex = (int) (Math.random() * length);
+        }
+
+        sLastIndex = thisIndex;
+        return ICONS[sLastIndex];
+    }
 
     public static String randomLiveRoomName(Context context) {
         String[] ROOM_NAMES = context.getResources().getStringArray(R.array.random_channel_names);
@@ -33,6 +61,7 @@ public class RandomUtil {
         return String.format(defaultLocale, "%s%s",
                 getRandomSurname(context), getRandomName(context));
     }
+
 
     private static String getRandomSurname(Context context) {
         Random random = new Random(System.currentTimeMillis());

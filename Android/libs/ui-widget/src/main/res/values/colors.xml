@@ -16,4 +16,9 @@
     <color name="video_setting_dialog_text_color">#656565</color>
     <color name="video_setting_dialog_diliver_color">#efefef</color>
 
+    <!-- Live Bottom View -->
+    <color name="live_bottom_text_color">#c4c4c4</color>
+    <color name="live_bottom_text_color_light">#656565</color>
+
+
 </resources>
