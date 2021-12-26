@@ -6,11 +6,13 @@ import androidx.annotation.DrawableRes;
 
 import java.util.Locale;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.agora.uiwidget.R;
 
 
 public class RandomUtil {
+    private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
     private static int sLastIndex;
 
     private static final int[] ICONS = new int[]{
@@ -73,5 +75,17 @@ public class RandomUtil {
         Random random = new Random(System.currentTimeMillis());
         String[] names = context.getResources().getStringArray(R.array.random_names);
         return names[random.nextInt(names.length - 1)];
+    }
+
+    public static int randomId() {
+        for (;;) {
+            final int result = sNextGeneratedId.get();
+            // aapt-generated IDs have the high byte nonzero; clamp to the range under that.
+            int newValue = result + 1;
+            if (newValue > 0x00FFFFFF) newValue = 1; // Roll over to 1, not 0.
+            if (sNextGeneratedId.compareAndSet(result, newValue)) {
+                return result;
+            }
+        }
     }
 }
