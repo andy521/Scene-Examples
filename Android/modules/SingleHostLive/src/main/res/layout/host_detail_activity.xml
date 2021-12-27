@@ -3,8 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingHorizontal="16dp"
-    android:paddingVertical="8dp"
+
     android:background="@android:color/darker_gray">
 
     <FrameLayout
@@ -12,11 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
         android:orientation="horizontal">
 
         <io.agora.uiwidget.function.LiveHostNameView
@@ -24,11 +24,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <io.agora.uiwidget.function.LiveRoomUserView
-            android:id="@+id/user_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"/>
 
     </LinearLayout>
 
@@ -37,6 +32,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
         android:orientation="vertical">
 
         <io.agora.uiwidget.function.LiveRoomMessageListView

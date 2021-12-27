@@ -26,7 +26,6 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -42,9 +41,6 @@ import io.agora.livepk.util.UserUtil;
 import io.agora.rtm.ErrorInfo;
 import io.agora.rtm.ResultCallback;
 import io.agora.rtm.RtmChannelAttribute;
-import io.agora.syncmanager.rtm.IObject;
-import io.agora.syncmanager.rtm.SyncManager;
-import io.agora.syncmanager.rtm.SyncManagerException;
 
 public class HostPKActivity extends BaseActivity<ActivityVideoBinding> {
     private static final String TAG = "HostPKActivity";
@@ -162,52 +158,52 @@ public class HostPKActivity extends BaseActivity<ActivityVideoBinding> {
     }
 
     private void loadRoomInfoList() {
-        SyncManager.Instance().getScene(LivePKListActivity.SYNC_SCENE_ID).collection(LivePKListActivity.SYNC_COLLECTION_ROOM_INFO).get(new SyncManager.DataListCallback() {
-            @Override
-            public void onSuccess(List<IObject> result) {
-                List<RoomInfo> list = new ArrayList<>();
-                for (IObject item : result) {
-                    RoomInfo info = item.toObject(RoomInfo.class);
-                    if(!info.roomId.equals(getLocalRoomId())){
-                        list.add(info);
-                    }
-                }
-                Collections.sort(list, (o1, o2) -> (int) (o2.createTime - o1.createTime));
-
-                if(isDestroyed()){
-                    return;
-                }
-
-                mHandler.post(() -> {
-                    showRoomListDialog(list);
-                });
-            }
-
-            @Override
-            public void onFail(SyncManagerException exception) {
-
-            }
-        });
+//        SyncManager.Instance().getScene(LivePKListActivity.SYNC_SCENE_ID).collection(LivePKListActivity.SYNC_COLLECTION_ROOM_INFO).get(new SyncManager.DataListCallback() {
+//            @Override
+//            public void onSuccess(List<IObject> result) {
+//                List<RoomInfo> list = new ArrayList<>();
+//                for (IObject item : result) {
+//                    RoomInfo info = item.toObject(RoomInfo.class);
+//                    if(!info.roomId.equals(getLocalRoomId())){
+//                        list.add(info);
+//                    }
+//                }
+//                Collections.sort(list, (o1, o2) -> (int) (o2.createTime - o1.createTime));
+//
+//                if(isDestroyed()){
+//                    return;
+//                }
+//
+//                mHandler.post(() -> {
+//                    showRoomListDialog(list);
+//                });
+//            }
+//
+//            @Override
+//            public void onFail(SyncManagerException exception) {
+//
+//            }
+//        });
     }
 
     private void deleteRoomInfo(Runnable success){
-        SyncManager.Instance()
-                .getScene(LivePKListActivity.SYNC_SCENE_ID)
-                .collection(LivePKListActivity.SYNC_COLLECTION_ROOM_INFO)
-                .document(getLocalRoomId())
-                .delete(new SyncManager.Callback() {
-                    @Override
-                    public void onSuccess() {
-                        if(success != null){
-                            success.run();
-                        }
-                    }
-
-                    @Override
-                    public void onFail(SyncManagerException exception) {
-                        Toast.makeText(HostPKActivity.this, "deleteRoomInfo failed exception: " + exception.toString(), Toast.LENGTH_LONG).show();
-                    }
-                });
+//        SyncManager.Instance()
+//                .getScene(LivePKListActivity.SYNC_SCENE_ID)
+//                .collection(LivePKListActivity.SYNC_COLLECTION_ROOM_INFO)
+//                .document(getLocalRoomId())
+//                .delete(new SyncManager.Callback() {
+//                    @Override
+//                    public void onSuccess() {
+//                        if(success != null){
+//                            success.run();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFail(SyncManagerException exception) {
+//                        Toast.makeText(HostPKActivity.this, "deleteRoomInfo failed exception: " + exception.toString(), Toast.LENGTH_LONG).show();
+//                    }
+//                });
     }
 
     private void showRoomListDialog(List<RoomInfo> list) {

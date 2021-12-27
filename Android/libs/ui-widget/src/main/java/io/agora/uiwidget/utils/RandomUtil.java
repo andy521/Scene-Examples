@@ -13,6 +13,7 @@ import io.agora.uiwidget.R;
 
 public class RandomUtil {
     private static final AtomicInteger sNextGeneratedId = new AtomicInteger(1);
+    private static final int sGeneratedIdRandomStart = randomId(1, 10000);
     private static int sLastIndex;
 
     private static final int[] ICONS = new int[]{
@@ -84,8 +85,12 @@ public class RandomUtil {
             int newValue = result + 1;
             if (newValue > 0x00FFFFFF) newValue = 1; // Roll over to 1, not 0.
             if (sNextGeneratedId.compareAndSet(result, newValue)) {
-                return result;
+                return sGeneratedIdRandomStart + result;
             }
         }
+    }
+
+    public static int randomId(int start, int end){
+        return new Random().nextInt(end - start) + start + 1;
     }
 }

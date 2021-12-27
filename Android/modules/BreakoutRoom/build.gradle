@@ -60,9 +60,9 @@ dependencies {
     androidTestImplementation safeExtGetDependence('androidx.test.espresso:espresso-core','3.4.0')
 
     implementation project(path: ':libs:base-library')
-    implementation project(path: ':libs:data-syncmanager')
 
     implementation safeExtGetDependence('io.agora.rtc:full-sdk', '3.5.1')
+    implementation safeExtGetDependence('com.github.AgoraIO-Community:SyncManager-Android', '1.0.0')
     implementation safeExtGetDependence('com.google.code.gson:gson','2.8.9')
 
     implementation safeExtGetDependence('androidx.navigation:navigation-fragment','2.3.5')

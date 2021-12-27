@@ -2,8 +2,8 @@ package io.agora.sample.singlehostlive;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Size;
-import android.view.SurfaceView;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
@@ -14,15 +14,12 @@ import com.yanzhenjie.permission.runtime.Permission;
 
 import java.util.Arrays;
 
-import io.agora.rtc.IRtcEngineEventHandler;
-import io.agora.rtc.RtcEngine;
-import io.agora.rtc.video.VideoCanvas;
 import io.agora.uiwidget.function.PreviewControlView;
 import io.agora.uiwidget.function.VideoSettingDialog;
 
 public class PreviewActivity extends AppCompatActivity {
-
-    private RtcEngine rtcEngine;
+    private static final String TAG = "PreviewActivity";
+    private RtcManager rtcManager = new RtcManager();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,9 +35,7 @@ public class PreviewActivity extends AppCompatActivity {
         PreviewControlView previewControlView = findViewById(R.id.preview_control_view);
         previewControlView.setBackIcon(true, v -> finish());
         previewControlView.setCameraIcon(true, v -> {
-            if(rtcEngine != null){
-                rtcEngine.switchCamera();
-            }
+            rtcManager.switchCamera();
         });
         previewControlView.setBeautyIcon(false, null);
         previewControlView.setSettingIcon(true, v -> {
@@ -69,34 +64,35 @@ public class PreviewActivity extends AppCompatActivity {
                     .show();
         });
         previewControlView.setGoLiveBtn((view, randomName) -> {
-            startActivity(new Intent(PreviewActivity.this, HostDetailActivity.class));
-            finish();
+            RoomManager.getInstance().createRoom(randomName, new RoomManager.DataCallback<RoomManager.RoomInfo>() {
+                @Override
+                public void onSuccess(RoomManager.RoomInfo data) {
+                    Intent intent = new Intent(PreviewActivity.this, HostDetailActivity.class);
+                    intent.putExtra("roomInfo", data);
+                    startActivity(intent);
+                    finish();
+                }
+
+                @Override
+                public void onFailed(Exception e) {
+                    Log.e(TAG, "", e);
+                }
+            });
+
         });
     }
 
     private void initPreview() {
-        try {
-            rtcEngine = RtcEngine.create(this, getString(R.string.agora_app_id), new IRtcEngineEventHandler() {
-                @Override
-                public void onError(int err) {
-                    super.onError(err);
-                }
-            });
-            rtcEngine.enableVideo();
-            FrameLayout surfaceViewContainer = findViewById(R.id.surface_view_container);
-            SurfaceView videoView = RtcEngine.CreateRendererView(this);
-            surfaceViewContainer.addView(videoView);
-            rtcEngine.setupLocalVideo(new VideoCanvas(videoView));
-            rtcEngine.startPreview();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        rtcManager.init(this, getString(R.string.agora_app_id), null);
+
+        FrameLayout surfaceViewContainer = findViewById(R.id.surface_view_container);
+        rtcManager.renderLocalVideo(surfaceViewContainer, null);
+
     }
 
     @Override
     public void finish() {
-        rtcEngine.stopPreview();
-        RtcEngine.destroy();
+        rtcManager.release();
         super.finish();
     }
 

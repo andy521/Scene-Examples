@@ -72,8 +72,8 @@ dependencies {
     implementation safeExtGetDependence('com.yanzhenjie:permission', '2.0.3')
 
     implementation safeExtGetDependence('io.agora.rtc:full-sdk','3.5.0')
+    implementation safeExtGetDependence('com.github.AgoraIO-Community:SyncManager-Android', '1.0.0')
 
     implementation project(':libs:ui-widget')
-    implementation project(':libs:data-syncmanager')
     implementation project(':libs:base-library')
 }

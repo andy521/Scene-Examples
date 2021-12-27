@@ -12,11 +12,9 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import io.agora.example.base.BaseUtil;
@@ -33,9 +31,6 @@ import io.agora.sample.breakoutroom.ViewStatus;
 import io.agora.sample.breakoutroom.bean.RoomInfo;
 import io.agora.sample.breakoutroom.bean.SubRoomInfo;
 import io.agora.sample.breakoutroom.repo.RoomApi;
-import io.agora.syncmanager.rtm.IObject;
-import io.agora.syncmanager.rtm.SyncManager;
-import io.agora.syncmanager.rtm.SyncManagerException;
 
 /**
  *
@@ -126,83 +121,83 @@ public class RoomViewModel extends ViewModel implements RoomApi {
         _viewStatus.postValue(new ViewStatus.Loading(false));
         SubRoomInfo pendingSubRoom = new SubRoomInfo(roomName);
         HashMap<String, Object> map = RoomUtil.convertObjToHashMap(pendingSubRoom, RoomConstant.gson);
-        SyncManager.Instance().getScene(currentRoomInfo.getId()).collection(RoomConstant.globalSubRoom).add(map, new SyncManager.DataItemCallback() {
-            @Override
-            public void onSuccess(IObject result) {
-            }
-
-            @Override
-            public void onFail(SyncManagerException e) {
-                _viewStatus.postValue(new ViewStatus.Error(e));
-            }
-        });
+//        Sync.Instance().getScene(currentRoomInfo.getId()).collection(RoomConstant.globalSubRoom).add(map, new SyncManager.DataItemCallback() {
+//            @Override
+//            public void onSuccess(IObject result) {
+//            }
+//
+//            @Override
+//            public void onFail(SyncManagerException e) {
+//                _viewStatus.postValue(new ViewStatus.Error(e));
+//            }
+//        });
     }
 
     @Override
     public void fetchAllSubRooms() {
-        SyncManager.Instance().getScene(currentRoomInfo.getId()).collection(RoomConstant.globalSubRoom).get(new SyncManager.DataListCallback() {
-            @Override
-            public void onSuccess(List<IObject> result) {
-
-                List<SubRoomInfo> res = new ArrayList<>();
-                SubRoomInfo subRoomInfo;
-
-                for (IObject iObject : result) {
-                    try {
-                        subRoomInfo = iObject.toObject(SubRoomInfo.class);
-                    } catch (Exception e) {
-                        subRoomInfo = null;
-                        BaseUtil.logE(e);
-                    }
-                    if (subRoomInfo != null && subRoomInfo.getSubRoom() != subRoomInfo.getCreateTime())
-                        res.add(subRoomInfo);
-                }
-                Collections.sort(res);
-                _subRoomList.postValue(res);
-            }
-
-            @Override
-            public void onFail(SyncManagerException e) {
-                _subRoomList.postValue(new ArrayList<>());
-                // TODO optimized it
-                if (!Objects.equals(e.getMessage(), "empty attributes")) {
-                    _viewStatus.postValue(new ViewStatus.Error(e));
-                }
-            }
-        });
+//        SyncManager.Instance().getScene(currentRoomInfo.getId()).collection(RoomConstant.globalSubRoom).get(new SyncManager.DataListCallback() {
+//            @Override
+//            public void onSuccess(List<IObject> result) {
+//
+//                List<SubRoomInfo> res = new ArrayList<>();
+//                SubRoomInfo subRoomInfo;
+//
+//                for (IObject iObject : result) {
+//                    try {
+//                        subRoomInfo = iObject.toObject(SubRoomInfo.class);
+//                    } catch (Exception e) {
+//                        subRoomInfo = null;
+//                        BaseUtil.logE(e);
+//                    }
+//                    if (subRoomInfo != null && subRoomInfo.getSubRoom() != subRoomInfo.getCreateTime())
+//                        res.add(subRoomInfo);
+//                }
+//                Collections.sort(res);
+//                _subRoomList.postValue(res);
+//            }
+//
+//            @Override
+//            public void onFail(SyncManagerException e) {
+//                _subRoomList.postValue(new ArrayList<>());
+//                // TODO optimized it
+//                if (!Objects.equals(e.getMessage(), "empty attributes")) {
+//                    _viewStatus.postValue(new ViewStatus.Error(e));
+//                }
+//            }
+//        });
     }
 
     @Override
     public void subscribeSubRooms() {
-        SyncManager.Instance().getScene(currentRoomInfo.getId()).collection(RoomConstant.globalSubRoom).subcribe(new SyncManager.EventListener() {
-            @Override
-            public void onCreated(IObject item) {
-                try {
-                    SubRoomInfo subRoomInfo = item.toObject(SubRoomInfo.class);
-                    addSubRoom(subRoomInfo);
-                    _viewStatus.postValue(new ViewStatus.Done());
-                } catch (Exception ignored) {
-                }
-            }
-
-            @Override
-            public void onUpdated(IObject item) {
-
-            }
-
-            @Override
-            public void onDeleted(IObject item) {
-                try {
-                    deleteSubRoom(item.toObject(SubRoomInfo.class));
-                } catch (Exception ignored) {
-                }
-            }
-
-            @Override
-            public void onSubscribeError(SyncManagerException ex) {
-                BaseUtil.logE(ex);
-            }
-        });
+//        SyncManager.Instance().getScene(currentRoomInfo.getId()).collection(RoomConstant.globalSubRoom).subcribe(new SyncManager.EventListener() {
+//            @Override
+//            public void onCreated(IObject item) {
+//                try {
+//                    SubRoomInfo subRoomInfo = item.toObject(SubRoomInfo.class);
+//                    addSubRoom(subRoomInfo);
+//                    _viewStatus.postValue(new ViewStatus.Done());
+//                } catch (Exception ignored) {
+//                }
+//            }
+//
+//            @Override
+//            public void onUpdated(IObject item) {
+//
+//            }
+//
+//            @Override
+//            public void onDeleted(IObject item) {
+//                try {
+//                    deleteSubRoom(item.toObject(SubRoomInfo.class));
+//                } catch (Exception ignored) {
+//                }
+//            }
+//
+//            @Override
+//            public void onSubscribeError(SyncManagerException ex) {
+//                BaseUtil.logE(ex);
+//            }
+//        });
     }
 
     private void addSubRoom(@NonNull SubRoomInfo subRoomInfo) {

@@ -5,18 +5,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 import io.agora.sample.breakoutroom.ViewStatus;
 import io.agora.sample.breakoutroom.bean.RoomInfo;
 import io.agora.sample.breakoutroom.repo.RoomListApi;
-import io.agora.syncmanager.rtm.IObject;
 import io.agora.syncmanager.rtm.Scene;
-import io.agora.syncmanager.rtm.SyncManager;
-import io.agora.syncmanager.rtm.SyncManagerException;
 
 /**
  * @author lq
@@ -52,41 +47,41 @@ public class RoomListViewModel extends ViewModel implements RoomListApi {
     @Override
     public void fetchRoomList() {
         _viewStatus.postValue(new ViewStatus.Loading(false));
-        SyncManager.Instance().getScenes(new SyncManager.DataListCallback() {
-            @Override
-            public void onSuccess(List<IObject> result) {
-                List<RoomInfo> res = new ArrayList<>();
-                RoomInfo roomInfo;
-
-                for (IObject iObject : result) {
-                    try {
-                        roomInfo = iObject.toObject(RoomInfo.class);
-                    } catch (Exception e) {
-                        roomInfo = null;
-                        e.printStackTrace();
-                    }
-                    if (roomInfo != null)
-                        res.add(roomInfo);
-                }
-//                for (int i = 0; i < 20; i++) {
-//                    roomInfo = new RoomInfo("room_"+i,""+i,""+i);
-//                    res.add(roomInfo);
+//        SyncManager.Instance().getScenes(new SyncManager.DataListCallback() {
+//            @Override
+//            public void onSuccess(List<IObject> result) {
+//                List<RoomInfo> res = new ArrayList<>();
+//                RoomInfo roomInfo;
+//
+//                for (IObject iObject : result) {
+//                    try {
+//                        roomInfo = iObject.toObject(RoomInfo.class);
+//                    } catch (Exception e) {
+//                        roomInfo = null;
+//                        e.printStackTrace();
+//                    }
+//                    if (roomInfo != null)
+//                        res.add(roomInfo);
 //                }
-                _roomList.postValue(res);
-                _viewStatus.postValue(new ViewStatus.Done());
-            }
-
-            @Override
-            public void onFail(SyncManagerException exception) {
-                if (Objects.equals(exception.getMessage(), "empty scene")) {
-                    _roomList.postValue(new ArrayList<>());
-                    _viewStatus.postValue(new ViewStatus.Done());
-                }else{
-                    _roomList.postValue(null);
-                    _viewStatus.postValue(new ViewStatus.Error(exception));
-                }
-            }
-        });
+////                for (int i = 0; i < 20; i++) {
+////                    roomInfo = new RoomInfo("room_"+i,""+i,""+i);
+////                    res.add(roomInfo);
+////                }
+//                _roomList.postValue(res);
+//                _viewStatus.postValue(new ViewStatus.Done());
+//            }
+//
+//            @Override
+//            public void onFail(SyncManagerException exception) {
+//                if (Objects.equals(exception.getMessage(), "empty scene")) {
+//                    _roomList.postValue(new ArrayList<>());
+//                    _viewStatus.postValue(new ViewStatus.Done());
+//                }else{
+//                    _roomList.postValue(null);
+//                    _viewStatus.postValue(new ViewStatus.Error(exception));
+//                }
+//            }
+//        });
     }
 
     /**
@@ -97,18 +92,18 @@ public class RoomListViewModel extends ViewModel implements RoomListApi {
     public void joinRoom(@NonNull RoomInfo roomInfo){
         _viewStatus.postValue(new ViewStatus.Loading(true));
 
-        SyncManager.Instance().joinScene(getSceneFromRoomInfo(roomInfo), new SyncManager.Callback() {
-            @Override
-            public void onSuccess() {
-                _pendingRoomInfo.postValue(roomInfo);
-                _viewStatus.postValue(new ViewStatus.Done());
-            }
-
-            @Override
-            public void onFail(SyncManagerException exception) {
-                _viewStatus.postValue(new ViewStatus.Error(exception));
-            }
-        });
+//        SyncManager.Instance().joinScene(getSceneFromRoomInfo(roomInfo), new SyncManager.Callback() {
+//            @Override
+//            public void onSuccess() {
+//                _pendingRoomInfo.postValue(roomInfo);
+//                _viewStatus.postValue(new ViewStatus.Done());
+//            }
+//
+//            @Override
+//            public void onFail(SyncManagerException exception) {
+//                _viewStatus.postValue(new ViewStatus.Error(exception));
+//            }
+//        });
     }
 
     /**
@@ -120,23 +115,23 @@ public class RoomListViewModel extends ViewModel implements RoomListApi {
     public void createRoom(@NonNull RoomInfo roomInfo) {
         _viewStatus.postValue(new ViewStatus.Loading(true));
 
-        SyncManager.Instance().joinScene(getSceneFromRoomInfo(roomInfo), new SyncManager.Callback() {
-            @Override
-            public void onSuccess() {
-                List<RoomInfo> list = _roomList.getValue();
-                if (list == null)
-                    list = new ArrayList<>();
-                list.add(roomInfo);
-                _roomList.postValue(list);
-                _pendingRoomInfo.postValue(roomInfo);
-                _viewStatus.postValue(new ViewStatus.Done());
-            }
-
-            @Override
-            public void onFail(SyncManagerException exception) {
-                _viewStatus.postValue(new ViewStatus.Error(exception));
-            }
-        });
+//        SyncManager.Instance().joinScene(getSceneFromRoomInfo(roomInfo), new SyncManager.Callback() {
+//            @Override
+//            public void onSuccess() {
+//                List<RoomInfo> list = _roomList.getValue();
+//                if (list == null)
+//                    list = new ArrayList<>();
+//                list.add(roomInfo);
+//                _roomList.postValue(list);
+//                _pendingRoomInfo.postValue(roomInfo);
+//                _viewStatus.postValue(new ViewStatus.Done());
+//            }
+//
+//            @Override
+//            public void onFail(SyncManagerException exception) {
+//                _viewStatus.postValue(new ViewStatus.Error(exception));
+//            }
+//        });
     }
 
 

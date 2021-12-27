@@ -10,9 +10,7 @@ import java.util.HashMap;
 
 import io.agora.sample.breakoutroom.R;
 import io.agora.sample.breakoutroom.RoomConstant;
-import io.agora.sample.breakoutroom.bean.RoomInfo;
-import io.agora.syncmanager.rtm.SceneReference;
-import io.agora.syncmanager.rtm.SyncManager;
+import io.agora.syncmanager.rtm.Sync;
 
 /**
  * @author lq
@@ -29,7 +27,7 @@ public class MainViewModel extends ViewModel {
         map.put("appid", context.getString(R.string.rtm_app_id));
         map.put("token", context.getString(R.string.rtm_app_token));
         map.put("defaultChannel", RoomConstant.globalChannel);
-        SyncManager.Instance().init(context, map);
+        Sync.Instance().init(context, map, null);
         // FIXME
         new Thread(() -> {
             try {
