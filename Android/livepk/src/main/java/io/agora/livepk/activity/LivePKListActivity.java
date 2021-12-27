@@ -12,7 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +25,7 @@ import io.agora.baselibrary.base.DataBindBaseActivity;
 import io.agora.livepk.R;
 import io.agora.livepk.adapter.RoomListAdapter;
 import io.agora.livepk.databinding.ActivityListBinding;
+import io.agora.livepk.manager.UrlManager;
 import io.agora.livepk.model.RoomInfo;
 import io.agora.livepk.util.DataListCallback;
 import io.agora.livepk.widget.CreateRoomDialog;
@@ -113,6 +117,7 @@ public class LivePKListActivity extends DataBindBaseActivity<ActivityListBinding
                         .show();
             }
         });
+        mDataBinding.ivSetting.setOnClickListener(v -> alertUrlSelectDialog());
     }
 
     @Override
@@ -148,6 +153,35 @@ public class LivePKListActivity extends DataBindBaseActivity<ActivityListBinding
             EasyPermissions.requestPermissions(this, getString(R.string.error_leak_permission),
                     TAG_PERMISSTION_REQUESTCODE, PERMISSTION);
         }
+    }
+
+    private void alertUrlSelectDialog(){
+        List<UrlManager.AbsUrl> urls = Arrays.asList(
+                UrlManager.WanSuUrl,
+                UrlManager.JinShangUrl,
+                UrlManager.TenXunUrl
+        );
+
+        String[] singleItems = new String[urls.size()];
+        int checkedItem = 0;
+        for (int i = 0; i < urls.size(); i++) {
+            UrlManager.AbsUrl url = urls.get(i);
+            singleItems[i] = url.name;
+            if(UrlManager.sUrl.name.equals(url.name)){
+                checkedItem = i;
+            }
+        }
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("URL Selector")
+                .setSingleChoiceItems(singleItems, checkedItem, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        UrlManager.sUrl = urls.get(which);
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 
     // ====== business method ======

@@ -25,6 +25,7 @@ import io.agora.rtc2.RtcEngine;
 import io.agora.rtc2.RtcEngineConfig;
 import io.agora.rtc2.RtcEngineEx;
 import io.agora.rtc2.live.LiveTranscoding;
+import io.agora.rtc2.video.CameraCapturerConfiguration;
 import io.agora.rtc2.video.VideoCanvas;
 import io.agora.rtc2.video.VideoEncoderConfiguration;
 
@@ -44,6 +45,8 @@ public class RtcManager {
     private final Map<Integer, Runnable> firstVideoFramePendingRuns = new HashMap<>();
     private Context mContext;
     private OnChannelListener publishChannelListener = null;
+
+    private static CameraCapturerConfiguration.CAMERA_DIRECTION sCameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT;
 
     private final VideoEncoderConfiguration encoderConfiguration = new VideoEncoderConfiguration(
             VD_640x360,
@@ -125,21 +128,17 @@ public class RtcManager {
             engine.enableVideo();
             engine.enableAudio();
 
+            engine.setParameters("{\"rtc.dual_signaling_mode\":2}");
+            engine.setParameters("{\"rtc.work_manager_account_list\":[\"WM-raw_streaming-119.188.27.100\"]}");
+            engine.setParameters("{\"rtc.work_manager_addr_list\":[\"119.188.27.100:30555\"]}");
 
-            //engine.setParameters("{\"che.video.retransDetectEnable\":true}");
-            //engine.setParameters("{\"che.video.captureFpsLowPower\":true}");
-            //engine.setParameters("{\"che.video.android_zero_copy_mode\":2}");
-            //engine.setParameters("{\"che.video.setQuickVideoHighFec\":true}");
-            //engine.setParameters("{\"rtc.enable_quick_rexfer_keyframe\":true}");
-            //engine.setParameters("{\"rtc.enable_audio_rsfec_in_video\":true}");
-            //engine.setParameters("{\"che.audio.opensl\":true}");
-            //engine.setParameters("{\"che.audio.specify.codec\":\"OPUSFB\"}");
-            //engine.setParameters("{\"rtc.log_size\":999999999}");
-            //engine.setParameters("{\"rtc.log_filter\":65535}");
-            //engine.setParameters("{\"rtc.dual_signaling_mode\":2}");
-            //engine.setParameters("{\"rtc.work_manager_account_list\":[\"mix-worker-182.18.83.206-30002\"]}");
-            //engine.setParameters("{\"rtc.work_manager_addr_list\":[\"182.18.83.206:30002\"]}");
-            //engine.setParameters("{\"rtc.enable_crypto_access\":false}");
+            engine.setCameraCapturerConfiguration(new CameraCapturerConfiguration(sCameraDirection));
+            if(sCameraDirection == CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT){
+                encoderConfiguration.mirrorMode = VideoEncoderConfiguration.MIRROR_MODE_TYPE.MIRROR_MODE_ENABLED;
+            }else{
+                encoderConfiguration.mirrorMode = VideoEncoderConfiguration.MIRROR_MODE_TYPE.MIRROR_MODE_DISABLED;
+            }
+            engine.setVideoEncoderConfiguration(encoderConfiguration);
 
             isInitialized = true;
         } catch (Exception e) {
@@ -166,6 +165,7 @@ public class RtcManager {
         if (engine == null) {
             return;
         }
+        final String pushRtmpUrl = getPushRtmpUrl(channelId);
         if(publish){
             ClientRoleOptions clientRoleOptions = new ClientRoleOptions();
             clientRoleOptions.audienceLatencyLevel = Constants.AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
@@ -188,8 +188,8 @@ public class RtcManager {
                     //user.height = encoderConfiguration.dimensions.width;
                     //transcoding.addUser(user);
                     //engine.setLiveTranscoding(transcoding);
-                    int publishCode = engine.addPublishStreamUrl(getPushRtmpUrl(channelId), false);
-                    Log.i(TAG, String.format("onJoinChannelSuccess channel %s uid %d publishCode %d", channelId, uid, publishCode));
+                    int publishCode = engine.addPublishStreamUrl(pushRtmpUrl, false);
+                    Log.i(TAG, String.format("onJoinChannelSuccess channel %s uid %d publishCode %d pushRtmpUrl %s", channelId, uid, publishCode, pushRtmpUrl));
                     if(listener != null){
                         listener.onJoinSuccess(uid);
                     }
@@ -198,7 +198,7 @@ public class RtcManager {
                 @Override
                 public void onUserJoined(String channelId, int uid) {
                     if(listener != null){
-                        listener.onUserJoined(channelId, uid);
+                        listener.onUserJoined(channelId,uid);
                     }
                 }
 
@@ -284,7 +284,7 @@ public class RtcManager {
                     user.height = encoderConfiguration.dimensions.width;
                     transcoding.addUser(user);
                     engine.setLiveTranscoding(transcoding);
-                    int publishCode = engine.addPublishStreamUrl(getPushRtmpUrl(channelId), false);
+                    int publishCode = engine.addPublishStreamUrl(pushRtmpUrl, false);
                     Log.i(TAG, String.format("onJoinChannelSuccess channel %s uid %d publishCode %d", channelId, uid, publishCode));
                 }
                 if (listener != null) {
@@ -398,13 +398,25 @@ public class RtcManager {
     }
 
     private static String getPushRtmpUrl(String pushName) {
-        return String.format(Locale.US, "rtmp://webdemo-push.agora.io/lbhd/%s", pushName);
+        return UrlManager.sUrl.getPushUrl(pushName);
     }
 
     public void switchCamera() {
-        if(engine != null){
-            engine.switchCamera();
+        if(engine == null){
+            return;
         }
+        engine.switchCamera();
+        if(sCameraDirection == CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT){
+            sCameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_REAR;
+        }else {
+            sCameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT;
+        }
+        if(sCameraDirection == CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT){
+            encoderConfiguration.mirrorMode = VideoEncoderConfiguration.MIRROR_MODE_TYPE.MIRROR_MODE_ENABLED;
+        }else{
+            encoderConfiguration.mirrorMode = VideoEncoderConfiguration.MIRROR_MODE_TYPE.MIRROR_MODE_DISABLED;
+        }
+        engine.setVideoEncoderConfiguration(encoderConfiguration);
     }
 
     public interface OnInitializeListener {

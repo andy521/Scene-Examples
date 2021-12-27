@@ -25,6 +25,7 @@ import io.agora.livepk.R;
 import io.agora.livepk.databinding.ActivityVideoBinding;
 import io.agora.livepk.manager.RtcManager;
 import io.agora.livepk.manager.RtmManager;
+import io.agora.livepk.manager.UrlManager;
 import io.agora.livepk.model.RoomInfo;
 import io.agora.livepk.util.UserUtil;
 import io.agora.mediaplayer.Constants;
@@ -316,7 +317,6 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
     }
 
     private String getVideoPullUrl(String roomName) {
-        //return String.format(Locale.US, "rtmp://mdetest.pull.agoramde.agoraio.cn/live/%s", roomName);
-        return String.format(Locale.US, "https://webdemo-pull-hdl.agora.io/lbhd/%s.flv", roomName);
+        return UrlManager.sUrl.getPullUrl(roomName);
     }
 }
