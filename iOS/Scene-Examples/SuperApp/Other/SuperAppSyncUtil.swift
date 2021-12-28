@@ -9,7 +9,7 @@ import Foundation
 import AgoraSyncManager
 
 protocol SuperAppSyncUtilDelegate: NSObjectProtocol {
-    func superAppSyncUtilDidPkAccept(util: SuperAppSyncUtil, pkName: String)
+    func superAppSyncUtilDidPkAccept(util: SuperAppSyncUtil, userIdPK: String)
     func superAppSyncUtilDidPkCancle(util: SuperAppSyncUtil)
     func superAppSyncUtilDidSceneClose(util: SuperAppSyncUtil)
 }
@@ -17,7 +17,7 @@ protocol SuperAppSyncUtilDelegate: NSObjectProtocol {
 class SuperAppSyncUtil {
     private let appId: String
     /// 场景所在的默认房间id
-    private let defaultScenelId: String
+    private let defaultScenelId = "PKByCDN"
     /// 房间id
     private let sceneId: String
     /// 房间名称 用于显示
@@ -27,19 +27,18 @@ class SuperAppSyncUtil {
     private var sceneRef: SceneReference!
     private var manager: AgoraSyncManager!
     private var currentMemberId: String!
+    fileprivate var lastUserIdPKValue = ""
     let queue = DispatchQueue(label: "queue.SuperAppSyncUtil")
     
-    typealias CompltedBlock = (Error?) -> ()
+    typealias CompltedBlock = (LocalizedError?) -> ()
     weak var delegate: SuperAppSyncUtilDelegate?
     
     init(appId: String,
-         defaultScenelId: String,
          sceneId: String,
          sceneName: String,
          userId: String,
          userName: String) {
         self.appId = appId
-        self.defaultScenelId = defaultScenelId
         self.sceneId = sceneId
         self.sceneName = sceneName
         self.userId = userId
@@ -53,7 +52,8 @@ class SuperAppSyncUtil {
                 try self?.addMember()
                 complted?(nil)
             } catch let error {
-                complted?(error)
+                let e = error as! LocalizedError
+                complted?(e)
             }
         }
     }
@@ -68,7 +68,8 @@ class SuperAppSyncUtil {
                 try self?.addMember()
                 complted?(nil)
             } catch let error {
-                complted?(error)
+                let e = error as! LocalizedError
+                complted?(e)
             }
         }
     }
@@ -81,7 +82,7 @@ class SuperAppSyncUtil {
         let config = AgoraSyncManager.RtmConfig(appId: appId, channelName: defaultScenelId)
         manager = AgoraSyncManager(config: config, complete: { code in
             let msg = "AgoraSyncManager init fail \(code)"
-            LogUtils.logError(message: msg, tag: .currentTag)
+            LogUtils.logError(message: msg, tag: .defaultLogTag)
             semp.signal()
         })
         semp.wait()
@@ -92,13 +93,13 @@ class SuperAppSyncUtil {
                           property: ["roomName" : sceneName])
         sceneRef = manager.joinScene(scene: scene,
                                      success: { _ in
-            LogUtils.logInfo(message: "joinScene success", tag: .currentTag)
+            LogUtils.logInfo(message: "joinScene success", tag: .defaultLogTag)
             semp.signal()
         }, fail:  { e in
             error = e
             semp.signal()
             let msg = "joinScene fail \(e.description)"
-            LogUtils.logError(message: msg, tag: .currentTag)
+            LogUtils.logError(message: msg, tag: .defaultLogTag)
         })
         semp.wait()
         
@@ -121,11 +122,11 @@ class SuperAppSyncUtil {
         
         sceneRef.update(data: property) { _ in
             LogUtils.logInfo(message: "addRoomInfo success",
-                             tag: .currentTag)
+                             tag: .defaultLogTag)
             semp.signal()
         } fail: { (e) in
             let msg = "addRoomInfo fail: \(e.errorDescription ?? "")"
-            LogUtils.logError(message: msg, tag: .currentTag)
+            LogUtils.logError(message: msg, tag: .defaultLogTag)
             error = e
             semp.signal()
         }
@@ -146,13 +147,13 @@ class SuperAppSyncUtil {
         var error: SyncError?
         sceneRef.collection(className: "member")
             .add(data: userInfo.dict) { [weak self](obj) in
-                LogUtils.logInfo(message: "addMember success", tag: .currentTag)
+                LogUtils.logInfo(message: "addMember success", tag: .defaultLogTag)
                 let id = obj.getId()
                 self?.currentMemberId = id
                 semp.signal()
             } fail: { (e) in
                 let msg = "addMember fail: \(e.errorDescription ?? "")"
-                LogUtils.logError(message: msg, tag: .currentTag)
+                LogUtils.logError(message: msg, tag: .defaultLogTag)
                 error = e
                 semp.signal()
             }
@@ -167,33 +168,58 @@ class SuperAppSyncUtil {
                            onDeleted: onPkInfoDeleted(object:),
                            fail: { error in
             let msg = "subscribePKInfo fail: \(error.errorDescription ?? "")"
-            LogUtils.logError(message: msg, tag: .currentTag)
+            LogUtils.logError(message: msg, tag: .defaultLogTag)
         })
+    }
+    
+    func unsubscribePKInfo() {
+        sceneRef.unsubscribe()
     }
     
     func updatePKInfo(userIdPK: String) {
         sceneRef.update(data: ["userIdPK" : userIdPK]) { obj in
-            LogUtils.logInfo(message: "updatePKInfo success)", tag: .currentTag)
+            LogUtils.logInfo(message: "updatePKInfo success)", tag: .defaultLogTag)
         } fail: { error in
             let msg = "updatePKInfo fail: \(error.errorDescription ?? "")"
-            LogUtils.logError(message: msg, tag: .currentTag)
+            LogUtils.logError(message: msg, tag: .defaultLogTag)
         }
     }
     
     func resetPKInfo() {
         sceneRef.update(data: ["userIdPK" : ""]) { _ in
-            LogUtils.logInfo(message: "resetPKInfo success)", tag: .currentTag)
+            LogUtils.logInfo(message: "resetPKInfo success)", tag: .defaultLogTag)
         } fail: { error in
             let msg = "resetPKInfo fail: \(error.errorDescription ?? "")"
-            LogUtils.logError(message: msg, tag: .currentTag)
+            LogUtils.logError(message: msg, tag: .defaultLogTag)
         }
+    }
+    
+    func leaveByAudience() {
+        if let id = currentMemberId {
+            sceneRef.collection(className: "member")
+                .document(id: id)
+                .delete(success: nil, fail: nil)
+        }
+        resetPKInfo()
     }
 }
 
 extension SuperAppSyncUtil {
     func onPkInfoUpdated(object: IObject) {
         if let userIdPK = object.getPropertyWith(key: "userIdPK", type: String.self) as? String {
-            userIdPK.count > 0 ? invokeDidPkAccept(pkName: userIdPK) : invokeDidPkCancle()
+            if userIdPK.count > 0 {
+                guard lastUserIdPKValue != userId else { /** filter same **/
+                    return
+                }
+                if userIdPK == userId { /** invite me **/
+                    lastUserIdPKValue = userId
+                    invokeDidPkAccept(userIdPK: userIdPK)
+                }
+            }
+            else {
+                lastUserIdPKValue = userId
+                invokeDidPkCancle()
+            }
         }
     }
     
@@ -205,15 +231,15 @@ extension SuperAppSyncUtil {
 }
 
 extension SuperAppSyncUtil {
-    func invokeDidPkAccept(pkName: String) {
+    func invokeDidPkAccept(userIdPK: String) {
         if Thread.isMainThread {
-            delegate?.superAppSyncUtilDidPkAccept(util: self, pkName: pkName)
+            delegate?.superAppSyncUtilDidPkAccept(util: self, userIdPK: userIdPK)
             return
         }
         
         DispatchQueue.main.async { [weak self] in
             guard let `self` = self else { return }
-            self.delegate?.superAppSyncUtilDidPkAccept(util: self, pkName: pkName)
+            self.delegate?.superAppSyncUtilDidPkAccept(util: self, userIdPK: userIdPK)
         }
     }
     
@@ -243,7 +269,7 @@ extension SuperAppSyncUtil {
 }
 
 extension String {
-    fileprivate static var currentTag: String {
+    fileprivate static var defaultLogTag: String {
         return "SuperAppSyncUtil"
     }
 }

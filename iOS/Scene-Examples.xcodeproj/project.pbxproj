@@ -52,6 +52,10 @@
 		265F4F8B2779DEA2009A096B /* MainView+RemoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F5D2779DEA1009A096B /* MainView+RemoteView.swift */; };
 		265F4F8C2779DEA2009A096B /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F5E2779DEA1009A096B /* MainView.swift */; };
 		269E9C9E277B07D700EF02B8 /* SuperAppSyncUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269E9C9D277B07D700EF02B8 /* SuperAppSyncUtil.swift */; };
+		269E9CA0277B250500EF02B8 /* SuperAppAudienceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269E9C9F277B250500EF02B8 /* SuperAppAudienceViewController.swift */; };
+		269E9CA2277B27DE00EF02B8 /* SuperAppAudienceViewController+RTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269E9CA1277B27DE00EF02B8 /* SuperAppAudienceViewController+RTC.swift */; };
+		269E9CA4277B3AE000EF02B8 /* SuperAppHostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269E9CA3277B3AE000EF02B8 /* SuperAppHostViewController.swift */; };
+		269E9CA6277B3C4F00EF02B8 /* SuperAppHostViewController+RTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 269E9CA5277B3C4F00EF02B8 /* SuperAppHostViewController+RTC.swift */; };
 		9BBBCEFD3169C583A481C92C /* Pods_Agora_ScreenShare_Extension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6A12BD14C6C12D3D9AB21A6 /* Pods_Agora_ScreenShare_Extension.framework */; };
 		B5DF969B7ED11BACA57C6864 /* Pods_Scene_Examples.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AED837A3EC68965AC33FE2E6 /* Pods_Scene_Examples.framework */; };
 		E79BEF31273D0EA4009FA838 /* LivePlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79BEF30273D0EA4009FA838 /* LivePlayerController.swift */; };
@@ -186,6 +190,10 @@
 		265F4F5D2779DEA1009A096B /* MainView+RemoteView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainView+RemoteView.swift"; sourceTree = "<group>"; };
 		265F4F5E2779DEA1009A096B /* MainView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		269E9C9D277B07D700EF02B8 /* SuperAppSyncUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperAppSyncUtil.swift; sourceTree = "<group>"; };
+		269E9C9F277B250500EF02B8 /* SuperAppAudienceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperAppAudienceViewController.swift; sourceTree = "<group>"; };
+		269E9CA1277B27DE00EF02B8 /* SuperAppAudienceViewController+RTC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SuperAppAudienceViewController+RTC.swift"; sourceTree = "<group>"; };
+		269E9CA3277B3AE000EF02B8 /* SuperAppHostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperAppHostViewController.swift; sourceTree = "<group>"; };
+		269E9CA5277B3C4F00EF02B8 /* SuperAppHostViewController+RTC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SuperAppHostViewController+RTC.swift"; sourceTree = "<group>"; };
 		4C1A8B8E636109C2F8647D68 /* Pods-Agora-ScreenShare-Extension(Socket).debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Agora-ScreenShare-Extension(Socket).debug.xcconfig"; path = "Target Support Files/Pods-Agora-ScreenShare-Extension(Socket)/Pods-Agora-ScreenShare-Extension(Socket).debug.xcconfig"; sourceTree = "<group>"; };
 		4EAC22A0ABCEA5BE7ED7FCFA /* Pods-Agora-ScreenShare-Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Agora-ScreenShare-Extension.release.xcconfig"; path = "Target Support Files/Pods-Agora-ScreenShare-Extension/Pods-Agora-ScreenShare-Extension.release.xcconfig"; sourceTree = "<group>"; };
 		A6A12BD14C6C12D3D9AB21A6 /* Pods_Agora_ScreenShare_Extension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Agora_ScreenShare_Extension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -351,6 +359,10 @@
 				265F4F4C2779DEA1009A096B /* CreateLiveVC.swift */,
 				265F4F4D2779DEA1009A096B /* InvitationVC.swift */,
 				265F4F4E2779DEA1009A096B /* MainVC.swift */,
+				269E9C9F277B250500EF02B8 /* SuperAppAudienceViewController.swift */,
+				269E9CA1277B27DE00EF02B8 /* SuperAppAudienceViewController+RTC.swift */,
+				269E9CA3277B3AE000EF02B8 /* SuperAppHostViewController.swift */,
+				269E9CA5277B3C4F00EF02B8 /* SuperAppHostViewController+RTC.swift */,
 			);
 			path = VC;
 			sourceTree = "<group>";
@@ -849,6 +861,7 @@
 			files = (
 				E79BEF60273E72F7009FA838 /* LiveGiftDelegate.swift in Sources */,
 				265F4F712779DEA2009A096B /* MainVMAudience+Info.swift in Sources */,
+				269E9CA2277B27DE00EF02B8 /* SuperAppAudienceViewController+RTC.swift in Sources */,
 				E79BEF37273D15D6009FA838 /* Screen.swift in Sources */,
 				E79C2616273B6BEC00909CD4 /* BaseTableViewLayout.swift in Sources */,
 				E79C2611273B689B00909CD4 /* SyncUtil.swift in Sources */,
@@ -860,6 +873,7 @@
 				E79C264E273D062400909CD4 /* LiveRoomListCell.swift in Sources */,
 				E79C264A273D003B00909CD4 /* LiveRoomInfo.swift in Sources */,
 				265F4F742779DEA2009A096B /* MainVMHost+Invoke.swift in Sources */,
+				269E9CA4277B3AE000EF02B8 /* SuperAppHostViewController.swift in Sources */,
 				265F4F6A2779DEA2009A096B /* MainVMHost+Handle.swift in Sources */,
 				E79C2610273B689B00909CD4 /* KeyCenter.swift in Sources */,
 				265F4F802779DEA2009A096B /* RoomItem.swift in Sources */,
@@ -884,6 +898,7 @@
 				E79C261C273B712000909CD4 /* BaseViewController.swift in Sources */,
 				E79BEF752744FD8B009FA838 /* GCDTimer.swift in Sources */,
 				265F4F852779DEA2009A096B /* ToolView.swift in Sources */,
+				269E9CA0277B250500EF02B8 /* SuperAppAudienceViewController.swift in Sources */,
 				E79BEF33273D0F0C009FA838 /* LiveCanvasModel.swift in Sources */,
 				E79C25E3273B67DB00909CD4 /* MainViewController.swift in Sources */,
 				265F4F862779DEA2009A096B /* InvitationView.swift in Sources */,
@@ -900,6 +915,7 @@
 				E79C2638273BC8DF00909CD4 /* MainModel.swift in Sources */,
 				265F4F6E2779DEA2009A096B /* MainVMAudience+Invoke.swift in Sources */,
 				E79C2613273B689B00909CD4 /* UIColor+Extension.swift in Sources */,
+				269E9CA6277B3C4F00EF02B8 /* SuperAppHostViewController+RTC.swift in Sources */,
 				265F4F732779DEA2009A096B /* MainVMAudience+Handle.swift in Sources */,
 				E79BEF35273D1304009FA838 /* LivePlayerCell.swift in Sources */,
 				265F4F8B2779DEA2009A096B /* MainView+RemoteView.swift in Sources */,

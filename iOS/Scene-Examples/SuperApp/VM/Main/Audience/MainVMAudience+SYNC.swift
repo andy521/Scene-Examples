@@ -81,6 +81,10 @@ extension MainVMAudience {
         })
     }
     
+    func unsubscibePKInfo() {
+        sceneRef.unsubscribe()
+    }
+    
     func resetPKInfo() {
         sceneRef.update(data: ["userIdPK" : ""]) { _ in
             Log.info(text: "updatePK success)",
