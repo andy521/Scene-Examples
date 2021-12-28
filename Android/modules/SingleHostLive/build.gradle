@@ -21,10 +21,12 @@ def safeExtGetDependence(key, fallback){
 android {
     compileSdkVersion safeExtGetVersion('android', 'compileSdkVersion', 30)
     buildToolsVersion safeExtGetVersion('android', 'buildToolsVersion', '30.0.3')
+    resourcePrefix "single_host_live_"
+
 
     defaultConfig {
         if (isModule.toBoolean()) {
-            applicationId "io.agora.sample.live"
+            applicationId "io.agora.sample.singlehostlive"
         }
         minSdkVersion safeExtGetVersion('android', 'minSdkVersion', 21)
         targetSdkVersion safeExtGetVersion('android', 'targetSdkVersion', 30)

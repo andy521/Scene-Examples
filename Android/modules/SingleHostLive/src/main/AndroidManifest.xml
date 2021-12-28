@@ -20,7 +20,7 @@
         android:requestLegacyExternalStorage="true"
         android:screenOrientation="portrait"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
+        android:theme="@style/SingleHostLiveAppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <meta-data
             android:name="android.max_aspect"
@@ -35,10 +35,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name="io.agora.sample.singlehostlive.UserProfileActivity"
-            android:launchMode="singleTop"/>
 
         <activity
             android:name="io.agora.sample.singlehostlive.PreviewActivity"
