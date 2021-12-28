@@ -95,17 +95,30 @@ enum LogLevel {
 }
 
 struct LogItem {
-    var message:String
-    var level:LogLevel
-    var dateTime:Date
+    var message: String
+    var level: LogLevel
+    var dateTime: Date
+    let tag: String?
+    
+    var description: String {
+        let timeStr = "\(dateTime.getFormattedDate(format: "yyyy-MM-dd HH:mm:ss")))"
+        let levelStr = " [\(level.description)]"
+        let tagStr = tag != nil ? "[\(tag!)]" : ""
+        return timeStr + levelStr + tagStr + message + "\n"
+    }
 }
 
 class LogUtils {
     static var logs:[LogItem] = []
     static var appLogPath:String = "\(logFolder())/app-\(Date().getFormattedDate(format: "yyyy-MM-dd")).log"
     
-    static func log(message: String, level: LogLevel) {
-        LogUtils.logs.append(LogItem(message: message, level: level, dateTime: Date()))
+    static func log(message: String,
+                    level: LogLevel,
+                    tag: String? = nil) {
+        
+        let item = LogItem(message: message, level: level, dateTime: Date(), tag: tag)
+        
+        LogUtils.logs.append(item)
         print("\(level.description): \(message)")
     }
     
@@ -127,7 +140,7 @@ class LogUtils {
         if let outputStream = OutputStream(url: URL(fileURLWithPath: LogUtils.appLogPath), append: true) {
             outputStream.open()
             for log in LogUtils.logs {
-                let msg = "\(log.level.description) \(log.dateTime.getFormattedDate(format: "yyyy-MM-dd HH:mm:ss")) \(log.message)\n"
+                let msg = log.description
                 let bytesWritten = outputStream.write(msg)
                 if bytesWritten < 0 { print("write failure") }
             }
@@ -140,5 +153,28 @@ class LogUtils {
     
     static func cleanUp() {
         try? FileManager.default.removeItem(at: URL(fileURLWithPath: LogUtils.logFolder(), isDirectory: true))
+    }
+}
+
+extension LogUtils {
+    static func logInfo(message: String,
+                        tag: String? = nil) {
+        LogUtils.log(message: message,
+                     level: .info,
+                     tag: tag)
+    }
+    
+    static func logError(message: String,
+                         tag: String? = nil) {
+        LogUtils.log(message: message,
+                     level: .error,
+                     tag: tag)
+    }
+    
+    static func logWarning(message: String,
+                         tag: String? = nil) {
+        LogUtils.log(message: message,
+                     level: .warning,
+                     tag: tag)
     }
 }

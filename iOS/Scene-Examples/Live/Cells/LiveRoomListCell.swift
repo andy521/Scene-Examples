@@ -45,10 +45,6 @@ class LiveRoomListCell: UICollectionViewCell {
     }
     
     func setRoomInfo(info: Any?) {
-        if let info = info as? BORLiveModel {
-            titleLabel.text = info.id
-            bgImageView.image = UIImage(named: info.backgroundId)
-        }
         if let info = info as? LiveRoomInfo {
             titleLabel.text = info.roomName
             bgImageView.image = UIImage(named: info.backgroundId)

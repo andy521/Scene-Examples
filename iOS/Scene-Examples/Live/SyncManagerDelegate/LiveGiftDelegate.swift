@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AgoraSyncManager
 
 enum PKLiveType {
     /// 自己
@@ -15,7 +16,7 @@ enum PKLiveType {
 }
 /// 收到礼物回调
 var LiveReceivedGiftClosure: ((LiveGiftModel, PKLiveType) -> Void)?
-class LiveGiftDelegate: ISyncManagerEventDelegate {
+class LiveGiftDelegate {
     private var vc: LivePlayerController
     private var type: PKLiveType
     init(vc: LivePlayerController, type: PKLiveType) {

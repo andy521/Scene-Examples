@@ -10,17 +10,10 @@ import UIKit
 enum SceneType: String {
     /// 单直播
     case singleLive = "SignleLive"
-    /// 超级小班课
-    case breakoutRoom = "BreakOutRoom"
-    /// 游戏
-    case game = "interactiveGame"
-    /// PKApply
-    case pkApply = "PKApplyInfo"
+    case superApp = "superApp"
     
     var alertTitle: String {
         switch self {
-        case .game: return "PK_Recieved_Game_Invite".localized
-        case .pkApply: return "PK_Recieved_Invite".localized
         default: return ""
         }
     }
@@ -42,24 +35,10 @@ struct MainModel {
         dataArray.append(model)
         
         model = MainModel()
-        model.title = "PK直播"
-        model.desc = "两个不同直播间的主播跨频道连麦PK, 引爆直播间"
-        model.imageNmae = "pic-PK"
-        model.sceneType = .pkApply
-        dataArray.append(model)
-        
-        model = MainModel()
-        model.title = "超级小班课"
-        model.desc = "多人会议, 可建立小会议室讨论"
+        model.title = "Super App"
+        model.desc = "融合CDN"
         model.imageNmae = "pic-multiple"
-        model.sceneType = .breakoutRoom
-        dataArray.append(model)
-        
-        model = MainModel()
-        model.title = "游戏直播"
-        model.desc = "你画我猜"
-        model.imageNmae = "pic-Virtual"
-        model.sceneType = .game
+        model.sceneType = .superApp
         dataArray.append(model)
         
         return dataArray

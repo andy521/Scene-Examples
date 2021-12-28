@@ -8,8 +8,12 @@ target 'Scene-Examples' do
   
   pod 'AgoraRtm_iOS', '~> 1.4.8'
   pod 'MBProgressHUD', '~> 1.2.0'
-  pod 'AgoraRtcEngine_iOS_Preview', '4.0.0.preview.3'
+  pod 'AgoraRtcEngine_Special_iOS', '3.6.200.202'
   pod 'AgoraScreenShare', :path => 'sdk'
+  pod 'AgoraSyncManager', :path => '~/Agora/SyncManager-iOS/AgoraSyncManager/AgoraSyncManagerLocal.podspec'
+  pod 'Presentr'
+  pod 'Toast-Swift'
+  pod 'AgoraLog'
   # Pods for Scene-Examples
 
 end
