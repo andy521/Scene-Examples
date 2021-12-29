@@ -84,13 +84,19 @@ extension EntryVC: EntryViewDelegate, EntryVMDelegate {
         guard let roomInfo = vm.getRoomInfo(index: index) else {
             return
         }
+        /// 作为观众进入
         let roomId = roomInfo.id
         let roomName = roomInfo.roomName
-        let config = MainVMAudience.Config(appId: appId,
-                                           roomName: roomName,
-                                           roomId: roomId)
-        let vc = MainVC(config: config,
-                        syncManager: vm.syncManager)
+//        let config = MainVMAudience.Config(appId: appId,
+//                                           roomName: roomName,
+//                                           roomId: roomId)
+//        let vc = MainVC(config: config,
+//                        syncManager: vm.syncManager)
+        
+        let config = SuperAppAudienceViewController.Config(appId: appId,
+                                                           sceneName: roomName,
+                                                           sceneId: roomId)
+        let vc = SuperAppAudienceViewController(config: config)
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true, completion: nil)
     }
@@ -113,16 +119,25 @@ extension EntryVC: CreateLiveVCDelegate {
     func createLiveVC(_ vc: CreateLiveVC,
                       didSart roomName: String,
                       sellectedType: CreateLiveVC.SelectedType) {
+        /// 作为主播进入
         let createTime = Double(Int(Date().timeIntervalSince1970 * 1000) )
         let roomId = "\(Int(createTime))"
-        let mode: MainVMHost.Mode = sellectedType == .value1 ? .push : .byPassPush
-        let config = MainVMHost.Config(appId: appId,
-                                       roomName: roomName,
-                                       roomId: roomId,
-                                       createdTime: createTime,
-                                       mode: mode)
-        let vc = MainVC(config: config,
-                        syncManager: vm.syncManager)
+        let mode: SuperAppHostViewController.Mode = sellectedType == .value1 ? .push : .byPassPush
+//        let config = MainVMHost.Config(appId: appId,
+//                                       roomName: roomName,
+//                                       roomId: roomId,
+//                                       createdTime: createTime,
+//                                       mode: mode)
+//        let vc = MainVC(config: config,
+//                        syncManager: vm.syncManager)
+        
+        let config = SuperAppHostViewController.Config(appId: appId,
+                                          sceneName: roomName,
+                                          sceneId: roomId,
+                                          createdTime: createTime,
+                                          mode: mode)
+        let vc = SuperAppHostViewController(config: config)
+        
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true, completion: nil)
     }

@@ -21,9 +21,11 @@ class SuperAppAudienceViewController: UIViewController {
     let defaultLogTag = "AudienceVC"
     
     public init(config: Config) {
+        super.init(nibName: nil, bundle: nil)
         self.config = config
         self.pushUrlString = "rtmp://examplepush.agoramdn.com/live/" + config.sceneId
         self.pullUrlString = "http://examplepull.agoramdn.com/live/\(config.sceneId).flv"
+        
         let userId = StorageManager.uuid
         let userName = StorageManager.userName
         self.syncUtil = SuperAppSyncUtil(appId: config.appId,
@@ -31,44 +33,46 @@ class SuperAppAudienceViewController: UIViewController {
                                          sceneName: config.sceneName,
                                          userId: userId,
                                          userName: userName)
-        mainView.setPersonViewHidden(hidden: true)
-        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        LogUtils.logInfo(message: "deinit", tag: defaultLogTag)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        
         syncUtil.delegate = self
         syncUtil.joinByAudience(complted: joinCompleted(error:))
-        syncUtil.subscribePKInfo()
+        
         /// default mode is pull
         initMediaPlayer()
     }
     
     private func setupUI() {
+        mainView.setPersonViewHidden(hidden: true)
         view.addSubview(mainView)
         mainView.frame = view.bounds
         mainView.delegate = self
-    }
-    
-    func startRenderRemoteView() {
-        mainView.setRemoteViewHidden(hidden: false)
-    }
-    
-    func stopRenderRemoteView() {
-        mainView.setRemoteViewHidden(hidden: true)
+        let imageName = StorageManager.uuid.headImageName
+        let info = MainView.Info(title: config.sceneName + "(\(config.sceneId))",
+                                 imageName: imageName,
+                                 userCount: 0)
+        mainView.update(info: info)
     }
     
     func changeToRtc() { /** 切换rtc模式 **/
         LogUtils.logInfo(message: "切换到rtc模式", tag: defaultLogTag)
-        mode = .rtc
         mediaPlayer.stop()
         agoraKit.destroyMediaPlayer(mediaPlayer)
         mediaPlayer = nil
+        
+        mode = .rtc
         joinRtc()
     }
     
@@ -77,22 +81,21 @@ class SuperAppAudienceViewController: UIViewController {
         mode = .pull
         leaveRtc()
         initMediaPlayer()
-        stopRenderRemoteView()
+        mainView.setRemoteViewHidden(hidden: true)
     }
     
     func showCloseAlert() {
         let vc = UIAlertController(title: "提示", message: "房间已关闭", preferredStyle: .alert)
         vc.addAction(.init(title: "确定", style: .default, handler: { [unowned self](_) in
-            self.close()
+            self.destroy()
             self.dismiss(animated: true, completion: nil)
         }))
         present(vc, animated: true, completion: nil)
     }
     
-    private func close() {
-        syncUtil.unsubscribePKInfo()
+    private func destroy() {
         syncUtil.leaveByAudience()
-        closeRtc()
+        destroyRtc()
     }
     
     private func joinCompleted(error: LocalizedError?) {
@@ -101,6 +104,7 @@ class SuperAppAudienceViewController: UIViewController {
             LogUtils.logInfo(message: msg, tag: defaultLogTag)
             return
         }
+        syncUtil.subscribePKInfo()
         LogUtils.logInfo(message: "joinByAudience success", tag: defaultLogTag)
     }
 }
@@ -127,7 +131,7 @@ extension SuperAppAudienceViewController: MainViewDelegate {
     func mainView(_ view: MainView, didTap action: MainView.Action) {
         switch action {
         case .close:
-            close()
+            destroy()
             dismiss(animated: true, completion: nil)
             return
         case .closeRemote:

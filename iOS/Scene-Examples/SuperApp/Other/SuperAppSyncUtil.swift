@@ -31,6 +31,8 @@ class SuperAppSyncUtil {
     let queue = DispatchQueue(label: "queue.SuperAppSyncUtil")
     
     typealias CompltedBlock = (LocalizedError?) -> ()
+    typealias SuccessBlockStrings = ([String]) -> ()
+    typealias FailBlockLocalizedError = (LocalizedError) -> ()
     weak var delegate: SuperAppSyncUtilDelegate?
     
     init(appId: String,
@@ -163,6 +165,15 @@ class SuperAppSyncUtil {
         }
     }
     
+    func getMembers(success: @escaping SuccessBlockStrings,
+                    fail: FailBlockLocalizedError?) {
+        sceneRef.collection(className: "member")
+            .get(success: { objs in
+                let members = objs.compactMap({ $0.toJson() })
+                success(members)
+            }, fail: fail)
+    }
+    
     func subscribePKInfo() {
         sceneRef.subscribe(onUpdated: onPkInfoUpdated(object:),
                            onDeleted: onPkInfoDeleted(object:),
@@ -195,6 +206,18 @@ class SuperAppSyncUtil {
     }
     
     func leaveByAudience() {
+        unsubscribePKInfo()
+        if let id = currentMemberId {
+            sceneRef.collection(className: "member")
+                .document(id: id)
+                .delete(success: nil, fail: nil)
+        }
+        resetPKInfo()
+    }
+    
+    func leaveByHost() {
+        unsubscribePKInfo()
+        sceneRef.delete(success: nil, fail: nil)
         if let id = currentMemberId {
             sceneRef.collection(className: "member")
                 .document(id: id)
@@ -217,7 +240,7 @@ extension SuperAppSyncUtil {
                 }
             }
             else {
-                lastUserIdPKValue = userId
+                lastUserIdPKValue = userIdPK
                 invokeDidPkCancle()
             }
         }

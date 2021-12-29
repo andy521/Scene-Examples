@@ -9,7 +9,6 @@ import UIKit
 import AgoraRtcKit
 
 class SuperAppHostViewController: UIViewController {
-
     let mainView = MainView()
     var syncUtil: SuperAppSyncUtil!
     var pushUrlString: String!
@@ -19,6 +18,7 @@ class SuperAppHostViewController: UIViewController {
     let liveTranscoding = AgoraLiveTranscoding.default()
     /// log tag
     let defaultLogTag = "HostVC"
+    var audioIsMute = false
 
     public init(config: Config) {
         self.config = config
@@ -31,7 +31,6 @@ class SuperAppHostViewController: UIViewController {
                                          sceneName: config.sceneName,
                                          userId: userId,
                                          userName: userName)
-        mainView.setPersonViewHidden(hidden: true)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -42,28 +41,26 @@ class SuperAppHostViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        
         syncUtil.delegate = self
         syncUtil.joinByHost(createTime: config.createdTime,
                             liveMode: config.mode.rawValue,
                             complted: joinCompleted(error:))
-        syncUtil.subscribePKInfo()
         
-        /// default mode is push
-        joinRtcByPush()
+        config.mode == .push ? joinRtcByPush() : joinRtcByPassPush()
     }
     
     private func setupUI() {
+        mainView.setPersonViewHidden(hidden: false)
         view.addSubview(mainView)
         mainView.frame = view.bounds
         mainView.delegate = self
-    }
-    
-    func startRenderRemoteView() {
-        mainView.setRemoteViewHidden(hidden: false)
-    }
-    
-    func stopRenderRemoteView() {
-        mainView.setRemoteViewHidden(hidden: true)
+        mainView.setPersonViewHidden(hidden: false)
+        let imageName = StorageManager.uuid.headImageName
+        let info = MainView.Info(title: config.sceneName + "(\(config.sceneId))",
+                                 imageName: imageName,
+                                 userCount: 0)
+        mainView.update(info: info)
     }
 
     private func changeToByPassPush() {
@@ -76,7 +73,17 @@ class SuperAppHostViewController: UIViewController {
     private func changeToPush() {
         mode = .push
         leaveRtcByPassPush()
-        stopRenderRemoteView()
+        mainView.setRemoteViewHidden(hidden: true)
+    }
+    
+    /// `true` is mute
+    func getLocalAudioMuteState() -> Bool {
+        return audioIsMute
+    }
+    
+    private func destroy() {
+        syncUtil.leaveByHost()
+        destroyRtc()
     }
     
     private func joinCompleted(error: LocalizedError?) {
@@ -85,29 +92,63 @@ class SuperAppHostViewController: UIViewController {
             LogUtils.logInfo(message: msg, tag: defaultLogTag)
             return
         }
+        syncUtil.subscribePKInfo()
         LogUtils.logInfo(message: "joinByAudience success", tag: defaultLogTag)
     }
 }
 
 // MRK: - SuperAppSyncUtilDelegate
 extension SuperAppHostViewController: SuperAppSyncUtilDelegate {
-    func superAppSyncUtilDidPkAccept(util: SuperAppSyncUtil, userIdPK: String) { /** userIdPK, no an empty string **/
-        LogUtils.logInfo(message: "收到上麦申请", tag: defaultLogTag)
-        
-    }
+    func superAppSyncUtilDidPkAccept(util: SuperAppSyncUtil, userIdPK: String) {}
+    func superAppSyncUtilDidSceneClose(util: SuperAppSyncUtil) {}
     
     func superAppSyncUtilDidPkCancle(util: SuperAppSyncUtil) { /** userIdPK, an empty string **/
         LogUtils.logInfo(message: "下麦", tag: defaultLogTag)
-        
+        changeToPush()
     }
-    
-    func superAppSyncUtilDidSceneClose(util: SuperAppSyncUtil) { }
 }
 
 // MARK: - UI Event MainViewDelegate
 extension SuperAppHostViewController: MainViewDelegate {
     func mainView(_ view: MainView, didTap action: MainView.Action) {
-        
+        switch action {
+        case .member:
+            let vc = InvitationVC(syncUtil: syncUtil)
+            vc.delegate = self
+            vc.show(in: self)
+            return
+        case .more:
+            let vc = ToolVC()
+            let open = getLocalAudioMuteState()
+            vc.setMicState(open: open)
+            vc.delegate = self
+            vc.show(in: self)
+            return
+        case .close:
+            destroy()
+            dismiss(animated: true, completion: nil)
+            return
+        case .closeRemote:
+            syncUtil.resetPKInfo()
+            return
+        }
+    }
+}
+
+extension SuperAppHostViewController: ToolVCDelegate, InvitationVCDelegate {
+    func toolVC(_ vc: ToolVC, didTap action: ToolVC.Action) {
+        switch action {
+        case .camera:
+            switchCamera()
+        case .mic:
+            audioIsMute = !audioIsMute
+            muteLocalAudio(mute: audioIsMute)
+        }
+    }
+    
+    func invitationVC(_ vc: InvitationVC, didInvited user: SuperAppUserInfo) {
+        changeToByPassPush()
+        syncUtil.updatePKInfo(userIdPK: user.userId)
     }
 }
 

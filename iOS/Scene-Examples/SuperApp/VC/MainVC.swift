@@ -56,9 +56,9 @@ extension MainVC: MainViewDelegate {
     func mainView(_ view: MainView, didTap action: MainView.Action) {
         switch action {
         case .member:
-            let vc = InvitationVC(sceneRef: vm.getSceneRef())
-            vc.delegate = self
-            vc.show(in: self)
+//            let vc = InvitationVC(sceneRef: vm.getSceneRef())
+//            vc.delegate = self
+//            vc.show(in: self)
             return
         case .more:
             let vc = ToolVC()

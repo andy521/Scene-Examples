@@ -20,8 +20,8 @@ class InvitationVC: UIViewController {
     private var vm: InvitationVM!
     weak var delegate: InvitationVCDelegate?
     
-    init(sceneRef: SceneReference) {
-        vm = InvitationVM(sceneRef: sceneRef)
+    init(syncUtil: SuperAppSyncUtil) {
+        vm = InvitationVM(syncUtil: syncUtil)
         super.init(nibName: nil, bundle: nil)
     }
     

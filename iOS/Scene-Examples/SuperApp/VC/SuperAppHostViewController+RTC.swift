@@ -11,7 +11,7 @@ extension SuperAppHostViewController {
     var videoSize: CGSize { .init(width: 640, height: 360) }
     
     func joinRtcByPassPush() { /** 旁推方式加入 **/
-        Log.info(text: "旁推方式加入", tag: "MainVMHost")
+        LogUtils.logInfo(message: "旁推方式加入", tag: defaultLogTag)
         
         let channelId = self.config.sceneId
         
@@ -20,10 +20,8 @@ extension SuperAppHostViewController {
         
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: config,
                                                   delegate: self)
-        agoraKit.enableVideo()
         agoraKit.setChannelProfile(.liveBroadcasting)
         agoraKit.setClientRole(.broadcaster)
-        agoraKit.setDefaultAudioRouteToSpeakerphone(true)
         
         let videoConfig = AgoraVideoEncoderConfiguration(size: videoSize,
                                                          frameRate: .fps15,
@@ -31,8 +29,11 @@ extension SuperAppHostViewController {
                                                          orientationMode: .fixedPortrait,
                                                          mirrorMode: .auto)
         agoraKit.setVideoEncoderConfiguration(videoConfig)
-
+        agoraKit.enableVideo()
+        setupLocalVideo(view: mainView.renderViewLocal)
         
+        agoraKit.setDefaultAudioRouteToSpeakerphone(true)
+
         let ret = agoraKit.joinChannel(byToken: nil,
                                        channelId: channelId,
                                        info: nil,
@@ -41,10 +42,8 @@ extension SuperAppHostViewController {
         
         if ret != 0 {
             Log.errorText(text: "joinRtcByPush error \(ret)",
-                          tag: "MainVM")
-            return
+                          tag: defaultLogTag)
         }
-        subscribeVideoLocal(view: mainView.renderViewLocal)
     }
     
     func leaveRtcByPassPush() { /** 离开旁推方式 **/
@@ -52,43 +51,49 @@ extension SuperAppHostViewController {
     }
     
     func joinRtcByPush() { /** 直推方式加入 **/
-        Log.info(text: "直推方式加入", tag: "MainVMHost")
+        LogUtils.logInfo(message: "直推方式加入", tag: defaultLogTag)
+        
         let config = AgoraRtcEngineConfig()
         config.appId = config.appId
+        
+        agoraKit = AgoraRtcEngineKit.sharedEngine(with: config,
+                                                  delegate: self)
+        agoraKit.setChannelProfile(.liveBroadcasting)
+        agoraKit.setClientRole(.broadcaster)
         
         let videoConfig = AgoraVideoEncoderConfiguration(size: videoSize,
                                                          frameRate: .fps15,
                                                          bitrate: 700,
                                                          orientationMode: .fixedPortrait,
                                                          mirrorMode: .disabled)
-        
-        agoraKit = AgoraRtcEngineKit.sharedEngine(with: config,
-                                                  delegate: self)
-        
-        agoraKit.enableVideo()
-        agoraKit.enableAudio()
-        agoraKit.setChannelProfile(.liveBroadcasting)
-        agoraKit.setClientRole(.broadcaster)
-        agoraKit.setDirectCdnStreamingAudioProfile(.default)
-        agoraKit.setDefaultAudioRouteToSpeakerphone(true)
         agoraKit.setVideoEncoderConfiguration(videoConfig)
+        agoraKit.enableVideo()
+        setupLocalVideo(view: mainView.renderViewLocal)
+        
+        agoraKit.setDirectCdnStreamingAudioProfile(.default)
         agoraKit.setDirectCdnStreamingVideoConfiguration(videoConfig)
-        agoraKit.startPreview()
         let options = AgoraDirectCdnStreamingMediaOptions()
         options.publishCameraTrack = .of(true)
         options.publishMicrophoneTrack = .of(true)
-        agoraKit.startDirectCdnStreaming(self,
+        let ret = agoraKit.startDirectCdnStreaming(self,
                                          publishUrl: pushUrlString,
                                          mediaOptions: options)
-        subscribeVideoLocal(view: mainView.renderViewLocal)
+        
+        agoraKit.enableAudio()
+        agoraKit.setDefaultAudioRouteToSpeakerphone(true)
+        
+        if ret != 0 {
+            Log.errorText(text: "joinRtcByPush error \(ret)",
+                          tag: defaultLogTag)
+        }
     }
     
     func leaveRtcByPush() { /** 离开直推方式 **/
-        Log.debug(text: "leaveRtcByPush", tag: "MainVM")
+        Log.debug(text: "leaveRtcByPush", tag: defaultLogTag)
         agoraKit.stopDirectCdnStreaming()
     }
     
-    private func subscribeVideoLocal(view: UIView) {
+    private func setupLocalVideo(view: UIView) {
         let videoCanvas = AgoraRtcVideoCanvas()
         videoCanvas.uid = 0
         videoCanvas.view = view
@@ -97,7 +102,7 @@ extension SuperAppHostViewController {
         agoraKit.startPreview()
     }
     
-    func subscribeVideoRemote(view: UIView, uid: UInt) {
+    func setupRemoteVideo(view: UIView, uid: UInt) {
         view.backgroundColor = .gray
         let videoCanvas = AgoraRtcVideoCanvas()
         videoCanvas.uid = uid
@@ -106,8 +111,17 @@ extension SuperAppHostViewController {
         agoraKit.setupRemoteVideo(videoCanvas)
     }
     
+    func switchCamera() {
+        agoraKit.switchCamera()
+    }
+    
+    func muteLocalAudio(mute: Bool) {
+        agoraKit.muteLocalAudioStream(audioIsMute)
+        agoraKit.adjustRecordingSignalVolume(audioIsMute ? 0 : 100)
+    }
+    
     func setMergeVideoLocal(engine: AgoraRtcEngineKit, uid: UInt) { /** 设置旁路推流合图（本地） **/
-        Log.info(text: "设置旁路推流合图（本地）", tag: "MainVMHost")
+        LogUtils.logInfo(message: "设置旁路推流合图（本地）", tag: defaultLogTag)
         let user = AgoraLiveTranscodingUser()
         user.rect = CGRect(x: 0,
                            y: 0,
@@ -122,7 +136,7 @@ extension SuperAppHostViewController {
     }
     
     func setMergeVideoRemote(engine: AgoraRtcEngineKit, uid: UInt) { /** 设置旁路推流合图（远程） **/
-        Log.info(text: "旁路合图设置(远程)", tag: "MainVMHost")
+        LogUtils.logInfo(message: "旁路合图设置(远程)", tag: defaultLogTag)
         let user = AgoraLiveTranscodingUser()
         user.rect = CGRect(x: 0.5 * videoSize.height,
                            y: 0.1 * videoSize.width,
@@ -133,6 +147,19 @@ extension SuperAppHostViewController {
         liveTranscoding.add(user)
         engine.setLiveTranscoding(liveTranscoding)
     }
+    
+    func destroyRtc() {
+        agoraKit.delegate = nil
+        
+        if mode == .push {
+            leaveRtcByPush()
+        }
+        else {
+            leaveRtcByPassPush()
+        }
+        agoraKit = nil
+        AgoraRtcEngineKit.destroy()
+    }
 }
 
 extension SuperAppHostViewController: AgoraRtcEngineDelegate {
@@ -140,7 +167,7 @@ extension SuperAppHostViewController: AgoraRtcEngineDelegate {
                    didJoinChannel channel: String,
                    withUid uid: UInt,
                    elapsed: Int) {
-        Log.info(text: "didJoinChannel", tag: "MainVMHost")
+        LogUtils.logInfo(message: "didJoinChannel", tag: defaultLogTag)
         setMergeVideoLocal(engine: engine, uid: uid)
         engine.addPublishStreamUrl(pushUrlString,
                                    transcodingEnabled: true)
@@ -149,16 +176,16 @@ extension SuperAppHostViewController: AgoraRtcEngineDelegate {
     func rtcEngine(_ engine: AgoraRtcEngineKit,
                    didJoinedOfUid uid: UInt,
                    elapsed: Int) {
-        Log.info(text: "didJoinChannel", tag: "MainVMHost")
+        LogUtils.logInfo(message: "didJoinChannel", tag: defaultLogTag)
         
         setMergeVideoRemote(engine: engine, uid: uid)
-        startRenderRemoteView()
-        subscribeVideoRemote(view: mainView.renderViewRemote,
+        mainView.setRemoteViewHidden(hidden: false)
+        setupRemoteVideo(view: mainView.renderViewRemote,
                              uid: uid)
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, streamUnpublishedWithUrl url: String) {
-        Log.info(text: "streamUnpublishedWithUrl", tag: "MainVMHost")
+        LogUtils.logInfo(message: "streamUnpublishedWithUrl", tag: defaultLogTag)
         let option = AgoraLeaveChannelOptions()
         option.stopMicrophoneRecording = false
         agoraKit.leaveChannel(option)
