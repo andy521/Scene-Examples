@@ -1,26 +1,26 @@
-package io.agora.sample.singlehostlive;
+package io.agora.sample.pklive;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.lang.ref.WeakReference;
 
-import io.agora.sample.singlehostlive.databinding.SingleHostLiveHostDetailActivityBinding;
+import io.agora.sample.pklive.databinding.PkLiveAudienceDetailActivityBinding;
 import io.agora.uiwidget.function.GiftAnimPlayDialog;
+import io.agora.uiwidget.function.GiftGridDialog;
 import io.agora.uiwidget.function.LiveRoomMessageListView;
-import io.agora.uiwidget.function.LiveToolsDialog;
 import io.agora.uiwidget.function.TextInputDialog;
+import io.agora.uiwidget.utils.RandomUtil;
 
-public class HostDetailActivity extends AppCompatActivity {
+public class AudienceDetailActivity extends AppCompatActivity {
+
     private final RtcManager rtcManager = new RtcManager();
     private final RoomManager roomManager = RoomManager.getInstance();
 
-    private SingleHostLiveHostDetailActivityBinding mBinding;
+    private PkLiveAudienceDetailActivityBinding mBinding;
     private RoomManager.RoomInfo roomInfo;
     private LiveRoomMessageListView.LiveRoomMessageAdapter<RoomManager.MessageInfo> mMessageAdapter;
     private final RoomManager.DataCallback<RoomManager.GiftInfo> giftInfoDataCallback = new RoomManager.DataCallback<RoomManager.GiftInfo>() {
@@ -33,10 +33,11 @@ public class HostDetailActivity extends AppCompatActivity {
                         data.getIconId()
                 ));
                 // 播放动画
-                new GiftAnimPlayDialog(HostDetailActivity.this)
+                new GiftAnimPlayDialog(AudienceDetailActivity.this)
                         .setAnimRes(data.getGifId())
                         .show();
             });
+
         }
 
         @Override
@@ -48,23 +49,22 @@ public class HostDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBinding = SingleHostLiveHostDetailActivityBinding.inflate(LayoutInflater.from(this));
+        mBinding = PkLiveAudienceDetailActivityBinding.inflate(LayoutInflater.from(this));
         setContentView(mBinding.getRoot());
         roomInfo = (RoomManager.RoomInfo) getIntent().getSerializableExtra("roomInfo");
 
         // 房间信息
-        mBinding.hostNameView.setName(roomInfo.roomName);
+        mBinding.hostNameView.setName(RandomUtil.randomUserName(this));
         mBinding.hostNameView.setIcon(roomInfo.getAndroidBgId());
 
         // 底部按钮栏
-        mBinding.bottomView.setFun1Visible(false);
+        mBinding.bottomView.setFun1Visible(true)
+                .setFun1ImageResource(R.drawable.live_bottom_btn_gift)
+                .setFun1ClickListener(v -> showGiftGridDialog());
         mBinding.bottomView.setFun2Visible(false);
-        mBinding.bottomView.setupInputText(true, v -> {
-            // 弹出文本输入框
-            showTextInputDialog();
-        });
-        mBinding.bottomView.setupCloseBtn(true, v -> onBackPressed());
-        mBinding.bottomView.setupMoreBtn(true, v -> showSettingDialog());
+        mBinding.bottomView.setupInputText(true, v -> showTextInputDialog());
+        mBinding.bottomView.setupCloseBtn(true, v -> finish());
+        mBinding.bottomView.setupMoreBtn(false, null);
 
         // 消息列表
         mMessageAdapter = new LiveRoomMessageListView.LiveRoomMessageAdapter<RoomManager.MessageInfo>() {
@@ -75,42 +75,33 @@ public class HostDetailActivity extends AppCompatActivity {
         };
         mBinding.messageList.setAdapter(mMessageAdapter);
 
-        initRoomManager();
         initRtcManager();
+        initRoomManager();
     }
 
-    private void showTextInputDialog() {
-        new TextInputDialog(this)
-                .setOnSendClickListener((v, text) -> mMessageAdapter.addMessage(new RoomManager.MessageInfo(RoomManager.getCacheUserId(), text)))
-                .show();
-    }
-
-    private void initRoomManager(){
+    private void initRoomManager() {
         roomManager.joinRoom(roomInfo.roomId, () -> roomManager.subscribeGiftReceiveEvent(roomInfo.roomId, new WeakReference<>(giftInfoDataCallback)));
     }
 
     private void initRtcManager() {
-        rtcManager.init(this, getString(R.string.single_host_live_agora_app_id), null);
-        rtcManager.renderLocalVideo(mBinding.fullVideoContainer, null);
-        rtcManager.joinChannel(roomInfo.roomId, roomInfo.userId, getString(R.string.single_host_live_agora_token), true, new RtcManager.OnChannelListener() {
+        rtcManager.init(this, getString(R.string.pk_live_agora_app_id), null);
+        rtcManager.joinChannel(roomInfo.roomId, RoomManager.getCacheUserId(), getString(R.string.pk_live_agora_token), false, new RtcManager.OnChannelListener() {
             @Override
             public void onError(int code, String message) {
-                runOnUiThread(() -> {
-                    Toast.makeText(HostDetailActivity.this, "code=" + code + ",message=" + message, Toast.LENGTH_LONG).show();
-                    finish();
-                });
 
             }
 
             @Override
             public void onJoinSuccess(int uid) {
                 runOnUiThread(() -> mMessageAdapter.addMessage(new RoomManager.MessageInfo(uid + "", getString(R.string.live_room_message_user_join_suffix))));
-
             }
 
             @Override
             public void onUserJoined(String channelId, int uid) {
-                runOnUiThread(() -> mMessageAdapter.addMessage(new RoomManager.MessageInfo(uid + "", getString(R.string.live_room_message_user_join_suffix))));
+                runOnUiThread(() -> {
+                    rtcManager.renderRemoteVideo(mBinding.fullVideoContainer, uid);
+                    mMessageAdapter.addMessage(new RoomManager.MessageInfo(uid + "", getString(R.string.live_room_message_user_join_suffix)));
+                });
             }
 
             @Override
@@ -120,30 +111,30 @@ public class HostDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void showSettingDialog() {
-        new LiveToolsDialog(HostDetailActivity.this)
-                .addToolItem(LiveToolsDialog.TOOL_ITEM_ROTATE, false, (view, item) -> rtcManager.switchCamera())
+    private void showGiftGridDialog() {
+        new GiftGridDialog(this)
+                .setOnGiftSendClickListener((dialog, item, position) -> {
+                    dialog.dismiss();
+                    RoomManager.GiftInfo giftInfo = new RoomManager.GiftInfo();
+                    giftInfo.setIconNameById(item.icon_res);
+                    giftInfo.setGifNameById(item.anim_res);
+                    giftInfo.title = getString(item.name_res);
+                    giftInfo.coin = item.coin_point;
+                    giftInfo.userId = RoomManager.getCacheUserId();
+                    roomManager.sendGift(roomInfo.roomId, giftInfo);
+                })
                 .show();
     }
 
-    @Override
-    public void onBackPressed() {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.common_tip)
-                .setMessage(R.string.common_tip_close_room)
-                .setPositiveButton(R.string.common_yes, (dialog, which) -> {
-                    dialog.dismiss();
-                    HostDetailActivity.super.onBackPressed();
-                })
-                .setNegativeButton(R.string.common_cancel, (dialog, which) -> dialog.dismiss())
+    private void showTextInputDialog() {
+        new TextInputDialog(this)
+                .setOnSendClickListener((v, text) -> mMessageAdapter.addMessage(new RoomManager.MessageInfo(RoomManager.getCacheUserId(), text)))
                 .show();
     }
 
     @Override
     public void finish() {
-        roomManager.destroyRoom(roomInfo.roomId);
         rtcManager.release();
         super.finish();
     }
-
 }

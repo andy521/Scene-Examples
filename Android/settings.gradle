@@ -7,5 +7,5 @@ include ':libs:base-library'
 include ':libs:ui-widget'
 
 include ':modules:BreakoutRoom'
-include ':modules:LivePK'
+include ':modules:PKLive'
 include ':modules:SingleHostLive'

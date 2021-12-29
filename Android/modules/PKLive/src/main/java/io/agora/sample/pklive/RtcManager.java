@@ -1,4 +1,4 @@
-package io.agora.sample.singlehostlive;
+package io.agora.sample.pklive;
 
 import static io.agora.rtc.video.VideoCanvas.RENDER_MODE_HIDDEN;
 import static io.agora.rtc.video.VideoEncoderConfiguration.FRAME_RATE;
@@ -246,7 +246,7 @@ public class RtcManager {
 
         ClientRoleOptions roleOptions = new ClientRoleOptions();
         roleOptions.audienceLatencyLevel = Constants.AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
-        engine.setClientRole(publish ? Constants.CLIENT_ROLE_BROADCASTER : Constants.CLIENT_ROLE_AUDIENCE, roleOptions);
+        engine.setClientRole(Constants.CLIENT_ROLE_BROADCASTER, roleOptions);
 
         publishChannelId = channelId;
         publishChannelListener = new OnChannelListener() {

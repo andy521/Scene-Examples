@@ -1,4 +1,4 @@
-package io.agora.sample.singlehostlive;
+package io.agora.sample.pklive;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.List;
 
-import io.agora.sample.singlehostlive.RoomManager.RoomInfo;
+import io.agora.sample.pklive.RoomManager.RoomInfo;
 import io.agora.uiwidget.basic.TitleBar;
 import io.agora.uiwidget.function.RoomListView;
 
@@ -21,9 +21,9 @@ public class RoomListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.single_host_live_room_list_activity);
+        setContentView(R.layout.pk_live_room_list_activity);
 
-        RoomManager.getInstance().init(this, getString(R.string.single_host_live_agora_app_id), getString(R.string.single_host_live_agora_token));
+        RoomManager.getInstance().init(this, getString(R.string.pk_live_agora_app_id), getString(R.string.pk_live_agora_token));
 
         RoomListView roomListView = findViewById(R.id.room_list_view);
         roomListView.setListAdapter(new RoomListView.AbsRoomListAdapter<RoomInfo>() {
@@ -67,7 +67,7 @@ public class RoomListActivity extends AppCompatActivity {
         });
 
         TitleBar titleBar = findViewById(R.id.title_bar);
-        titleBar.setTitleName(getResources().getString(R.string.single_host_live_app_name), 0);
+        titleBar.setTitleName(getResources().getString(R.string.pk_live_app_name), 0);
         titleBar.setBgDrawable(io.agora.uiwidget.R.drawable.title_bar_bg_colorful);
         titleBar.setUserIcon(false, 0, null);
 

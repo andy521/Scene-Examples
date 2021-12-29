@@ -1,4 +1,4 @@
-package io.agora.sample.singlehostlive;
+package io.agora.sample.pklive;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.lang.ref.WeakReference;
 
-import io.agora.sample.singlehostlive.databinding.SingleHostLiveHostDetailActivityBinding;
+import io.agora.sample.pklive.databinding.PkLiveHostDetailActivityBinding;
 import io.agora.uiwidget.function.GiftAnimPlayDialog;
 import io.agora.uiwidget.function.LiveRoomMessageListView;
 import io.agora.uiwidget.function.LiveToolsDialog;
@@ -20,7 +20,7 @@ public class HostDetailActivity extends AppCompatActivity {
     private final RtcManager rtcManager = new RtcManager();
     private final RoomManager roomManager = RoomManager.getInstance();
 
-    private SingleHostLiveHostDetailActivityBinding mBinding;
+    private PkLiveHostDetailActivityBinding mBinding;
     private RoomManager.RoomInfo roomInfo;
     private LiveRoomMessageListView.LiveRoomMessageAdapter<RoomManager.MessageInfo> mMessageAdapter;
     private final RoomManager.DataCallback<RoomManager.GiftInfo> giftInfoDataCallback = new RoomManager.DataCallback<RoomManager.GiftInfo>() {
@@ -48,7 +48,7 @@ public class HostDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBinding = SingleHostLiveHostDetailActivityBinding.inflate(LayoutInflater.from(this));
+        mBinding = PkLiveHostDetailActivityBinding.inflate(LayoutInflater.from(this));
         setContentView(mBinding.getRoot());
         roomInfo = (RoomManager.RoomInfo) getIntent().getSerializableExtra("roomInfo");
 
@@ -90,9 +90,9 @@ public class HostDetailActivity extends AppCompatActivity {
     }
 
     private void initRtcManager() {
-        rtcManager.init(this, getString(R.string.single_host_live_agora_app_id), null);
+        rtcManager.init(this, getString(R.string.pk_live_agora_app_id), null);
         rtcManager.renderLocalVideo(mBinding.fullVideoContainer, null);
-        rtcManager.joinChannel(roomInfo.roomId, roomInfo.userId, getString(R.string.single_host_live_agora_token), true, new RtcManager.OnChannelListener() {
+        rtcManager.joinChannel(roomInfo.roomId, roomInfo.userId, getString(R.string.pk_live_agora_token), true, new RtcManager.OnChannelListener() {
             @Override
             public void onError(int code, String message) {
                 runOnUiThread(() -> {
