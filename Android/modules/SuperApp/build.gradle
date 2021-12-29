@@ -73,6 +73,7 @@ dependencies {
     annotationProcessor safeExtGetDependence('com.github.bumptech.glide:compiler','4.11.0')
 
     implementation project(':libs:base-library')
+    implementation project(':libs:ui-widget')
 
     implementation safeExtGetDependence('io.agora.rtc:agora-special-full','3.6.200.202')
     implementation safeExtGetDependence('com.github.AgoraIO-Community:SyncManager-Android', '1.0.0')

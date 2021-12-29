@@ -106,5 +106,11 @@
     <dimen name="gift_grid_content_margin_h">24dp</dimen>
     <dimen name="gift_grid_content_margin_v">16dp</dimen>
 
+    <!-- TextInputDialog -->
+    <dimen name="text_input_dialog_content_height">48dp</dimen>
+    <dimen name="text_input_dialog_content_padding_h">12dp</dimen>
+    <dimen name="text_input_dialog_content_padding_v">6dp</dimen>
+    <dimen name="text_input_dialog_content_text_size">16sp</dimen>
+
 
 </resources>

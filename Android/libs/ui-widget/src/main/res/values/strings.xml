@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="common_tip">Tip</string>
+    <string name="common_yes">Yes</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_no">No</string>
+    <string name="common_tip_close_room">Sure to close room?</string>
 
 
     <!--================== Function ==================-->

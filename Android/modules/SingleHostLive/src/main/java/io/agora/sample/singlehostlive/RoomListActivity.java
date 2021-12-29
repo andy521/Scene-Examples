@@ -21,9 +21,9 @@ public class RoomListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.room_list_activity);
+        setContentView(R.layout.single_host_live_room_list_activity);
 
-        RoomManager.getInstance().init(this, getString(R.string.agora_app_id), "");
+        RoomManager.getInstance().init(this, getString(R.string.single_host_live_agora_app_id), getString(R.string.single_host_live_agora_token));
 
         RoomListView roomListView = findViewById(R.id.room_list_view);
         roomListView.setListAdapter(new RoomListView.AbsRoomListAdapter<RoomInfo>() {
@@ -69,15 +69,12 @@ public class RoomListActivity extends AppCompatActivity {
         TitleBar titleBar = findViewById(R.id.title_bar);
         titleBar.setTitleName(getResources().getString(R.string.single_host_live_app_name), 0);
         titleBar.setBgDrawable(io.agora.uiwidget.R.drawable.title_bar_bg_colorful);
-        titleBar.setUserIcon(true, 0, v ->  goUserProfilePage());
+        titleBar.setUserIcon(false, 0, null);
 
         ImageView startLiveIv = findViewById(R.id.btn_start_live);
         startLiveIv.setOnClickListener(v -> gotoPreviewPage());
     }
 
-    private void goUserProfilePage() {
-        startActivity(new Intent(RoomListActivity.this, UserProfileActivity.class));
-    }
 
     private void gotoPreviewPage() {
         startActivity(new Intent(RoomListActivity.this, PreviewActivity.class));

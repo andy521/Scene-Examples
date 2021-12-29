@@ -24,7 +24,7 @@ public class ModulesConfig {
         moduleInfos.add(new ModuleInfo(
                 io.agora.sample.singlehostlive.R.string.single_host_live_app_name,
                 io.agora.sample.singlehostlive.R.string.single_host_live_description,
-                io.agora.sample.singlehostlive.R.drawable.home_category_single,
+                io.agora.sample.singlehostlive.R.drawable.single_host_live_poster,
                 io.agora.sample.singlehostlive.RoomListActivity.class
         ));
         moduleInfos.add(new ModuleInfo(
