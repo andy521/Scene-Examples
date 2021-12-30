@@ -18,8 +18,8 @@
 		265F4F7C2779DEA2009A096B /* CreateLiveVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F4C2779DEA1009A096B /* CreateLiveVC.swift */; };
 		265F4F7D2779DEA2009A096B /* InvitationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F4D2779DEA1009A096B /* InvitationVC.swift */; };
 		265F4F7F2779DEA2009A096B /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F502779DEA1009A096B /* UserInfo.swift */; };
-		265F4F802779DEA2009A096B /* RoomItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F512779DEA1009A096B /* RoomItem.swift */; };
-		265F4F812779DEA2009A096B /* RoomInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F522779DEA1009A096B /* RoomInfo.swift */; };
+		265F4F802779DEA2009A096B /* RoomInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F512779DEA1009A096B /* RoomInfo.swift */; };
+		265F4F812779DEA2009A096B /* PKInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F522779DEA1009A096B /* PKInfo.swift */; };
 		265F4F822779DEA2009A096B /* CreateLiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F542779DEA1009A096B /* CreateLiveView.swift */; };
 		265F4F832779DEA2009A096B /* MineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F552779DEA1009A096B /* MineView.swift */; };
 		265F4F842779DEA2009A096B /* CreateLiveView+CenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F562779DEA1009A096B /* CreateLiveView+CenterView.swift */; };
@@ -136,8 +136,8 @@
 		265F4F4C2779DEA1009A096B /* CreateLiveVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateLiveVC.swift; sourceTree = "<group>"; };
 		265F4F4D2779DEA1009A096B /* InvitationVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InvitationVC.swift; sourceTree = "<group>"; };
 		265F4F502779DEA1009A096B /* UserInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
-		265F4F512779DEA1009A096B /* RoomItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoomItem.swift; sourceTree = "<group>"; };
-		265F4F522779DEA1009A096B /* RoomInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoomInfo.swift; sourceTree = "<group>"; };
+		265F4F512779DEA1009A096B /* RoomInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoomInfo.swift; sourceTree = "<group>"; };
+		265F4F522779DEA1009A096B /* PKInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PKInfo.swift; sourceTree = "<group>"; };
 		265F4F542779DEA1009A096B /* CreateLiveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateLiveView.swift; sourceTree = "<group>"; };
 		265F4F552779DEA1009A096B /* MineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MineView.swift; sourceTree = "<group>"; };
 		265F4F562779DEA1009A096B /* CreateLiveView+CenterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CreateLiveView+CenterView.swift"; sourceTree = "<group>"; };
@@ -307,8 +307,8 @@
 			isa = PBXGroup;
 			children = (
 				265F4F502779DEA1009A096B /* UserInfo.swift */,
-				265F4F512779DEA1009A096B /* RoomItem.swift */,
-				265F4F522779DEA1009A096B /* RoomInfo.swift */,
+				265F4F512779DEA1009A096B /* RoomInfo.swift */,
+				265F4F522779DEA1009A096B /* PKInfo.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -779,7 +779,7 @@
 				E79C264A273D003B00909CD4 /* LiveRoomInfo.swift in Sources */,
 				269E9CA4277B3AE000EF02B8 /* SuperAppHostViewController.swift in Sources */,
 				E79C2610273B689B00909CD4 /* KeyCenter.swift in Sources */,
-				265F4F802779DEA2009A096B /* RoomItem.swift in Sources */,
+				265F4F802779DEA2009A096B /* RoomInfo.swift in Sources */,
 				E79C262D273BC0CA00909CD4 /* ToastView.swift in Sources */,
 				265F4F7F2779DEA2009A096B /* UserInfo.swift in Sources */,
 				265F4F7D2779DEA2009A096B /* InvitationVC.swift in Sources */,
@@ -802,7 +802,7 @@
 				265F4F862779DEA2009A096B /* InvitationView.swift in Sources */,
 				E79C2612273B689B00909CD4 /* SegmentView.swift in Sources */,
 				265F4F642779DEA2009A096B /* LogProvider.swift in Sources */,
-				265F4F812779DEA2009A096B /* RoomInfo.swift in Sources */,
+				265F4F812779DEA2009A096B /* PKInfo.swift in Sources */,
 				E79C264C273D053E00909CD4 /* LiveRoomListController.swift in Sources */,
 				E79C261F273B737100909CD4 /* MainTableViewCell.swift in Sources */,
 				265F4F8A2779DEA2009A096B /* EntryView.swift in Sources */,

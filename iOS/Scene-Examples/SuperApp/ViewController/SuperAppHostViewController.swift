@@ -45,9 +45,7 @@ class SuperAppHostViewController: UIViewController {
         setupUI()
         
         syncUtil.delegate = self
-        syncUtil.joinByHost(createTime: config.createdTime,
-                            liveMode: config.mode.rawValue,
-                            complted: joinCompleted(error:))
+        syncUtil.joinByHost(roomInfo: config.roomItem, complted: joinCompleted(error:))
         
         config.mode == .push ? joinRtcByPush() : joinRtcByPassPush()
     }
@@ -176,9 +174,18 @@ extension SuperAppHostViewController {
     
     struct Config {
         let appId: String
-        let sceneName: String
-        let sceneId: String
-        let createdTime: TimeInterval
-        let mode: Mode
+        let roomItem: RoomInfo
+        
+        var sceneId: String {
+            return roomItem.id
+        }
+        
+        var sceneName: String {
+            return roomItem.roomName
+        }
+        
+        var mode: Mode {
+            return Mode(rawValue: roomItem.liveMode.rawValue)!
+        }
     }
 }

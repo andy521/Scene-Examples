@@ -55,11 +55,11 @@ class SuperAppSyncUtil {
         self.userName = userName
     }
     
-    func joinByAudience(liveMode: Int,
+    func joinByAudience(roomItem: RoomInfo,
                         complted: CompltedBlock? = nil) {
         queue.async { [weak self] in
             do {
-                try self?.joinScene(liveMode: liveMode)
+                try self?.joinScene(roomInfo: roomItem)
                 try self?.addMember()
                 complted?(nil)
             } catch let error {
@@ -69,13 +69,12 @@ class SuperAppSyncUtil {
         }
     }
     
-    func joinByHost(createTime: TimeInterval,
-                    liveMode: Int,
+    func joinByHost(roomInfo: RoomInfo,
                     complted: CompltedBlock? = nil) {
         queue.async { [weak self] in
             do {
-                try self?.joinScene(liveMode: liveMode)
-                try self?.addRoomInfo(createTime: createTime)
+                try self?.joinScene(roomInfo: roomInfo)
+                self?.resetPKInfo()
                 try self?.addMember()
                 complted?(nil)
             } catch let error {
@@ -85,7 +84,7 @@ class SuperAppSyncUtil {
         }
     }
     
-    private func joinScene(liveMode: Int) throws {
+    private func joinScene(roomInfo: RoomInfo) throws {
         let semp = DispatchSemaphore(value: 0)
         var error: Error?
         
@@ -104,8 +103,7 @@ class SuperAppSyncUtil {
         /// join
         let scene = Scene(id: sceneId,
                           userId: userId,
-                          property: ["roomName" : sceneName,
-                                     "liveMode" : "\(liveMode)"])
+                          property: ["roomInfo" : roomInfo.jsonString])
         sceneRef = manager.joinScene(scene: scene,
                                      success: { _ in
             LogUtils.logInfo(message: "joinScene success", tag: .defaultLogTag)
@@ -116,33 +114,6 @@ class SuperAppSyncUtil {
             let msg = "joinScene fail \(e.description)"
             LogUtils.logError(message: msg, tag: .defaultLogTag)
         })
-        semp.wait()
-        
-        if let e = error {
-            throw e
-        }
-    }
-    
-    private func addRoomInfo(createTime: TimeInterval) throws {
-        let property = RoomInfo(createTime: createTime,
-                                expiredTime: 0,
-                                roomId: sceneId,
-                                roomName: sceneName,
-                                userIdPK: "").dict
-        let semp = DispatchSemaphore(value: 0)
-        var error: SyncError?
-        
-        sceneRef.update(data: property) { _ in
-            LogUtils.logInfo(message: "addRoomInfo success",
-                             tag: .defaultLogTag)
-            semp.signal()
-        } fail: { (e) in
-            let msg = "addRoomInfo fail: \(e.errorDescription ?? "")"
-            LogUtils.logError(message: msg, tag: .defaultLogTag)
-            error = e
-            semp.signal()
-        }
-        
         semp.wait()
         
         if let e = error {
@@ -201,7 +172,9 @@ class SuperAppSyncUtil {
         if userIdPK.count == 0 {
             fatalError("muts no empty string")
         }
-        sceneRef.update(data: ["userIdPK" : userIdPK]) { obj in
+        
+        let property = PKInfo(userIdPK: userIdPK).dict
+        sceneRef.update(data: property) { obj in
             LogUtils.logInfo(message: "updatePKInfo success)", tag: .defaultLogTag)
         } fail: { error in
             let msg = "updatePKInfo fail: \(error.errorDescription ?? "")"
@@ -210,7 +183,8 @@ class SuperAppSyncUtil {
     }
     
     func resetPKInfo() { /** host and audience can invoke cancle pk **/
-        sceneRef.update(data: ["userIdPK" : ""]) { _ in
+        let property = PKInfo(userIdPK: "").dict
+        sceneRef.update(data: property) { _ in
             LogUtils.logInfo(message: "resetPKInfo success)", tag: .defaultLogTag)
         } fail: { error in
             let msg = "resetPKInfo fail: \(error.errorDescription ?? "")"
@@ -224,7 +198,7 @@ class SuperAppSyncUtil {
             if let data = obj?.toJson()?.data(using: .utf8) {
                 let decoder = JSONDecoder()
                 do {
-                    let roomInfo = try decoder.decode(RoomInfo.self, from: data)
+                    let roomInfo = try decoder.decode(PKInfo.self, from: data)
                     success(roomInfo.userIdPK)
                 } catch let error {
                     fail(error as! LocalizedError)

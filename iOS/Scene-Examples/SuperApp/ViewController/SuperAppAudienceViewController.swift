@@ -48,7 +48,7 @@ class SuperAppAudienceViewController: UIViewController {
         setupUI()
         
         syncUtil.delegate = self
-        syncUtil.joinByAudience(liveMode: config.liveMode.rawValue) { [weak self](error) in /** 1. join sync scene **/
+        syncUtil.joinByAudience(roomItem: config.roomInfo) { [weak self](error) in /** 1. join sync scene **/
             guard let `self`  = self else { return }
             if let e = error {
                 let msg = "joinByAudience fail: \(e.errorDescription ?? "")"
@@ -59,13 +59,13 @@ class SuperAppAudienceViewController: UIViewController {
             
             self.syncUtil.getPKInfo { [weak self](userPkId) in
                 
-                if userPkId == "", self?.config.liveMode == .push { /** no pk, live mode can be change **/
+                if userPkId == "", self?.config.roomInfo.liveMode == .push { /** no pk, live mode can be change **/
                     self?.initMediaPlayer(useAgoraCDN: true)
                     self?.syncUtil.subscribePKInfo()
                     return
                 }
                 
-                if userPkId == "", self?.config.liveMode == .byPassPush { /** no pk, live mode can not be change **/
+                if userPkId == "", self?.config.roomInfo.liveMode == .byPassPush { /** no pk, live mode can not be change **/
                     self?.initMediaPlayer(useAgoraCDN: false)
                     self?.syncUtil.subscribePKInfo()
                     return
@@ -117,7 +117,7 @@ class SuperAppAudienceViewController: UIViewController {
         mode = .pull
         leaveRtc()
         
-        if config.liveMode == .byPassPush {
+        if config.roomInfo.liveMode == .byPassPush {
             initMediaPlayer(useAgoraCDN: false)
         }
         else {
@@ -163,13 +163,13 @@ extension SuperAppAudienceViewController: SuperAppSyncUtilDelegate {
     }
     
     func superAppSyncUtilDidPkAcceptForOther(util: SuperAppSyncUtil) {
-        if config.liveMode == .push {
+        if config.roomInfo.liveMode == .push {
             initMediaPlayer(useAgoraCDN: false)
         }
     }
     
     func superAppSyncUtilDidPkCancleForOther(util: SuperAppSyncUtil) {
-        if config.liveMode == .push {
+        if config.roomInfo.liveMode == .push {
             initMediaPlayer(useAgoraCDN: true)
         }
     }
@@ -200,14 +200,15 @@ extension SuperAppAudienceViewController: MainViewDelegate {
 extension SuperAppAudienceViewController {
     struct Config {
         let appId: String
-        let sceneName: String
-        let sceneId: String
-        let liveMode: LiveMode
-    }
-    
-    enum LiveMode: Int {
-        case push = 1
-        case byPassPush = 2
+        let roomInfo: RoomInfo
+        
+        var sceneName: String {
+            return roomInfo.roomName
+        }
+        
+        var sceneId: String {
+            return roomInfo.id
+        }
     }
     
     enum Mode {
