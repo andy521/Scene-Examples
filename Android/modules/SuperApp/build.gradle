@@ -21,10 +21,11 @@ def safeExtGetDependence(key, fallback){
 android {
     compileSdkVersion safeExtGetVersion('android', 'compileSdkVersion', 30)
     buildToolsVersion safeExtGetVersion('android', 'buildToolsVersion', '30.0.3')
+    resourcePrefix "superapp_"
 
     defaultConfig {
         if (isModule.toBoolean()) {
-            applicationId "io.agora.superapp"
+            applicationId "io.agora.sample.superapp"
         }
         minSdkVersion safeExtGetVersion('android', 'minSdkVersion', 21)
         targetSdkVersion safeExtGetVersion('android', 'targetSdkVersion', 30)

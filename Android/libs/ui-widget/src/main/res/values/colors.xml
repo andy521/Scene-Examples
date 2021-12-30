@@ -28,4 +28,8 @@
     <color name="gift_grid_title_text_color">#656565</color>
     <color name="gift_grid_divider_color">#efefef</color>
 
+    <!-- OnlineUserListDialog -->
+    <color name="online_user_list_dialog_text_color">#656565</color>
+    <color name="online_user_list_dialog_divider_color">#efefef</color>
+
 </resources>

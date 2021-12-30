@@ -58,6 +58,10 @@
     <string name="gift_grid_default_gift_item_diamond">Diamond</string>
     <string name="gift_grid_default_gift_item_rocket">Rocket</string>
 
+    <!-- OnlineUserListDialog -->
+    <string name="online_user_list_dialog_title">Member Listing</string>
+    <string name="online_user_list_dialog_invite">Invite</string>
+
     <!--=================== Utils ======================-->
 
     <!-- RandomUtil -->

@@ -28,10 +28,10 @@ public class ModulesConfig {
                 io.agora.sample.singlehostlive.RoomListActivity.class
         ));
         moduleInfos.add(new ModuleInfo(
-                io.agora.superapp.R.string.superapp_app_name,
-                io.agora.superapp.R.string.superapp_app_name,
-                io.agora.superapp.R.drawable.home_category_multi,
-                io.agora.superapp.view.RoomListActivity.class
+                io.agora.sample.superapp.R.string.superapp_app_name,
+                io.agora.sample.superapp.R.string.superapp_app_name,
+                io.agora.sample.superapp.R.drawable.superapp_poster,
+                io.agora.sample.superapp.RoomListActivity.class
         ));
     }
 

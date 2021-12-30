@@ -54,6 +54,10 @@
     <string name="gift_grid_default_gift_item_diamond">钻石</string>
     <string name="gift_grid_default_gift_item_rocket">火箭</string>
 
+    <!-- OnlineUserListDialog -->
+    <string name="online_user_list_dialog_title">在线用户</string>
+    <string name="online_user_list_dialog_invite">邀请</string>
+
 
     <!--=================== Utils ======================-->
 
