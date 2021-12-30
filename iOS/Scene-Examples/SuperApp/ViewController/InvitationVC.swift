@@ -17,11 +17,12 @@ class InvitationVC: UIViewController {
     typealias Info = InvitationCell.Info
     let invitedView = InvitationView()
     private let presenter = Presentr(presentationType: .bottomHalf)
-    private var vm: InvitationVM!
+    var syncUtil: SuperAppSyncUtil!
     weak var delegate: InvitationVCDelegate?
+    private var userInfos = [SuperAppUserInfo]()
     
     init(syncUtil: SuperAppSyncUtil) {
-        vm = InvitationVM(syncUtil: syncUtil)
+        self.syncUtil = syncUtil
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -43,8 +44,7 @@ class InvitationVC: UIViewController {
     
     private func commonInit() {
         invitedView.delegate = self
-        vm.delegate = self
-        vm.start()
+        fetchInfos()
     }
     
     func show(in vc: UIViewController) {
@@ -58,12 +58,50 @@ class InvitationVC: UIViewController {
     func update(infos: [Info]) {
         invitedView.update(infos: infos)
     }
+    
+    func fetchInfos() {
+        syncUtil.getMembers { [weak self](strings) in
+            guard let `self` = self else { return }
+            
+            let localUserId = StorageManager.uuid
+            let decoder = JSONDecoder()
+            var userInfos = strings.compactMap({ $0.data(using: .utf8) })
+                .compactMap({ try? decoder.decode(SuperAppUserInfo.self, from: $0) })
+                .filter({ $0.userId != localUserId })
+            
+            /// 查重
+            var dict = [String : SuperAppUserInfo]()
+            for userInfo in userInfos {
+                dict[userInfo.userId] = userInfo
+            }
+            userInfos = dict.map({ $0.value })
+            
+            self.userInfos = userInfos
+            
+            var infos = [Info]()
+            for (index, userInfo) in userInfos.enumerated() {
+                let info = Info(idnex: index,
+                                title: userInfo.userName,
+                                imageName: userInfo.userId.headImageName,
+                                isInvited: false)
+                infos.append(info)
+            }
+            self.update(infos: infos)
+        } fail: { [weak self](error) in
+            guard let `self` = self else { return }
+            self.show(error.errorDescription ?? "unknow error (fetchInfos)")
+        }
+    }
+    
+    func getUserInfo(index: Int) -> SuperAppUserInfo? {
+        return userInfos[index]
+    }
 }
 
 extension InvitationVC: InvitationViewDelegate {
     func invitationView(_ view: InvitationView,
                         didSelectedAt index: Int) {
-        guard let userInfo = vm.getUserInfo(index: index) else {
+        guard let userInfo = getUserInfo(index: index) else {
             return
         }
         dismiss(animated: true, completion: { [weak self] in
@@ -73,15 +111,3 @@ extension InvitationVC: InvitationViewDelegate {
     }
 }
 
-extension InvitationVC: InvitationVMDelegate {
-    func invitationVM(_ vm: InvitationVM,
-                      didUpdate infos: [InvitationVM.Info],
-                      errorMsg: String?) {
-        if let text = errorMsg {
-            show(text)
-            return
-        }
-        
-        update(infos: infos)
-    }
-}

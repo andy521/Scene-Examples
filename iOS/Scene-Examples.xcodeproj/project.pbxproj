@@ -12,31 +12,11 @@
 		265F4F632779DEA2009A096B /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F302779DEA1009A096B /* UIViewController+Extension.swift */; };
 		265F4F642779DEA2009A096B /* LogProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F312779DEA1009A096B /* LogProvider.swift */; };
 		265F4F652779DEA2009A096B /* String+Extension+SuperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F322779DEA1009A096B /* String+Extension+SuperApp.swift */; };
-		265F4F662779DEA2009A096B /* InvitationVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F342779DEA1009A096B /* InvitationVM.swift */; };
-		265F4F672779DEA2009A096B /* CreateLiveVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F352779DEA1009A096B /* CreateLiveVM.swift */; };
-		265F4F682779DEA2009A096B /* EntryVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F362779DEA1009A096B /* EntryVM.swift */; };
-		265F4F692779DEA2009A096B /* MainVMAudience+RTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F382779DEA1009A096B /* MainVMAudience+RTC.swift */; };
-		265F4F6A2779DEA2009A096B /* MainVMHost+Handle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F392779DEA1009A096B /* MainVMHost+Handle.swift */; };
-		265F4F6B2779DEA2009A096B /* MainVMProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F3A2779DEA1009A096B /* MainVMProtocol.swift */; };
-		265F4F6C2779DEA2009A096B /* MainVMAudience.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F3B2779DEA1009A096B /* MainVMAudience.swift */; };
-		265F4F6D2779DEA2009A096B /* MainVMHost+Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F3C2779DEA1009A096B /* MainVMHost+Event.swift */; };
-		265F4F6E2779DEA2009A096B /* MainVMAudience+Invoke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F3D2779DEA1009A096B /* MainVMAudience+Invoke.swift */; };
-		265F4F6F2779DEA2009A096B /* MainVMAudience+SYNC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F3E2779DEA1009A096B /* MainVMAudience+SYNC.swift */; };
-		265F4F702779DEA2009A096B /* MainVMHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F3F2779DEA1009A096B /* MainVMHost.swift */; };
-		265F4F712779DEA2009A096B /* MainVMAudience+Info.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F402779DEA1009A096B /* MainVMAudience+Info.swift */; };
-		265F4F722779DEA2009A096B /* MainVMHost+RTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F412779DEA1009A096B /* MainVMHost+RTC.swift */; };
-		265F4F732779DEA2009A096B /* MainVMAudience+Handle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F422779DEA1009A096B /* MainVMAudience+Handle.swift */; };
-		265F4F742779DEA2009A096B /* MainVMHost+Invoke.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F432779DEA1009A096B /* MainVMHost+Invoke.swift */; };
-		265F4F752779DEA2009A096B /* MainVMHost+Info.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F442779DEA1009A096B /* MainVMHost+Info.swift */; };
-		265F4F762779DEA2009A096B /* MainVMHost+SYNC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F452779DEA1009A096B /* MainVMHost+SYNC.swift */; };
-		265F4F772779DEA2009A096B /* MainVMAudience+Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F462779DEA1009A096B /* MainVMAudience+Event.swift */; };
-		265F4F782779DEA2009A096B /* MineVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F472779DEA1009A096B /* MineVM.swift */; };
 		265F4F792779DEA2009A096B /* MineVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F492779DEA1009A096B /* MineVC.swift */; };
 		265F4F7A2779DEA2009A096B /* EntryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F4A2779DEA1009A096B /* EntryVC.swift */; };
 		265F4F7B2779DEA2009A096B /* ToolVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F4B2779DEA1009A096B /* ToolVC.swift */; };
 		265F4F7C2779DEA2009A096B /* CreateLiveVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F4C2779DEA1009A096B /* CreateLiveVC.swift */; };
 		265F4F7D2779DEA2009A096B /* InvitationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F4D2779DEA1009A096B /* InvitationVC.swift */; };
-		265F4F7E2779DEA2009A096B /* MainVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F4E2779DEA1009A096B /* MainVC.swift */; };
 		265F4F7F2779DEA2009A096B /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F502779DEA1009A096B /* UserInfo.swift */; };
 		265F4F802779DEA2009A096B /* RoomItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F512779DEA1009A096B /* RoomItem.swift */; };
 		265F4F812779DEA2009A096B /* RoomInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F522779DEA1009A096B /* RoomInfo.swift */; };
@@ -150,31 +130,11 @@
 		265F4F302779DEA1009A096B /* UIViewController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		265F4F312779DEA1009A096B /* LogProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogProvider.swift; sourceTree = "<group>"; };
 		265F4F322779DEA1009A096B /* String+Extension+SuperApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extension+SuperApp.swift"; sourceTree = "<group>"; };
-		265F4F342779DEA1009A096B /* InvitationVM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InvitationVM.swift; sourceTree = "<group>"; };
-		265F4F352779DEA1009A096B /* CreateLiveVM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateLiveVM.swift; sourceTree = "<group>"; };
-		265F4F362779DEA1009A096B /* EntryVM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntryVM.swift; sourceTree = "<group>"; };
-		265F4F382779DEA1009A096B /* MainVMAudience+RTC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainVMAudience+RTC.swift"; sourceTree = "<group>"; };
-		265F4F392779DEA1009A096B /* MainVMHost+Handle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainVMHost+Handle.swift"; sourceTree = "<group>"; };
-		265F4F3A2779DEA1009A096B /* MainVMProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainVMProtocol.swift; sourceTree = "<group>"; };
-		265F4F3B2779DEA1009A096B /* MainVMAudience.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainVMAudience.swift; sourceTree = "<group>"; };
-		265F4F3C2779DEA1009A096B /* MainVMHost+Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainVMHost+Event.swift"; sourceTree = "<group>"; };
-		265F4F3D2779DEA1009A096B /* MainVMAudience+Invoke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainVMAudience+Invoke.swift"; sourceTree = "<group>"; };
-		265F4F3E2779DEA1009A096B /* MainVMAudience+SYNC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainVMAudience+SYNC.swift"; sourceTree = "<group>"; };
-		265F4F3F2779DEA1009A096B /* MainVMHost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainVMHost.swift; sourceTree = "<group>"; };
-		265F4F402779DEA1009A096B /* MainVMAudience+Info.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainVMAudience+Info.swift"; sourceTree = "<group>"; };
-		265F4F412779DEA1009A096B /* MainVMHost+RTC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainVMHost+RTC.swift"; sourceTree = "<group>"; };
-		265F4F422779DEA1009A096B /* MainVMAudience+Handle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainVMAudience+Handle.swift"; sourceTree = "<group>"; };
-		265F4F432779DEA1009A096B /* MainVMHost+Invoke.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainVMHost+Invoke.swift"; sourceTree = "<group>"; };
-		265F4F442779DEA1009A096B /* MainVMHost+Info.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainVMHost+Info.swift"; sourceTree = "<group>"; };
-		265F4F452779DEA1009A096B /* MainVMHost+SYNC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainVMHost+SYNC.swift"; sourceTree = "<group>"; };
-		265F4F462779DEA1009A096B /* MainVMAudience+Event.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainVMAudience+Event.swift"; sourceTree = "<group>"; };
-		265F4F472779DEA1009A096B /* MineVM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MineVM.swift; sourceTree = "<group>"; };
 		265F4F492779DEA1009A096B /* MineVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MineVC.swift; sourceTree = "<group>"; };
 		265F4F4A2779DEA1009A096B /* EntryVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntryVC.swift; sourceTree = "<group>"; };
 		265F4F4B2779DEA1009A096B /* ToolVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolVC.swift; sourceTree = "<group>"; };
 		265F4F4C2779DEA1009A096B /* CreateLiveVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateLiveVC.swift; sourceTree = "<group>"; };
 		265F4F4D2779DEA1009A096B /* InvitationVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InvitationVC.swift; sourceTree = "<group>"; };
-		265F4F4E2779DEA1009A096B /* MainVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainVC.swift; sourceTree = "<group>"; };
 		265F4F502779DEA1009A096B /* UserInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
 		265F4F512779DEA1009A096B /* RoomItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoomItem.swift; sourceTree = "<group>"; };
 		265F4F522779DEA1009A096B /* RoomInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoomInfo.swift; sourceTree = "<group>"; };
@@ -306,10 +266,9 @@
 		265F4F2A2779DEA1009A096B /* SuperApp */ = {
 			isa = PBXGroup;
 			children = (
-				265F4F2C2779DEA1009A096B /* Other */,
-				265F4F332779DEA1009A096B /* VM */,
-				265F4F482779DEA1009A096B /* VC */,
+				265F4F482779DEA1009A096B /* ViewController */,
 				265F4F4F2779DEA1009A096B /* Model */,
+				265F4F2C2779DEA1009A096B /* Other */,
 				265F4F532779DEA1009A096B /* View */,
 			);
 			path = SuperApp;
@@ -328,43 +287,20 @@
 			path = Other;
 			sourceTree = "<group>";
 		};
-		265F4F332779DEA1009A096B /* VM */ = {
+		265F4F482779DEA1009A096B /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				265F4F372779DEA1009A096B /* Main */,
-				265F4F342779DEA1009A096B /* InvitationVM.swift */,
-				265F4F352779DEA1009A096B /* CreateLiveVM.swift */,
-				265F4F362779DEA1009A096B /* EntryVM.swift */,
-				265F4F472779DEA1009A096B /* MineVM.swift */,
-			);
-			path = VM;
-			sourceTree = "<group>";
-		};
-		265F4F372779DEA1009A096B /* Main */ = {
-			isa = PBXGroup;
-			children = (
-				269E9C9C277AF43A00EF02B8 /* Audience */,
-				269E9C9B277AF42700EF02B8 /* Host */,
-				265F4F3A2779DEA1009A096B /* MainVMProtocol.swift */,
-			);
-			path = Main;
-			sourceTree = "<group>";
-		};
-		265F4F482779DEA1009A096B /* VC */ = {
-			isa = PBXGroup;
-			children = (
+				269E9C9F277B250500EF02B8 /* SuperAppAudienceViewController.swift */,
+				269E9CA1277B27DE00EF02B8 /* SuperAppAudienceViewController+RTC.swift */,
+				269E9CA3277B3AE000EF02B8 /* SuperAppHostViewController.swift */,
+				269E9CA5277B3C4F00EF02B8 /* SuperAppHostViewController+RTC.swift */,
 				265F4F492779DEA1009A096B /* MineVC.swift */,
 				265F4F4A2779DEA1009A096B /* EntryVC.swift */,
 				265F4F4B2779DEA1009A096B /* ToolVC.swift */,
 				265F4F4C2779DEA1009A096B /* CreateLiveVC.swift */,
 				265F4F4D2779DEA1009A096B /* InvitationVC.swift */,
-				265F4F4E2779DEA1009A096B /* MainVC.swift */,
-				269E9C9F277B250500EF02B8 /* SuperAppAudienceViewController.swift */,
-				269E9CA1277B27DE00EF02B8 /* SuperAppAudienceViewController+RTC.swift */,
-				269E9CA3277B3AE000EF02B8 /* SuperAppHostViewController.swift */,
-				269E9CA5277B3C4F00EF02B8 /* SuperAppHostViewController+RTC.swift */,
 			);
-			path = VC;
+			path = ViewController;
 			sourceTree = "<group>";
 		};
 		265F4F4F2779DEA1009A096B /* Model */ = {
@@ -393,34 +329,6 @@
 				265F4F5E2779DEA1009A096B /* MainView.swift */,
 			);
 			path = View;
-			sourceTree = "<group>";
-		};
-		269E9C9B277AF42700EF02B8 /* Host */ = {
-			isa = PBXGroup;
-			children = (
-				265F4F3F2779DEA1009A096B /* MainVMHost.swift */,
-				265F4F452779DEA1009A096B /* MainVMHost+SYNC.swift */,
-				265F4F412779DEA1009A096B /* MainVMHost+RTC.swift */,
-				265F4F432779DEA1009A096B /* MainVMHost+Invoke.swift */,
-				265F4F442779DEA1009A096B /* MainVMHost+Info.swift */,
-				265F4F392779DEA1009A096B /* MainVMHost+Handle.swift */,
-				265F4F3C2779DEA1009A096B /* MainVMHost+Event.swift */,
-			);
-			path = Host;
-			sourceTree = "<group>";
-		};
-		269E9C9C277AF43A00EF02B8 /* Audience */ = {
-			isa = PBXGroup;
-			children = (
-				265F4F3B2779DEA1009A096B /* MainVMAudience.swift */,
-				265F4F3E2779DEA1009A096B /* MainVMAudience+SYNC.swift */,
-				265F4F382779DEA1009A096B /* MainVMAudience+RTC.swift */,
-				265F4F3D2779DEA1009A096B /* MainVMAudience+Invoke.swift */,
-				265F4F402779DEA1009A096B /* MainVMAudience+Info.swift */,
-				265F4F422779DEA1009A096B /* MainVMAudience+Handle.swift */,
-				265F4F462779DEA1009A096B /* MainVMAudience+Event.swift */,
-			);
-			path = Audience;
 			sourceTree = "<group>";
 		};
 		639A589D923EE6D429888195 /* Frameworks */ = {
@@ -860,27 +768,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				E79BEF60273E72F7009FA838 /* LiveGiftDelegate.swift in Sources */,
-				265F4F712779DEA2009A096B /* MainVMAudience+Info.swift in Sources */,
 				269E9CA2277B27DE00EF02B8 /* SuperAppAudienceViewController+RTC.swift in Sources */,
 				E79BEF37273D15D6009FA838 /* Screen.swift in Sources */,
 				E79C2616273B6BEC00909CD4 /* BaseTableViewLayout.swift in Sources */,
 				E79C2611273B689B00909CD4 /* SyncUtil.swift in Sources */,
-				265F4F662779DEA2009A096B /* InvitationVM.swift in Sources */,
 				E79BEF5B273E5768009FA838 /* GIFImageView.swift in Sources */,
 				265F4F7C2779DEA2009A096B /* CreateLiveVC.swift in Sources */,
-				265F4F6F2779DEA2009A096B /* MainVMAudience+SYNC.swift in Sources */,
 				E79BEF45273E4D99009FA838 /* LiveGiftModel.swift in Sources */,
 				E79C264E273D062400909CD4 /* LiveRoomListCell.swift in Sources */,
 				E79C264A273D003B00909CD4 /* LiveRoomInfo.swift in Sources */,
-				265F4F742779DEA2009A096B /* MainVMHost+Invoke.swift in Sources */,
 				269E9CA4277B3AE000EF02B8 /* SuperAppHostViewController.swift in Sources */,
-				265F4F6A2779DEA2009A096B /* MainVMHost+Handle.swift in Sources */,
 				E79C2610273B689B00909CD4 /* KeyCenter.swift in Sources */,
 				265F4F802779DEA2009A096B /* RoomItem.swift in Sources */,
 				E79C262D273BC0CA00909CD4 /* ToastView.swift in Sources */,
-				265F4F6B2779DEA2009A096B /* MainVMProtocol.swift in Sources */,
 				265F4F7F2779DEA2009A096B /* UserInfo.swift in Sources */,
-				265F4F722779DEA2009A096B /* MainVMHost+RTC.swift in Sources */,
 				265F4F7D2779DEA2009A096B /* InvitationVC.swift in Sources */,
 				E79C2644273BE7C000909CD4 /* LiveSettingView.swift in Sources */,
 				265F4F622779DEA2009A096B /* UIView+Extension.swift in Sources */,
@@ -890,10 +791,7 @@
 				265F4F832779DEA2009A096B /* MineView.swift in Sources */,
 				265F4F632779DEA2009A096B /* UIViewController+Extension.swift in Sources */,
 				E79C2626273B7BDA00909CD4 /* CreateLiveController.swift in Sources */,
-				265F4F672779DEA2009A096B /* CreateLiveVM.swift in Sources */,
-				265F4F692779DEA2009A096B /* MainVMAudience+RTC.swift in Sources */,
 				265F4F872779DEA2009A096B /* MainView+LeftView.swift in Sources */,
-				265F4F782779DEA2009A096B /* MineVM.swift in Sources */,
 				E79BEF39273D18B4009FA838 /* LiveAvatarView.swift in Sources */,
 				E79C261C273B712000909CD4 /* BaseViewController.swift in Sources */,
 				E79BEF752744FD8B009FA838 /* GCDTimer.swift in Sources */,
@@ -907,35 +805,25 @@
 				265F4F812779DEA2009A096B /* RoomInfo.swift in Sources */,
 				E79C264C273D053E00909CD4 /* LiveRoomListController.swift in Sources */,
 				E79C261F273B737100909CD4 /* MainTableViewCell.swift in Sources */,
-				265F4F702779DEA2009A096B /* MainVMHost.swift in Sources */,
 				265F4F8A2779DEA2009A096B /* EntryView.swift in Sources */,
-				265F4F762779DEA2009A096B /* MainVMHost+SYNC.swift in Sources */,
-				265F4F6D2779DEA2009A096B /* MainVMHost+Event.swift in Sources */,
 				E79BEF3D273D327F009FA838 /* LiveBottomView.swift in Sources */,
 				E79C2638273BC8DF00909CD4 /* MainModel.swift in Sources */,
-				265F4F6E2779DEA2009A096B /* MainVMAudience+Invoke.swift in Sources */,
 				E79C2613273B689B00909CD4 /* UIColor+Extension.swift in Sources */,
 				269E9CA6277B3C4F00EF02B8 /* SuperAppHostViewController+RTC.swift in Sources */,
-				265F4F732779DEA2009A096B /* MainVMAudience+Handle.swift in Sources */,
 				E79BEF35273D1304009FA838 /* LivePlayerCell.swift in Sources */,
 				265F4F8B2779DEA2009A096B /* MainView+RemoteView.swift in Sources */,
-				265F4F7E2779DEA2009A096B /* MainVC.swift in Sources */,
 				265F4F822779DEA2009A096B /* CreateLiveView.swift in Sources */,
-				265F4F752779DEA2009A096B /* MainVMHost+Info.swift in Sources */,
 				269E9C9E277B07D700EF02B8 /* SuperAppSyncUtil.swift in Sources */,
 				265F4F892779DEA2009A096B /* EntryViewCell.swift in Sources */,
 				E79C2636273BC6C400909CD4 /* LiveRandomNameView.swift in Sources */,
 				E79C2642273BE5C500909CD4 /* AlertManager.swift in Sources */,
 				E79BEFA1274796F7009FA838 /* NetworkManager.swift in Sources */,
-				265F4F682779DEA2009A096B /* EntryVM.swift in Sources */,
 				E79C2628273B7D3700909CD4 /* LiveRandomName.swift in Sources */,
 				E79BEF41273E0C3A009FA838 /* LiveToolModel.swift in Sources */,
 				265F4F792779DEA2009A096B /* MineVC.swift in Sources */,
 				265F4F8C2779DEA2009A096B /* MainView.swift in Sources */,
 				E79BEF31273D0EA4009FA838 /* LivePlayerController.swift in Sources */,
-				265F4F6C2779DEA2009A096B /* MainVMAudience.swift in Sources */,
 				265F4F882779DEA2009A096B /* InvitationCell.swift in Sources */,
-				265F4F772779DEA2009A096B /* MainVMAudience+Event.swift in Sources */,
 				E79C2632273BC17B00909CD4 /* String+Extension.swift in Sources */,
 				E79C262A273B7D8900909CD4 /* DeviceAssistant.swift in Sources */,
 				265F4F842779DEA2009A096B /* CreateLiveView+CenterView.swift in Sources */,

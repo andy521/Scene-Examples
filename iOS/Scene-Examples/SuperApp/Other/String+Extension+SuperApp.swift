@@ -24,7 +24,6 @@ extension String {
         let endIndex = self.index(self.startIndex, offsetBy: to)
         return String(self[beginIndex...endIndex])
     }
-    
 }
 
 extension String {

@@ -19,11 +19,13 @@ class SuperAppHostViewController: UIViewController {
     /// log tag
     let defaultLogTag = "HostVC"
     var audioIsMute = false
+    var allowChangeToPushMode: Bool!
 
     public init(config: Config) {
         self.config = config
         self.mode = config.mode
         self.pushUrlString = "rtmp://examplepush.agoramdn.com/live/" + config.sceneId
+        self.allowChangeToPushMode = mode == .push
         let userId = StorageManager.uuid
         let userName = StorageManager.userName
         self.syncUtil = SuperAppSyncUtil(appId: config.appId,
@@ -64,13 +66,19 @@ class SuperAppHostViewController: UIViewController {
     }
 
     private func changeToByPassPush() {
-        if mode != .byPassPush {
-            mode = .byPassPush
-            leaveRtcByPush()
+        guard mode != .byPassPush else {
+            return
         }
+        LogUtils.logInfo(message: "changeToByPassPush", tag: defaultLogTag)
+        mode = .byPassPush
+        leaveRtcByPush()
     }
     
     private func changeToPush() {
+        guard mode != .push else {
+            return
+        }
+        LogUtils.logInfo(message: "changeToPush", tag: defaultLogTag)
         mode = .push
         leaveRtcByPassPush()
         mainView.setRemoteViewHidden(hidden: true)
@@ -99,13 +107,16 @@ class SuperAppHostViewController: UIViewController {
 
 // MRK: - SuperAppSyncUtilDelegate
 extension SuperAppHostViewController: SuperAppSyncUtilDelegate {
-    func superAppSyncUtilDidPkAccept(util: SuperAppSyncUtil, userIdPK: String) {}
-    func superAppSyncUtilDidSceneClose(util: SuperAppSyncUtil) {}
-    
-    func superAppSyncUtilDidPkCancle(util: SuperAppSyncUtil) { /** userIdPK, an empty string **/
+    func superAppSyncUtilDidPkCancleForOther(util: SuperAppSyncUtil) {
         LogUtils.logInfo(message: "下麦", tag: defaultLogTag)
-        changeToPush()
+        if allowChangeToPushMode { changeToPush() }
+        else { mainView.setRemoteViewHidden(hidden: true) }
     }
+    
+    func superAppSyncUtilDidPkAcceptForMe(util: SuperAppSyncUtil, userIdPK: String) {}
+    func superAppSyncUtilDidPkCancleForMe(util: SuperAppSyncUtil) {}
+    func superAppSyncUtilDidPkAcceptForOther(util: SuperAppSyncUtil) {}
+    func superAppSyncUtilDidSceneClose(util: SuperAppSyncUtil) {}
 }
 
 // MARK: - UI Event MainViewDelegate
@@ -130,6 +141,8 @@ extension SuperAppHostViewController: MainViewDelegate {
             return
         case .closeRemote:
             syncUtil.resetPKInfo()
+            if allowChangeToPushMode { changeToPush() }
+            else { mainView.setRemoteViewHidden(hidden: true) }
             return
         }
     }

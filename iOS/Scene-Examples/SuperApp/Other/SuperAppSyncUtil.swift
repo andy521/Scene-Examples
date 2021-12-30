@@ -9,8 +9,15 @@ import Foundation
 import AgoraSyncManager
 
 protocol SuperAppSyncUtilDelegate: NSObjectProtocol {
-    func superAppSyncUtilDidPkAccept(util: SuperAppSyncUtil, userIdPK: String)
-    func superAppSyncUtilDidPkCancle(util: SuperAppSyncUtil)
+    /// 自己上麦了
+    func superAppSyncUtilDidPkAcceptForMe(util: SuperAppSyncUtil, userIdPK: String)
+    /// 自己下麦了
+    func superAppSyncUtilDidPkCancleForMe(util: SuperAppSyncUtil)
+    /// 别人上麦了
+    func superAppSyncUtilDidPkAcceptForOther(util: SuperAppSyncUtil)
+    /// 别人下麦了
+    func superAppSyncUtilDidPkCancleForOther(util: SuperAppSyncUtil)
+    /// 房间关闭了
     func superAppSyncUtilDidSceneClose(util: SuperAppSyncUtil)
 }
 
@@ -32,6 +39,7 @@ class SuperAppSyncUtil {
     
     typealias CompltedBlock = (LocalizedError?) -> ()
     typealias SuccessBlockStrings = ([String]) -> ()
+    typealias SuccessBlockString = (String) -> ()
     typealias FailBlockLocalizedError = (LocalizedError) -> ()
     weak var delegate: SuperAppSyncUtilDelegate?
     
@@ -47,10 +55,11 @@ class SuperAppSyncUtil {
         self.userName = userName
     }
     
-    func joinByAudience(complted: CompltedBlock? = nil) {
+    func joinByAudience(liveMode: Int,
+                        complted: CompltedBlock? = nil) {
         queue.async { [weak self] in
             do {
-                try self?.joinScene()
+                try self?.joinScene(liveMode: liveMode)
                 try self?.addMember()
                 complted?(nil)
             } catch let error {
@@ -65,8 +74,8 @@ class SuperAppSyncUtil {
                     complted: CompltedBlock? = nil) {
         queue.async { [weak self] in
             do {
-                try self?.joinScene()
-                try self?.addRoomInfo(createTime: createTime, liveMode: liveMode)
+                try self?.joinScene(liveMode: liveMode)
+                try self?.addRoomInfo(createTime: createTime)
                 try self?.addMember()
                 complted?(nil)
             } catch let error {
@@ -76,15 +85,18 @@ class SuperAppSyncUtil {
         }
     }
     
-    private func joinScene() throws {
+    private func joinScene(liveMode: Int) throws {
         let semp = DispatchSemaphore(value: 0)
         var error: Error?
         
         /// create
         let config = AgoraSyncManager.RtmConfig(appId: appId, channelName: defaultScenelId)
         manager = AgoraSyncManager(config: config, complete: { code in
-            let msg = "AgoraSyncManager init fail \(code)"
-            LogUtils.logError(message: msg, tag: .defaultLogTag)
+            if code != 0 {
+                let msg = "AgoraSyncManager init fail \(code)"
+                LogUtils.logError(message: msg, tag: .defaultLogTag)
+                error = SyncError(message: msg, code: code)
+            }
             semp.signal()
         })
         semp.wait()
@@ -92,7 +104,8 @@ class SuperAppSyncUtil {
         /// join
         let scene = Scene(id: sceneId,
                           userId: userId,
-                          property: ["roomName" : sceneName])
+                          property: ["roomName" : sceneName,
+                                     "liveMode" : "\(liveMode)"])
         sceneRef = manager.joinScene(scene: scene,
                                      success: { _ in
             LogUtils.logInfo(message: "joinScene success", tag: .defaultLogTag)
@@ -110,15 +123,12 @@ class SuperAppSyncUtil {
         }
     }
     
-    private func addRoomInfo(createTime: TimeInterval,
-                             liveMode: Int) throws {
+    private func addRoomInfo(createTime: TimeInterval) throws {
         let property = RoomInfo(createTime: createTime,
                                 expiredTime: 0,
                                 roomId: sceneId,
                                 roomName: sceneName,
-                                userIdPK: "",
-                                userCount: 0,
-                                liveMode: liveMode).dict
+                                userIdPK: "").dict
         let semp = DispatchSemaphore(value: 0)
         var error: SyncError?
         
@@ -187,7 +197,10 @@ class SuperAppSyncUtil {
         sceneRef.unsubscribe()
     }
     
-    func updatePKInfo(userIdPK: String) {
+    func updatePKInfo(userIdPK: String) { /** only host can invoke pk **/
+        if userIdPK.count == 0 {
+            fatalError("muts no empty string")
+        }
         sceneRef.update(data: ["userIdPK" : userIdPK]) { obj in
             LogUtils.logInfo(message: "updatePKInfo success)", tag: .defaultLogTag)
         } fail: { error in
@@ -196,13 +209,28 @@ class SuperAppSyncUtil {
         }
     }
     
-    func resetPKInfo() {
+    func resetPKInfo() { /** host and audience can invoke cancle pk **/
         sceneRef.update(data: ["userIdPK" : ""]) { _ in
             LogUtils.logInfo(message: "resetPKInfo success)", tag: .defaultLogTag)
         } fail: { error in
             let msg = "resetPKInfo fail: \(error.errorDescription ?? "")"
             LogUtils.logError(message: msg, tag: .defaultLogTag)
         }
+    }
+    
+    func getPKInfo(success: @escaping SuccessBlockString,
+                     fail: @escaping FailBlockLocalizedError) {
+        sceneRef.get(success: {  obj in
+            if let data = obj?.toJson()?.data(using: .utf8) {
+                let decoder = JSONDecoder()
+                do {
+                    let roomInfo = try decoder.decode(RoomInfo.self, from: data)
+                    success(roomInfo.userIdPK)
+                } catch let error {
+                    fail(error as! LocalizedError)
+                }
+            }
+        }, fail: fail)
     }
     
     func leaveByAudience() {
@@ -230,18 +258,32 @@ class SuperAppSyncUtil {
 extension SuperAppSyncUtil {
     func onPkInfoUpdated(object: IObject) {
         if let userIdPK = object.getPropertyWith(key: "userIdPK", type: String.self) as? String {
-            if userIdPK.count > 0 {
-                guard lastUserIdPKValue != userId else { /** filter same **/
-                    return
-                }
-                if userIdPK == userId { /** invite me **/
-                    lastUserIdPKValue = userId
-                    invokeDidPkAccept(userIdPK: userIdPK)
-                }
+            guard lastUserIdPKValue != userIdPK else { /** filter same **/
+                return
             }
-            else {
+            
+            if userIdPK.count > 0, userIdPK == userId {
                 lastUserIdPKValue = userIdPK
-                invokeDidPkCancle()
+                invokeDidPkAcceptForMe(userIdPK: userIdPK)
+                return
+            }
+            
+            if userIdPK.count > 0, userIdPK != userId {
+                lastUserIdPKValue = userIdPK
+                invokeDidPkAcceptForOther()
+                return
+            }
+            
+            if userIdPK.count == 0, lastUserIdPKValue == userId {
+                lastUserIdPKValue = userIdPK
+                invokeDidPkCancleForMe()
+                return
+            }
+            
+            if userIdPK.count == 0, lastUserIdPKValue != userId {
+                lastUserIdPKValue = userIdPK
+                invokeDidPkCancleForOther()
+                return
             }
         }
     }
@@ -254,27 +296,53 @@ extension SuperAppSyncUtil {
 }
 
 extension SuperAppSyncUtil {
-    func invokeDidPkAccept(userIdPK: String) {
+    func invokeDidPkAcceptForMe(userIdPK: String) {
         if Thread.isMainThread {
-            delegate?.superAppSyncUtilDidPkAccept(util: self, userIdPK: userIdPK)
+            delegate?.superAppSyncUtilDidPkAcceptForMe(util: self,
+                                                  userIdPK: userIdPK)
             return
         }
         
         DispatchQueue.main.async { [weak self] in
             guard let `self` = self else { return }
-            self.delegate?.superAppSyncUtilDidPkAccept(util: self, userIdPK: userIdPK)
+            self.delegate?.superAppSyncUtilDidPkAcceptForMe(util: self,
+                                                       userIdPK: userIdPK)
         }
     }
     
-    func invokeDidPkCancle() {
+    func invokeDidPkCancleForMe() {
         if Thread.isMainThread {
-            delegate?.superAppSyncUtilDidPkCancle(util: self)
+            delegate?.superAppSyncUtilDidPkCancleForMe(util: self)
             return
         }
         
         DispatchQueue.main.async { [weak self] in
             guard let `self` = self else { return }
-            self.delegate?.superAppSyncUtilDidPkCancle(util: self)
+            self.delegate?.superAppSyncUtilDidPkCancleForMe(util: self)
+        }
+    }
+    
+    func invokeDidPkAcceptForOther() {
+        if Thread.isMainThread {
+            delegate?.superAppSyncUtilDidPkAcceptForOther(util: self)
+            return
+        }
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let `self` = self else { return }
+            self.delegate?.superAppSyncUtilDidPkAcceptForOther(util: self)
+        }
+    }
+    
+    func invokeDidPkCancleForOther() {
+        if Thread.isMainThread {
+            delegate?.superAppSyncUtilDidPkCancleForOther(util: self)
+            return
+        }
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let `self` = self else { return }
+            self.delegate?.superAppSyncUtilDidPkCancleForMe(util: self)
         }
     }
     

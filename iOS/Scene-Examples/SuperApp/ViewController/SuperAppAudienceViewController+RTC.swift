@@ -11,7 +11,7 @@ import AgoraRtcKit
 extension SuperAppAudienceViewController {
     var videoSize: CGSize { .init(width: 640, height: 360) }
     
-    func initMediaPlayer() {
+    func initMediaPlayer(useAgoraCDN: Bool) {
         let rtcConfig = AgoraRtcEngineConfig()
         rtcConfig.appId = config.appId
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: rtcConfig,
@@ -19,8 +19,15 @@ extension SuperAppAudienceViewController {
         mediaPlayer = agoraKit.createMediaPlayer(with: self)
         mediaPlayer.setView(mainView.renderViewLocal)
         mediaPlayer.setRenderMode(.hidden)
-        mediaPlayer.open(withAgoraCDNSrc: pullUrlString,
-                         startPos: 0)
+        if useAgoraCDN {
+            LogUtils.logInfo(message: "use AgoraCDN", tag: defaultLogTag)
+            mediaPlayer.open(withAgoraCDNSrc: pullUrlString,
+                             startPos: 0)
+        }
+        else {
+            LogUtils.logInfo(message: "not use AgoraCDN", tag: defaultLogTag)
+            mediaPlayer.open(pullUrlString, startPos: 0)
+        }
         LogUtils.logInfo(message: pullUrlString, tag: defaultLogTag)
     }
     
@@ -80,9 +87,11 @@ extension SuperAppAudienceViewController {
     
     func destroyRtc() {
         if mode == .pull {
-            mediaPlayer.stop()
-            agoraKit.destroyMediaPlayer(mediaPlayer)
-            mediaPlayer = nil
+            if mediaPlayer != nil {
+                mediaPlayer.stop()
+                agoraKit.destroyMediaPlayer(mediaPlayer)
+                mediaPlayer = nil
+            }
         }
         else {
             agoraKit.leaveChannel(nil)

@@ -9,7 +9,6 @@ import UIKit
 
 class MineVC: UIViewController {
     let mineView = MineView(frame: .zero)
-    let vm = MineVM()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,8 +23,24 @@ class MineVC: UIViewController {
     }
     
     func commonInit() {
-        vm.delegate = self
-        vm.start()
+        start()
+    }
+    
+    func start() {
+        updateInfo()
+    }
+    
+    func updateInfo() {
+        let name = StorageManager.userName
+        let imageName = StorageManager.uuid.headImageName
+        let info = MineView.Info(name: name,
+                                 imageName: imageName)
+        mineView.update(info: info)
+    }
+    
+    func udpateName(name: String) {
+        StorageManager.userName = name
+        updateInfo()
     }
     
     func showAlertVC() {
@@ -33,7 +48,7 @@ class MineVC: UIViewController {
         let action1 = UIAlertAction(title: "取消", style: .cancel, handler: nil)
         let action2 = UIAlertAction(title: "确定", style: .default) { _ in
             if let text = alertVC.textFields?.first?.text {
-                self.vm.udpateName(name: text)
+                self.udpateName(name: text)
             }
         }
         alertVC.addTextField { textField in
@@ -45,13 +60,6 @@ class MineVC: UIViewController {
         present(alertVC, animated: true, completion: nil)
     }
     
-}
-
-extension MineVC: MineVMDelegate {
-    func mineVMDidUpdateInfo(_ vm: MineVM,
-                             info: MineView.Info) {
-        mineView.update(info: info)
-    }
 }
 
 extension MineVC: MineViewDelegate {

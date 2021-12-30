@@ -104,7 +104,7 @@ struct LogItem {
         let timeStr = "\(dateTime.getFormattedDate(format: "yyyy-MM-dd HH:mm:ss"))"
         let levelStr = " [\(level.description)]"
         let tagStr = tag != nil ? "[\(tag!)]" : ""
-        return timeStr + levelStr + tagStr + message + "\n"
+        return timeStr + levelStr + tagStr + message
     }
 }
 

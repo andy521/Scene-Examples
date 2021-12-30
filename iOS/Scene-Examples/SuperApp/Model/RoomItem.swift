@@ -11,4 +11,5 @@ struct RoomItem: Codable {
     let id: String
     let roomName: String
     let userId: String
+    let liveMode: String
 }

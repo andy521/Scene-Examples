@@ -14,34 +14,25 @@ struct RoomInfo: Codable {
     let roomName: String
     /// 当前房间正在pk的用户id
     let userIdPK: String
-    let userCount: Int
-    ///  直播模式. 1: 直推模式, 2: 旁推模式
-    let liveMode: Int
     
     var dict: [String : String] {
         return ["createTime" : "\(createTime)",
                 "expiredTime" : "\(expiredTime)",
                 "roomId" : roomId,
                 "roomName" : roomName,
-                "userIdPK" : userIdPK,
-                "userCount" : "\(userCount)",
-                "liveMode" : "\(liveMode)"]
+                "userIdPK" : userIdPK]
     }
     
     init(createTime: TimeInterval,
          expiredTime: TimeInterval,
          roomId: String,
          roomName: String,
-         userIdPK: String,
-         userCount: Int,
-         liveMode: Int) {
+         userIdPK: String) {
         self.createTime = createTime
         self.expiredTime = expiredTime
         self.roomId = roomId
         self.roomName = roomName
         self.userIdPK = userIdPK
-        self.userCount = userCount
-        self.liveMode = liveMode
     }
     
     init(from decoder: Decoder) throws {
@@ -51,8 +42,6 @@ struct RoomInfo: Codable {
         self.roomId = try container.decode(String.self, forKey: .roomId)
         self.roomName = try container.decode(String.self, forKey: .roomName)
         self.userIdPK = try container.decode(String.self, forKey: .userIdPK)
-        self.userCount = Int(try container.decode(String.self, forKey: .userCount)) ?? 0
-        self.liveMode = Int(try container.decode(String.self, forKey: .liveMode)) ?? 0
     }
 }
 

@@ -48,10 +48,46 @@ class SuperAppAudienceViewController: UIViewController {
         setupUI()
         
         syncUtil.delegate = self
-        syncUtil.joinByAudience(complted: joinCompleted(error:))
-        
-        /// default mode is pull
-        initMediaPlayer()
+        syncUtil.joinByAudience(liveMode: config.liveMode.rawValue) { [weak self](error) in /** 1. join sync scene **/
+            guard let `self`  = self else { return }
+            if let e = error {
+                let msg = "joinByAudience fail: \(e.errorDescription ?? "")"
+                LogUtils.logInfo(message: msg, tag: self.defaultLogTag)
+                return
+            }
+            LogUtils.logInfo(message: "joinByAudience success", tag: self.defaultLogTag)
+            
+            self.syncUtil.getPKInfo { [weak self](userPkId) in
+                
+                if userPkId == "", self?.config.liveMode == .push { /** no pk, live mode can be change **/
+                    self?.initMediaPlayer(useAgoraCDN: true)
+                    self?.syncUtil.subscribePKInfo()
+                    return
+                }
+                
+                if userPkId == "", self?.config.liveMode == .byPassPush { /** no pk, live mode can not be change **/
+                    self?.initMediaPlayer(useAgoraCDN: false)
+                    self?.syncUtil.subscribePKInfo()
+                    return
+                }
+                
+                if userPkId != StorageManager.uuid { /** pk no me **/
+                    self?.initMediaPlayer(useAgoraCDN: false)
+                    self?.syncUtil.subscribePKInfo()
+                    return
+                }
+                
+                if userPkId == StorageManager.uuid { /** pk me **/
+                    self?.mode = .rtc
+                    self?.joinRtc()
+                    self?.syncUtil.subscribePKInfo()
+                    return
+                }
+            } fail: { [weak self](error) in
+                self?.show(error.localizedDescription)
+                self?.showOpeFailAlert()
+            }
+        }
     }
     
     private func setupUI() {
@@ -71,8 +107,8 @@ class SuperAppAudienceViewController: UIViewController {
         mediaPlayer.stop()
         agoraKit.destroyMediaPlayer(mediaPlayer)
         mediaPlayer = nil
-        
         mode = .rtc
+        
         joinRtc()
     }
     
@@ -80,7 +116,13 @@ class SuperAppAudienceViewController: UIViewController {
         LogUtils.logInfo(message: "切换到拉流模式", tag: defaultLogTag)
         mode = .pull
         leaveRtc()
-        initMediaPlayer()
+        
+        if config.liveMode == .byPassPush {
+            initMediaPlayer(useAgoraCDN: false)
+        }
+        else {
+            initMediaPlayer(useAgoraCDN: true)
+        }
         mainView.setRemoteViewHidden(hidden: true)
     }
     
@@ -93,32 +135,43 @@ class SuperAppAudienceViewController: UIViewController {
         present(vc, animated: true, completion: nil)
     }
     
+    func showOpeFailAlert() {
+        let vc = UIAlertController(title: "提示", message: "打开失败，请重试", preferredStyle: .alert)
+        vc.addAction(.init(title: "确定", style: .default, handler: { [unowned self](_) in
+            self.destroy()
+            self.dismiss(animated: true, completion: nil)
+        }))
+        present(vc, animated: true, completion: nil)
+    }
+    
     private func destroy() {
         syncUtil.leaveByAudience()
         destroyRtc()
-    }
-    
-    private func joinCompleted(error: LocalizedError?) {
-        if let e = error {
-            let msg = "joinByAudience fail: \(e.errorDescription ?? "")"
-            LogUtils.logInfo(message: msg, tag: defaultLogTag)
-            return
-        }
-        syncUtil.subscribePKInfo()
-        LogUtils.logInfo(message: "joinByAudience success", tag: defaultLogTag)
     }
 }
 
 // MRK: - SuperAppSyncUtilDelegate
 extension SuperAppAudienceViewController: SuperAppSyncUtilDelegate {
-    func superAppSyncUtilDidPkAccept(util: SuperAppSyncUtil, userIdPK: String) { /** userIdPK, no an empty string **/
+    func superAppSyncUtilDidPkAcceptForMe(util: SuperAppSyncUtil, userIdPK: String) {
         LogUtils.logInfo(message: "收到上麦申请", tag: defaultLogTag)
         changeToRtc()
     }
     
-    func superAppSyncUtilDidPkCancle(util: SuperAppSyncUtil) { /** userIdPK, an empty string **/
+    func superAppSyncUtilDidPkCancleForMe(util: SuperAppSyncUtil) {
         LogUtils.logInfo(message: "下麦", tag: defaultLogTag)
         changeToPull()
+    }
+    
+    func superAppSyncUtilDidPkAcceptForOther(util: SuperAppSyncUtil) {
+        if config.liveMode == .push {
+            initMediaPlayer(useAgoraCDN: false)
+        }
+    }
+    
+    func superAppSyncUtilDidPkCancleForOther(util: SuperAppSyncUtil) {
+        if config.liveMode == .push {
+            initMediaPlayer(useAgoraCDN: true)
+        }
     }
     
     func superAppSyncUtilDidSceneClose(util: SuperAppSyncUtil) { /** scene was delete **/
@@ -149,6 +202,12 @@ extension SuperAppAudienceViewController {
         let appId: String
         let sceneName: String
         let sceneId: String
+        let liveMode: LiveMode
+    }
+    
+    enum LiveMode: Int {
+        case push = 1
+        case byPassPush = 2
     }
     
     enum Mode {

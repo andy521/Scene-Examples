@@ -5,7 +5,7 @@
 //  Created by ZYP on 2021/11/16.
 //
 
-import UIKit
+import AgoraRtcKit
 
 protocol CreateLiveVCDelegate: NSObjectProtocol {
     func createLiveVC(_ vc: CreateLiveVC,
@@ -15,11 +15,15 @@ protocol CreateLiveVCDelegate: NSObjectProtocol {
 
 class CreateLiveVC: UIViewController {
     let createLiveView = CreateLiveView(frame: .zero)
-    var vm: CreateLiveVM!
+    private var appId: String!
+    private var rtcKit: AgoraRtcEngineKit!
     weak var delegate: CreateLiveVCDelegate?
     
     public init(appId: String) {
-        self.vm = CreateLiveVM(appId: appId)
+        self.appId = appId
+        self.rtcKit = AgoraRtcEngineKit.sharedEngine(withAppId: appId,
+                                                     delegate: nil)
+        rtcKit.enableVideo()
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -39,10 +43,26 @@ class CreateLiveVC: UIViewController {
     }
     
     private func commonInit() {
-        vm.delegate = self
-        vm.startRenderLocalVideoStream(view: createLiveView.cameraPreview)
+        renderLocalVideo(view: createLiveView.cameraPreview)
         createLiveView.delegate = self
-        vm.genRandomName()
+        genRandomName()
+    }
+    
+    func genRandomName() {
+        let text: String = .randomRoomName
+        createLiveView.set(text: text)
+    }
+    
+    func renderLocalVideo(view: UIView) {
+        let canvas = AgoraRtcVideoCanvas()
+        canvas.uid = 0
+        canvas.view = view
+        rtcKit.setupLocalVideo(canvas)
+        rtcKit.startPreview()
+    }
+    
+    func switchCamera() {
+        rtcKit.switchCamera()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -56,31 +76,22 @@ extension CreateLiveVC: CreateLiveViewDelegate {
     }
     
     func createLiveViewDidTapCameraButton(_ view: CreateLiveView) {
-        vm.switchCamera()
+        switchCamera()
     }
     
     func createLiveViewDidTapStartButton(_ view: CreateLiveView) {
-        vm.destory()
         let text = createLiveView.text
         let sellectedType: SelectedType = createLiveView.currentSelectedType == .value1 ? .value1 : .value2
         dismiss(animated: true) { [weak self] in
-            if self != nil {
-                
-                self?.delegate?.createLiveVC(self!,
-                                             didSart: text,
-                                             sellectedType: sellectedType)
-            }
+            guard let `self` = self else { return }
+            self.delegate?.createLiveVC(self,
+                                        didSart: text,
+                                        sellectedType: sellectedType)
         }
     }
     
     func createLiveViewDidTapRandomButton(_ view: CreateLiveView) {
-        vm.genRandomName()
-    }
-}
-
-extension CreateLiveVC: CreateLiveVMDelegate {
-    func createLiveVM(_ vm: CreateLiveVM, didUpdate roomName: String) {
-        createLiveView.set(text: roomName)
+        genRandomName()
     }
 }
 
