@@ -1,5 +1,5 @@
 //
-//  CreateLiveVC.swift
+//  CreateLiveViewController.swift
 //  SuperAppCore
 //
 //  Created by ZYP on 2021/11/16.
@@ -8,12 +8,12 @@
 import AgoraRtcKit
 
 protocol CreateLiveVCDelegate: NSObjectProtocol {
-    func createLiveVC(_ vc: CreateLiveVC,
+    func createLiveVC(_ vc: SuperAppCreateLiveViewController,
                       didSart roomName: String,
-                      sellectedType: CreateLiveVC.SelectedType)
+                      sellectedType: SuperAppCreateLiveViewController.SelectedType)
 }
 
-class CreateLiveVC: UIViewController {
+class SuperAppCreateLiveViewController: UIViewController {
     let createLiveView = CreateLiveView(frame: .zero)
     private var appId: String!
     private var rtcKit: AgoraRtcEngineKit!
@@ -70,7 +70,7 @@ class CreateLiveVC: UIViewController {
     }
 }
 
-extension CreateLiveVC: CreateLiveViewDelegate {
+extension SuperAppCreateLiveViewController: CreateLiveViewDelegate {
     func createLiveViewDidTapCloseButton(_ view: CreateLiveView) {
         dismiss(animated: true, completion: nil)
     }
@@ -95,7 +95,7 @@ extension CreateLiveVC: CreateLiveViewDelegate {
     }
 }
 
-extension CreateLiveVC {
+extension SuperAppCreateLiveViewController {
     enum SelectedType {
         case value1
         case value2

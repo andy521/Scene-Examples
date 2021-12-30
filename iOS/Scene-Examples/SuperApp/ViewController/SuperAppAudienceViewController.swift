@@ -26,8 +26,8 @@ class SuperAppAudienceViewController: UIViewController {
         self.pushUrlString = "rtmp://examplepush.agoramdn.com/live/" + config.sceneId
         self.pullUrlString = "http://examplepull.agoramdn.com/live/\(config.sceneId).flv"
         
-        let userId = StorageManager.uuid
-        let userName = StorageManager.userName
+        let userId = SupperAppStorageManager.uuid
+        let userName = SupperAppStorageManager.userName
         self.syncUtil = SuperAppSyncUtil(appId: config.appId,
                                          sceneId: config.sceneId,
                                          sceneName: config.sceneName,
@@ -71,13 +71,13 @@ class SuperAppAudienceViewController: UIViewController {
                     return
                 }
                 
-                if userPkId != StorageManager.uuid { /** pk no me **/
+                if userPkId != SupperAppStorageManager.uuid { /** pk no me **/
                     self?.initMediaPlayer(useAgoraCDN: false)
                     self?.syncUtil.subscribePKInfo()
                     return
                 }
                 
-                if userPkId == StorageManager.uuid { /** pk me **/
+                if userPkId == SupperAppStorageManager.uuid { /** pk me **/
                     self?.mode = .rtc
                     self?.joinRtc()
                     self?.syncUtil.subscribePKInfo()
@@ -95,7 +95,7 @@ class SuperAppAudienceViewController: UIViewController {
         view.addSubview(mainView)
         mainView.frame = view.bounds
         mainView.delegate = self
-        let imageName = StorageManager.uuid.headImageName
+        let imageName = SupperAppStorageManager.uuid.headImageName
         let info = MainView.Info(title: config.sceneName + "(\(config.sceneId))",
                                  imageName: imageName,
                                  userCount: 0)
@@ -200,14 +200,14 @@ extension SuperAppAudienceViewController: MainViewDelegate {
 extension SuperAppAudienceViewController {
     struct Config {
         let appId: String
-        let roomInfo: RoomInfo
+        let roomInfo: SuperAppRoomInfo
         
         var sceneName: String {
             return roomInfo.roomName
         }
         
         var sceneId: String {
-            return roomInfo.id
+            return roomInfo.roomId
         }
     }
     

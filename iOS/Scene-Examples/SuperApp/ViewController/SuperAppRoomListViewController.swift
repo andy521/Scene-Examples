@@ -1,5 +1,5 @@
 //
-//  EntryVC.swift
+//  SuperAppRoomListViewController.swift
 //  SuperAppCore
 //
 //  Created by ZYP on 2021/11/12.
@@ -8,12 +8,12 @@
 import UIKit
 import AgoraSyncManager
 
-public class EntryVC: UIViewController {
+public class SuperAppRoomListViewController: UIViewController {
     private var rightBarButtonItem: UIBarButtonItem!
     private let entryView = EntryView()
     private var syncManager: AgoraSyncManager!
     private var sceneRef: SceneReference?
-    private var rooms = [RoomInfo]()
+    private var rooms = [SuperAppRoomInfo]()
     private let appId: String
     private let defaultChannelName = "PKByCDN"
     
@@ -60,8 +60,7 @@ public class EntryVC: UIViewController {
         syncManager.getScenes { [weak self](objs) in
             let decoder = JSONDecoder()
             let rooms = objs.compactMap({ $0.toJson()?.data(using: .utf8) })
-                .compactMap({ try? decoder.decode(RoomInfoWapper.self, from: $0) })
-                .compactMap({ $0.roomInfoObj })
+                .compactMap({ try? decoder.decode(SuperAppRoomInfo.self, from: $0) })
             self?.udpateRooms(rooms: rooms)
             self?.entryView.endRefreshing()
         } fail: { [weak self](error) in
@@ -71,34 +70,34 @@ public class EntryVC: UIViewController {
     }
     
     @objc func deleteAllRooms() {
-        let keys = rooms.map({ $0.id })
+        let keys = rooms.map({ $0.roomId })
         syncManager.deleteScenes(sceneIds: keys) { [weak self] in
             self?.udpateRooms(rooms: [])
         } fail: { error in
-            Log.error(error: error.description, tag: "deleteAllRooms")
+            LogUtils.logError(message: error.description, tag: "deleteAllRooms")
         }
     }
     
-    func udpateRooms(rooms: [RoomInfo]) {
-        let infos = rooms.map({ EntryView.Info(imageName: $0.id.headImageName,
+    func udpateRooms(rooms: [SuperAppRoomInfo]) {
+        let infos = rooms.map({ EntryView.Info(imageName: $0.roomId.headImageName,
                                                title: $0.roomName,
                                                count: 0) })
         self.rooms = rooms
         entryView.update(infos: infos)
     }
     
-    func getRoomInfo(index: Int) -> RoomInfo? {
+    func getRoomInfo(index: Int) -> SuperAppRoomInfo? {
         rooms[index]
     }
 }
 
-extension EntryVC: EntryViewDelegate {
+extension SuperAppRoomListViewController: EntryViewDelegate {
     func entryViewdidPull(_ view: EntryView) {
         fetchRooms()
     }
     
     func entryViewDidTapCreateButton(_ view: EntryView) {
-        let vc = CreateLiveVC(appId: appId)
+        let vc = SuperAppCreateLiveViewController(appId: appId)
         vc.delegate = self
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true, completion: nil)
@@ -119,16 +118,15 @@ extension EntryVC: EntryViewDelegate {
     }
 }
 
-extension EntryVC: CreateLiveVCDelegate {
-    func createLiveVC(_ vc: CreateLiveVC,
+extension SuperAppRoomListViewController: CreateLiveVCDelegate {
+    func createLiveVC(_ vc: SuperAppCreateLiveViewController,
                       didSart roomName: String,
-                      sellectedType: CreateLiveVC.SelectedType) {
+                      sellectedType: SuperAppCreateLiveViewController.SelectedType) {
         /// 作为主播进入
         let createTime = Double(Int(Date().timeIntervalSince1970 * 1000) )
         let roomId = "\(Int(createTime))"
         let liveMode: LiveMode = sellectedType == .value1 ? .push : .byPassPush
-        let userId = StorageManager.uuid
-        let roomItem = RoomInfo(id: roomId, roomName: roomName, userId: userId, liveMode: liveMode)
+        let roomItem = SuperAppRoomInfo(roomId: roomId, roomName: roomName, liveMode: liveMode)
         
         let config = SuperAppHostViewController.Config(appId: appId,
                                                        roomItem: roomItem)

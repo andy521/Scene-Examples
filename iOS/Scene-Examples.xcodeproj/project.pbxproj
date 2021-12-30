@@ -7,21 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		265F4F602779DEA2009A096B /* StrorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F2D2779DEA1009A096B /* StrorageManager.swift */; };
-		265F4F622779DEA2009A096B /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F2F2779DEA1009A096B /* UIView+Extension.swift */; };
+		265F4F602779DEA2009A096B /* SupperAppStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F2D2779DEA1009A096B /* SupperAppStorageManager.swift */; };
 		265F4F632779DEA2009A096B /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F302779DEA1009A096B /* UIViewController+Extension.swift */; };
-		265F4F642779DEA2009A096B /* LogProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F312779DEA1009A096B /* LogProvider.swift */; };
 		265F4F652779DEA2009A096B /* String+Extension+SuperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F322779DEA1009A096B /* String+Extension+SuperApp.swift */; };
-		265F4F792779DEA2009A096B /* MineVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F492779DEA1009A096B /* MineVC.swift */; };
-		265F4F7A2779DEA2009A096B /* EntryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F4A2779DEA1009A096B /* EntryVC.swift */; };
-		265F4F7B2779DEA2009A096B /* ToolVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F4B2779DEA1009A096B /* ToolVC.swift */; };
-		265F4F7C2779DEA2009A096B /* CreateLiveVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F4C2779DEA1009A096B /* CreateLiveVC.swift */; };
-		265F4F7D2779DEA2009A096B /* InvitationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F4D2779DEA1009A096B /* InvitationVC.swift */; };
-		265F4F7F2779DEA2009A096B /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F502779DEA1009A096B /* UserInfo.swift */; };
-		265F4F802779DEA2009A096B /* RoomInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F512779DEA1009A096B /* RoomInfo.swift */; };
-		265F4F812779DEA2009A096B /* PKInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F522779DEA1009A096B /* PKInfo.swift */; };
+		265F4F7A2779DEA2009A096B /* SuperAppRoomListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F4A2779DEA1009A096B /* SuperAppRoomListViewController.swift */; };
+		265F4F7B2779DEA2009A096B /* SuperAppToolSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F4B2779DEA1009A096B /* SuperAppToolSheetViewController.swift */; };
+		265F4F7C2779DEA2009A096B /* SuperAppCreateLiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F4C2779DEA1009A096B /* SuperAppCreateLiveViewController.swift */; };
+		265F4F7D2779DEA2009A096B /* SuperAppInvitationSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F4D2779DEA1009A096B /* SuperAppInvitationSheetViewController.swift */; };
+		265F4F7F2779DEA2009A096B /* SuperAppUserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F502779DEA1009A096B /* SuperAppUserInfo.swift */; };
+		265F4F802779DEA2009A096B /* SuperAppRoomInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F512779DEA1009A096B /* SuperAppRoomInfo.swift */; };
+		265F4F812779DEA2009A096B /* SuperAppPKInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F522779DEA1009A096B /* SuperAppPKInfo.swift */; };
 		265F4F822779DEA2009A096B /* CreateLiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F542779DEA1009A096B /* CreateLiveView.swift */; };
-		265F4F832779DEA2009A096B /* MineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F552779DEA1009A096B /* MineView.swift */; };
 		265F4F842779DEA2009A096B /* CreateLiveView+CenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F562779DEA1009A096B /* CreateLiveView+CenterView.swift */; };
 		265F4F852779DEA2009A096B /* ToolView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F572779DEA1009A096B /* ToolView.swift */; };
 		265F4F862779DEA2009A096B /* InvitationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F4F582779DEA1009A096B /* InvitationView.swift */; };
@@ -125,21 +121,17 @@
 
 /* Begin PBXFileReference section */
 		20C581EEB5F90DA480F83A68 /* Pods-Agora-ScreenShare-Extension(Socket).release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Agora-ScreenShare-Extension(Socket).release.xcconfig"; path = "Target Support Files/Pods-Agora-ScreenShare-Extension(Socket)/Pods-Agora-ScreenShare-Extension(Socket).release.xcconfig"; sourceTree = "<group>"; };
-		265F4F2D2779DEA1009A096B /* StrorageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StrorageManager.swift; sourceTree = "<group>"; };
-		265F4F2F2779DEA1009A096B /* UIView+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
+		265F4F2D2779DEA1009A096B /* SupperAppStorageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SupperAppStorageManager.swift; sourceTree = "<group>"; };
 		265F4F302779DEA1009A096B /* UIViewController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
-		265F4F312779DEA1009A096B /* LogProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogProvider.swift; sourceTree = "<group>"; };
 		265F4F322779DEA1009A096B /* String+Extension+SuperApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Extension+SuperApp.swift"; sourceTree = "<group>"; };
-		265F4F492779DEA1009A096B /* MineVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MineVC.swift; sourceTree = "<group>"; };
-		265F4F4A2779DEA1009A096B /* EntryVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntryVC.swift; sourceTree = "<group>"; };
-		265F4F4B2779DEA1009A096B /* ToolVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolVC.swift; sourceTree = "<group>"; };
-		265F4F4C2779DEA1009A096B /* CreateLiveVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateLiveVC.swift; sourceTree = "<group>"; };
-		265F4F4D2779DEA1009A096B /* InvitationVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InvitationVC.swift; sourceTree = "<group>"; };
-		265F4F502779DEA1009A096B /* UserInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
-		265F4F512779DEA1009A096B /* RoomInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoomInfo.swift; sourceTree = "<group>"; };
-		265F4F522779DEA1009A096B /* PKInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PKInfo.swift; sourceTree = "<group>"; };
+		265F4F4A2779DEA1009A096B /* SuperAppRoomListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuperAppRoomListViewController.swift; sourceTree = "<group>"; };
+		265F4F4B2779DEA1009A096B /* SuperAppToolSheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuperAppToolSheetViewController.swift; sourceTree = "<group>"; };
+		265F4F4C2779DEA1009A096B /* SuperAppCreateLiveViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuperAppCreateLiveViewController.swift; sourceTree = "<group>"; };
+		265F4F4D2779DEA1009A096B /* SuperAppInvitationSheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuperAppInvitationSheetViewController.swift; sourceTree = "<group>"; };
+		265F4F502779DEA1009A096B /* SuperAppUserInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuperAppUserInfo.swift; sourceTree = "<group>"; };
+		265F4F512779DEA1009A096B /* SuperAppRoomInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuperAppRoomInfo.swift; sourceTree = "<group>"; };
+		265F4F522779DEA1009A096B /* SuperAppPKInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuperAppPKInfo.swift; sourceTree = "<group>"; };
 		265F4F542779DEA1009A096B /* CreateLiveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateLiveView.swift; sourceTree = "<group>"; };
-		265F4F552779DEA1009A096B /* MineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MineView.swift; sourceTree = "<group>"; };
 		265F4F562779DEA1009A096B /* CreateLiveView+CenterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CreateLiveView+CenterView.swift"; sourceTree = "<group>"; };
 		265F4F572779DEA1009A096B /* ToolView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolView.swift; sourceTree = "<group>"; };
 		265F4F582779DEA1009A096B /* InvitationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InvitationView.swift; sourceTree = "<group>"; };
@@ -277,10 +269,8 @@
 		265F4F2C2779DEA1009A096B /* Other */ = {
 			isa = PBXGroup;
 			children = (
-				265F4F2D2779DEA1009A096B /* StrorageManager.swift */,
-				265F4F2F2779DEA1009A096B /* UIView+Extension.swift */,
+				265F4F2D2779DEA1009A096B /* SupperAppStorageManager.swift */,
 				265F4F302779DEA1009A096B /* UIViewController+Extension.swift */,
-				265F4F312779DEA1009A096B /* LogProvider.swift */,
 				265F4F322779DEA1009A096B /* String+Extension+SuperApp.swift */,
 				269E9C9D277B07D700EF02B8 /* SuperAppSyncUtil.swift */,
 			);
@@ -294,11 +284,10 @@
 				269E9CA1277B27DE00EF02B8 /* SuperAppAudienceViewController+RTC.swift */,
 				269E9CA3277B3AE000EF02B8 /* SuperAppHostViewController.swift */,
 				269E9CA5277B3C4F00EF02B8 /* SuperAppHostViewController+RTC.swift */,
-				265F4F492779DEA1009A096B /* MineVC.swift */,
-				265F4F4A2779DEA1009A096B /* EntryVC.swift */,
-				265F4F4B2779DEA1009A096B /* ToolVC.swift */,
-				265F4F4C2779DEA1009A096B /* CreateLiveVC.swift */,
-				265F4F4D2779DEA1009A096B /* InvitationVC.swift */,
+				265F4F4A2779DEA1009A096B /* SuperAppRoomListViewController.swift */,
+				265F4F4B2779DEA1009A096B /* SuperAppToolSheetViewController.swift */,
+				265F4F4C2779DEA1009A096B /* SuperAppCreateLiveViewController.swift */,
+				265F4F4D2779DEA1009A096B /* SuperAppInvitationSheetViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -306,9 +295,9 @@
 		265F4F4F2779DEA1009A096B /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				265F4F502779DEA1009A096B /* UserInfo.swift */,
-				265F4F512779DEA1009A096B /* RoomInfo.swift */,
-				265F4F522779DEA1009A096B /* PKInfo.swift */,
+				265F4F502779DEA1009A096B /* SuperAppUserInfo.swift */,
+				265F4F512779DEA1009A096B /* SuperAppRoomInfo.swift */,
+				265F4F522779DEA1009A096B /* SuperAppPKInfo.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -317,7 +306,6 @@
 			isa = PBXGroup;
 			children = (
 				265F4F542779DEA1009A096B /* CreateLiveView.swift */,
-				265F4F552779DEA1009A096B /* MineView.swift */,
 				265F4F562779DEA1009A096B /* CreateLiveView+CenterView.swift */,
 				265F4F572779DEA1009A096B /* ToolView.swift */,
 				265F4F582779DEA1009A096B /* InvitationView.swift */,
@@ -773,22 +761,20 @@
 				E79C2616273B6BEC00909CD4 /* BaseTableViewLayout.swift in Sources */,
 				E79C2611273B689B00909CD4 /* SyncUtil.swift in Sources */,
 				E79BEF5B273E5768009FA838 /* GIFImageView.swift in Sources */,
-				265F4F7C2779DEA2009A096B /* CreateLiveVC.swift in Sources */,
+				265F4F7C2779DEA2009A096B /* SuperAppCreateLiveViewController.swift in Sources */,
 				E79BEF45273E4D99009FA838 /* LiveGiftModel.swift in Sources */,
 				E79C264E273D062400909CD4 /* LiveRoomListCell.swift in Sources */,
 				E79C264A273D003B00909CD4 /* LiveRoomInfo.swift in Sources */,
 				269E9CA4277B3AE000EF02B8 /* SuperAppHostViewController.swift in Sources */,
 				E79C2610273B689B00909CD4 /* KeyCenter.swift in Sources */,
-				265F4F802779DEA2009A096B /* RoomInfo.swift in Sources */,
+				265F4F802779DEA2009A096B /* SuperAppRoomInfo.swift in Sources */,
 				E79C262D273BC0CA00909CD4 /* ToastView.swift in Sources */,
-				265F4F7F2779DEA2009A096B /* UserInfo.swift in Sources */,
-				265F4F7D2779DEA2009A096B /* InvitationVC.swift in Sources */,
+				265F4F7F2779DEA2009A096B /* SuperAppUserInfo.swift in Sources */,
+				265F4F7D2779DEA2009A096B /* SuperAppInvitationSheetViewController.swift in Sources */,
 				E79C2644273BE7C000909CD4 /* LiveSettingView.swift in Sources */,
-				265F4F622779DEA2009A096B /* UIView+Extension.swift in Sources */,
 				E79BEF3B273D21FD009FA838 /* LiveChatView.swift in Sources */,
 				E79BEF3F273D3EF0009FA838 /* LiveToolView.swift in Sources */,
 				E79C2614273B689B00909CD4 /* BaseCollectionViewLayout.swift in Sources */,
-				265F4F832779DEA2009A096B /* MineView.swift in Sources */,
 				265F4F632779DEA2009A096B /* UIViewController+Extension.swift in Sources */,
 				E79C2626273B7BDA00909CD4 /* CreateLiveController.swift in Sources */,
 				265F4F872779DEA2009A096B /* MainView+LeftView.swift in Sources */,
@@ -801,8 +787,7 @@
 				E79C25E3273B67DB00909CD4 /* MainViewController.swift in Sources */,
 				265F4F862779DEA2009A096B /* InvitationView.swift in Sources */,
 				E79C2612273B689B00909CD4 /* SegmentView.swift in Sources */,
-				265F4F642779DEA2009A096B /* LogProvider.swift in Sources */,
-				265F4F812779DEA2009A096B /* PKInfo.swift in Sources */,
+				265F4F812779DEA2009A096B /* SuperAppPKInfo.swift in Sources */,
 				E79C264C273D053E00909CD4 /* LiveRoomListController.swift in Sources */,
 				E79C261F273B737100909CD4 /* MainTableViewCell.swift in Sources */,
 				265F4F8A2779DEA2009A096B /* EntryView.swift in Sources */,
@@ -820,7 +805,6 @@
 				E79BEFA1274796F7009FA838 /* NetworkManager.swift in Sources */,
 				E79C2628273B7D3700909CD4 /* LiveRandomName.swift in Sources */,
 				E79BEF41273E0C3A009FA838 /* LiveToolModel.swift in Sources */,
-				265F4F792779DEA2009A096B /* MineVC.swift in Sources */,
 				265F4F8C2779DEA2009A096B /* MainView.swift in Sources */,
 				E79BEF31273D0EA4009FA838 /* LivePlayerController.swift in Sources */,
 				265F4F882779DEA2009A096B /* InvitationCell.swift in Sources */,
@@ -832,11 +816,11 @@
 				E79C260F273B689B00909CD4 /* JSONObject.swift in Sources */,
 				E79C25DF273B67DB00909CD4 /* AppDelegate.swift in Sources */,
 				E79C260E273B689B00909CD4 /* AgoraExtension.swift in Sources */,
-				265F4F7B2779DEA2009A096B /* ToolVC.swift in Sources */,
+				265F4F7B2779DEA2009A096B /* SuperAppToolSheetViewController.swift in Sources */,
 				E79C2646273CBA2700909CD4 /* LiveSettingModel.swift in Sources */,
-				265F4F602779DEA2009A096B /* StrorageManager.swift in Sources */,
+				265F4F602779DEA2009A096B /* SupperAppStorageManager.swift in Sources */,
 				E79C260D273B689B00909CD4 /* Config.swift in Sources */,
-				265F4F7A2779DEA2009A096B /* EntryVC.swift in Sources */,
+				265F4F7A2779DEA2009A096B /* SuperAppRoomListViewController.swift in Sources */,
 				E79C25E1273B67DB00909CD4 /* SceneDelegate.swift in Sources */,
 				E79C260C273B689B00909CD4 /* MBHUD.swift in Sources */,
 			);

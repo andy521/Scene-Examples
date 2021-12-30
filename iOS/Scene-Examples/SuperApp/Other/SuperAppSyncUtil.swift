@@ -55,7 +55,7 @@ class SuperAppSyncUtil {
         self.userName = userName
     }
     
-    func joinByAudience(roomItem: RoomInfo,
+    func joinByAudience(roomItem: SuperAppRoomInfo,
                         complted: CompltedBlock? = nil) {
         queue.async { [weak self] in
             do {
@@ -69,7 +69,7 @@ class SuperAppSyncUtil {
         }
     }
     
-    func joinByHost(roomInfo: RoomInfo,
+    func joinByHost(roomInfo: SuperAppRoomInfo,
                     complted: CompltedBlock? = nil) {
         queue.async { [weak self] in
             do {
@@ -84,7 +84,7 @@ class SuperAppSyncUtil {
         }
     }
     
-    private func joinScene(roomInfo: RoomInfo) throws {
+    private func joinScene(roomInfo: SuperAppRoomInfo) throws {
         let semp = DispatchSemaphore(value: 0)
         var error: Error?
         
@@ -101,9 +101,10 @@ class SuperAppSyncUtil {
         semp.wait()
         
         /// join
+        let property = roomInfo.dict
         let scene = Scene(id: sceneId,
                           userId: userId,
-                          property: ["roomInfo" : roomInfo.jsonString])
+                          property: property)
         sceneRef = manager.joinScene(scene: scene,
                                      success: { _ in
             LogUtils.logInfo(message: "joinScene success", tag: .defaultLogTag)
@@ -122,10 +123,8 @@ class SuperAppSyncUtil {
     }
     
     private func addMember() throws { /** 把本地用户添加到人员列表 **/
-        let userInfo = SuperAppUserInfo(expiredTime: 0,
-                                        userId: userId,
-                                        userName: userName,
-                                        roomId: sceneId)
+        let userInfo = SuperAppUserInfo(userId: userId,
+                                        userName: userName)
         let semp = DispatchSemaphore(value: 0)
         var error: SyncError?
         sceneRef.collection(className: "member")
@@ -173,7 +172,7 @@ class SuperAppSyncUtil {
             fatalError("muts no empty string")
         }
         
-        let property = PKInfo(userIdPK: userIdPK).dict
+        let property = SuperAppPKInfo(userIdPK: userIdPK).dict
         sceneRef.update(data: property) { obj in
             LogUtils.logInfo(message: "updatePKInfo success)", tag: .defaultLogTag)
         } fail: { error in
@@ -183,7 +182,7 @@ class SuperAppSyncUtil {
     }
     
     func resetPKInfo() { /** host and audience can invoke cancle pk **/
-        let property = PKInfo(userIdPK: "").dict
+        let property = SuperAppPKInfo(userIdPK: "").dict
         sceneRef.update(data: property) { _ in
             LogUtils.logInfo(message: "resetPKInfo success)", tag: .defaultLogTag)
         } fail: { error in
@@ -198,7 +197,7 @@ class SuperAppSyncUtil {
             if let data = obj?.toJson()?.data(using: .utf8) {
                 let decoder = JSONDecoder()
                 do {
-                    let roomInfo = try decoder.decode(PKInfo.self, from: data)
+                    let roomInfo = try decoder.decode(SuperAppPKInfo.self, from: data)
                     success(roomInfo.userIdPK)
                 } catch let error {
                     fail(error as! LocalizedError)

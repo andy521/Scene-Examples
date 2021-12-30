@@ -57,8 +57,8 @@ extension SuperAppAudienceViewController {
                                        uid: 0,
                                        joinSuccess: nil)
         if ret != 0 {
-            Log.errorText(text: "joinRtcByPush error \(ret)",
-                          tag: defaultLogTag)
+            LogUtils.logError(message: "joinRtcByPush error \(ret)",
+                              tag: defaultLogTag)
             return
         }
     }

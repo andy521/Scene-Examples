@@ -10,10 +10,10 @@ import Presentr
 import AgoraSyncManager
 
 protocol InvitationVCDelegate: NSObjectProtocol {
-    func invitationVC(_ vc: InvitationVC, didInvited user: SuperAppUserInfo)
+    func invitationVC(_ vc: SuperAppInvitationSheetViewController, didInvited user: SuperAppUserInfo)
 }
 
-class InvitationVC: UIViewController {
+class SuperAppInvitationSheetViewController: UIViewController {
     typealias Info = InvitationCell.Info
     let invitedView = InvitationView()
     private let presenter = Presentr(presentationType: .bottomHalf)
@@ -63,7 +63,7 @@ class InvitationVC: UIViewController {
         syncUtil.getMembers { [weak self](strings) in
             guard let `self` = self else { return }
             
-            let localUserId = StorageManager.uuid
+            let localUserId = SupperAppStorageManager.uuid
             let decoder = JSONDecoder()
             var userInfos = strings.compactMap({ $0.data(using: .utf8) })
                 .compactMap({ try? decoder.decode(SuperAppUserInfo.self, from: $0) })
@@ -98,7 +98,7 @@ class InvitationVC: UIViewController {
     }
 }
 
-extension InvitationVC: InvitationViewDelegate {
+extension SuperAppInvitationSheetViewController: InvitationViewDelegate {
     func invitationView(_ view: InvitationView,
                         didSelectedAt index: Int) {
         guard let userInfo = getUserInfo(index: index) else {

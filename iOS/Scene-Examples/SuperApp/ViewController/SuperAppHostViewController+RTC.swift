@@ -41,8 +41,8 @@ extension SuperAppHostViewController {
                                        joinSuccess: nil)
         
         if ret != 0 {
-            Log.errorText(text: "joinRtcByPush error \(ret)",
-                          tag: defaultLogTag)
+            LogUtils.logError(message: "joinRtcByPush error \(ret)",
+                              tag: defaultLogTag)
         }
     }
     
@@ -83,13 +83,13 @@ extension SuperAppHostViewController {
         agoraKit.setDefaultAudioRouteToSpeakerphone(true)
         
         if ret != 0 {
-            Log.errorText(text: "joinRtcByPush error \(ret)",
+            LogUtils.logError(message: "joinRtcByPush error \(ret)",
                           tag: defaultLogTag)
         }
     }
     
     func leaveRtcByPush() { /** 离开直推方式 **/
-        Log.debug(text: "leaveRtcByPush", tag: defaultLogTag)
+        LogUtils.logInfo(message: "leaveRtcByPush", tag: defaultLogTag)
         agoraKit.stopDirectCdnStreaming()
     }
     

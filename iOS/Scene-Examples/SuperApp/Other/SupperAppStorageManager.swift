@@ -1,5 +1,5 @@
 //
-//  StrorageManager.swift
+//  SupperAppStorageManager.swift
 //  SuperAppCore
 //
 //  Created by ZYP on 2021/11/15.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-class StorageManager {
+class SupperAppStorageManager {
     
     fileprivate static let userNameKey = "superApp-userName"
     fileprivate static let roomNameKey = "superApp-roomName"

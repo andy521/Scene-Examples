@@ -52,7 +52,7 @@ extension MainViewController: BaseTableViewLayoutDelegate {
             navigationController?.pushViewController(roomListVC, animated: true)
             break
         case .superApp:
-            let vc = EntryVC(appId: KeyCenter.AppId)
+            let vc = SuperAppRoomListViewController(appId: KeyCenter.AppId)
             vc.title = MainModel.mainDatas()[indexPath.row].title
             navigationController?.pushViewController(vc, animated: true)
             break

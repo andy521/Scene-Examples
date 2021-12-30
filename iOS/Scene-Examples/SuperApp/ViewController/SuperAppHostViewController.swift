@@ -26,8 +26,8 @@ class SuperAppHostViewController: UIViewController {
         self.mode = config.mode
         self.pushUrlString = "rtmp://examplepush.agoramdn.com/live/" + config.sceneId
         self.allowChangeToPushMode = mode == .push
-        let userId = StorageManager.uuid
-        let userName = StorageManager.userName
+        let userId = SupperAppStorageManager.uuid
+        let userName = SupperAppStorageManager.userName
         self.syncUtil = SuperAppSyncUtil(appId: config.appId,
                                          sceneId: config.sceneId,
                                          sceneName: config.sceneName,
@@ -56,7 +56,7 @@ class SuperAppHostViewController: UIViewController {
         mainView.frame = view.bounds
         mainView.delegate = self
         mainView.setPersonViewHidden(hidden: false)
-        let imageName = StorageManager.uuid.headImageName
+        let imageName = SupperAppStorageManager.uuid.headImageName
         let info = MainView.Info(title: config.sceneName + "(\(config.sceneId))",
                                  imageName: imageName,
                                  userCount: 0)
@@ -122,12 +122,12 @@ extension SuperAppHostViewController: MainViewDelegate {
     func mainView(_ view: MainView, didTap action: MainView.Action) {
         switch action {
         case .member:
-            let vc = InvitationVC(syncUtil: syncUtil)
+            let vc = SuperAppInvitationSheetViewController(syncUtil: syncUtil)
             vc.delegate = self
             vc.show(in: self)
             return
         case .more:
-            let vc = ToolVC()
+            let vc = SuperAppToolSheetViewController()
             let open = getLocalAudioMuteState()
             vc.setMicState(open: open)
             vc.delegate = self
@@ -147,7 +147,7 @@ extension SuperAppHostViewController: MainViewDelegate {
 }
 
 extension SuperAppHostViewController: ToolVCDelegate, InvitationVCDelegate {
-    func toolVC(_ vc: ToolVC, didTap action: ToolVC.Action) {
+    func toolVC(_ vc: SuperAppToolSheetViewController, didTap action: SuperAppToolSheetViewController.Action) {
         switch action {
         case .camera:
             switchCamera()
@@ -157,7 +157,7 @@ extension SuperAppHostViewController: ToolVCDelegate, InvitationVCDelegate {
         }
     }
     
-    func invitationVC(_ vc: InvitationVC, didInvited user: SuperAppUserInfo) {
+    func invitationVC(_ vc: SuperAppInvitationSheetViewController, didInvited user: SuperAppUserInfo) {
         changeToByPassPush()
         syncUtil.updatePKInfo(userIdPK: user.userId)
     }
@@ -174,10 +174,10 @@ extension SuperAppHostViewController {
     
     struct Config {
         let appId: String
-        let roomItem: RoomInfo
+        let roomItem: SuperAppRoomInfo
         
         var sceneId: String {
-            return roomItem.id
+            return roomItem.roomId
         }
         
         var sceneName: String {
@@ -185,7 +185,7 @@ extension SuperAppHostViewController {
         }
         
         var mode: Mode {
-            return Mode(rawValue: roomItem.liveMode.rawValue)!
+            return roomItem.liveMode == .push ? .push : .byPassPush
         }
     }
 }

@@ -1,6 +1,6 @@
 //
-//  ToolVC.swift
-//  SuperAppCore
+//  SuperAppToolViewController.swift
+//
 //
 //  Created by ZYP on 2021/11/18.
 //
@@ -9,10 +9,10 @@ import UIKit
 import Presentr
 
 protocol ToolVCDelegate: NSObjectProtocol {
-    func toolVC(_ vc: ToolVC, didTap action: ToolVC.Action)
+    func toolVC(_ vc: SuperAppToolSheetViewController, didTap action: SuperAppToolSheetViewController.Action)
 }
 
-class ToolVC: UIViewController {
+class SuperAppToolSheetViewController: UIViewController {
     typealias Action = ToolView.Action
     private let toolView = ToolView()
     private let presenter = Presentr(presentationType: .bottomHalf)
@@ -48,7 +48,7 @@ class ToolVC: UIViewController {
     }
 }
 
-extension ToolVC: ToolViewDelegate {
+extension SuperAppToolSheetViewController: ToolViewDelegate {
     func toolView(_ view: ToolView, didTap action: ToolView.Action) {
         if action == .mic {
             let open = !view.micOpen

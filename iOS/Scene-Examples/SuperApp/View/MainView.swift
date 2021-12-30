@@ -144,7 +144,7 @@ class MainView: UIView {
     }
     
     func setRemoteViewHidden(hidden: Bool) {
-        Log.info(text: "setRemoteViewHidden \(hidden)", tag: "setRemoteViewHidden")
+        LogUtils.logInfo(message: "setRemoteViewHidden \(hidden)", tag: "setRemoteViewHidden")
         remoteView.isHidden = hidden
     }
     
