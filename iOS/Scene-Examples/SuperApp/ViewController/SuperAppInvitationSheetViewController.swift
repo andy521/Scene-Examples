@@ -9,16 +9,16 @@ import UIKit
 import Presentr
 import AgoraSyncManager
 
-protocol InvitationVCDelegate: NSObjectProtocol {
+protocol SuperAppInvitationSheetDelegate: NSObjectProtocol {
     func invitationVC(_ vc: SuperAppInvitationSheetViewController, didInvited user: SuperAppUserInfo)
 }
 
-class SuperAppInvitationSheetViewController: UIViewController {
-    typealias Info = InvitationCell.Info
-    let invitedView = InvitationView()
+class SuperAppInvitationSheetViewController: BaseViewController {
+    typealias Info = SuperAppInvitationViewCell.Info
+    let invitedView = SuperAppInvitationView()
     private let presenter = Presentr(presentationType: .bottomHalf)
     var syncUtil: SuperAppSyncUtil!
-    weak var delegate: InvitationVCDelegate?
+    weak var delegate: SuperAppInvitationSheetDelegate?
     private var userInfos = [SuperAppUserInfo]()
     
     init(syncUtil: SuperAppSyncUtil) {
@@ -98,8 +98,8 @@ class SuperAppInvitationSheetViewController: UIViewController {
     }
 }
 
-extension SuperAppInvitationSheetViewController: InvitationViewDelegate {
-    func invitationView(_ view: InvitationView,
+extension SuperAppInvitationSheetViewController: SuperAppInvitationViewDelegate {
+    func invitationView(_ view: SuperAppInvitationView,
                         didSelectedAt index: Int) {
         guard let userInfo = getUserInfo(index: index) else {
             return

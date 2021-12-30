@@ -1,5 +1,5 @@
 //
-//  SuperAppHostViewController.swift
+//  SuperAppPlayerViewControllerHost.swift
 //  Scene-Examples
 //
 //  Created by ZYP on 2021/12/28.
@@ -8,8 +8,8 @@
 import UIKit
 import AgoraRtcKit
 
-class SuperAppHostViewController: UIViewController {
-    let mainView = MainView()
+class SuperAppPlayerViewControllerHost: UIViewController {
+    let mainView = SuperAppMainView()
     var syncUtil: SuperAppSyncUtil!
     var pushUrlString: String!
     var agoraKit: AgoraRtcEngineKit!
@@ -57,7 +57,7 @@ class SuperAppHostViewController: UIViewController {
         mainView.delegate = self
         mainView.setPersonViewHidden(hidden: false)
         let imageName = SupperAppStorageManager.uuid.headImageName
-        let info = MainView.Info(title: config.sceneName + "(\(config.sceneId))",
+        let info = SuperAppMainView.Info(title: config.sceneName + "(\(config.sceneId))",
                                  imageName: imageName,
                                  userCount: 0)
         mainView.update(info: info)
@@ -104,7 +104,7 @@ class SuperAppHostViewController: UIViewController {
 }
 
 // MRK: - SuperAppSyncUtilDelegate
-extension SuperAppHostViewController: SuperAppSyncUtilDelegate {
+extension SuperAppPlayerViewControllerHost: SuperAppSyncUtilDelegate {
     func superAppSyncUtilDidPkCancleForOther(util: SuperAppSyncUtil) {
         LogUtils.logInfo(message: "下麦", tag: defaultLogTag)
         if allowChangeToPushMode { changeToPush() }
@@ -118,8 +118,8 @@ extension SuperAppHostViewController: SuperAppSyncUtilDelegate {
 }
 
 // MARK: - UI Event MainViewDelegate
-extension SuperAppHostViewController: MainViewDelegate {
-    func mainView(_ view: MainView, didTap action: MainView.Action) {
+extension SuperAppPlayerViewControllerHost: SuperAppMainViewDelegate {
+    func mainView(_ view: SuperAppMainView, didTap action: SuperAppMainView.Action) {
         switch action {
         case .member:
             let vc = SuperAppInvitationSheetViewController(syncUtil: syncUtil)
@@ -146,7 +146,7 @@ extension SuperAppHostViewController: MainViewDelegate {
     }
 }
 
-extension SuperAppHostViewController: ToolVCDelegate, InvitationVCDelegate {
+extension SuperAppPlayerViewControllerHost: SuperAppToolSheetDelegate, SuperAppInvitationSheetDelegate {
     func toolVC(_ vc: SuperAppToolSheetViewController, didTap action: SuperAppToolSheetViewController.Action) {
         switch action {
         case .camera:
@@ -164,7 +164,7 @@ extension SuperAppHostViewController: ToolVCDelegate, InvitationVCDelegate {
 }
 
 // MARK: - Data Struct
-extension SuperAppHostViewController {
+extension SuperAppPlayerViewControllerHost {
     enum Mode: Int {
         /// 直推模式
         case push = 1

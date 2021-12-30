@@ -7,19 +7,19 @@
 
 import UIKit
 
-protocol MainViewDelegate: NSObjectProtocol {
-    func mainView(_ view: MainView, didTap action: MainView.Action)
+protocol SuperAppMainViewDelegate: NSObjectProtocol {
+    func mainView(_ view: SuperAppMainView, didTap action: SuperAppMainView.Action)
 }
 
-class MainView: UIView {
-    private let personCountView = EntryViewCell.IconTextView()
+class SuperAppMainView: UIView {
+    private let personCountView = SuperAppRoomListViewCell.IconTextView()
     private let leftView = LeftView()
     private let moreButton = UIButton()
     private let closeButton = UIButton()
     private let localView = UIView()
     private let remoteView = RemoteView()
     private let personCountButton = UIButton()
-    weak var delegate: MainViewDelegate?
+    weak var delegate: SuperAppMainViewDelegate?
     private var info = Info.empty
     
     var renderViewLocal: UIView {
@@ -154,7 +154,7 @@ class MainView: UIView {
     }
 }
 
-extension MainView {
+extension SuperAppMainView {
     enum Action {
         case close
         case more

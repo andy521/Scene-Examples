@@ -7,16 +7,16 @@
 
 import UIKit
 
-protocol InvitationViewDelegate: NSObjectProtocol {
-    func invitationView(_ view: InvitationView, didSelectedAt index: Int)
+protocol SuperAppInvitationViewDelegate: NSObjectProtocol {
+    func invitationView(_ view: SuperAppInvitationView, didSelectedAt index: Int)
 }
 
-class InvitationView: UIView {
+class SuperAppInvitationView: UIView {
     let tableView = UITableView(frame: .zero,
                                 style: .plain)
     let titleLabel = UILabel()
-    private var infos = [InvitationCell.Info]()
-    weak var delegate: InvitationViewDelegate?
+    private var infos = [SuperAppInvitationViewCell.Info]()
+    weak var delegate: SuperAppInvitationViewDelegate?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -47,26 +47,26 @@ class InvitationView: UIView {
     }
     
     private func commomInit() {
-        tableView.register(InvitationCell.self,
+        tableView.register(SuperAppInvitationViewCell.self,
                            forCellReuseIdentifier: "InvitationCell")
         tableView.delegate = self
         tableView.dataSource = self
     }
     
-    func update(infos: [InvitationCell.Info]) {
+    func update(infos: [SuperAppInvitationViewCell.Info]) {
         self.infos = infos
         tableView.reloadData()
     }
     
 }
 
-extension InvitationView: UITableViewDataSource, UITableViewDelegate {
+extension SuperAppInvitationView: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return infos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "InvitationCell", for: indexPath) as! InvitationCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "InvitationCell", for: indexPath) as! SuperAppInvitationViewCell
         cell.selectionStyle = .none
         cell.delegate = self
         let info = infos[indexPath.row]
@@ -79,8 +79,8 @@ extension InvitationView: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
-extension InvitationView: InvitationCellDelegate {
-    func cell(_ cell: InvitationCell, on index: Int) {
+extension SuperAppInvitationView: SuperAppInvitationCellDelegate {
+    func cell(_ cell: SuperAppInvitationViewCell, on index: Int) {
         delegate?.invitationView(self, didSelectedAt: index)
     }
 }

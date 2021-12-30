@@ -8,14 +8,14 @@
 import UIKit
 
 protocol CreateLiveViewDelegate: NSObjectProtocol {
-    func createLiveViewDidTapCloseButton(_ view: CreateLiveView)
-    func createLiveViewDidTapCameraButton(_ view: CreateLiveView)
-    func createLiveViewDidTapStartButton(_ view: CreateLiveView)
-    func createLiveViewDidTapRandomButton(_ view: CreateLiveView)
+    func createLiveViewDidTapCloseButton(_ view: SuperAppCreateLiveView)
+    func createLiveViewDidTapCameraButton(_ view: SuperAppCreateLiveView)
+    func createLiveViewDidTapStartButton(_ view: SuperAppCreateLiveView)
+    func createLiveViewDidTapRandomButton(_ view: SuperAppCreateLiveView)
 }
 
-class CreateLiveView: UIView {
-    typealias SelectedType = CreateLiveView.CenterView.SelectedType
+class SuperAppCreateLiveView: UIView {
+    typealias SelectedType = SuperAppCreateLiveView.CenterView.SelectedType
     
     let cameraPreview = UIView()
     private let backButton = UIButton()

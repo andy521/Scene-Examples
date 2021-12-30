@@ -1,5 +1,5 @@
 //
-//  SuperAppAudienceViewController+RTC.swift
+//  SuperAppPlayerViewControllerAudience+RTC.swift
 //  Scene-Examples
 //
 //  Created by ZYP on 2021/12/28.
@@ -8,7 +8,7 @@
 import UIKit
 import AgoraRtcKit
 
-extension SuperAppAudienceViewController {
+extension SuperAppPlayerViewControllerAudience {
     var videoSize: CGSize { .init(width: 640, height: 360) }
     
     func initMediaPlayer(useAgoraCDN: Bool) {
@@ -100,7 +100,7 @@ extension SuperAppAudienceViewController {
 }
 
 // MARK: - AgoraRtcEngineDelegate
-extension SuperAppAudienceViewController: AgoraRtcEngineDelegate {
+extension SuperAppPlayerViewControllerAudience: AgoraRtcEngineDelegate {
     
     func rtcEngine(_ engine: AgoraRtcEngineKit,
                    didJoinChannel channel: String,
@@ -120,7 +120,7 @@ extension SuperAppAudienceViewController: AgoraRtcEngineDelegate {
 }
 
 // MARK: - AgoraRtcMediaPlayerDelegate
-extension SuperAppAudienceViewController: AgoraRtcMediaPlayerDelegate {
+extension SuperAppPlayerViewControllerAudience: AgoraRtcMediaPlayerDelegate {
     func agoraRtcMediaPlayer(_ playerKit: AgoraRtcMediaPlayerProtocol,
                              didChangedTo state: AgoraMediaPlayerState,
                              error: AgoraMediaPlayerError) {

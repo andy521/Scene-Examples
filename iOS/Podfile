@@ -13,7 +13,6 @@ target 'Scene-Examples' do
   pod 'AgoraSyncManager', :path => '~/Agora/SyncManager-iOS/AgoraSyncManager/AgoraSyncManagerLocal.podspec'
   pod 'Presentr'
   pod 'Toast-Swift'
-  pod 'AgoraLog'
   # Pods for Scene-Examples
 
 end

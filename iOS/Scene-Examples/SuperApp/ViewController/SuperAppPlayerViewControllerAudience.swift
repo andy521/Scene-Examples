@@ -1,5 +1,5 @@
 //
-//  SuperAppAudienceViewController.swift
+//  SuperAppPlayerViewControllerAudience.swift
 //  Scene-Examples
 //
 //  Created by ZYP on 2021/12/28.
@@ -8,8 +8,8 @@
 import UIKit
 import AgoraRtcKit
 
-class SuperAppAudienceViewController: UIViewController {
-    let mainView = MainView()
+class SuperAppPlayerViewControllerAudience: BaseViewController {
+    let mainView = SuperAppMainView()
     var syncUtil: SuperAppSyncUtil!
     var pushUrlString: String!
     var pullUrlString: String!
@@ -96,7 +96,7 @@ class SuperAppAudienceViewController: UIViewController {
         mainView.frame = view.bounds
         mainView.delegate = self
         let imageName = SupperAppStorageManager.uuid.headImageName
-        let info = MainView.Info(title: config.sceneName + "(\(config.sceneId))",
+        let info = SuperAppMainView.Info(title: config.sceneName + "(\(config.sceneId))",
                                  imageName: imageName,
                                  userCount: 0)
         mainView.update(info: info)
@@ -151,7 +151,7 @@ class SuperAppAudienceViewController: UIViewController {
 }
 
 // MRK: - SuperAppSyncUtilDelegate
-extension SuperAppAudienceViewController: SuperAppSyncUtilDelegate {
+extension SuperAppPlayerViewControllerAudience: SuperAppSyncUtilDelegate {
     func superAppSyncUtilDidPkAcceptForMe(util: SuperAppSyncUtil, userIdPK: String) {
         LogUtils.logInfo(message: "收到上麦申请", tag: defaultLogTag)
         changeToRtc()
@@ -180,8 +180,8 @@ extension SuperAppAudienceViewController: SuperAppSyncUtilDelegate {
 }
 
 // MARK: - UI Event MainViewDelegate
-extension SuperAppAudienceViewController: MainViewDelegate {
-    func mainView(_ view: MainView, didTap action: MainView.Action) {
+extension SuperAppPlayerViewControllerAudience: SuperAppMainViewDelegate {
+    func mainView(_ view: SuperAppMainView, didTap action: SuperAppMainView.Action) {
         switch action {
         case .close:
             destroy()
@@ -197,7 +197,7 @@ extension SuperAppAudienceViewController: MainViewDelegate {
 }
 
 // MARK: - Data Struct
-extension SuperAppAudienceViewController {
+extension SuperAppPlayerViewControllerAudience {
     struct Config {
         let appId: String
         let roomInfo: SuperAppRoomInfo

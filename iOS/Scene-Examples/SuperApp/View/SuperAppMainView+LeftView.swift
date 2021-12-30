@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension MainView {
+extension SuperAppMainView {
     class LeftView: UIView {
         let imageView = UIImageView()
         let titleLabel = UILabel()

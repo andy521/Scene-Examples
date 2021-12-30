@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension CreateLiveView {
+extension SuperAppCreateLiveView {
     
     class CenterView: UIView {
         let itemWidth: CGFloat = (UIScreen.main.bounds.size.width - 70)/2

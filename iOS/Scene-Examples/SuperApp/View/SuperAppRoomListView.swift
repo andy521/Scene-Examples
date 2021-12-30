@@ -7,22 +7,22 @@
 
 import UIKit
 
-protocol EntryViewDelegate: NSObjectProtocol {
-    func entryViewDidTapCreateButton(_ view: EntryView)
-    func entryView(_ view: EntryView,
-                   didSelected info: EntryView.Info,
+protocol SuperAppRoomListViewDelegate: NSObjectProtocol {
+    func entryViewDidTapCreateButton(_ view: SuperAppRoomListView)
+    func entryView(_ view: SuperAppRoomListView,
+                   didSelected info: SuperAppRoomListView.Info,
                    at index: Int)
-    func entryViewdidPull(_ view: EntryView)
+    func entryViewdidPull(_ view: SuperAppRoomListView)
 }
 
-class EntryView: UIView {
-    typealias Info = EntryViewCell.Info
+class SuperAppRoomListView: UIView {
+    typealias Info = SuperAppRoomListViewCell.Info
     let createButton = UIButton()
     let centerButton = UIButton()
     let tipsLabel = UILabel()
     let collectionView: UICollectionView
     let refreshControl = UIRefreshControl()
-    weak var delegate: EntryViewDelegate?
+    weak var delegate: SuperAppRoomListViewDelegate?
     var infos = [Info]()
     
     override init(frame: CGRect) {
@@ -76,7 +76,7 @@ class EntryView: UIView {
     }
     
     private func commonInit() {
-        collectionView.register(EntryViewCell.self, forCellWithReuseIdentifier: "EntryViewCell")
+        collectionView.register(SuperAppRoomListViewCell.self, forCellWithReuseIdentifier: "EntryViewCell")
         collectionView.dataSource = self
         collectionView.delegate = self
         createButton.addTarget(self,
@@ -112,14 +112,14 @@ class EntryView: UIView {
 }
 
 // MARK: - UICollectionViewDataSource & UICollectionViewDelegate
-extension EntryView: UICollectionViewDataSource, UICollectionViewDelegate {
+extension SuperAppRoomListView: UICollectionViewDataSource, UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return infos.count
     }
     
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "EntryViewCell", for: indexPath) as! EntryViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "EntryViewCell", for: indexPath) as! SuperAppRoomListViewCell
         let info = infos[indexPath.row]
         cell.setInfo(info)
         return cell

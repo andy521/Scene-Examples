@@ -8,9 +8,9 @@
 import UIKit
 import AgoraSyncManager
 
-public class SuperAppRoomListViewController: UIViewController {
+class SuperAppRoomListViewController: BaseViewController {
     private var rightBarButtonItem: UIBarButtonItem!
-    private let entryView = EntryView()
+    private let entryView = SuperAppRoomListView()
     private var syncManager: AgoraSyncManager!
     private var sceneRef: SceneReference?
     private var rooms = [SuperAppRoomInfo]()
@@ -79,7 +79,7 @@ public class SuperAppRoomListViewController: UIViewController {
     }
     
     func udpateRooms(rooms: [SuperAppRoomInfo]) {
-        let infos = rooms.map({ EntryView.Info(imageName: $0.roomId.headImageName,
+        let infos = rooms.map({ SuperAppRoomListView.Info(imageName: $0.roomId.headImageName,
                                                title: $0.roomName,
                                                count: 0) })
         self.rooms = rooms
@@ -91,34 +91,34 @@ public class SuperAppRoomListViewController: UIViewController {
     }
 }
 
-extension SuperAppRoomListViewController: EntryViewDelegate {
-    func entryViewdidPull(_ view: EntryView) {
+extension SuperAppRoomListViewController: SuperAppRoomListViewDelegate {
+    func entryViewdidPull(_ view: SuperAppRoomListView) {
         fetchRooms()
     }
     
-    func entryViewDidTapCreateButton(_ view: EntryView) {
+    func entryViewDidTapCreateButton(_ view: SuperAppRoomListView) {
         let vc = SuperAppCreateLiveViewController(appId: appId)
         vc.delegate = self
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true, completion: nil)
     }
     
-    func entryView(_ view: EntryView,
-                   didSelected info: EntryView.Info,
+    func entryView(_ view: SuperAppRoomListView,
+                   didSelected info: SuperAppRoomListView.Info,
                    at index: Int) {
         guard let roomInfo = getRoomInfo(index: index) else {
             return
         }
         /// 作为观众进入
-        let config = SuperAppAudienceViewController.Config(appId: appId,
+        let config = SuperAppPlayerViewControllerAudience.Config(appId: appId,
                                                            roomInfo: roomInfo)
-        let vc = SuperAppAudienceViewController(config: config)
+        let vc = SuperAppPlayerViewControllerAudience(config: config)
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true, completion: nil)
     }
 }
 
-extension SuperAppRoomListViewController: CreateLiveVCDelegate {
+extension SuperAppRoomListViewController: SuperAppCreateLiveDelegate {
     func createLiveVC(_ vc: SuperAppCreateLiveViewController,
                       didSart roomName: String,
                       sellectedType: SuperAppCreateLiveViewController.SelectedType) {
@@ -128,9 +128,9 @@ extension SuperAppRoomListViewController: CreateLiveVCDelegate {
         let liveMode: LiveMode = sellectedType == .value1 ? .push : .byPassPush
         let roomItem = SuperAppRoomInfo(roomId: roomId, roomName: roomName, liveMode: liveMode)
         
-        let config = SuperAppHostViewController.Config(appId: appId,
+        let config = SuperAppPlayerViewControllerHost.Config(appId: appId,
                                                        roomItem: roomItem)
-        let vc = SuperAppHostViewController(config: config)
+        let vc = SuperAppPlayerViewControllerHost(config: config)
         
         vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true, completion: nil)

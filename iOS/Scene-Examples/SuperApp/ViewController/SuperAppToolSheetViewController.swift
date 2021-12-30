@@ -8,15 +8,15 @@
 import UIKit
 import Presentr
 
-protocol ToolVCDelegate: NSObjectProtocol {
+protocol SuperAppToolSheetDelegate: NSObjectProtocol {
     func toolVC(_ vc: SuperAppToolSheetViewController, didTap action: SuperAppToolSheetViewController.Action)
 }
 
 class SuperAppToolSheetViewController: UIViewController {
-    typealias Action = ToolView.Action
-    private let toolView = ToolView()
+    typealias Action = SuperAppToolView.Action
+    private let toolView = SuperAppToolView()
     private let presenter = Presentr(presentationType: .bottomHalf)
-    weak var delegate: ToolVCDelegate?
+    weak var delegate: SuperAppToolSheetDelegate?
     
     
     override func viewDidLoad() {
@@ -48,8 +48,8 @@ class SuperAppToolSheetViewController: UIViewController {
     }
 }
 
-extension SuperAppToolSheetViewController: ToolViewDelegate {
-    func toolView(_ view: ToolView, didTap action: ToolView.Action) {
+extension SuperAppToolSheetViewController: SuperAppToolViewDelegate {
+    func toolView(_ view: SuperAppToolView, didTap action: SuperAppToolView.Action) {
         if action == .mic {
             let open = !view.micOpen
             setMicState(open: open)

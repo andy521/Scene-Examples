@@ -1,5 +1,5 @@
 //
-//  SuperAppHostViewController+RTC.swift
+//  SuperAppPlayerViewControllerHost+RTC.swift
 //  Scene-Examples
 //
 //  Created by ZYP on 2021/12/28.
@@ -7,7 +7,7 @@
 
 import AgoraRtcKit
 
-extension SuperAppHostViewController {
+extension SuperAppPlayerViewControllerHost {
     var videoSize: CGSize { .init(width: 640, height: 360) }
     
     func joinRtcByPassPush() { /** 旁推方式加入 **/
@@ -162,7 +162,7 @@ extension SuperAppHostViewController {
     }
 }
 
-extension SuperAppHostViewController: AgoraRtcEngineDelegate {
+extension SuperAppPlayerViewControllerHost: AgoraRtcEngineDelegate {
     func rtcEngine(_ engine: AgoraRtcEngineKit,
                    didJoinChannel channel: String,
                    withUid uid: UInt,
@@ -198,7 +198,7 @@ extension SuperAppHostViewController: AgoraRtcEngineDelegate {
     }
 }
 
-extension SuperAppHostViewController: AgoraDirectCdnStreamingEventDelegate {
+extension SuperAppPlayerViewControllerHost: AgoraDirectCdnStreamingEventDelegate {
     func onDirectCdnStreamingStateChanged(_ state: AgoraDirectCdnStreamingState,
                                           error: AgoraDirectCdnStreamingError,
                                           message: String?) {

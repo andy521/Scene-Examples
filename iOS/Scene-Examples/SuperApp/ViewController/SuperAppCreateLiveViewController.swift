@@ -7,17 +7,17 @@
 
 import AgoraRtcKit
 
-protocol CreateLiveVCDelegate: NSObjectProtocol {
+protocol SuperAppCreateLiveDelegate: NSObjectProtocol {
     func createLiveVC(_ vc: SuperAppCreateLiveViewController,
                       didSart roomName: String,
                       sellectedType: SuperAppCreateLiveViewController.SelectedType)
 }
 
-class SuperAppCreateLiveViewController: UIViewController {
-    let createLiveView = CreateLiveView(frame: .zero)
+class SuperAppCreateLiveViewController: BaseViewController {
+    let createLiveView = SuperAppCreateLiveView(frame: .zero)
     private var appId: String!
     private var rtcKit: AgoraRtcEngineKit!
-    weak var delegate: CreateLiveVCDelegate?
+    weak var delegate: SuperAppCreateLiveDelegate?
     
     public init(appId: String) {
         self.appId = appId
@@ -71,15 +71,15 @@ class SuperAppCreateLiveViewController: UIViewController {
 }
 
 extension SuperAppCreateLiveViewController: CreateLiveViewDelegate {
-    func createLiveViewDidTapCloseButton(_ view: CreateLiveView) {
+    func createLiveViewDidTapCloseButton(_ view: SuperAppCreateLiveView) {
         dismiss(animated: true, completion: nil)
     }
     
-    func createLiveViewDidTapCameraButton(_ view: CreateLiveView) {
+    func createLiveViewDidTapCameraButton(_ view: SuperAppCreateLiveView) {
         switchCamera()
     }
     
-    func createLiveViewDidTapStartButton(_ view: CreateLiveView) {
+    func createLiveViewDidTapStartButton(_ view: SuperAppCreateLiveView) {
         let text = createLiveView.text
         let sellectedType: SelectedType = createLiveView.currentSelectedType == .value1 ? .value1 : .value2
         dismiss(animated: true) { [weak self] in
@@ -90,7 +90,7 @@ extension SuperAppCreateLiveViewController: CreateLiveViewDelegate {
         }
     }
     
-    func createLiveViewDidTapRandomButton(_ view: CreateLiveView) {
+    func createLiveViewDidTapRandomButton(_ view: SuperAppCreateLiveView) {
         genRandomName()
     }
 }

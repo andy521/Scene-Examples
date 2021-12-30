@@ -7,7 +7,7 @@
 
 import UIKit
 
-class EntryViewCell: UICollectionViewCell {
+class SuperAppRoomListViewCell: UICollectionViewCell {
     let personCountView = IconTextView(frame: .zero)
     let briefView = LabelShadowView(frame: .zero)
     
@@ -56,7 +56,7 @@ class EntryViewCell: UICollectionViewCell {
     }
 }
 
-extension EntryViewCell {
+extension SuperAppRoomListViewCell {
     struct Info {
         let imageName: String
         let title: String
@@ -64,7 +64,7 @@ extension EntryViewCell {
     }
 }
 
-extension EntryViewCell {
+extension SuperAppRoomListViewCell {
     class IconTextView: UIControl {
         private(set) var label = UILabel(frame: CGRect.zero)
         private(set) var imageView = UIImageView(frame: CGRect.zero)
