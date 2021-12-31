@@ -46,21 +46,18 @@ public class RoomListActivity extends BaseActivity<SuperappRoomListActivityBindi
                 RoomManager.getInstance().getAllRooms(new RoomManager.DataListCallback<RoomManager.RoomInfo>() {
                     @Override
                     public void onSuccess(List<RoomManager.RoomInfo> dataList) {
-                        runOnUiThread(() -> {
-                            mDataList.clear();
-                            mDataList.addAll(dataList);
-                            notifyDataSetChanged();
-                            triggerDataListUpdateRun();
-                        });
-
+                        mDataList.clear();
+                        mDataList.addAll(dataList);
+                        notifyDataSetChanged();
+                        triggerDataListUpdateRun();
                     }
 
                     @Override
                     public void onFailed(Exception e) {
                         Log.e(TAG, "", e);
-                        runOnUiThread(() -> {
-                            triggerDataListUpdateRun();
-                        });
+                        mDataList.clear();
+                        notifyDataSetChanged();
+                        triggerDataListUpdateRun();
                     }
                 });
             }

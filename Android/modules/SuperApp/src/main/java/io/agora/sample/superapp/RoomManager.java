@@ -144,17 +144,23 @@ public class RoomManager {
         Sync.Instance().joinScene(roomId, new Sync.JoinSceneCallback() {
             @Override
             public void onSuccess(SceneReference sceneReference) {
-                if(isHost){
-                    updatePKInfo(roomId, "");
-                }
-
                 sceneMap.put(roomId, sceneReference);
-                List<Runnable> runnables = roomJoinedRuns.get(roomId);
-                if (runnables != null) {
-                    for (Runnable runnable : runnables) {
-                        mainHandler.post(runnable);
+                Runnable successRun = new Runnable() {
+                    @Override
+                    public void run() {
+                        List<Runnable> runnables = roomJoinedRuns.get(roomId);
+                        if (runnables != null) {
+                            for (Runnable runnable : runnables) {
+                                mainHandler.post(runnable);
+                            }
+                            runnables.clear();
+                        }
                     }
-                    runnables.clear();
+                };
+                if(isHost){
+                    updatePKInfo(roomId, "", successRun);
+                }else{
+                    successRun.run();
                 }
             }
 
@@ -165,7 +171,7 @@ public class RoomManager {
         });
     }
 
-    private void updatePKInfo(String roomId, String userIdPK) {
+    private void updatePKInfo(String roomId, String userIdPK, Runnable successRun) {
         checkInitialized();
         doOnRoomJoined(roomId, new Runnable() {
             @Override
@@ -179,7 +185,9 @@ public class RoomManager {
                 sceneReference.update(pkInfo.toObjectMap(), new Sync.DataItemCallback() {
                     @Override
                     public void onSuccess(IObject result) {
-
+                        if(successRun != null){
+                            successRun.run();
+                        }
                     }
 
                     @Override
@@ -320,11 +328,11 @@ public class RoomManager {
     }
 
     public void startLinkWith(String roomId, String userId) {
-        updatePKInfo(roomId, userId);
+        updatePKInfo(roomId, userId, null);
     }
 
     public void stopLink(String roomId) {
-        updatePKInfo(roomId, "");
+        updatePKInfo(roomId, "", null);
     }
 
     public void getRoomPKInfo(String roomId, DataCallback<PKInfo> callback) {

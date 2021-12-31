@@ -36,10 +36,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import io.agora.mediaplayer.IMediaPlayer;
 import io.agora.mediaplayer.IMediaPlayerObserver;
@@ -103,14 +101,13 @@ public class RtcManager {
     );
 
     private volatile boolean isInitialized = false;
-    private final Map<Integer, Runnable> firstVideoFramePendingRuns = new HashMap<>();
     private RtcEngine engine;
 
     private LiveTranscoding liveTranscoding = new LiveTranscoding();
     private int canvas_width = 480;
     private int canvas_height = 640;
 
-    private Handler mainHandler = new Handler(Looper.getMainLooper());
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     private volatile int localUid = 0;
     private Runnable pendingDirectCDNStoppedRun = null;
@@ -242,14 +239,23 @@ public class RtcManager {
             };
             engine = RtcEngine.create(config);
             engine.setDefaultAudioRoutetoSpeakerphone(true);
+            engine.enableDualStreamMode(false);
             engine.setClientRole(IRtcEngineEventHandler.ClientRole.CLIENT_ROLE_BROADCASTER);
             engine.enableVideo();
             engine.enableAudio();
+            engine.enableLocalAudio(!isMuteLocalAudio);
 
             canvas_height = Math.max(encoderConfiguration.dimensions.height, encoderConfiguration.dimensions.width);
             canvas_width = Math.min(encoderConfiguration.dimensions.height, encoderConfiguration.dimensions.width);
+
+            if(currCameraDirection == CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT){
+                encoderConfiguration.mirrorMode = VideoEncoderConfiguration.MIRROR_MODE_TYPE.MIRROR_MODE_ENABLED;
+            }else{
+                encoderConfiguration.mirrorMode = VideoEncoderConfiguration.MIRROR_MODE_TYPE.MIRROR_MODE_DISABLED;
+            }
             engine.setVideoEncoderConfiguration(encoderConfiguration);
             engine.setDirectCdnStreamingVideoConfiguration(encoderConfiguration);
+
             isInitialized = true;
         } catch (Exception e) {
             if (listener != null) {
@@ -274,7 +280,6 @@ public class RtcManager {
         engine.setCameraCapturerConfiguration(new CameraCapturerConfiguration(currCameraDirection));
         View videoView = new TextureView(container.getContext());
         container.addView(videoView);
-        firstVideoFramePendingRuns.put(LOCAL_RTC_UID, firstFrame);
         int ret = engine.setupLocalVideo(new VideoCanvas(videoView, RENDER_MODE_HIDDEN, LOCAL_RTC_UID));
         Log.d(TAG, "setupLocalVideo ret=" + ret);
         ret = engine.startPreview();
@@ -288,18 +293,19 @@ public class RtcManager {
         engine.switchCamera();
         if (currCameraDirection == CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT) {
             currCameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_REAR;
+            encoderConfiguration.mirrorMode = VideoEncoderConfiguration.MIRROR_MODE_TYPE.MIRROR_MODE_DISABLED;
         } else {
             currCameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT;
+            encoderConfiguration.mirrorMode = VideoEncoderConfiguration.MIRROR_MODE_TYPE.MIRROR_MODE_ENABLED;
         }
+        engine.setVideoEncoderConfiguration(encoderConfiguration);
+        engine.setDirectCdnStreamingVideoConfiguration(encoderConfiguration);
     }
 
     public void startDirectCDNStreaming(String channelId) {
         if (engine == null) {
             return;
         }
-        engine.enableLocalAudio(!isMuteLocalAudio);
-
-        engine.setDirectCdnStreamingVideoConfiguration(encoderConfiguration);
         DirectCdnStreamingMediaOptions directCdnStreamingMediaOptions = new DirectCdnStreamingMediaOptions();
         directCdnStreamingMediaOptions.publishCameraTrack = true;
         directCdnStreamingMediaOptions.publishMicrophoneTrack = true;
@@ -322,8 +328,6 @@ public class RtcManager {
         if (engine == null) {
             return;
         }
-        engine.enableLocalAudio(!isMuteLocalAudio);
-
         ChannelMediaOptions channelMediaOptions = new ChannelMediaOptions();
         channelMediaOptions.publishAudioTrack = true;
         channelMediaOptions.publishCameraTrack = true;
@@ -365,7 +369,6 @@ public class RtcManager {
             int ret = engine.removePublishStreamUrl(String.format(Locale.US, AGORA_CDN_CHANNEL_PUSH_PREFIX, channelId));
             Log.d(TAG, "Stream Publish: stopRtcStreaming removePublishStreamUrl ret=" + ret );
         }
-        engine.stopPreview();
     }
 
     public void renderRemoteVideo(FrameLayout container, int uid, Runnable firstFrame) {
@@ -376,7 +379,6 @@ public class RtcManager {
         container.removeAllViews();
         TextureView videoView = new TextureView(container.getContext());
         container.addView(videoView);
-        firstVideoFramePendingRuns.put(uid, firstFrame);
         engine.setupRemoteVideo(new VideoCanvas(videoView, RENDER_MODE_HIDDEN, uid));
     }
 
@@ -385,7 +387,6 @@ public class RtcManager {
         mainHandler.removeCallbacksAndMessages(null);
         pendingDirectCDNStoppedRun = null;
         pendingStreamUnpublishedlRun = null;
-        firstVideoFramePendingRuns.clear();
         if (engine != null) {
             engine.leaveChannel();
             engine.stopDirectCdnStreaming();

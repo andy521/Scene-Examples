@@ -1,7 +1,6 @@
 package io.agora.sample.superapp;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.Toast;
 
@@ -134,13 +133,13 @@ public class HostDetailActivity extends BaseActivity<SuperappHostDetailActivityB
 
             }
         });
+        rtcManager.renderLocalVideo(mBinding.fullVideoContainer, null);
 
         if (mRoomInfo.liveMode == RoomManager.PUSH_MODE_RTC) {
             rtcManager.startRtcStreaming(mRoomInfo.roomId, RoomManager.getCacheUserId(), true);
         } else {
             rtcManager.startDirectCDNStreaming(mRoomInfo.roomId);
         }
-        new Handler().postDelayed(() -> rtcManager.renderLocalVideo(mBinding.fullVideoContainer, null), 200);
 
     }
 

@@ -78,7 +78,6 @@ public class PreviewActivity extends BaseActivity<SuperappPreviewActivityBinding
             RoomManager.getInstance().createRoom(randomName, pushMode, new RoomManager.DataCallback<RoomManager.RoomInfo>() {
                 @Override
                 public void onSuccess(RoomManager.RoomInfo data) {
-                    rtcManager.release();
                     Intent intent = new Intent(PreviewActivity.this, HostDetailActivity.class);
                     intent.putExtra("roomInfo", data);
                     startActivity(intent);
@@ -114,4 +113,9 @@ public class PreviewActivity extends BaseActivity<SuperappPreviewActivityBinding
         rtcManager.renderLocalVideo(surfaceViewContainer, null);
     }
 
+    @Override
+    public void finish() {
+        rtcManager.release();
+        super.finish();
+    }
 }
