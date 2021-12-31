@@ -87,12 +87,14 @@ extension SuperAppInvitationViewCell {
         let title: String
         let imageName: String
         let isInvited: Bool
+        let userId: String
         
         static var empty: Info {
             return Info(idnex: 0,
                         title: "",
                         imageName: "",
-                        isInvited: false)
+                        isInvited: false,
+                        userId: "")
         }
     }
 }

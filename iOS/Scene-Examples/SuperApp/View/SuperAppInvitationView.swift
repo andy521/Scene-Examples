@@ -8,15 +8,17 @@
 import UIKit
 
 protocol SuperAppInvitationViewDelegate: NSObjectProtocol {
-    func invitationView(_ view: SuperAppInvitationView, didSelectedAt index: Int)
+    func invitationView(_ view: SuperAppInvitationView, didSelected info: SuperAppInvitationView.Info)
 }
 
 class SuperAppInvitationView: UIView {
+    typealias Info = SuperAppInvitationViewCell.Info
     let tableView = UITableView(frame: .zero,
                                 style: .plain)
     let titleLabel = UILabel()
     private var infos = [SuperAppInvitationViewCell.Info]()
     weak var delegate: SuperAppInvitationViewDelegate?
+    var manager: SuperAppInvitationSheetManager?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -30,6 +32,9 @@ class SuperAppInvitationView: UIView {
     
     private func setup() {
         backgroundColor = .white
+        translatesAutoresizingMaskIntoConstraints = false
+        widthAnchor.constraint(equalToConstant: cl_screenWidht).isActive = true
+        heightAnchor.constraint(equalToConstant: 350).isActive = true
         titleLabel.text = "在线用户"
         titleLabel.textColor = .gray
         addSubview(tableView)
@@ -53,11 +58,16 @@ class SuperAppInvitationView: UIView {
         tableView.dataSource = self
     }
     
-    func update(infos: [SuperAppInvitationViewCell.Info]) {
+    private func update(infos: [SuperAppInvitationViewCell.Info]) {
         self.infos = infos
         tableView.reloadData()
     }
     
+    func startFetch(manager: SuperAppInvitationSheetManager) {
+        self.manager = manager
+        manager.delegate = self
+        manager.fetchInfos()
+    }
 }
 
 extension SuperAppInvitationView: UITableViewDataSource, UITableViewDelegate {
@@ -79,8 +89,15 @@ extension SuperAppInvitationView: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
+extension SuperAppInvitationView: SuperAppInvitationSheetManagerDelegate {
+    func superAppInvitationSheetManagerDidFetch(infos: [SuperAppInvitationSheetManager.Info]) {
+        update(infos: infos)
+    }
+}
+
 extension SuperAppInvitationView: SuperAppInvitationCellDelegate {
     func cell(_ cell: SuperAppInvitationViewCell, on index: Int) {
-        delegate?.invitationView(self, didSelectedAt: index)
+        let info = infos[index]
+        delegate?.invitationView(self, didSelected: info)
     }
 }

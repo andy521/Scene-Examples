@@ -24,7 +24,7 @@ class SuperAppPlayerViewControllerHost: UIViewController {
     public init(config: Config) {
         self.config = config
         self.mode = config.mode
-        self.pushUrlString = "rtmp://examplepush.agoramdn.com/live/" + config.sceneId
+        self.pushUrlString = "rtmp://examplepush.agoramde.agoraio.cn/live/" + config.sceneId
         self.allowChangeToPushMode = mode == .push
         let userId = SupperAppStorageManager.uuid
         let userName = SupperAppStorageManager.userName
@@ -122,16 +122,17 @@ extension SuperAppPlayerViewControllerHost: SuperAppMainViewDelegate {
     func mainView(_ view: SuperAppMainView, didTap action: SuperAppMainView.Action) {
         switch action {
         case .member:
-            let vc = SuperAppInvitationSheetViewController(syncUtil: syncUtil)
-            vc.delegate = self
-            vc.show(in: self)
+            let inviteView = SuperAppInvitationView()
+            inviteView.delegate = self
+            inviteView.startFetch(manager: .init(syncUtil: syncUtil))
+            AlertManager.show(view: inviteView, alertPostion: .bottom)
             return
         case .more:
-            let vc = SuperAppToolSheetViewController()
+            let toolView = SuperAppToolView()
             let open = getLocalAudioMuteState()
-            vc.setMicState(open: open)
-            vc.delegate = self
-            vc.show(in: self)
+            toolView.setMicState(open: open)
+            toolView.delegate = self
+            AlertManager.show(view: toolView, alertPostion: .bottom)
             return
         case .close:
             destroy()
@@ -146,8 +147,13 @@ extension SuperAppPlayerViewControllerHost: SuperAppMainViewDelegate {
     }
 }
 
-extension SuperAppPlayerViewControllerHost: SuperAppToolSheetDelegate, SuperAppInvitationSheetDelegate {
-    func toolVC(_ vc: SuperAppToolSheetViewController, didTap action: SuperAppToolSheetViewController.Action) {
+extension SuperAppPlayerViewControllerHost: SuperAppToolViewDelegate, SuperAppInvitationViewDelegate {
+    func invitationView(_ view: SuperAppInvitationView, didSelected info: SuperAppInvitationView.Info) {
+        changeToByPassPush()
+        syncUtil.updatePKInfo(userIdPK: info.userId)
+    }
+    
+    func toolView(_ view: SuperAppToolView, didTap action: SuperAppToolView.Action) {
         switch action {
         case .camera:
             switchCamera()
@@ -155,11 +161,6 @@ extension SuperAppPlayerViewControllerHost: SuperAppToolSheetDelegate, SuperAppI
             audioIsMute = !audioIsMute
             muteLocalAudio(mute: audioIsMute)
         }
-    }
-    
-    func invitationVC(_ vc: SuperAppInvitationSheetViewController, didInvited user: SuperAppUserInfo) {
-        changeToByPassPush()
-        syncUtil.updatePKInfo(userIdPK: user.userId)
     }
 }
 

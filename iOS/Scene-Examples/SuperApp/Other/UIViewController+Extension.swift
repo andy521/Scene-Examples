@@ -10,6 +10,6 @@ import Foundation
 
 extension BaseViewController {
     func show(_ text: String) {
-        showHUD(title: text)
+        ToastView.show(text: text)
     }
 }

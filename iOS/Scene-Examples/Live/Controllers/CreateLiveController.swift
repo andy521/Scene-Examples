@@ -203,6 +203,6 @@ extension CreateLiveController {
     }
     
     func onFailed(error: SyncError) {
-        LogUtils.log(message: "code == \(error.code) msg == \(error.message)", level: .error)
+        LogUtils.log(message: error.localizedDescription, level: .error)
     }
 }

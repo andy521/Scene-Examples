@@ -9,7 +9,7 @@ import UIKit
 
 enum SceneType: String {
     /// 单直播
-    case singleLive = "SignleLive"
+    case singleLive = "signleLive"
     case superApp = "superApp"
     
     var alertTitle: String {

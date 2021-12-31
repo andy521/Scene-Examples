@@ -29,6 +29,11 @@ class SuperAppToolView: UIView {
     }
     
     private func setup() {
+        backgroundColor = .white
+        translatesAutoresizingMaskIntoConstraints = false
+        widthAnchor.constraint(equalToConstant: cl_screenWidht).isActive = true
+        heightAnchor.constraint(equalToConstant: 250).isActive = true
+        
         titleLabel.text = "工具"
         cameraButton.setImage(.init(named: "icon-rotate-circle"), for: .normal)
         setMicState(open: micOpen)

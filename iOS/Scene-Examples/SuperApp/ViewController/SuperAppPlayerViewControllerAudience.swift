@@ -23,8 +23,8 @@ class SuperAppPlayerViewControllerAudience: BaseViewController {
     public init(config: Config) {
         super.init(nibName: nil, bundle: nil)
         self.config = config
-        self.pushUrlString = "rtmp://examplepush.agoramdn.com/live/" + config.sceneId
-        self.pullUrlString = "http://examplepull.agoramdn.com/live/\(config.sceneId).flv"
+        self.pushUrlString = "rtmp://examplepush.agoramde.agoraio.cn/live/" + config.sceneId
+        self.pullUrlString = "http://examplepull.agoramde.agoraio.cn/live/\(config.sceneId).flv"
         
         let userId = SupperAppStorageManager.uuid
         let userName = SupperAppStorageManager.userName
