@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 public let cl_screenWidht = UIScreen.main.bounds.width
 public let cl_screenHeight = UIScreen.main.bounds.height
@@ -20,7 +21,7 @@ class AlertManager: NSObject {
     }
     
     private static var vc: UIViewController?
-    private static var containerView: UIButton?
+    private static var containerView: UIView?
     private static var currentPosition: AlertPosition = .center
     private static var viewCache: [AlertViewCache] = []
     private static var bottomAnchor: NSLayoutConstraint?
@@ -36,7 +37,7 @@ class AlertManager: NSObject {
             containerView?.backgroundColor = UIColor(red: 0.0/255, green: 0.0/255, blue: 0.0/255, alpha: 0.0)
         }
         if didCoverDismiss {
-            containerView?.addTarget(self, action: #selector(tapView), for: .touchUpInside)
+            (containerView as? UIButton)?.addTarget(self, action: #selector(tapView), for: .touchUpInside)
         }
         guard let containerView = containerView else { return }
         containerView.addSubview(view)
@@ -62,10 +63,10 @@ class AlertManager: NSObject {
             showAlertPostion(alertPostion: alertPostion, view: view)
         }
         //注册键盘出现通知
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name:  UIResponder.keyboardWillShowNotification, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name:  UIResponder.keyboardWillShowNotification, object: nil)
         
         //注册键盘隐藏通知
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name:  UIResponder.keyboardWillHideNotification, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name:  UIResponder.keyboardWillHideNotification, object: nil)
     }
 
     private static func showAlertPostion(alertPostion: AlertPosition, view: UIView) {

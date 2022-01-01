@@ -7,6 +7,7 @@
 
 import UIKit
 import AgoraRtcKit
+import AgoraSyncManager
 
 class CreateLiveController: BaseViewController {
     private lazy var randomNameView: LiveRandomNameView = {
@@ -173,17 +174,21 @@ class CreateLiveController: BaseViewController {
     private func clickStartLiveButton() {
         let roomInfo = LiveRoomInfo(roomName: randomNameView.text)
         let params = JSONObject.toJson(roomInfo)
-        SyncUtil.joinScene(id: roomInfo.roomId, userId: roomInfo.userId, property: params, delegate: self)
+        SyncUtil.joinScene(id: roomInfo.roomId,
+                           userId: roomInfo.userId,
+                           property: params,
+                           success: onSuccess(result:),
+                           fail: onFailed(error:))
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
     }
 }
 
-extension CreateLiveController: IObjectDelegate {
+extension CreateLiveController {
     func onSuccess(result: IObject) {
         LogUtils.log(message: "result == \(result.toJson() ?? "")", level: .info)
-        let channelName = try? result.getPropertyWith(key: "roomId", type: String.self) as? String
+        let channelName = result.getPropertyWith(key: "roomId", type: String.self) as? String
         
         switch sceneType {
         case .singleLive:
@@ -192,26 +197,12 @@ extension CreateLiveController: IObjectDelegate {
                                                     userId: "\(UserInfo.userId)",
                                                     agoraKit: agoraKit)
             navigationController?.pushViewController(livePlayerVC, animated: true)
-            
-        case .pkApply:
-            let pkLiveVC = PKLiveController(channelName: channelName ?? "",
-                                            sceneType: sceneType,
-                                            userId: "\(UserInfo.userId)",
-                                            agoraKit: agoraKit)
-            navigationController?.pushViewController(pkLiveVC, animated: true)
-            
-        case .game:
-            let dgLiveVC = GameLiveController(channelName: channelName ?? "",
-                                            sceneType: sceneType,
-                                            userId: "\(UserInfo.userId)",
-                                            agoraKit: agoraKit)
-            navigationController?.pushViewController(dgLiveVC, animated: true)
-            
+            break
         default: break
         }
     }
     
-    func onFailed(code: Int, msg: String) {
-        LogUtils.log(message: "code == \(code) msg == \(msg)", level: .error)
+    func onFailed(error: SyncError) {
+        LogUtils.log(message: error.localizedDescription, level: .error)
     }
 }

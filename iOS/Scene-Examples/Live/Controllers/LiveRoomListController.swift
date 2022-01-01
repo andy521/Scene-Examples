@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AgoraSyncManager
 
 class LiveRoomListController: BaseViewController {
     private lazy var roomView: BaseCollectionViewLayout = {
@@ -48,7 +49,7 @@ class LiveRoomListController: BaseViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        SyncUtil.fetchAll(delegate: self)
+        SyncUtil.fetchAll(success: onSuccess(results:), fail: onFailed(error:))
     }
     
     private func setupUI() {
@@ -81,7 +82,7 @@ extension LiveRoomListController: BaseCollectionViewLayoutDelegate {
         SyncUtil.joinScene(id: item.roomId,
                            userId: item.userId,
                            property: params,
-                           delegate: self)
+                           success: onSuccess(result:))
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LiveRoomListCell.description(),
@@ -90,47 +91,35 @@ extension LiveRoomListController: BaseCollectionViewLayoutDelegate {
         return cell
     }
     func pullToRefreshHandler() {
-        SyncUtil.fetchAll(delegate: self)
+        SyncUtil.fetchAll(success: onSuccess(results:), fail: onFailed(error:))
     }
 }
 
-extension LiveRoomListController: IObjectDelegate {
+extension LiveRoomListController {
     func onSuccess(result: IObject) {
-        let channelName = try? result.getPropertyWith(key: "roomId", type: String.self) as? String
-        let ownerId = try? result.getPropertyWith(key: "userId", type: String.self) as? String
+        let channelName =  result.getPropertyWith(key: "roomId", type: String.self) as? String
+        let ownerId = result.getPropertyWith(key: "userId", type: String.self) as? String
         switch sceneType {
         case .singleLive:
             let livePlayerVC = LivePlayerController(channelName: channelName ?? "", sceneType: sceneType, userId: ownerId ?? "")
             navigationController?.pushViewController(livePlayerVC, animated: true)
-        case .pkApply:
-            let pkLiveVC = PKLiveController(channelName: channelName ?? "", sceneType: sceneType, userId: ownerId ?? "")
-            navigationController?.pushViewController(pkLiveVC, animated: true)
-            
-        case .breakoutRoom:
-            let breakoutRoomVC = BORRoomDetailController(channelName: channelName ?? "", ownerId: ownerId ?? "")
-            navigationController?.pushViewController(breakoutRoomVC, animated: true)
-            
-        case .game:
-            let dgLiveVC = GameLiveController(channelName: channelName ?? "", sceneType: sceneType, userId: ownerId ?? "")
-            navigationController?.pushViewController(dgLiveVC, animated: true)
-            
-        default: break
+        case .superApp:
+            break
         }
-        
     }
 }
 
-extension LiveRoomListController: IObjectListDelegate {
-    func onFailed(code: Int, msg: String) {
+extension LiveRoomListController {
+    func onFailed(error: SyncError) {
         hideHUD()
         roomView.endRefreshing()
     }
     
-    func onSuccess(result: [IObject]) {
+    func onSuccess(results: [IObject]) {
         hideHUD()
         roomView.endRefreshing()
-        print("result == \(result.compactMap{ $0.toJson() })")
-        dataArray = result.compactMap({ $0.toJson() }).compactMap({ JSONObject.toModel(LiveRoomInfo.self, value: $0 )})
+        print("result == \(results.compactMap{ $0.toJson() })")
+        dataArray = results.compactMap({ $0.toJson() }).compactMap({ JSONObject.toModel(LiveRoomInfo.self, value: $0 )})
         roomView.dataArray = dataArray
     }
 }

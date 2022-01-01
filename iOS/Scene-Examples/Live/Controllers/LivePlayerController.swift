@@ -219,7 +219,8 @@ class LivePlayerController: BaseViewController {
                     SyncUtil.update(id: self.channleName,
                                     key: SYNC_MANAGER_GIFT_INFO,
                                     params: params,
-                                    delegate: nil)
+                                    success: nil,
+                                    fail: nil)
                 }
                 AlertManager.show(view: self.giftView, alertPostion: .bottom)
             case .pk:
@@ -234,7 +235,12 @@ class LivePlayerController: BaseViewController {
         }
         
         // 监听礼物
-        SyncUtil.subscribe(id: channleName, key: SYNC_MANAGER_GIFT_INFO, delegate: LiveGiftDelegate(vc: self, type: .me))
+        let delegateObj = LiveGiftDelegate(vc: self, type: .me)
+        SyncUtil.subscribe(id: channleName,
+                           key: SYNC_MANAGER_GIFT_INFO,
+                           onUpdated: delegateObj.onUpdated(object:),
+                           onDeleted: delegateObj.onDeleted(object:),
+                           onSubscribed: delegateObj.onSubscribed)
         
         // 收到礼物
         LiveReceivedGiftClosure = { [weak self] giftModel, type in
