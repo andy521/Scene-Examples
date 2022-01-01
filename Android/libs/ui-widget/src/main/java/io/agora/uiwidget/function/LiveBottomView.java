@@ -90,7 +90,7 @@ public class LiveBottomView extends RelativeLayout{
         return this;
     }
 
-    public LiveBottomView setFun1ClickListener(View.OnClickListener listener){
+    public LiveBottomView setFun1ClickListener(OnClickListener listener){
         mFun1.setOnClickListener(listener);
         return this;
     }
@@ -111,7 +111,7 @@ public class LiveBottomView extends RelativeLayout{
         return this;
     }
 
-    public LiveBottomView setFun2ClickListener(View.OnClickListener listener){
+    public LiveBottomView setFun2ClickListener(OnClickListener listener){
         mFun2.setOnClickListener(listener);
         return this;
     }

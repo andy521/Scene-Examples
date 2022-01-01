@@ -106,5 +106,32 @@
     <dimen name="gift_grid_content_margin_h">24dp</dimen>
     <dimen name="gift_grid_content_margin_v">16dp</dimen>
 
+    <!-- TextInputDialog -->
+    <dimen name="text_input_dialog_content_height">48dp</dimen>
+    <dimen name="text_input_dialog_content_padding_h">12dp</dimen>
+    <dimen name="text_input_dialog_content_padding_v">6dp</dimen>
+    <dimen name="text_input_dialog_content_text_size">16sp</dimen>
+
+    <!-- OnlineUserListDialog -->
+    <dimen name="online_user_list_dialog_height">540dp</dimen>
+    <dimen name="online_user_list_dialog_text_height">48dp</dimen>
+    <dimen name="online_user_list_dialog_text_size">16sp</dimen>
+    <dimen name="online_user_list_dialog_divider_height">1dp</dimen>
+    <dimen name="online_user_list_dialog_content_margin_h">24dp</dimen>
+    <dimen name="online_user_list_dialog_item_height">52dp</dimen>
+    <dimen name="online_user_list_dialog_item_icon_size">28dp</dimen>
+    <dimen name="online_user_list_dialog_item_text_margin_h">16dp</dimen>
+    <dimen name="online_user_list_dialog_item_text_size">14sp</dimen>
+    <dimen name="online_user_list_dialog_content_margin_v">8dp</dimen>
+
+    <!-- RemoteSmallControlView -->
+    <dimen name="remote_small_control_layout_width">130dp</dimen>
+    <dimen name="remote_small_control_layout_height">170dp</dimen>
+    <dimen name="remote_small_control_video_width">120dp</dimen>
+    <dimen name="remote_small_control_video_height">160dp</dimen>
+    <dimen name="remote_small_control_close_icon_size">20dp</dimen>
+    <dimen name="remote_small_control_text_padding_v">12dp</dimen>
+
+
 
 </resources>

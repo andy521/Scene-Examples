@@ -187,7 +187,7 @@ public class LiveRoomUserView extends RelativeLayout {
         mIconLayout.addView(imageView, params);
     }
 
-    public void setTotalLayoutClickListener(View.OnClickListener listener){
+    public void setTotalLayoutClickListener(OnClickListener listener){
         mTotalLayout.setOnClickListener(listener);
     }
 

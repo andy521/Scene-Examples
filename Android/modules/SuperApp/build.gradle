@@ -21,10 +21,11 @@ def safeExtGetDependence(key, fallback){
 android {
     compileSdkVersion safeExtGetVersion('android', 'compileSdkVersion', 30)
     buildToolsVersion safeExtGetVersion('android', 'buildToolsVersion', '30.0.3')
+    resourcePrefix "superapp_"
 
     defaultConfig {
         if (isModule.toBoolean()) {
-            applicationId "io.agora.superapp"
+            applicationId "io.agora.sample.superapp"
         }
         minSdkVersion safeExtGetVersion('android', 'minSdkVersion', 21)
         targetSdkVersion safeExtGetVersion('android', 'targetSdkVersion', 30)
@@ -53,6 +54,17 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    sourceSets {
+        main {
+            if (isModule.toBoolean()) {
+                manifest.srcFile 'src/main/AndroidManifest_Module.xml'
+            } else {
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+            }
+        }
+    }
+
 }
 
 dependencies {
@@ -73,6 +85,7 @@ dependencies {
     annotationProcessor safeExtGetDependence('com.github.bumptech.glide:compiler','4.11.0')
 
     implementation project(':libs:base-library')
+    implementation project(':libs:ui-widget')
 
     implementation safeExtGetDependence('io.agora.rtc:agora-special-full','3.6.200.202')
     implementation safeExtGetDependence('com.github.AgoraIO-Community:SyncManager-Android', '1.0.0')
