@@ -3,10 +3,9 @@ if (!isModule.toBoolean()) {
     include ':app'
 }
 
-include ':libs:data-syncmanager'
 include ':libs:base-library'
 include ':libs:ui-widget'
 
 include ':modules:BreakoutRoom'
-include ':modules:LivePK'
+include ':modules:PKLive'
 include ':modules:SingleHostLive'

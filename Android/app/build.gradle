@@ -66,7 +66,7 @@ dependencies {
     implementation project(':libs:base-library')
     implementation project(':libs:ui-widget')
 
-    implementation project(':modules:LivePK')
+    implementation project(':modules:PKLive')
     implementation project(':modules:BreakoutRoom')
     implementation project(':modules:SingleHostLive')
 }

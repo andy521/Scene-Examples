@@ -23,7 +23,6 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
-import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
@@ -46,7 +45,6 @@ import io.agora.sample.breakoutroom.databinding.FragmentRoomListBinding;
 import io.agora.sample.breakoutroom.databinding.ItemRoomListBinding;
 import io.agora.sample.breakoutroom.ui.MainViewModel;
 import io.agora.sample.breakoutroom.ui.room.RoomFragment;
-import io.agora.syncmanager.rtm.SyncManager;
 
 public class RoomListFragment extends BaseFragment<FragmentRoomListBinding> implements OnItemClickListener<RoomInfo> {
 
@@ -117,7 +115,7 @@ public class RoomListFragment extends BaseFragment<FragmentRoomListBinding> impl
         // 清除所有房间
         if (BuildConfig.DEBUG) {
             mBinding.toolbarFgList.setOnLongClickListener(v -> {
-                SyncManager.Instance().getScene(RoomConstant.globalChannel).delete(null);
+                //SyncManager.Instance().getScene(RoomConstant.globalChannel).delete(null);
                 return true;
             });
         }

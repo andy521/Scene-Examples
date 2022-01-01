@@ -15,6 +15,15 @@ import io.agora.uiwidget.R;
 
 
 public class LiveBottomView extends RelativeLayout{
+    public static final int FUN_ICON_GIFT = R.drawable.live_bottom_btn_gift;
+    public static final int FUN_ICON_PK = R.drawable.live_bottom_btn_pk;
+    public static final int FUN_ICON_SHOP_CAR = R.drawable.live_bottom_btn_shopcart;
+    public static final int FUN_ICON_MUSIC = R.drawable.live_bottom_button_music;
+    public static final int FUN_ICON_MUSIC_LIGHT = R.drawable.live_bottom_button_music_light;
+    public static final int FUN_ICON_BEAUTY = R.drawable.live_bottom_button_beauty;
+
+
+
     private AppCompatImageView mCancel;
     private AppCompatImageView mMore;
     private AppCompatImageView mFun1;

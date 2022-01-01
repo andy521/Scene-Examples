@@ -2,8 +2,8 @@ package io.agora.sample.singlehostlive;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Size;
-import android.view.SurfaceView;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
@@ -12,22 +12,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.runtime.Permission;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
-import io.agora.rtc.IRtcEngineEventHandler;
-import io.agora.rtc.RtcEngine;
-import io.agora.rtc.video.VideoCanvas;
+import io.agora.rtc.video.VideoEncoderConfiguration;
 import io.agora.uiwidget.function.PreviewControlView;
 import io.agora.uiwidget.function.VideoSettingDialog;
 
 public class PreviewActivity extends AppCompatActivity {
-
-    private RtcEngine rtcEngine;
+    private static final String TAG = "PreviewActivity";
+    private RtcManager rtcManager = new RtcManager();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.preview_activity);
+        setContentView(R.layout.single_host_live_preview_activity);
         AndPermission.with(this)
                 .runtime()
                 .permission(Permission.Group.CAMERA, Permission.Group.MICROPHONE)
@@ -38,65 +37,73 @@ public class PreviewActivity extends AppCompatActivity {
         PreviewControlView previewControlView = findViewById(R.id.preview_control_view);
         previewControlView.setBackIcon(true, v -> finish());
         previewControlView.setCameraIcon(true, v -> {
-            if(rtcEngine != null){
-                rtcEngine.switchCamera();
-            }
+            rtcManager.switchCamera();
         });
         previewControlView.setBeautyIcon(false, null);
         previewControlView.setSettingIcon(true, v -> {
             // 视频参数设置弹窗
+            List<Size> resolutions = new ArrayList<>();
+            for (VideoEncoderConfiguration.VideoDimensions sVideoDimension : RtcManager.sVideoDimensions) {
+                resolutions.add(new Size(sVideoDimension.width, sVideoDimension.height));
+            }
+            List<Integer> frameRates = new ArrayList<>();
+            for (VideoEncoderConfiguration.FRAME_RATE sFrameRate : RtcManager.sFrameRates) {
+                frameRates.add(sFrameRate.getValue());
+            }
             new VideoSettingDialog(PreviewActivity.this)
-                    .setResolutions(Arrays.asList(new Size(360, 640), new Size(720, 1080)))
-                    .setFrameRates(Arrays.asList(10, 20, 30))
+                    .setResolutions(resolutions)
+                    .setFrameRates(frameRates)
                     .setBitRateRange(0, 2000)
-                    .setDefaultValues(new Size(360, 640), 10, 700)
+                    .setDefaultValues(new Size(RtcManager.encoderConfiguration.dimensions.width, RtcManager.encoderConfiguration.dimensions.height),
+                            RtcManager.encoderConfiguration.frameRate, RtcManager.encoderConfiguration.bitrate)
                     .setOnValuesChangeListener(new VideoSettingDialog.OnValuesChangeListener() {
                         @Override
                         public void onResolutionChanged(Size resolution) {
-
+                            RtcManager.encoderConfiguration.dimensions = new VideoEncoderConfiguration.VideoDimensions(resolution.getWidth(), resolution.getHeight());
                         }
 
                         @Override
                         public void onFrameRateChanged(int framerate) {
-
+                            RtcManager.encoderConfiguration.frameRate = framerate;
                         }
 
                         @Override
                         public void onBitrateChanged(int bitrate) {
-
+                            RtcManager.encoderConfiguration.bitrate = bitrate;
                         }
                     })
                     .show();
         });
         previewControlView.setGoLiveBtn((view, randomName) -> {
-            startActivity(new Intent(PreviewActivity.this, HostDetailActivity.class));
-            finish();
+            RoomManager.getInstance().createRoom(randomName, new RoomManager.DataCallback<RoomManager.RoomInfo>() {
+                @Override
+                public void onSuccess(RoomManager.RoomInfo data) {
+                    Intent intent = new Intent(PreviewActivity.this, HostDetailActivity.class);
+                    intent.putExtra("roomInfo", data);
+                    startActivity(intent);
+                    finish();
+                }
+
+                @Override
+                public void onFailed(Exception e) {
+                    Log.e(TAG, "", e);
+                }
+            });
+
         });
     }
 
     private void initPreview() {
-        try {
-            rtcEngine = RtcEngine.create(this, getString(R.string.agora_app_id), new IRtcEngineEventHandler() {
-                @Override
-                public void onError(int err) {
-                    super.onError(err);
-                }
-            });
-            rtcEngine.enableVideo();
-            FrameLayout surfaceViewContainer = findViewById(R.id.surface_view_container);
-            SurfaceView videoView = RtcEngine.CreateRendererView(this);
-            surfaceViewContainer.addView(videoView);
-            rtcEngine.setupLocalVideo(new VideoCanvas(videoView));
-            rtcEngine.startPreview();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        rtcManager.init(this, getString(R.string.single_host_live_agora_app_id), null);
+
+        FrameLayout surfaceViewContainer = findViewById(R.id.surface_view_container);
+        rtcManager.renderLocalVideo(surfaceViewContainer, null);
+
     }
 
     @Override
     public void finish() {
-        rtcEngine.stopPreview();
-        RtcEngine.destroy();
+        rtcManager.release();
         super.finish();
     }
 

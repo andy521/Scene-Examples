@@ -21,10 +21,12 @@ def safeExtGetDependence(key, fallback){
 android {
     compileSdkVersion safeExtGetVersion('android', 'compileSdkVersion', 30)
     buildToolsVersion safeExtGetVersion('android', 'buildToolsVersion', '30.0.3')
+    resourcePrefix "single_host_live_"
+
 
     defaultConfig {
         if (isModule.toBoolean()) {
-            applicationId "io.agora.sample.live"
+            applicationId "io.agora.sample.singlehostlive"
         }
         minSdkVersion safeExtGetVersion('android', 'minSdkVersion', 21)
         targetSdkVersion safeExtGetVersion('android', 'targetSdkVersion', 30)
@@ -59,6 +61,16 @@ android {
             }
         }
     }
+
+    sourceSets {
+        main {
+            if (isModule.toBoolean()) {
+                manifest.srcFile 'src/main/AndroidManifest_Module.xml'
+            } else {
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+            }
+        }
+    }
 }
 
 dependencies {
@@ -72,8 +84,8 @@ dependencies {
     implementation safeExtGetDependence('com.yanzhenjie:permission', '2.0.3')
 
     implementation safeExtGetDependence('io.agora.rtc:full-sdk','3.5.0')
+    implementation safeExtGetDependence('com.github.AgoraIO-Community:SyncManager-Android', '1.0.0')
 
     implementation project(':libs:ui-widget')
-    implementation project(':libs:data-syncmanager')
     implementation project(':libs:base-library')
 }

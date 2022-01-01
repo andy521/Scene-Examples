@@ -24,14 +24,14 @@ public class ModulesConfig {
         moduleInfos.add(new ModuleInfo(
                 io.agora.sample.singlehostlive.R.string.single_host_live_app_name,
                 io.agora.sample.singlehostlive.R.string.single_host_live_description,
-                io.agora.sample.singlehostlive.R.drawable.home_category_single,
+                io.agora.sample.singlehostlive.R.drawable.single_host_live_poster,
                 io.agora.sample.singlehostlive.RoomListActivity.class
         ));
         moduleInfos.add(new ModuleInfo(
-                io.agora.livepk.R.string.livepk_app_name,
-                io.agora.livepk.R.string.livepk_description,
-                io.agora.livepk.R.drawable.home_category_pk,
-                io.agora.livepk.activity.LivePKListActivity.class
+                io.agora.sample.pklive.R.string.pk_live_app_name,
+                io.agora.sample.pklive.R.string.pk_live_description,
+                io.agora.sample.pklive.R.drawable.pk_live_home_poster,
+                io.agora.sample.pklive.RoomListActivity.class
         ));
         moduleInfos.add(new ModuleInfo(
                 io.agora.sample.breakoutroom.R.string.breakoutroom_app_name,
