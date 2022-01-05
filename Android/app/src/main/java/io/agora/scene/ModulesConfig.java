@@ -48,6 +48,13 @@ public class ModulesConfig {
                 R.drawable.app_banner_live_shopping,
                 "io.agora.scene.onelive.MainActivity"
         ));
+
+        this.moduleInfo.add(new ModuleInfo(
+                R.string.app_virtual_image,
+                R.string.app_virtual_image_description,
+                R.drawable.app_banner_live_single_host,
+                "io.agora.sample.virtualimage.RoomListActivity"
+        ));
     }
 
 

@@ -11,7 +11,9 @@ buildscript {
                 RTEGame : "game_",
                 LivePK : "pk_",
                 SingleHostLive : "single_",
-                OneLive : "one_"
+                OneLive : "one_",
+                VirtualImage : "virtual_image",
+
         ]
 //        resMap = [
 //                app : "0x7F",

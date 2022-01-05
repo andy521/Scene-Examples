@@ -17,4 +17,9 @@
 
     <string name="app_one_live_name">1V1直播</string>
     <string name="app_one_live_description">直播间双人游戏</string>
+
+    <!--    虚拟形象-->
+    <string name="app_virtual_image">虚拟形象</string>
+    <string name="app_virtual_image_description">虚拟形象(使用FaceUnity)</string>
+
 </resources>
