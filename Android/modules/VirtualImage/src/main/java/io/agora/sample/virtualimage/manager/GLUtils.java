@@ -1,11 +1,16 @@
 package io.agora.sample.virtualimage.manager;
 
 import android.graphics.Bitmap;
-import android.opengl.GLES10Ext;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
@@ -83,7 +88,7 @@ public class GLUtils {
             bitmap.copyPixelsFromBuffer(rgbaBuf);
 
             GLES20.glDeleteRenderbuffers(1, IntBuffer.wrap(framebuffers));
-            GLES20.glDeleteFramebuffers(1, IntBuffer.allocate(framebufferId));
+            //GLES20.glDeleteFramebuffers(1, IntBuffer.allocate(framebufferId));
 
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, oldFboId[0]);
 
@@ -92,5 +97,19 @@ public class GLUtils {
             Log.e(TAG, "", e);
         }
         return null;
+    }
+
+    private static Bitmap nv21ToBitmap(byte[] nv21, int width, int height) {
+        Bitmap bitmap = null;
+        try {
+            YuvImage image = new YuvImage(nv21, ImageFormat.NV21, width, height, null);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            image.compressToJpeg(new Rect(0, 0, width, height), 80, stream);
+            bitmap = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
+            stream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
     }
 }

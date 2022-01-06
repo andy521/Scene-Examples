@@ -2,15 +2,14 @@ package io.agora.sample.virtualimage.manager;
 
 import android.content.Context;
 import android.hardware.Camera;
+import android.opengl.Matrix;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.faceunity.wrapper.faceunity;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,27 +36,13 @@ public class FUManager {
     public static final String BUNDLE_ai_face_processor = "ai_face_processor.bundle";
 
 
-    private static volatile FUManager INSTANCE;
     private Context mContext;
     private int[] mToolHandlers;
     private int mToolController;
 
-    public static FUManager getInstance(){
-        if(INSTANCE == null){
-            synchronized (FUManager.class){
-                if(INSTANCE == null){
-                    INSTANCE = new FUManager();
-                }
-            }
-        }
-        return INSTANCE;
-    }
-    private FUManager(){}
-
     private volatile boolean isInitialized = false;
     private int mFrameId;
 
-    private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private HandlerThread fuItemThread;
     private Handler fuItemHandler;
 
@@ -67,64 +52,71 @@ public class FUManager {
     public static final int ITEM_ARRAYS_FXAA = 3;
     public static final int ITEM_ARRAYS_COUNT = 4;
     private final int[] mItemsArray = new int[ITEM_ARRAYS_COUNT];
+    private faceunity.RotatedImage mRotatedImage;
+
+    public static final float[] IdentityMatrix = new float[16];
+    static {
+        Matrix.setIdentityM(IdentityMatrix, 0);
+    }
 
     public void init(Context ct){
         if(isInitialized){
             return;
         }
         mContext = ct.getApplicationContext();
-        try {
-            /**
-             * 初始化dsp设备
-             * 如果已经调用过一次了，后面再重新初始化bundle，也不需要重新再调用了。
-             */
-            String path = mContext.getApplicationInfo().nativeLibraryDir;
-            faceunity.fuHexagonInitWithPath(path);
+        fuItemThread = new HandlerThread("FuItemLoad");
+        fuItemThread.start();
+        fuItemHandler = new Handler(fuItemThread.getLooper());
+        isInitialized = true;
+        runInFuItemThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    /**
+                     * 初始化dsp设备
+                     * 如果已经调用过一次了，后面再重新初始化bundle，也不需要重新再调用了。
+                     */
+                    String path = mContext.getApplicationInfo().nativeLibraryDir;
+                    faceunity.fuHexagonInitWithPath(path);
 
-            //获取faceunity SDK版本信息
-            Log.i(TAG, "fu sdk version " + faceunity.fuGetVersion());
+                    //获取faceunity SDK版本信息
+                    Log.i(TAG, "fu sdk version " + faceunity.fuGetVersion());
 
-            /**
-             * fuSetup faceunity初始化
-             * 其中 v3.bundle：人脸识别数据文件，缺少该文件会导致系统初始化失败；
-             *      authpack：用于鉴权证书内存数组。若没有,请咨询support@faceunity.com
-             * 首先调用完成后再调用其他FU API
-             */
-            InputStream v3 = mContext.getAssets().open(BUNDLE_v3);
-            byte[] v3Data = new byte[v3.available()];
-            v3.read(v3Data);
-            v3.close();
-            faceunity.fuSetup(v3Data, authpack.A());
+                    /**
+                     * fuSetup faceunity初始化
+                     * 其中 v3.bundle：人脸识别数据文件，缺少该文件会导致系统初始化失败；
+                     *      authpack：用于鉴权证书内存数组。若没有,请咨询support@faceunity.com
+                     * 首先调用完成后再调用其他FU API
+                     */
+                    InputStream v3 = mContext.getAssets().open(BUNDLE_v3);
+                    byte[] v3Data = new byte[v3.available()];
+                    v3.read(v3Data);
+                    v3.close();
+                    faceunity.fuSetup(v3Data, authpack.A());
 
-            // 提前加载算法数据模型，用于人脸检测
-            loadAiModel(mContext, BUNDLE_ai_face_processor, faceunity.FUAITYPE_FACEPROCESSOR);
+                    // 提前加载算法数据模型，用于人脸检测
+                    loadAiModel(mContext, BUNDLE_ai_face_processor, faceunity.FUAITYPE_FACEPROCESSOR);
 
-            fuItemThread = new HandlerThread("FuItemLoad");
-            fuItemThread.start();
-            fuItemHandler = new Handler(fuItemThread.getLooper());
-
-            runInFuItemThread(new Runnable() {
-                @Override
-                public void run() {
                     mToolController = loadFUItem(BUNDLE_controller_new);
                     int controllerConfig = loadFUItem(BUNDLE_controller_config_new);
                     faceunity.fuBindItems(mToolController, new int[]{controllerConfig});
 
-                    /**
-                     * 1 为开启，0 为关闭，开启的时候移动角色的值会被设进骨骼系统，这时候带DynamicBone的模型会有相关效果
-                     * 如果添加了没有骨骼的模型，请关闭这个值，否则无法移动模型
-                     * 默认开启
-                     * 每个角色的这个值都是独立的
-                     */
-                    faceunity.fuItemSetParam(mToolController, "modelmat_to_bone", 0);
-                    int hairMask = loadFUItem("hair_mask.bundle");
-                    faceunity.fuItemSetParam(mToolController, "enter_ar_mode", 1);
-                    faceunity.fuBindItems(mToolController, new int[]{hairMask});
-                    //3.设置enable_face_processor，说明启用或者关闭面部追踪，value = 1.0表示开启，value = 0.0表示关闭
+                    int wholeBodyHandler = loadFUItem("new/camera/cam_02.bundle");
+                    faceunity.fuBindItems(mToolController, new int[]{wholeBodyHandler});
+
+                    loadAiModel(mContext, "ai_human_processor.bundle", faceunity.FUAITYPE_HUMAN_PROCESSOR);
+                    faceunity.fuItemSetParam(mToolController, "enable_human_processor", 1.0);
+                    //设置enable_face_processor，说明启用或者关闭面部追踪，value = 1.0表示开启，value = 0.0表示关闭
                     faceunity.fuItemSetParam(mToolController, "enable_face_processor", 1.0);
 
+                    // 背景
+                    int defaultBgHandler = loadFUItem("default_bg.bundle");
+                    int planeLeftHandler = loadFUItem("plane_shadow_left.bundle");
+                    int planeRightHandler = loadFUItem("plane_shadow_right.bundle");
+                    faceunity.fuBindItems(mToolController, new int[]{defaultBgHandler});
+                    faceunity.fuBindItems(mToolController, new int[]{planeLeftHandler, planeRightHandler});
+
                     // 加载人物道具
-                    // 1. 头
                     int headHandler = loadFUItem("new/head/head_1/head.bundle");
                     int hairHandler = loadFUItem("new/hair/female_hair_7.bundle");
                     int hatHandler = loadFUItem("new/hat/hair_hat_7.bundle");
@@ -132,8 +124,20 @@ public class FUManager {
                     int beardHandler = loadFUItem("new/beard/beard_4.bundle");
                     int eyebrowHandler = loadFUItem("new/eyebrow/eyebrow_3.bundle");
                     int eyelashHandler = loadFUItem("new/eyelash/Eyelash_1.bundle");
+                    int bodyHandle = loadFUItem("new/body/female/midBody_female2.bundle");
+                    int clothHandler = loadFUItem("new/clothes/suit/cloth_1.bundle");
+                    int clothUpperHandler = loadFUItem("new/clothes/upper/shangyi_chenshan_1.bundle");
+                    int clothLowerHandler = loadFUItem("new/clothes/lower/kuzi_changku_1.bundle");
+                    int shoeHandler = loadFUItem("new/shoes/female_cloth03_shoes.bundle");
+
                     int decorationsEarHandler = loadFUItem("new/decorations/ear/peishi_erding_4.bundle");
+                    int decorationsFootHandler = loadFUItem("new/decorations/foot/peishi_jiao_1.bundle");
+                    int decorationsHandHandler = loadFUItem("new/decorations/hand/peishi_shou_1.bundle");
                     int decorationsHeadHandler = loadFUItem("new/decorations/head/toushi_8.bundle");
+                    int decorationsNeckHandler = loadFUItem("new/decorations/neck/peishi_erji.bundle");
+
+                    int expressionHandler = loadFUItem("new/expression/ani_idle.bundle");
+
                     int eyelinerHandler = loadFUItem("new/makeup/eyeliner/Eyeliner_1.bundle");
                     int eyeshadowHandler = loadFUItem("new/makeup/eyeshadow/Eyeshadow_1.bundle");
                     int facemakeupHandler = loadFUItem("new/makeup/facemakeup/facemakeup_2.bundle");
@@ -142,28 +146,28 @@ public class FUManager {
 
                     mToolHandlers = new int[]{headHandler, hairHandler, hatHandler, glassHandler,
                             beardHandler, eyebrowHandler, eyelashHandler,
-                            decorationsEarHandler, decorationsHeadHandler,
-                            eyelinerHandler, eyeshadowHandler,
-                            facemakeupHandler, lipglossHandler,
-                            pupilHandler
+                            bodyHandle, clothHandler, clothUpperHandler, clothLowerHandler, shoeHandler,
+                            decorationsEarHandler, decorationsFootHandler, decorationsHandHandler, decorationsHeadHandler,decorationsNeckHandler,
+                            expressionHandler,
+                            eyelinerHandler, eyeshadowHandler, facemakeupHandler, lipglossHandler, pupilHandler
                     };
                     faceunity.fuBindItems(mToolController, mToolHandlers);
 
-                    faceunity.fuItemSetParam(mToolController, "screen_orientation", 1);
-                    faceunity.fuSetDefaultRotationMode(1);
-                    faceunity.fuItemSetParam(mToolController, "is3DFlipH", 0);
-                    faceunity.fuItemSetParam(mToolController, "arMode", (360 - 90) / 90);
+                    faceunity.fuItemSetParam(mToolController, "human_3d_track_set_scene", 1);
 
+                    faceunity.fuItemSetParam(mToolController, "target_position", new double[]{0.0, 0f, -100f});
+                    faceunity.fuItemSetParam(mToolController, "target_angle", 0);
+                    faceunity.fuItemSetParam(mToolController, "reset_all", 3);
 
                     mItemsArray[ITEM_ARRAYS_CONTROLLER] = mToolController;
                     mItemsArray[ITEM_ARRAYS_FXAA] = loadFUItem(BUNDLE_fxaa);
-                }
-            });
 
-            isInitialized = true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
     /**
@@ -243,11 +247,26 @@ public class FUManager {
         return item;
     }
 
-    public int processVideoFrame(byte[] img, int texId, int width, int height) {
-        return faceunity.fuRenderBundlesWithCamera(img,
+    public FuVideoFrame processVideoFrame(byte[] img, int texId, int width, int height, int cameraType) {
+        if(mRotatedImage == null){
+            mRotatedImage = new faceunity.RotatedImage();
+        }
+        int rotateMode = cameraType == Camera.CameraInfo.CAMERA_FACING_FRONT ? faceunity.FU_ROTATION_MODE_270 : faceunity.FU_ROTATION_MODE_90;
+        int flipX = cameraType == Camera.CameraInfo.CAMERA_FACING_FRONT ? 1 : 0;
+        int flipY = 0;
+        faceunity.fuRotateImage(mRotatedImage, img, faceunity.FU_FORMAT_NV21_BUFFER, width, height, rotateMode, flipX, flipY);
+        //设置texture的绘制方式
+        faceunity.fuSetInputCameraMatrix(flipX, flipY, rotateMode);
+        int rendWidth = mRotatedImage.mWidth;
+        int rendHeight = mRotatedImage.mHeight;
+        faceunity.fuSetOutputResolution(rendWidth, rendHeight);
+
+        int retTexId = faceunity.fuRenderBundlesWithCamera(mRotatedImage.mData,
                 texId,
                 faceunity.FU_ADM_FLAG_EXTERNAL_OES_TEXTURE,
-                width, height, mFrameId++, mItemsArray);
+                rendWidth, rendHeight, mFrameId++, mItemsArray);
+
+        return new FuVideoFrame(retTexId, IdentityMatrix, rendWidth, rendHeight, TEXTURE_TYPE_2D);
     }
 
     private void runInFuItemThread(Runnable runnable){
@@ -256,5 +275,38 @@ public class FUManager {
         }
         fuItemHandler.post(runnable);
     }
+
+    public void release() {
+        mFrameId = 0;
+        mRotatedImage = null;
+        if(isInitialized){
+            fuItemThread.quit();
+            fuItemHandler.removeCallbacksAndMessages(null);
+            isInitialized = false;
+        }
+        faceunity.fuDestroyAllItems();
+        faceunity.fuOnDeviceLost();
+        faceunity.fuDone();
+
+    }
+
+    public static final class FuVideoFrame {
+        public final int texId;
+        public final float[] texMatrix;
+        public final int width;
+        public final int height;
+        public final int texType;
+
+        public FuVideoFrame(int texId, float[] texMatrix, int width, int height, int texType) {
+            this.texId = texId;
+            this.texMatrix = texMatrix;
+            this.width = width;
+            this.height = height;
+            this.texType = texType;
+        }
+    }
+
+    public static final int TEXTURE_TYPE_OES = 1;
+    public static final int TEXTURE_TYPE_2D = 2;
 
 }

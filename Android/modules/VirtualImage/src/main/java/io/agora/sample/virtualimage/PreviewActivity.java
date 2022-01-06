@@ -15,7 +15,6 @@ import com.yanzhenjie.permission.runtime.Permission;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.agora.base.internal.video.EglBase;
 import io.agora.rtc2.video.VideoEncoderConfiguration;
 import io.agora.sample.virtualimage.manager.FUManager;
 import io.agora.sample.virtualimage.manager.RoomManager;
@@ -25,21 +24,20 @@ import io.agora.uiwidget.function.VideoSettingDialog;
 
 public class PreviewActivity extends AppCompatActivity {
     private static final String TAG = "PreviewActivity";
-    private RtcManager rtcManager = new RtcManager();
-    private FUManager fuManager = FUManager.getInstance();
+    private final RtcManager rtcManager = new RtcManager();
+    private final FUManager fuManager = new FUManager();
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.virtual_image_preview_activity);
-        fuManager.init(this);
         AndPermission.with(this)
                 .runtime()
                 .permission(Permission.Group.CAMERA, Permission.Group.MICROPHONE)
                 .onGranted(data -> initPreview())
                 .start();
-
+        fuManager.init(this);
 
         PreviewControlView previewControlView = findViewById(R.id.preview_control_view);
         previewControlView.setBackIcon(true, v -> finish());
@@ -104,8 +102,10 @@ public class PreviewActivity extends AppCompatActivity {
         rtcManager.init(this, getString(R.string.virtual_image_agora_app_id), null);
         rtcManager.setVideoPreProcess(new RtcManager.VideoPreProcess() {
             @Override
-            public int processVideoFrameTex(byte[] img, int texId, int width, int height) {
-                return fuManager.processVideoFrame(img, texId, width, height);
+            public RtcManager.ProcessVideoFrame processVideoFrameTex(byte[] img, int texId, int width, int height, int cameraType) {
+                FUManager.FuVideoFrame videoFrame = fuManager.processVideoFrame(img, texId, width, height, cameraType);
+                return new RtcManager.ProcessVideoFrame(videoFrame.texId, videoFrame.texMatrix, videoFrame.width, videoFrame.height,
+                        videoFrame.texType == FUManager.TEXTURE_TYPE_OES ? RtcManager.TEXTURE_TYPE_OES : RtcManager.TEXTURE_TYPE_2D);
             }
         });
 
@@ -117,6 +117,7 @@ public class PreviewActivity extends AppCompatActivity {
     @Override
     public void finish() {
         rtcManager.release();
+        fuManager.release();
         super.finish();
     }
 

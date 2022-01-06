@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.lang.ref.WeakReference;
 
 import io.agora.sample.virtualimage.databinding.VirtualImageHostDetailActivityBinding;
+import io.agora.sample.virtualimage.manager.FUManager;
 import io.agora.sample.virtualimage.manager.RoomManager;
 import io.agora.sample.virtualimage.manager.RtcManager;
 import io.agora.uiwidget.function.GiftAnimPlayDialog;
@@ -21,6 +22,7 @@ import io.agora.uiwidget.function.TextInputDialog;
 public class HostDetailActivity extends AppCompatActivity {
     private final RtcManager rtcManager = new RtcManager();
     private final RoomManager roomManager = RoomManager.getInstance();
+    private final FUManager fuManager = new FUManager();
 
     private VirtualImageHostDetailActivityBinding mBinding;
     private RoomManager.RoomInfo roomInfo;
@@ -77,6 +79,7 @@ public class HostDetailActivity extends AppCompatActivity {
         };
         mBinding.messageList.setAdapter(mMessageAdapter);
 
+        fuManager.init(this);
         initRoomManager();
         initRtcManager();
     }
@@ -94,6 +97,14 @@ public class HostDetailActivity extends AppCompatActivity {
     private void initRtcManager() {
         rtcManager.init(this, getString(R.string.virtual_image_agora_app_id), null);
         rtcManager.renderLocalVideo(mBinding.fullVideoContainer, null);
+        rtcManager.setVideoPreProcess(new RtcManager.VideoPreProcess() {
+            @Override
+            public RtcManager.ProcessVideoFrame processVideoFrameTex(byte[] img, int texId, int width, int height, int cameraType) {
+                FUManager.FuVideoFrame videoFrame = fuManager.processVideoFrame(img, texId, width, height, cameraType);
+                return new RtcManager.ProcessVideoFrame(videoFrame.texId, videoFrame.texMatrix, videoFrame.width, videoFrame.height,
+                        videoFrame.texType == FUManager.TEXTURE_TYPE_OES ? RtcManager.TEXTURE_TYPE_OES : RtcManager.TEXTURE_TYPE_2D);
+            }
+        });
         rtcManager.joinChannel(roomInfo.roomId, roomInfo.userId, getString(R.string.virtual_image_agora_token), true, new RtcManager.OnChannelListener() {
             @Override
             public void onError(int code, String message) {
@@ -145,6 +156,7 @@ public class HostDetailActivity extends AppCompatActivity {
     public void finish() {
         roomManager.destroyRoom(roomInfo.roomId);
         rtcManager.release();
+        fuManager.release();
         super.finish();
     }
 

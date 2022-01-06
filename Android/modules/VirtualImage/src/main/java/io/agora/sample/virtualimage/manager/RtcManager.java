@@ -30,7 +30,7 @@ import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_960x720;
 
 import android.content.Context;
 import android.graphics.Matrix;
-import android.opengl.GLSurfaceView;
+import android.hardware.Camera;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -43,14 +43,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import javax.microedition.khronos.egl.EGL10;
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.egl.EGLContext;
-import javax.microedition.khronos.egl.EGLDisplay;
-
 import io.agora.base.TextureBufferHelper;
 import io.agora.base.VideoFrame;
-import io.agora.base.internal.video.EglBase;
 import io.agora.base.internal.video.RendererCommon;
 import io.agora.rtc2.ChannelMediaOptions;
 import io.agora.rtc2.Constants;
@@ -112,6 +106,8 @@ public class RtcManager {
 
     private VideoPreProcess videoPreProcess;
     private TextureBufferHelper videoPreTexBuffHelper;
+
+    private volatile boolean isPushExtVideoFrame = false;
 
     public void init(Context context, String appId, OnInitializeListener listener) {
         if (isInitialized) {
@@ -243,24 +239,32 @@ public class RtcManager {
                             videoPreTexBuffHelper.invoke(new Callable<Boolean>() {
                                 @Override
                                 public Boolean call() throws Exception {
-                                    int _texId = videoPreProcess.processVideoFrameTex(convertToNV21(videoFrame), texId, width, height);
+                                    ProcessVideoFrame processVideoFrame = videoPreProcess.processVideoFrameTex(convertToNV21(videoFrame), texId, width, height,
+                                            cameraDirection == CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT ? Camera.CameraInfo.CAMERA_FACING_FRONT: Camera.CameraInfo.CAMERA_FACING_BACK);
 
                                     if(localGLSurfaceView != null){
                                         localGLSurfaceView.init(videoPreTexBuffHelper.getEglBase().getEglBaseContext());
-                                        if(_texId != texId){
-                                            localGLSurfaceView.consume2DTexture(_texId,
-                                                    texMatrix,
-                                                    width,
-                                                    height
+                                        if(processVideoFrame.texType == TEXTURE_TYPE_2D){
+                                            localGLSurfaceView.consume2DTexture(processVideoFrame.texId,
+                                                    processVideoFrame.texMatrix,
+                                                    processVideoFrame.width,
+                                                    processVideoFrame.height
                                             );
                                         }
                                         else{
-                                            localGLSurfaceView.consumeOESTexture(_texId,
-                                                    texMatrix,
-                                                    width,
-                                                    height
+                                            localGLSurfaceView.consumeOESTexture(processVideoFrame.texId,
+                                                    processVideoFrame.texMatrix,
+                                                    processVideoFrame.width,
+                                                    processVideoFrame.height
                                             );
                                         }
+                                    }
+
+                                    if(isPushExtVideoFrame){
+                                        VideoFrame.TextureBuffer pushTextBuffer = videoPreTexBuffHelper.wrapTextureBuffer(processVideoFrame.width, processVideoFrame.height,
+                                                processVideoFrame.texType == TEXTURE_TYPE_2D ? VideoFrame.TextureBuffer.Type.RGB : VideoFrame.TextureBuffer.Type.OES,
+                                                processVideoFrame.texId, RendererCommon.convertMatrixToAndroidGraphicsMatrix(processVideoFrame.texMatrix));
+                                        engine.pushExternalVideoFrame(new VideoFrame(pushTextBuffer, 0, System.nanoTime()));
                                     }
 
                                     return null;
@@ -367,6 +371,22 @@ public class RtcManager {
         if (engine == null) {
             return;
         }
+        if(publish){
+            /**Configures the external video source.
+             * @param enable Sets whether or not to use the external video source:
+             *                 true: Use the external video source.
+             *                 false: Do not use the external video source.
+             * @param useTexture Sets whether or not to use texture as an input:
+             *                     true: Use texture as an input.
+             *                     false: (Default) Do not use texture as an input.
+             * @param pushMode Sets whether or not the external video source needs to call the PushExternalVideoFrame
+             *                 method to send the video frame to the Agora SDK:
+             *                   true: Use the push mode.
+             *                   false: Use the pull mode (not supported).*/
+            engine.setExternalVideoSource(true, true, false);
+            isPushExtVideoFrame = true;
+        }
+
         int _uid = LOCAL_RTC_UID;
         if(!TextUtils.isEmpty(uid)){
             try {
@@ -376,8 +396,8 @@ public class RtcManager {
             }
         }
         ChannelMediaOptions options = new ChannelMediaOptions();
-        options.publishCameraTrack = publish;
-        options.publishAudioTrack = publish;
+        options.autoSubscribeAudio = true;
+        options.autoSubscribeVideo = true;
 
         engine.setClientRole(publish ? Constants.CLIENT_ROLE_BROADCASTER : Constants.CLIENT_ROLE_AUDIENCE);
 
@@ -431,6 +451,7 @@ public class RtcManager {
     }
 
     public void release() {
+        isPushExtVideoFrame = false;
         publishChannelListener = null;
         if(localGLSurfaceView != null){
             localGLSurfaceView.release();
@@ -481,6 +502,26 @@ public class RtcManager {
     }
 
     public interface VideoPreProcess {
-        int processVideoFrameTex(byte[] img, int texId, int width, int height);
+        ProcessVideoFrame processVideoFrameTex(byte[] img, int texId, int width, int height, int cameraType);
     }
+
+    public static final class ProcessVideoFrame{
+        public final int texId;
+        public final float[] texMatrix;
+        public final int width;
+        public final int height;
+        public final int texType;
+
+        public ProcessVideoFrame(int texId, float[] texMatrix, int width, int height, int texType) {
+            this.texId = texId;
+            this.texMatrix = texMatrix;
+            this.width = width;
+            this.height = height;
+            this.texType = texType;
+        }
+    }
+
+    public static final int TEXTURE_TYPE_OES = 1;
+    public static final int TEXTURE_TYPE_2D = 2;
+
 }
