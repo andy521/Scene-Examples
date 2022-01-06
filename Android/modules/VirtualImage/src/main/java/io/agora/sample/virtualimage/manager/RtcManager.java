@@ -33,7 +33,7 @@ import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.SurfaceView;
+import android.view.TextureView;
 import android.widget.FrameLayout;
 
 import java.nio.ByteBuffer;
@@ -270,6 +270,7 @@ public class RtcManager {
                                     return null;
                                 }
                             });
+                            return false;
                         }else if(localGLSurfaceView != null){
                             localGLSurfaceView.init(textureBuffer.getEglBaseContext());
                             localGLSurfaceView.consumeOESTexture(texId,
@@ -278,8 +279,6 @@ public class RtcManager {
                                     height
                             );
                         }
-
-                        return false;
                     }
                     return true;
                 }
@@ -371,7 +370,20 @@ public class RtcManager {
         if (engine == null) {
             return;
         }
-        if(publish){
+
+        int _uid = LOCAL_RTC_UID;
+        if(!TextUtils.isEmpty(uid)){
+            try {
+                _uid = Integer.parseInt(uid);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        ChannelMediaOptions options = new ChannelMediaOptions();
+        options.autoSubscribeAudio = true;
+        options.autoSubscribeVideo = true;
+
+        if(publish && videoPreProcess != null){
             /**Configures the external video source.
              * @param enable Sets whether or not to use the external video source:
              *                 true: Use the external video source.
@@ -385,19 +397,10 @@ public class RtcManager {
              *                   false: Use the pull mode (not supported).*/
             engine.setExternalVideoSource(true, true, false);
             isPushExtVideoFrame = true;
+        }else{
+            options.publishAudioTrack = publish;
+            options.publishAudioTrack = publish;
         }
-
-        int _uid = LOCAL_RTC_UID;
-        if(!TextUtils.isEmpty(uid)){
-            try {
-                _uid = Integer.parseInt(uid);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        ChannelMediaOptions options = new ChannelMediaOptions();
-        options.autoSubscribeAudio = true;
-        options.autoSubscribeVideo = true;
 
         engine.setClientRole(publish ? Constants.CLIENT_ROLE_BROADCASTER : Constants.CLIENT_ROLE_AUDIENCE);
 
@@ -441,7 +444,7 @@ public class RtcManager {
         if (engine == null) {
             return;
         }
-        SurfaceView view = new SurfaceView(container.getContext());
+        TextureView view = new TextureView(container.getContext());
         container.addView(view);
         engine.setupRemoteVideo(new VideoCanvas(view, RENDER_MODE_HIDDEN, uid));
     }

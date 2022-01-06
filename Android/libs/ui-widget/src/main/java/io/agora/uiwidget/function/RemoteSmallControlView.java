@@ -3,6 +3,7 @@ package io.agora.uiwidget.function;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -33,6 +34,11 @@ public class RemoteSmallControlView extends FrameLayout {
 
     public RemoteSmallControlView setOnCloseClickListener(OnClickListener onClickListener){
         mBinding.ivClose.setOnClickListener(onClickListener);
+        return this;
+    }
+
+    public RemoteSmallControlView setCloseVisible(boolean visible){
+        mBinding.ivClose.setVisibility(visible ? View.VISIBLE: View.GONE);
         return this;
     }
 

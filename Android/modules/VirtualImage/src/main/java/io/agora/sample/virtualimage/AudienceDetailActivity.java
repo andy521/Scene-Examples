@@ -2,6 +2,7 @@ package io.agora.sample.virtualimage;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -87,7 +88,7 @@ public class AudienceDetailActivity extends AppCompatActivity {
 
     private void initRtcManager() {
         rtcManager.init(this, getString(R.string.virtual_image_agora_app_id), null);
-        rtcManager.joinChannel(roomInfo.roomId, RoomManager.getCacheUserId(), getString(R.string.virtual_image_agora_token), false, new RtcManager.OnChannelListener() {
+        rtcManager.joinChannel(roomInfo.roomId, RoomManager.getCacheUserId(), getString(R.string.virtual_image_agora_token), true, new RtcManager.OnChannelListener() {
             @Override
             public void onError(int code, String message) {
 
@@ -101,16 +102,23 @@ public class AudienceDetailActivity extends AppCompatActivity {
             @Override
             public void onUserJoined(String channelId, int uid) {
                 runOnUiThread(() -> {
-                    rtcManager.renderRemoteVideo(mBinding.fullVideoContainer, uid);
+                    mBinding.remoteVideoControl.setVisibility(View.VISIBLE);
+                    mBinding.remoteVideoControl.setCloseVisible(false);
+                    mBinding.remoteVideoControl.setName(uid + "");
+                    rtcManager.renderRemoteVideo(mBinding.remoteVideoControl.getVideoContainer(), uid);
                     mMessageAdapter.addMessage(new RoomManager.MessageInfo(uid + "", getString(R.string.live_room_message_user_join_suffix)));
                 });
             }
 
             @Override
             public void onUserOffline(String channelId, int uid) {
-                runOnUiThread(() -> mMessageAdapter.addMessage(new RoomManager.MessageInfo(uid + "", getString(R.string.live_room_message_user_left_suffix))));
+                runOnUiThread(() -> {
+                    mMessageAdapter.addMessage(new RoomManager.MessageInfo(uid + "", getString(R.string.live_room_message_user_left_suffix)));
+                    finish();
+                });
             }
         });
+        rtcManager.renderLocalVideo(mBinding.fullVideoContainer, null);
     }
 
     private void showGiftGridDialog() {

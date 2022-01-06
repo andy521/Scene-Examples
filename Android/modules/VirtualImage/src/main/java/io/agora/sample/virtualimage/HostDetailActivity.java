@@ -2,6 +2,7 @@ package io.agora.sample.virtualimage;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -123,12 +124,21 @@ public class HostDetailActivity extends AppCompatActivity {
 
             @Override
             public void onUserJoined(String channelId, int uid) {
-                runOnUiThread(() -> mMessageAdapter.addMessage(new RoomManager.MessageInfo(uid + "", getString(R.string.live_room_message_user_join_suffix))));
+                runOnUiThread(() -> {
+                    mMessageAdapter.addMessage(new RoomManager.MessageInfo(uid + "", getString(R.string.live_room_message_user_join_suffix)));
+                    mBinding.remoteVideoControl.setVisibility(View.VISIBLE);
+                    mBinding.remoteVideoControl.setCloseVisible(false);
+                    mBinding.remoteVideoControl.setName(uid + "");
+                    rtcManager.renderRemoteVideo(mBinding.remoteVideoControl.getVideoContainer(), uid);
+                });
             }
 
             @Override
             public void onUserOffline(String channelId, int uid) {
-                runOnUiThread(() -> mMessageAdapter.addMessage(new RoomManager.MessageInfo(uid + "", getString(R.string.live_room_message_user_left_suffix))));
+                runOnUiThread(() -> {
+                    mMessageAdapter.addMessage(new RoomManager.MessageInfo(uid + "", getString(R.string.live_room_message_user_left_suffix)));
+                    mBinding.remoteVideoControl.setVisibility(View.GONE);
+                });
             }
         });
     }

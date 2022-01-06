@@ -155,7 +155,7 @@ public class FUManager {
 
                     faceunity.fuItemSetParam(mToolController, "human_3d_track_set_scene", 1);
 
-                    faceunity.fuItemSetParam(mToolController, "target_position", new double[]{0.0, 0f, -100f});
+                    faceunity.fuItemSetParam(mToolController, "target_position", new double[]{0.0, -30f, -100f});
                     faceunity.fuItemSetParam(mToolController, "target_angle", 0);
                     faceunity.fuItemSetParam(mToolController, "reset_all", 3);
 
