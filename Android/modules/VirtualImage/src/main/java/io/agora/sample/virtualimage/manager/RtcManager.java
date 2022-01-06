@@ -89,7 +89,7 @@ public class RtcManager {
 
     private static CameraCapturerConfiguration.CAMERA_DIRECTION cameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT;
     public static final VideoEncoderConfiguration encoderConfiguration = new VideoEncoderConfiguration(
-            VD_640x360,
+            VD_1280x720,
             FRAME_RATE_FPS_15,
             700,
             ORIENTATION_MODE_FIXED_PORTRAIT
@@ -239,7 +239,7 @@ public class RtcManager {
                             videoPreTexBuffHelper.invoke(new Callable<Boolean>() {
                                 @Override
                                 public Boolean call() throws Exception {
-                                    ProcessVideoFrame processVideoFrame = videoPreProcess.processVideoFrameTex(convertToNV21(videoFrame), texId, width, height,
+                                    ProcessVideoFrame processVideoFrame = videoPreProcess.processVideoFrameTex(convertToNV21(videoFrame), texId, texMatrix, width, height,
                                             cameraDirection == CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT ? Camera.CameraInfo.CAMERA_FACING_FRONT: Camera.CameraInfo.CAMERA_FACING_BACK);
 
                                     if(localGLSurfaceView != null){
@@ -322,7 +322,7 @@ public class RtcManager {
             engine.enableVideo();
             engine.enableAudio();
 
-            engine.setCameraCapturerConfiguration(new CameraCapturerConfiguration(cameraDirection));
+            engine.setCameraCapturerConfiguration(new CameraCapturerConfiguration(cameraDirection, new CameraCapturerConfiguration.CaptureFormat(encoderConfiguration.dimensions.width, encoderConfiguration.dimensions.height, encoderConfiguration.frameRate)));
             if(cameraDirection == CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT){
                 encoderConfiguration.mirrorMode = MIRROR_MODE_TYPE.MIRROR_MODE_ENABLED;
                 engine.setVideoEncoderConfiguration(encoderConfiguration);
@@ -505,7 +505,7 @@ public class RtcManager {
     }
 
     public interface VideoPreProcess {
-        ProcessVideoFrame processVideoFrameTex(byte[] img, int texId, int width, int height, int cameraType);
+        ProcessVideoFrame processVideoFrameTex(byte[] img, int texId, float[] texMatrix, int width, int height, int cameraType);
     }
 
     public static final class ProcessVideoFrame{

@@ -10,9 +10,15 @@ import android.util.Log;
 
 import com.faceunity.wrapper.faceunity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class FUManager {
     private static final String TAG = "FUManager";
@@ -35,6 +41,16 @@ public class FUManager {
     public static final String BUNDLE_fxaa = "fxaa.bundle";
     public static final String BUNDLE_ai_face_processor = "ai_face_processor.bundle";
 
+    public static double[][] skin_color;
+    public static double[][] lip_color;
+    public static double[][] iris_color;
+    public static double[][] hair_color;
+    public static double[][] beard_color;
+    public static double[][] glass_frame_color;
+    public static double[][] glass_color;
+    public static double[][] hat_color;
+    public static double[][] makeup_color;
+
 
     private Context mContext;
     private int[] mToolHandlers;
@@ -54,6 +70,8 @@ public class FUManager {
     private final int[] mItemsArray = new int[ITEM_ARRAYS_COUNT];
     private faceunity.RotatedImage mRotatedImage;
 
+    private volatile boolean isFuItemLoading = false;
+
     public static final float[] IdentityMatrix = new float[16];
     static {
         Matrix.setIdentityM(IdentityMatrix, 0);
@@ -71,6 +89,7 @@ public class FUManager {
         runInFuItemThread(new Runnable() {
             @Override
             public void run() {
+                isFuItemLoading = true;
                 try {
                     /**
                      * 初始化dsp设备
@@ -94,73 +113,47 @@ public class FUManager {
                     v3.close();
                     faceunity.fuSetup(v3Data, authpack.A());
 
-                    // 提前加载算法数据模型，用于人脸检测
-                    loadAiModel(mContext, BUNDLE_ai_face_processor, faceunity.FUAITYPE_FACEPROCESSOR);
+                    // 颜色列表
+                    InputStream is = mContext.getAssets().open("new/color.json");
+                    byte[] itemData = new byte[is.available()];
+                    is.read(itemData);
+                    is.close();
+                    String json = new String(itemData);
+                    JSONObject jsonObject = new JSONObject(json);
+                    skin_color = parseColorJson(jsonObject, "skin_color");
+                    lip_color = parseColorJson(jsonObject, "lip_color");
+                    iris_color = parseColorJson(jsonObject, "iris_color");
+                    hair_color = parseColorJson(jsonObject, "hair_color");
+                    beard_color = parseColorJson(jsonObject, "beard_color");
+                    glass_frame_color = parseColorJson(jsonObject, "glass_frame_color");
+                    glass_color = parseColorJson(jsonObject, "glass_color");
+                    hat_color = parseColorJson(jsonObject, "hat_color");
+                    makeup_color = parseColorJson(jsonObject, "makeup_color");
+                    ColorPickGradient.init(skin_color);
 
+                    // controller的创建
                     mToolController = loadFUItem(BUNDLE_controller_new);
                     int controllerConfig = loadFUItem(BUNDLE_controller_config_new);
                     faceunity.fuBindItems(mToolController, new int[]{controllerConfig});
-
-                    int wholeBodyHandler = loadFUItem("new/camera/cam_02.bundle");
-                    faceunity.fuBindItems(mToolController, new int[]{wholeBodyHandler});
-
-                    loadAiModel(mContext, "ai_human_processor.bundle", faceunity.FUAITYPE_HUMAN_PROCESSOR);
-                    faceunity.fuItemSetParam(mToolController, "enable_human_processor", 1.0);
-                    //设置enable_face_processor，说明启用或者关闭面部追踪，value = 1.0表示开启，value = 0.0表示关闭
-                    faceunity.fuItemSetParam(mToolController, "enable_face_processor", 1.0);
-
-                    // 背景
-                    int defaultBgHandler = loadFUItem("default_bg.bundle");
-                    int planeLeftHandler = loadFUItem("plane_shadow_left.bundle");
-                    int planeRightHandler = loadFUItem("plane_shadow_right.bundle");
-                    faceunity.fuBindItems(mToolController, new int[]{defaultBgHandler});
-                    faceunity.fuBindItems(mToolController, new int[]{planeLeftHandler, planeRightHandler});
-
-                    // 加载人物道具
-                    int headHandler = loadFUItem("new/head/head_1/head.bundle");
-                    int hairHandler = loadFUItem("new/hair/female_hair_7.bundle");
-                    int hatHandler = loadFUItem("new/hat/hair_hat_7.bundle");
-                    int glassHandler = loadFUItem("new/glasses/glass_1.bundle");
-                    int beardHandler = loadFUItem("new/beard/beard_4.bundle");
-                    int eyebrowHandler = loadFUItem("new/eyebrow/eyebrow_3.bundle");
-                    int eyelashHandler = loadFUItem("new/eyelash/Eyelash_1.bundle");
-                    int bodyHandle = loadFUItem("new/body/female/midBody_female2.bundle");
-                    int clothHandler = loadFUItem("new/clothes/suit/cloth_1.bundle");
-                    int clothUpperHandler = loadFUItem("new/clothes/upper/shangyi_chenshan_1.bundle");
-                    int clothLowerHandler = loadFUItem("new/clothes/lower/kuzi_changku_1.bundle");
-                    int shoeHandler = loadFUItem("new/shoes/female_cloth03_shoes.bundle");
-
-                    int decorationsEarHandler = loadFUItem("new/decorations/ear/peishi_erding_4.bundle");
-                    int decorationsFootHandler = loadFUItem("new/decorations/foot/peishi_jiao_1.bundle");
-                    int decorationsHandHandler = loadFUItem("new/decorations/hand/peishi_shou_1.bundle");
-                    int decorationsHeadHandler = loadFUItem("new/decorations/head/toushi_8.bundle");
-                    int decorationsNeckHandler = loadFUItem("new/decorations/neck/peishi_erji.bundle");
-
-                    int expressionHandler = loadFUItem("new/expression/ani_idle.bundle");
-
-                    int eyelinerHandler = loadFUItem("new/makeup/eyeliner/Eyeliner_1.bundle");
-                    int eyeshadowHandler = loadFUItem("new/makeup/eyeshadow/Eyeshadow_1.bundle");
-                    int facemakeupHandler = loadFUItem("new/makeup/facemakeup/facemakeup_2.bundle");
-                    int lipglossHandler = loadFUItem("new/makeup/lipgloss/lipgloss_1.bundle");
-                    int pupilHandler = loadFUItem("new/makeup/pupil/pupil_2.bundle");
-
-                    mToolHandlers = new int[]{headHandler, hairHandler, hatHandler, glassHandler,
-                            beardHandler, eyebrowHandler, eyelashHandler,
-                            bodyHandle, clothHandler, clothUpperHandler, clothLowerHandler, shoeHandler,
-                            decorationsEarHandler, decorationsFootHandler, decorationsHandHandler, decorationsHeadHandler,decorationsNeckHandler,
-                            expressionHandler,
-                            eyelinerHandler, eyeshadowHandler, facemakeupHandler, lipglossHandler, pupilHandler
-                    };
-                    faceunity.fuBindItems(mToolController, mToolHandlers);
-
-                    faceunity.fuItemSetParam(mToolController, "human_3d_track_set_scene", 1);
-
-                    faceunity.fuItemSetParam(mToolController, "target_position", new double[]{0.0, -30f, -100f});
-                    faceunity.fuItemSetParam(mToolController, "target_angle", 0);
-                    faceunity.fuItemSetParam(mToolController, "reset_all", 3);
-
                     mItemsArray[ITEM_ARRAYS_CONTROLLER] = mToolController;
                     mItemsArray[ITEM_ARRAYS_FXAA] = loadFUItem(BUNDLE_fxaa);
+
+                    // 配置全身驱动场景
+                    loadAiModel(mContext, "ai_human_processor.bundle", faceunity.FUAITYPE_HUMAN_PROCESSOR);
+                    faceunity.fuItemSetParam(mToolController, "enable_human_processor", 1.0);
+                    // 配置人脸检测
+                    loadAiModel(mContext, BUNDLE_ai_face_processor, faceunity.FUAITYPE_FACEPROCESSOR);
+                    //设置enable_face_processor，说明启用或者关闭面部追踪，value = 1.0表示开启，value = 0.0表示关闭
+                    faceunity.fuItemSetParam(mToolController, "enable_face_processor", 1.0);
+                    faceunity.fuItemSetParam(mToolController, "human_3d_track_set_scene", 1);
+                    faceunity.fuItemSetParam(mToolController, "target_position", new double[]{0.0, -30f, 0f});
+                    faceunity.fuItemSetParam(mToolController, "target_angle", 0);
+                    faceunity.fuItemSetParam(mToolController, "reset_all", 3);
+                    // 将相机与相机之间的过度动画时间设置为0
+                    faceunity.fuItemSetParam(mToolController, "camera_animation_transition_time", 0.0);
+
+
+                    showImage01();
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -169,6 +162,178 @@ public class FUManager {
         });
 
     }
+
+    private static double[][] parseColorJson(JSONObject jsonObject, String key) throws Exception {
+        JSONObject object = jsonObject.getJSONObject(key);
+        List<double[]> colors = new ArrayList<>();
+        for (int i = 1; object.has(String.valueOf(i)); i++) {
+            JSONObject color = object.getJSONObject(String.valueOf(i));
+            int r = color.getInt("r");
+            int g = color.getInt("g");
+            int b = color.getInt("b");
+            if (color.has("intensity")) {
+                double intensity = color.getDouble("intensity");
+                colors.add(new double[]{r, g, b, intensity});
+            } else {
+                colors.add(new double[]{r, g, b});
+            }
+        }
+        double[][] doubles = new double[colors.size()][];
+        colors.toArray(doubles);
+        return doubles;
+    }
+
+    public static double[] getColor(double[][] colors, double value) {
+        int index = (int) value;
+        if (index >= colors.length - 1) return colors[colors.length - 1];
+        if (index < 0) return colors[0];
+        double v = value - index;
+        double[] c = Arrays.copyOf(colors[index], colors[index].length);
+        c[0] = colors[index][0] + v * (colors[index + 1][0] - colors[index][0]);
+        c[1] = colors[index][1] + v * (colors[index + 1][1] - colors[index][1]);
+        c[2] = colors[index][2] + v * (colors[index + 1][2] - colors[index][2]);
+        return c;
+    }
+
+    public static double[] getMakeupColor(double[][] colors, double value) {
+        int index = (int) value;
+        if (index >= colors.length - 1) {
+            index = colors.length - 1;
+        }
+        if (index <= 0) {
+            index = 0;
+        }
+        double[] c = Arrays.copyOf(colors[index], 3);
+        return c;
+    }
+
+    /**
+     * 设置美妆颜色
+     *
+     * @param color
+     */
+    public void setMakeupColor(int makeupHandleId, double[] color) {
+        //设置美妆的颜色
+        //美妆参数名为json结构，
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("name", "global");
+            jsonObject.put("type", "face_detail");
+            jsonObject.put("param", "blend_color");
+            jsonObject.put("UUID", makeupHandleId);//需要修改的美妆道具bundle handle id
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        double[] makeupColor = new double[color.length];
+        for (int i = 0; i < color.length; i++) {
+            makeupColor[i] = color[i] * 1.0 / 255;
+        }
+        //美妆参数值为0-1之间的RGB设置，美妆颜色原始为RGB色值(sRGB空间)，RGB/255得到传给controller的值
+        //例如要替换的美妆颜色为[255,0,0], 传给controller的值为[1,0,0]
+        faceunity.fuItemSetParam(mToolController, jsonObject.toString(), makeupColor);
+    }
+
+    public void showImage01() {
+        isFuItemLoading = true;
+        runInFuItemThread(new Runnable() {
+            @Override
+            public void run() {
+                if(mToolHandlers != null && mToolHandlers.length > 0){
+                    faceunity.fuUnBindItems(mToolController, mToolHandlers);
+                }
+                // 人物支架
+                int wholeBodyHandler = loadFUItem("new/camera/cam_02.bundle");
+
+                // 背景
+                int defaultBgHandler = loadFUItem("default_bg.bundle");
+                int planeLeftHandler = loadFUItem("plane_shadow_left.bundle");
+                int planeRightHandler = loadFUItem("plane_shadow_right.bundle");
+
+                // 加载人物道具
+                int headHandler = loadFUItem("new/head/head_1/head.bundle");
+                int hairHandler = loadFUItem("new/hair/male_hair_3.bundle");
+                int bodyHandler = loadFUItem("new/body/male/midBody_male3.bundle");
+                int clothUpperHandler = loadFUItem("new/clothes/upper/shangyi_chenshan_3.bundle");
+                int clothLowerHandler = loadFUItem("new/clothes/lower/kuzi_changku_5.bundle");
+                int shoesHandler = loadFUItem("new/shoes/xiezi_tuoxie_3.bundle");
+                int lipglossHandler = loadFUItem("new/makeup/lipgloss/lipgloss_1.bundle");
+                int expressionHandler = loadFUItem("new/expression/ani_huxi_hi.bundle");
+                int expressionScenesHandler = loadFUItem("new/expression/scenes/2d/keting_A_mesh.bundle");
+                int lightHandler = loadFUItem("new/light/light_0.6.bundle");
+
+                mToolHandlers = new int[]{
+                        wholeBodyHandler,
+                        defaultBgHandler, planeLeftHandler, planeRightHandler,
+                        headHandler,hairHandler,bodyHandler, clothUpperHandler, clothLowerHandler,
+                        shoesHandler, lipglossHandler, expressionHandler, expressionScenesHandler, lightHandler
+                };
+                faceunity.fuBindItems(mToolController, mToolHandlers);
+
+                // 设置颜色
+                faceunity.fuItemSetParam(mToolController, "iris_color", getColor(iris_color, 0));
+                faceunity.fuItemSetParam(mToolController, "hair_color", getColor(hair_color, 0));
+                faceunity.fuItemSetParam(mToolController, "hair_color_intensity", getColor(hair_color, 0)[3]);
+                faceunity.fuItemSetParam(mToolController, "glass_color", getColor(glass_color, 0));
+                faceunity.fuItemSetParam(mToolController, "glass_frame_color", getColor(glass_frame_color, 0));
+                faceunity.fuItemSetParam(mToolController, "beard_color", getColor(beard_color, 0));
+                faceunity.fuItemSetParam(mToolController, "hat_color", getColor(hat_color, 0));
+                setMakeupColor(lipglossHandler, getMakeupColor(lip_color, 6));
+                isFuItemLoading = false;
+            }
+        });
+    }
+
+    public void showImage02() {
+        isFuItemLoading = true;
+        runInFuItemThread(new Runnable() {
+            @Override
+            public void run() {
+                if(mToolHandlers != null && mToolHandlers.length > 0){
+                    faceunity.fuUnBindItems(mToolController, mToolHandlers);
+                }
+                // 人物支架
+                int wholeBodyHandler = loadFUItem("new/camera/cam_02.bundle");
+
+                // 背景
+                int defaultBgHandler = loadFUItem("default_bg.bundle");
+                int planeLeftHandler = loadFUItem("plane_shadow_left.bundle");
+                int planeRightHandler = loadFUItem("plane_shadow_right.bundle");
+
+                // 加载人物道具
+                int headHandler = loadFUItem("new/head/head_1/head.bundle");
+                int hairHandler = loadFUItem("new/hair/male_hair_3.bundle");
+                int bodyHandler = loadFUItem("new/body/male/midBody_male3.bundle");
+                int clothUpperHandler = loadFUItem("new/clothes/upper/shangyi_chenshan_3.bundle");
+                int clothLowerHandler = loadFUItem("new/clothes/lower/kuzi_changku_5.bundle");
+                int shoesHandler = loadFUItem("new/shoes/xiezi_tuoxie_3.bundle");
+                int lipglossHandler = loadFUItem("new/makeup/lipgloss/lipgloss_1.bundle");
+                int expressionHandler = loadFUItem("new/expression/ani_huxi_hi.bundle");
+                int expressionScenesHandler = loadFUItem("new/expression/scenes/2d/keting_A_mesh.bundle");
+                int lightHandler = loadFUItem("new/light/light_0.6.bundle");
+
+                mToolHandlers = new int[]{
+                        wholeBodyHandler,
+                        defaultBgHandler, planeLeftHandler, planeRightHandler,
+                        headHandler,hairHandler,bodyHandler, clothUpperHandler, clothLowerHandler,
+                        shoesHandler, lipglossHandler, expressionHandler, expressionScenesHandler, lightHandler
+                };
+                faceunity.fuBindItems(mToolController, mToolHandlers);
+
+                // 设置颜色
+                faceunity.fuItemSetParam(mToolController, "iris_color", getColor(iris_color, 0));
+                faceunity.fuItemSetParam(mToolController, "hair_color", getColor(hair_color, 0));
+                faceunity.fuItemSetParam(mToolController, "hair_color_intensity", getColor(hair_color, 0)[3]);
+                faceunity.fuItemSetParam(mToolController, "glass_color", getColor(glass_color, 0));
+                faceunity.fuItemSetParam(mToolController, "glass_frame_color", getColor(glass_frame_color, 0));
+                faceunity.fuItemSetParam(mToolController, "beard_color", getColor(beard_color, 0));
+                faceunity.fuItemSetParam(mToolController, "hat_color", getColor(hat_color, 0));
+                setMakeupColor(lipglossHandler, getMakeupColor(lip_color, 6));
+                isFuItemLoading = false;
+            }
+        });
+    }
+
+
 
     /**
      * 加载 AI 模型资源
@@ -247,7 +412,10 @@ public class FUManager {
         return item;
     }
 
-    public FuVideoFrame processVideoFrame(byte[] img, int texId, int width, int height, int cameraType) {
+    public FuVideoFrame processVideoFrame(byte[] img, int texId, float[] texMatrix, int width, int height, int cameraType) {
+        if(isFuItemLoading || !isInitialized){
+            return new FuVideoFrame(texId, texMatrix, width, height, TEXTURE_TYPE_OES);
+        }
         if(mRotatedImage == null){
             mRotatedImage = new faceunity.RotatedImage();
         }
@@ -273,7 +441,11 @@ public class FUManager {
         if(fuItemThread == null || !fuItemThread.isAlive() || runnable == null){
             return;
         }
-        fuItemHandler.post(runnable);
+        if(Thread.currentThread() == fuItemThread){
+            runnable.run();
+        }else{
+            fuItemHandler.post(runnable);
+        }
     }
 
     public void release() {

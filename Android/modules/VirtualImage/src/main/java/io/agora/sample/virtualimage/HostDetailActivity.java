@@ -91,7 +91,7 @@ public class HostDetailActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void initRoomManager(){
+    private void initRoomManager() {
         roomManager.joinRoom(roomInfo.roomId, () -> roomManager.subscribeGiftReceiveEvent(roomInfo.roomId, new WeakReference<>(giftInfoDataCallback)));
     }
 
@@ -100,8 +100,8 @@ public class HostDetailActivity extends AppCompatActivity {
         rtcManager.renderLocalVideo(mBinding.fullVideoContainer, null);
         rtcManager.setVideoPreProcess(new RtcManager.VideoPreProcess() {
             @Override
-            public RtcManager.ProcessVideoFrame processVideoFrameTex(byte[] img, int texId, int width, int height, int cameraType) {
-                FUManager.FuVideoFrame videoFrame = fuManager.processVideoFrame(img, texId, width, height, cameraType);
+            public RtcManager.ProcessVideoFrame processVideoFrameTex(byte[] img, int texId, float[] texMatrix, int width, int height, int cameraType) {
+                FUManager.FuVideoFrame videoFrame = fuManager.processVideoFrame(img, texId, texMatrix, width, height, cameraType);
                 return new RtcManager.ProcessVideoFrame(videoFrame.texId, videoFrame.texMatrix, videoFrame.width, videoFrame.height,
                         videoFrame.texType == FUManager.TEXTURE_TYPE_OES ? RtcManager.TEXTURE_TYPE_OES : RtcManager.TEXTURE_TYPE_2D);
             }
