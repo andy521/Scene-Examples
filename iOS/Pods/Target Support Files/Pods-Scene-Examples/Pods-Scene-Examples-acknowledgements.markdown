@@ -15,7 +15,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 
-## AgoraRtcEngine_iOS_Preview
+## AgoraRtcEngine_Special_iOS
 
 Copyright 2018 agora.io. All rights reserved.
 

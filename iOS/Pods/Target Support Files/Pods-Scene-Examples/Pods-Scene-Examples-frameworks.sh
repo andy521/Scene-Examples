@@ -177,11 +177,11 @@ code_sign_if_enabled() {
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/AgoraLog/AgoraLog.framework"
-  install_framework "${PODS_ROOT}/AgoraRtcEngine_iOS_Preview/AgoraRTE.framework"
-  install_framework "${PODS_ROOT}/AgoraRtcEngine_iOS_Preview/AgoraRtcCryptoLoader.framework"
-  install_framework "${PODS_ROOT}/AgoraRtcEngine_iOS_Preview/AgoraRtcKit.framework"
-  install_framework "${PODS_ROOT}/AgoraRtcEngine_iOS_Preview/AgoraVideoProcess.framework"
-  install_framework "${PODS_ROOT}/AgoraRtcEngine_iOS_Preview/Agoraffmpeg.framework"
+  install_framework "${PODS_ROOT}/AgoraRtcEngine_Special_iOS/AgoraRTE.framework"
+  install_framework "${PODS_ROOT}/AgoraRtcEngine_Special_iOS/AgoraRtcCryptoLoader.framework"
+  install_framework "${PODS_ROOT}/AgoraRtcEngine_Special_iOS/AgoraRtcKit.framework"
+  install_framework "${PODS_ROOT}/AgoraRtcEngine_Special_iOS/AgoraVideoProcess.framework"
+  install_framework "${PODS_ROOT}/AgoraRtcEngine_Special_iOS/Agoraffmpeg.framework"
   install_framework "${PODS_ROOT}/AgoraRtm_iOS/AgoraRtmKit.framework"
   install_framework "${PODS_ROOT}/../sdk/libs/AgoraScreenShare.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/AgoraSyncManager/AgoraSyncManager.framework"
@@ -191,11 +191,11 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/AgoraLog/AgoraLog.framework"
-  install_framework "${PODS_ROOT}/AgoraRtcEngine_iOS_Preview/AgoraRTE.framework"
-  install_framework "${PODS_ROOT}/AgoraRtcEngine_iOS_Preview/AgoraRtcCryptoLoader.framework"
-  install_framework "${PODS_ROOT}/AgoraRtcEngine_iOS_Preview/AgoraRtcKit.framework"
-  install_framework "${PODS_ROOT}/AgoraRtcEngine_iOS_Preview/AgoraVideoProcess.framework"
-  install_framework "${PODS_ROOT}/AgoraRtcEngine_iOS_Preview/Agoraffmpeg.framework"
+  install_framework "${PODS_ROOT}/AgoraRtcEngine_Special_iOS/AgoraRTE.framework"
+  install_framework "${PODS_ROOT}/AgoraRtcEngine_Special_iOS/AgoraRtcCryptoLoader.framework"
+  install_framework "${PODS_ROOT}/AgoraRtcEngine_Special_iOS/AgoraRtcKit.framework"
+  install_framework "${PODS_ROOT}/AgoraRtcEngine_Special_iOS/AgoraVideoProcess.framework"
+  install_framework "${PODS_ROOT}/AgoraRtcEngine_Special_iOS/Agoraffmpeg.framework"
   install_framework "${PODS_ROOT}/AgoraRtm_iOS/AgoraRtmKit.framework"
   install_framework "${PODS_ROOT}/../sdk/libs/AgoraScreenShare.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/AgoraSyncManager/AgoraSyncManager.framework"

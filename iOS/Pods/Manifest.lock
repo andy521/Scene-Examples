@@ -1,7 +1,7 @@
 PODS:
   - AgoraLog (1.0.2):
     - CocoaLumberjack (~> 3.6.1)
-  - AgoraRtcEngine_iOS_Preview (4.0.0.preview.3)
+  - AgoraRtcEngine_Special_iOS (3.6.213)
   - AgoraRtm_iOS (1.4.8)
   - AgoraScreenShare (1.0)
   - AgoraSyncManager (1.0.0):
@@ -14,7 +14,7 @@ PODS:
   - MBProgressHUD (1.2.0)
 
 DEPENDENCIES:
-  - AgoraRtcEngine_iOS_Preview (= 4.0.0.preview.3)
+  - AgoraRtcEngine_Special_iOS (= 3.6.213)
   - AgoraRtm_iOS (~> 1.4.8)
   - AgoraScreenShare (from `sdk`)
   - AgoraSyncManager (from `AgoraSyncManager`)
@@ -24,7 +24,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - AgoraLog
-    - AgoraRtcEngine_iOS_Preview
+    - AgoraRtcEngine_Special_iOS
     - AgoraRtm_iOS
     - AgoraUIKit-iOS
     - CocoaLumberjack
@@ -38,7 +38,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AgoraLog: b0eb6ed816b29e411dc14dc2171fe5912a8a141f
-  AgoraRtcEngine_iOS_Preview: 6af3e4305cf2b6828ba8f759a082be2fcb45ec87
+  AgoraRtcEngine_Special_iOS: b456b94000813a9c18b64a2b915afeb475883929
   AgoraRtm_iOS: 382a54763803dad098d3b31a2608ccd62972e00b
   AgoraScreenShare: 07e82b5985340b66a574e17db0353d6e70c780cc
   AgoraSyncManager: ab021dc3535f1abccf38b2ee193e31dafc23851e
@@ -46,6 +46,6 @@ SPEC CHECKSUMS:
   CocoaLumberjack: bd155f2dd06c0e0b03f876f7a3ee55693122ec94
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
 
-PODFILE CHECKSUM: 4c08d621f6992067fa3cd5ac5eb83066ed7982d5
+PODFILE CHECKSUM: f4298687496e556d997d7e9d917aea7209199924
 
 COCOAPODS: 1.11.2

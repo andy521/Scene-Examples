@@ -62,6 +62,8 @@ class OneToOneViewController: BaseViewController {
     private var isCloseGame: Bool = false
     private var isSelfExitGame: Bool = false
     
+    private let videoFrameHandler = VideoFrameHandler()
+    
     init(channelName: String, sceneType: SceneType, userId: String, agoraKit: AgoraRtcEngineKit? = nil) {
         super.init(nibName: nil, bundle: nil)
         self.channelName = channelName
@@ -235,15 +237,20 @@ class OneToOneViewController: BaseViewController {
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: rtcEngineConfig, delegate: self)
         agoraKit?.setLogFile(LogUtils.sdkLogPath())
         agoraKit?.setClientRole(.broadcaster)
+        
+//        let encodeConfig = AgoraVideoEncoderConfiguration(size: CGSize(width: 540, height: 960),
+//                                                          frameRate: .fps30,
+//                                                          bitrate: AgoraVideoBitrateStandard,
+//                                                          orientationMode: .fixedPortrait,
+//                                                          mirrorMode: .auto)
+//        agoraKit?.setVideoEncoderConfiguration(encodeConfig)
+        agoraKit?.setVideoFrameDelegate(videoFrameHandler)
+        let captureConfig = AgoraCameraCapturerConfiguration()
+        captureConfig.cameraDirection = .front
+        captureConfig.cameraPixelFormat = kCVPixelFormatType_32BGRA
+        agoraKit?.setCameraCapturerConfiguration(captureConfig)
         agoraKit?.enableVideo()
-        agoraKit?.setVideoEncoderConfiguration(
-            AgoraVideoEncoderConfiguration(size: CGSize(width: 320, height: 240),
-                                           frameRate: .fps30,
-                                           bitrate: AgoraVideoBitrateStandard,
-                                           orientationMode: .fixedPortrait,
-                                           mirrorMode: .auto))
-        /// 开启扬声器
-        agoraKit?.setDefaultAudioRouteToSpeakerphone(true)
+        agoraKit?.disableAudio()
     }
     
     private func createAgoraVideoCanvas(uid: UInt, isLocal: Bool = false) {
@@ -325,5 +332,17 @@ extension OneToOneViewController: AgoraRtcEngineDelegate {
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, remoteAudioStats stats: AgoraRtcRemoteAudioStats) {
 //        remoteVideo.statsInfo?.updateAudioStats(stats)
+    }
+}
+
+
+extension OneToOneViewController: AgoraVideoFrameDelegate {
+    func onCapture(_ srcFrame: AgoraOutputVideoFrame, dstFrame: AutoreleasingUnsafeMutablePointer<AgoraOutputVideoFrame?>?) -> Bool {
+        
+        return true
+    }
+    
+    func getVideoFrameProcessMode() -> AgoraVideoFrameProcessMode {
+        return .readWrite
     }
 }
