@@ -545,5 +545,6 @@
 - (void)setOutputResolutionWithWidth:(CGFloat)width height:(CGFloat)height;
 
 - (void)setAvatarStyleDefault;
+- (void)setupForHalfMode;
 
 @end

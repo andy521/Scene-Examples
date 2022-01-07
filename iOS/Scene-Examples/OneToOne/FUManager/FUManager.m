@@ -404,6 +404,46 @@ static int ARFilterID = 0 ;
     return pixelBuffer;
 }
 
+- (CVPixelBufferRef)renderBodyTrackWithBuffer:(CVPixelBufferRef)pixelBuffer
+                                          ptr:(void *)human3dPtr
+                                   RenderMode:(FURenderMode)renderMode
+                                    Landmarks:(float *)landmarks
+                              LandmarksLength:(int)landmarksLength {
+    dispatch_semaphore_wait(self.signal, DISPATCH_TIME_FOREVER);
+     
+    int h = (int)CVPixelBufferGetHeight(pixelBuffer);
+    int stride = (int)CVPixelBufferGetBytesPerRow(pixelBuffer);
+    int w = stride/4;
+    CVPixelBufferLockBaseAddress(pixelBuffer, 0);
+    void* pod0 = (void *)CVPixelBufferGetBaseAddress(pixelBuffer);
+    [[FURenderer shareRenderer] setOutputResolution:w h:h];
+    [[FURenderer shareRenderer] renderBundles:pod0
+                                     inFormat:FU_FORMAT_BGRA_BUFFER
+                                       outPtr:pod0
+                                    outFormat:FU_FORMAT_BGRA_BUFFER
+                                        width:w
+                                       height:h
+                                      frameId:frameId ++
+                                        items:mItems
+                                    itemCount:sizeof(mItems)/sizeof(int)];
+    
+    [self rotateImage:pod0
+             inFormat:FU_FORMAT_BGRA_BUFFER
+                    w:w
+                    h:h
+         rotationMode:FU_ROTATION_MODE_0
+                flipX:NO
+                flipY:YES];
+    memcpy(pod0, self.rotatedImageManager.mData, CVPixelBufferGetDataSize(pixelBuffer));
+    
+    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
+    
+    dispatch_semaphore_signal(self.signal);
+    
+    return pixelBuffer;
+
+}
+
 
 /// 捕获人脸接口
 /// @param pixelBuffer 输入源
@@ -466,28 +506,7 @@ static int ARFilterID = 0 ;
     return bodyTrackBuffer;
 }
  
-- (CVPixelBufferRef)renderBodyTrackWithBuffer:(CVPixelBufferRef)pixelBuffer ptr:(void *)human3dPtr RenderMode:(FURenderMode)renderMode Landmarks:(float *)landmarks LandmarksLength:(int)landmarksLength
-{
-    dispatch_semaphore_wait(self.signal, DISPATCH_TIME_FOREVER);
-     
-    int h = (int)CVPixelBufferGetHeight(pixelBuffer);
-    int stride = (int)CVPixelBufferGetBytesPerRow(pixelBuffer);
-    int w = stride/4;
-    CVPixelBufferLockBaseAddress(pixelBuffer, 0);
-    void* pod0 = (void *)CVPixelBufferGetBaseAddress(pixelBuffer);
-    
-    [[FURenderer shareRenderer] renderBundles:pod0 inFormat:FU_FORMAT_BGRA_BUFFER outPtr:pod0 outFormat:FU_FORMAT_BGRA_BUFFER width:w height:h frameId:frameId ++ items:mItems itemCount:sizeof(mItems)/sizeof(int)];
-    
-    [self rotateImage:pod0 inFormat:FU_FORMAT_BGRA_BUFFER w:w h:h rotationMode:FU_ROTATION_MODE_0 flipX:NO flipY:YES];
-    memcpy(pod0, self.rotatedImageManager.mData, w*h*4);
-    
-    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
-    
-    dispatch_semaphore_signal(self.signal);
-    
-    return pixelBuffer;
 
-}
 
 -(CVPixelBufferRef)dealTheFrontCameraPixelBuffer:(CVPixelBufferRef) pixelBuffer
 {
@@ -3140,18 +3159,15 @@ static float CenterScale = 0.3;
 - (void)setAvatarStyleDefault {
     [self setAvatarStyle:FUAvatarStyleQ];
     [self loadDefaultAvatar];
+}
+
+- (void)setupForHalfMode {
+    [self loadDefaultBackGroundToController];
     FUAvatar *avatar = _currentAvatars.firstObject;
-    // 1.即将进入AR滤镜，加载处理头发的道具
-    [self bindHairMask];
-    // 2.解绑定身体、上衣、裤子、鞋子资源，只保留头部的一些素材
-    [self reloadRenderAvatarInARModeInSameController:avatar];
-//         [self.filterView selectedModeWith:self.currentAvatar];
-    // 3.设置AR滤镜的controller句柄为arItems[0]
-    [self enterARMode];
-    // 4.去除背景道具
-    [self reloadBackGroundAndBindToController:nil];
-    // 5.向nama设置enter_ar_mode为1，进入AR滤镜模式
-    [avatar enterARMode];
+    [[FUManager shareInstance] destoryHairMask];
+    [[FUManager shareInstance] reloadAvatarToControllerWithAvatar:avatar : NO];
+    [avatar enterTrackBodyMode];
+    [avatar loadFullAvatar];
     [self enableFaceCapture:1];
 }
 
