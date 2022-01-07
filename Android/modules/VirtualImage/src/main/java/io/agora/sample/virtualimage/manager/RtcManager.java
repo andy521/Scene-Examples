@@ -107,7 +107,125 @@ public class RtcManager {
     private VideoPreProcess videoPreProcess;
     private TextureBufferHelper videoPreTexBuffHelper;
 
+    private static volatile RtcManager INSTANCE;
+    public static RtcManager getInstance(){
+        if(INSTANCE == null){
+            synchronized (RtcManager.class){
+                if(INSTANCE== null){
+                    INSTANCE = new RtcManager();
+                }
+            }
+        }
+        return INSTANCE;
+    }
+
+    private RtcManager(){}
+
     private volatile boolean isPushExtVideoFrame = false;
+    private IVideoFrameObserver videoFrameObserver = new IVideoFrameObserver() {
+        @Override
+        public boolean onCaptureVideoFrame(VideoFrame videoFrame) {
+            VideoFrame.Buffer buffer = videoFrame.getBuffer();
+            if(buffer instanceof VideoFrame.TextureBuffer){
+                VideoFrame.TextureBuffer textureBuffer = (VideoFrame.TextureBuffer) buffer;
+
+                localRenderMatrix.reset();
+                localRenderMatrix.preTranslate(0.5f, 0.5f);
+                localRenderMatrix.preScale(1f, -1f); // I420-frames are upside down
+                localRenderMatrix.preRotate(videoFrame.getRotation());
+                localRenderMatrix.preTranslate(-0.5f, -0.5f);
+
+                float[] texMatrix = RendererCommon.convertMatrixFromAndroidGraphicsMatrix(localRenderMatrix);
+                int texId = textureBuffer.getTextureId();
+                int width = textureBuffer.getWidth();
+                int height = textureBuffer.getHeight();
+
+                if(videoPreProcess != null){
+                    if(videoPreTexBuffHelper == null){
+                        videoPreTexBuffHelper = TextureBufferHelper.create("VideoPreProcess", textureBuffer.getEglBaseContext());
+                    }
+                    videoPreTexBuffHelper.invoke(new Callable<Boolean>() {
+                        @Override
+                        public Boolean call() throws Exception {
+                            ProcessVideoFrame processVideoFrame = videoPreProcess.processVideoFrameTex(convertToNV21(videoFrame), texId, texMatrix, width, height,
+                                    cameraDirection == CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT ? Camera.CameraInfo.CAMERA_FACING_FRONT: Camera.CameraInfo.CAMERA_FACING_BACK);
+
+                            if(localGLSurfaceView != null){
+                                localGLSurfaceView.init(videoPreTexBuffHelper.getEglBase().getEglBaseContext());
+                                if(processVideoFrame.texType == TEXTURE_TYPE_2D){
+                                    localGLSurfaceView.consume2DTexture(processVideoFrame.texId,
+                                            processVideoFrame.texMatrix,
+                                            processVideoFrame.width,
+                                            processVideoFrame.height
+                                    );
+                                }
+                                else{
+                                    localGLSurfaceView.consumeOESTexture(processVideoFrame.texId,
+                                            processVideoFrame.texMatrix,
+                                            processVideoFrame.width,
+                                            processVideoFrame.height
+                                    );
+                                }
+                            }
+
+                            if(isPushExtVideoFrame){
+                                VideoFrame.TextureBuffer pushTextBuffer = videoPreTexBuffHelper.wrapTextureBuffer(processVideoFrame.width, processVideoFrame.height,
+                                        processVideoFrame.texType == TEXTURE_TYPE_2D ? VideoFrame.TextureBuffer.Type.RGB : VideoFrame.TextureBuffer.Type.OES,
+                                        processVideoFrame.texId, RendererCommon.convertMatrixToAndroidGraphicsMatrix(processVideoFrame.texMatrix));
+                                engine.pushExternalVideoFrame(new VideoFrame(pushTextBuffer, 0, System.nanoTime()));
+                            }
+
+                            return null;
+                        }
+                    });
+                    return false;
+                }else if(localGLSurfaceView != null){
+                    localGLSurfaceView.init(textureBuffer.getEglBaseContext());
+                    localGLSurfaceView.consumeOESTexture(texId,
+                            texMatrix,
+                            width,
+                            height
+                    );
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onScreenCaptureVideoFrame(VideoFrame videoFrame) {
+            return true;
+        }
+
+        @Override
+        public boolean onMediaPlayerVideoFrame(VideoFrame videoFrame, int i) {
+            return true;
+        }
+
+        @Override
+        public boolean onRenderVideoFrame(String s, int i, VideoFrame videoFrame) {
+            return true;
+        }
+
+        @Override
+        public int getVideoFrameProcessMode() {
+            return PROCESS_MODE_READ_WRITE;
+        }
+
+        @Override
+        public int getVideoFormatPreference() {
+            return 11;
+        }
+
+        @Override
+        public int getRotationApplied() {
+            return 0;
+        }
+
+        @Override
+        public boolean getMirrorApplied() {
+            return false;
+        }
+    };
 
     public void init(Context context, String appId, OnInitializeListener listener) {
         if (isInitialized) {
@@ -213,111 +331,7 @@ public class RtcManager {
             engine.setAudioProfile(Constants.AUDIO_PROFILE_SPEECH_STANDARD, Constants.AUDIO_SCENARIO_GAME_STREAMING);
             engine.setDefaultAudioRoutetoSpeakerphone(true);
             engine.enableDualStreamMode(false);
-
-            engine.registerVideoFrameObserver(new IVideoFrameObserver() {
-                @Override
-                public boolean onCaptureVideoFrame(VideoFrame videoFrame) {
-                    VideoFrame.Buffer buffer = videoFrame.getBuffer();
-                    if(buffer instanceof VideoFrame.TextureBuffer){
-                        VideoFrame.TextureBuffer textureBuffer = (VideoFrame.TextureBuffer) buffer;
-
-                        localRenderMatrix.reset();
-                        localRenderMatrix.preTranslate(0.5f, 0.5f);
-                        localRenderMatrix.preScale(1f, -1f); // I420-frames are upside down
-                        localRenderMatrix.preRotate(videoFrame.getRotation());
-                        localRenderMatrix.preTranslate(-0.5f, -0.5f);
-
-                        float[] texMatrix = RendererCommon.convertMatrixFromAndroidGraphicsMatrix(localRenderMatrix);
-                        int texId = textureBuffer.getTextureId();
-                        int width = textureBuffer.getWidth();
-                        int height = textureBuffer.getHeight();
-
-                        if(videoPreProcess != null){
-                            if(videoPreTexBuffHelper == null){
-                                videoPreTexBuffHelper = TextureBufferHelper.create("VideoPreProcess", textureBuffer.getEglBaseContext());
-                            }
-                            videoPreTexBuffHelper.invoke(new Callable<Boolean>() {
-                                @Override
-                                public Boolean call() throws Exception {
-                                    ProcessVideoFrame processVideoFrame = videoPreProcess.processVideoFrameTex(convertToNV21(videoFrame), texId, texMatrix, width, height,
-                                            cameraDirection == CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT ? Camera.CameraInfo.CAMERA_FACING_FRONT: Camera.CameraInfo.CAMERA_FACING_BACK);
-
-                                    if(localGLSurfaceView != null){
-                                        localGLSurfaceView.init(videoPreTexBuffHelper.getEglBase().getEglBaseContext());
-                                        if(processVideoFrame.texType == TEXTURE_TYPE_2D){
-                                            localGLSurfaceView.consume2DTexture(processVideoFrame.texId,
-                                                    processVideoFrame.texMatrix,
-                                                    processVideoFrame.width,
-                                                    processVideoFrame.height
-                                            );
-                                        }
-                                        else{
-                                            localGLSurfaceView.consumeOESTexture(processVideoFrame.texId,
-                                                    processVideoFrame.texMatrix,
-                                                    processVideoFrame.width,
-                                                    processVideoFrame.height
-                                            );
-                                        }
-                                    }
-
-                                    if(isPushExtVideoFrame){
-                                        VideoFrame.TextureBuffer pushTextBuffer = videoPreTexBuffHelper.wrapTextureBuffer(processVideoFrame.width, processVideoFrame.height,
-                                                processVideoFrame.texType == TEXTURE_TYPE_2D ? VideoFrame.TextureBuffer.Type.RGB : VideoFrame.TextureBuffer.Type.OES,
-                                                processVideoFrame.texId, RendererCommon.convertMatrixToAndroidGraphicsMatrix(processVideoFrame.texMatrix));
-                                        engine.pushExternalVideoFrame(new VideoFrame(pushTextBuffer, 0, System.nanoTime()));
-                                    }
-
-                                    return null;
-                                }
-                            });
-                            return false;
-                        }else if(localGLSurfaceView != null){
-                            localGLSurfaceView.init(textureBuffer.getEglBaseContext());
-                            localGLSurfaceView.consumeOESTexture(texId,
-                                    texMatrix,
-                                    width,
-                                    height
-                            );
-                        }
-                    }
-                    return true;
-                }
-
-                @Override
-                public boolean onScreenCaptureVideoFrame(VideoFrame videoFrame) {
-                    return true;
-                }
-
-                @Override
-                public boolean onMediaPlayerVideoFrame(VideoFrame videoFrame, int i) {
-                    return true;
-                }
-
-                @Override
-                public boolean onRenderVideoFrame(String s, int i, VideoFrame videoFrame) {
-                    return true;
-                }
-
-                @Override
-                public int getVideoFrameProcessMode() {
-                    return PROCESS_MODE_READ_WRITE;
-                }
-
-                @Override
-                public int getVideoFormatPreference() {
-                    return 11;
-                }
-
-                @Override
-                public int getRotationApplied() {
-                    return 0;
-                }
-
-                @Override
-                public boolean getMirrorApplied() {
-                    return false;
-                }
-            });
+            engine.registerVideoFrameObserver(videoFrameObserver);
 
             engine.enableVideo();
             engine.enableAudio();
@@ -453,7 +467,7 @@ public class RtcManager {
         this.videoPreProcess = videoPreProcess;
     }
 
-    public void release() {
+    public void reset(boolean isStopPreview) {
         isPushExtVideoFrame = false;
         publishChannelListener = null;
         if(localGLSurfaceView != null){
@@ -461,14 +475,18 @@ public class RtcManager {
             localGLSurfaceView = null;
         }
         videoPreProcess = null;
-        if(videoPreTexBuffHelper != null){
-            videoPreTexBuffHelper.dispose();
-            videoPreTexBuffHelper = null;
+        if(isStopPreview){
+            if(videoPreTexBuffHelper != null){
+                videoPreTexBuffHelper.dispose();
+                videoPreTexBuffHelper = null;
+            }
         }
+
         if (engine != null) {
             engine.leaveChannel();
-            engine.stopPreview();
-            RtcEngine.destroy();
+            if(isStopPreview){
+                engine.stopPreview();
+            }
         }
     }
 

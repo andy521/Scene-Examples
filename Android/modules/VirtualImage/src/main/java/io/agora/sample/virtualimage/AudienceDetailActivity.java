@@ -20,7 +20,7 @@ import io.agora.uiwidget.utils.RandomUtil;
 
 public class AudienceDetailActivity extends AppCompatActivity {
 
-    private final RtcManager rtcManager = new RtcManager();
+    private final RtcManager rtcManager = RtcManager.getInstance();
     private final RoomManager roomManager = RoomManager.getInstance();
 
     private VirtualImageAudienceDetailActivityBinding mBinding;
@@ -144,7 +144,7 @@ public class AudienceDetailActivity extends AppCompatActivity {
 
     @Override
     public void finish() {
-        rtcManager.release();
+        rtcManager.reset(true);
         super.finish();
     }
 }

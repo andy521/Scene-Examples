@@ -21,9 +21,9 @@ import io.agora.uiwidget.function.LiveToolsDialog;
 import io.agora.uiwidget.function.TextInputDialog;
 
 public class HostDetailActivity extends AppCompatActivity {
-    private final RtcManager rtcManager = new RtcManager();
+    private final RtcManager rtcManager = RtcManager.getInstance();
     private final RoomManager roomManager = RoomManager.getInstance();
-    private final FUManager fuManager = new FUManager();
+    private final FUManager fuManager = FUManager.getInstance();
 
     private VirtualImageHostDetailActivityBinding mBinding;
     private RoomManager.RoomInfo roomInfo;
@@ -80,7 +80,7 @@ public class HostDetailActivity extends AppCompatActivity {
         };
         mBinding.messageList.setAdapter(mMessageAdapter);
 
-        fuManager.init(this);
+        initFUManager();
         initRoomManager();
         initRtcManager();
     }
@@ -89,6 +89,12 @@ public class HostDetailActivity extends AppCompatActivity {
         new TextInputDialog(this)
                 .setOnSendClickListener((v, text) -> mMessageAdapter.addMessage(new RoomManager.MessageInfo(RoomManager.getCacheUserId(), text)))
                 .show();
+    }
+
+    private void initFUManager(){
+        fuManager.initController();
+        fuManager.enterBodyDriveMode();
+        fuManager.showImage01();
     }
 
     private void initRoomManager() {
@@ -156,18 +162,14 @@ public class HostDetailActivity extends AppCompatActivity {
                 .setMessage(R.string.common_tip_close_room)
                 .setPositiveButton(R.string.common_yes, (dialog, which) -> {
                     dialog.dismiss();
+                    roomManager.destroyRoom(roomInfo.roomId);
+                    rtcManager.reset(true);
+                    fuManager.reset();
                     HostDetailActivity.super.onBackPressed();
                 })
                 .setNegativeButton(R.string.common_cancel, (dialog, which) -> dialog.dismiss())
                 .show();
     }
 
-    @Override
-    public void finish() {
-        roomManager.destroyRoom(roomInfo.roomId);
-        rtcManager.release();
-        fuManager.release();
-        super.finish();
-    }
 
 }

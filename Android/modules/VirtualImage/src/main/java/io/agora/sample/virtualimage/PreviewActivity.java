@@ -24,8 +24,8 @@ import io.agora.uiwidget.function.VideoSettingDialog;
 
 public class PreviewActivity extends AppCompatActivity {
     private static final String TAG = "PreviewActivity";
-    private final RtcManager rtcManager = new RtcManager();
-    private final FUManager fuManager = new FUManager();
+    private final RtcManager rtcManager = RtcManager.getInstance();
+    private final FUManager fuManager = FUManager.getInstance();
 
 
     @Override
@@ -37,7 +37,6 @@ public class PreviewActivity extends AppCompatActivity {
                 .permission(Permission.Group.CAMERA, Permission.Group.MICROPHONE)
                 .onGranted(data -> initPreview())
                 .start();
-        fuManager.init(this);
 
         PreviewControlView previewControlView = findViewById(R.id.preview_control_view);
         previewControlView.setBackIcon(true, v -> finish());
@@ -83,6 +82,8 @@ public class PreviewActivity extends AppCompatActivity {
             RoomManager.getInstance().createRoom(randomName, new RoomManager.DataCallback<RoomManager.RoomInfo>() {
                 @Override
                 public void onSuccess(RoomManager.RoomInfo data) {
+                    rtcManager.reset(false);
+                    fuManager.reset();
                     Intent intent = new Intent(PreviewActivity.this, HostDetailActivity.class);
                     intent.putExtra("roomInfo", data);
                     startActivity(intent);
@@ -96,6 +97,14 @@ public class PreviewActivity extends AppCompatActivity {
             });
 
         });
+
+        initFUManager();
+    }
+
+    private void initFUManager(){
+        fuManager.initController();
+        fuManager.enterBodyDriveMode();
+        fuManager.showImage01();
     }
 
     private void initPreview() {
@@ -111,14 +120,12 @@ public class PreviewActivity extends AppCompatActivity {
 
         FrameLayout surfaceViewContainer = findViewById(R.id.surface_view_container);
         rtcManager.renderLocalVideo(surfaceViewContainer, null);
-
     }
 
     @Override
-    public void finish() {
-        rtcManager.release();
-        fuManager.release();
-        super.finish();
+    public void onBackPressed() {
+        rtcManager.reset(true);
+        fuManager.reset();
+        super.onBackPressed();
     }
-
 }

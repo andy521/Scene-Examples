@@ -11,8 +11,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.List;
 
+import io.agora.sample.virtualimage.manager.FUManager;
 import io.agora.sample.virtualimage.manager.RoomManager;
 import io.agora.sample.virtualimage.manager.RoomManager.RoomInfo;
+import io.agora.sample.virtualimage.manager.RtcManager;
 import io.agora.uiwidget.basic.TitleBar;
 import io.agora.uiwidget.function.RoomListView;
 
@@ -25,6 +27,8 @@ public class RoomListActivity extends AppCompatActivity {
         setContentView(R.layout.virtual_image_room_list_activity);
 
         RoomManager.getInstance().init(this, getString(R.string.virtual_image_agora_app_id), getString(R.string.virtual_image_agora_token));
+        FUManager.getInstance().init(this);
+        RtcManager.getInstance().init(this, getString(R.string.virtual_image_agora_app_id), null);
 
         RoomListView roomListView = findViewById(R.id.room_list_view);
         roomListView.setListAdapter(new RoomListView.AbsRoomListAdapter<RoomInfo>() {
