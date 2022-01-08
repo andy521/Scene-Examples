@@ -19,7 +19,7 @@
     
     const int landmarks_cnt = 314;
     float landmarks[landmarks_cnt] ;
-    CVPixelBufferRef mirrored_pixel = [[FUManager shareInstance] dealTheFrontCameraPixelBuffer:pixelBuffer];
+    CVPixelBufferRef mirrored_pixel = [[FUManager shareInstance] dealTheFrontCameraPixelBuffer:pixelBuffer returnNewBuffer:false];
     [[FUManager shareInstance] renderBodyTrackWithBuffer:mirrored_pixel
                                                      ptr:nil
                                               RenderMode:FURenderPreviewMode
