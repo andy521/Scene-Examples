@@ -87,7 +87,6 @@ public class AudienceDetailActivity extends AppCompatActivity {
     }
 
     private void initRtcManager() {
-        rtcManager.init(this, getString(R.string.virtual_image_agora_app_id), null);
         rtcManager.joinChannel(roomInfo.roomId, RoomManager.getCacheUserId(), getString(R.string.virtual_image_agora_token), true, new RtcManager.OnChannelListener() {
             @Override
             public void onError(int code, String message) {

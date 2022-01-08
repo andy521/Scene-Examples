@@ -149,6 +149,9 @@ public class RtcManager {
                         public Boolean call() throws Exception {
                             ProcessVideoFrame processVideoFrame = videoPreProcess.processVideoFrameTex(convertToNV21(videoFrame), texId, texMatrix, width, height,
                                     cameraDirection == CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT ? Camera.CameraInfo.CAMERA_FACING_FRONT: Camera.CameraInfo.CAMERA_FACING_BACK);
+                            if(processVideoFrame == null){
+                                return false;
+                            }
 
                             if(localGLSurfaceView != null){
                                 localGLSurfaceView.init(videoPreTexBuffHelper.getEglBase().getEglBaseContext());
@@ -486,6 +489,7 @@ public class RtcManager {
             engine.leaveChannel();
             if(isStopPreview){
                 engine.stopPreview();
+                engine.setCameraCapturerConfiguration(new CameraCapturerConfiguration(cameraDirection, new CameraCapturerConfiguration.CaptureFormat(encoderConfiguration.dimensions.width, encoderConfiguration.dimensions.height, encoderConfiguration.frameRate)));
             }
         }
     }

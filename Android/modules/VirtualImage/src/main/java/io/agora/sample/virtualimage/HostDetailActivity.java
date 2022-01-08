@@ -93,7 +93,7 @@ public class HostDetailActivity extends AppCompatActivity {
 
     private void initFUManager(){
         fuManager.initController();
-        fuManager.enterBodyDriveMode();
+        fuManager.setDriveMode();
         fuManager.showImage01();
     }
 
@@ -102,12 +102,14 @@ public class HostDetailActivity extends AppCompatActivity {
     }
 
     private void initRtcManager() {
-        rtcManager.init(this, getString(R.string.virtual_image_agora_app_id), null);
         rtcManager.renderLocalVideo(mBinding.fullVideoContainer, null);
         rtcManager.setVideoPreProcess(new RtcManager.VideoPreProcess() {
             @Override
             public RtcManager.ProcessVideoFrame processVideoFrameTex(byte[] img, int texId, float[] texMatrix, int width, int height, int cameraType) {
                 FUManager.FuVideoFrame videoFrame = fuManager.processVideoFrame(img, texId, texMatrix, width, height, cameraType);
+                if(videoFrame == null){
+                    return null;
+                }
                 return new RtcManager.ProcessVideoFrame(videoFrame.texId, videoFrame.texMatrix, videoFrame.width, videoFrame.height,
                         videoFrame.texType == FUManager.TEXTURE_TYPE_OES ? RtcManager.TEXTURE_TYPE_OES : RtcManager.TEXTURE_TYPE_2D);
             }

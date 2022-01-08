@@ -4,23 +4,17 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
 
-import java.util.concurrent.Callable;
-
-import io.agora.base.TextureBufferHelper;
-import io.agora.base.internal.Logging;
 import io.agora.base.internal.ThreadUtils;
 import io.agora.base.internal.video.EglBase;
 import io.agora.base.internal.video.EglBase10;
 import io.agora.base.internal.video.EglBase14;
 import io.agora.base.internal.video.GlRectDrawer;
-import io.agora.base.internal.video.RendererCommon;
 
 public class AgoraGLSurfaceView extends SurfaceView {
     private Runnable pendingRunOnSurfaceCreated = null;
@@ -75,7 +69,7 @@ public class AgoraGLSurfaceView extends SurfaceView {
 
     private void initGLEnv(EglBase.Context sharedContext, Handler handler) {
         final Surface surface = getHolder().getSurface();
-        if(surface == null){
+        if(surface == null || !surface.isValid()){
             return;
         }
         ThreadUtils.invokeAtFrontUninterruptibly(handler, () -> {

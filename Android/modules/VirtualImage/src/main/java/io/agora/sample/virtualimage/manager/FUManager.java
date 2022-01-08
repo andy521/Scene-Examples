@@ -18,7 +18,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.agora.base.internal.ThreadUtils;
 
@@ -59,7 +62,7 @@ public class FUManager {
     private int mToolController;
 
     private volatile boolean isInitialized = false;
-    private int mFrameId;
+    private volatile int mFrameId;
 
     private HandlerThread fuItemThread;
     private Handler fuItemHandler;
@@ -72,7 +75,8 @@ public class FUManager {
     private final int[] mItemsArray = new int[ITEM_ARRAYS_COUNT];
     private faceunity.RotatedImage mRotatedImage;
 
-    private volatile boolean isFuItemLoading = false;
+    private volatile boolean isFuItemLoading = true;
+    private final Map<String, Integer> bundlesLoaded = new HashMap<>();
 
     public static final float[] IdentityMatrix = new float[16];
     static {
@@ -81,6 +85,10 @@ public class FUManager {
 
 
     private static volatile FUManager INSTANCE;
+    private int mControllerConfig;
+
+    private final List<Runnable> mEventQueue = Collections.synchronizedList(new ArrayList<Runnable>());;
+
     public static FUManager getInstance(){
         if(INSTANCE == null){
             synchronized (FUManager.class){
@@ -146,6 +154,10 @@ public class FUManager {
                     hat_color = parseColorJson(jsonObject, "hat_color");
                     makeup_color = parseColorJson(jsonObject, "makeup_color");
                     ColorPickGradient.init(skin_color);
+
+                    loadAiModel(mContext, "ai_human_processor.bundle", faceunity.FUAITYPE_HUMAN_PROCESSOR);
+                    loadAiModel(mContext, BUNDLE_ai_face_processor, faceunity.FUAITYPE_FACEPROCESSOR);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -155,44 +167,45 @@ public class FUManager {
     }
 
     public void initController() {
-        isFuItemLoading = true;
         runInFuItemThread(new Runnable() {
             @Override
             public void run() {
                 // controller的创建
                 mToolController = loadFUItem(BUNDLE_controller_new);
-                int controllerConfig = loadFUItem(BUNDLE_controller_config_new);
-                faceunity.fuBindItems(mToolController, new int[]{controllerConfig});
+                mControllerConfig = loadFUItem(BUNDLE_controller_config_new);
+                faceunity.fuBindItems(mToolController, new int[]{mControllerConfig});
                 mItemsArray[ITEM_ARRAYS_CONTROLLER] = mToolController;
                 mItemsArray[ITEM_ARRAYS_FXAA] = loadFUItem(BUNDLE_fxaa);
-                isFuItemLoading = false;
             }
         });
     }
 
     public void reset(){
+        mFrameId = 0;
+        isFuItemLoading = true;
+        mEventQueue.clear();
+        bundlesLoaded.clear();
         runInFuItemThread(new Runnable() {
             @Override
             public void run() {
-                faceunity.fuDestroyAllItems();
-                faceunity.fuOnDeviceLost();
+                faceunity.fuUnBindItems(mToolController, new int[]{mControllerConfig});
+                faceunity.fuUnBindItems(mToolController, mToolHandlers);
+                faceunity.fuDestroyItem(mControllerConfig);
+                for (int handler : mToolHandlers) {
+                    faceunity.fuDestroyItem(handler);
+                }
             }
         });
     }
 
-    public void enterBodyDriveMode(){
+    public void setDriveMode(){
         runInFuItemThread(new Runnable() {
             @Override
             public void run() {
-                // 配置全身驱动场景
-                loadAiModel(mContext, "ai_human_processor.bundle", faceunity.FUAITYPE_HUMAN_PROCESSOR);
-                faceunity.fuItemSetParam(mToolController, "enable_human_processor", 1.0);
-                // 配置人脸检测
-                loadAiModel(mContext, BUNDLE_ai_face_processor, faceunity.FUAITYPE_FACEPROCESSOR);
                 //设置enable_face_processor，说明启用或者关闭面部追踪，value = 1.0表示开启，value = 0.0表示关闭
                 faceunity.fuItemSetParam(mToolController, "enable_face_processor", 1.0);
-                faceunity.fuItemSetParam(mToolController, "human_3d_track_set_scene", 1);
-                faceunity.fuItemSetParam(mToolController, "target_position", new double[]{0.0, -30f, 0f});
+                //faceunity.fuItemSetParam(mToolController, "human_3d_track_set_scene", 1);
+                faceunity.fuItemSetParam(mToolController, "target_position", new double[]{0.0, -60f, 350f});
                 faceunity.fuItemSetParam(mToolController, "target_angle", 0);
                 faceunity.fuItemSetParam(mToolController, "reset_all", 3);
                 // 将相机与相机之间的过度动画时间设置为0
@@ -272,7 +285,6 @@ public class FUManager {
     }
 
     public void showImage01() {
-        isFuItemLoading = true;
         runInFuItemThread(new Runnable() {
             @Override
             public void run() {
@@ -305,24 +317,29 @@ public class FUManager {
                         headHandler,hairHandler,bodyHandler, clothUpperHandler, clothLowerHandler,
                         shoesHandler, lipglossHandler, expressionHandler, expressionScenesHandler, lightHandler
                 };
-                faceunity.fuBindItems(mToolController, mToolHandlers);
+                runInEventQueue(new Runnable() {
+                    @Override
+                    public void run() {
+                        faceunity.fuBindItems(mToolController, mToolHandlers);
 
-                // 设置颜色
-                faceunity.fuItemSetParam(mToolController, "iris_color", getColor(iris_color, 0));
-                faceunity.fuItemSetParam(mToolController, "hair_color", getColor(hair_color, 0));
-                faceunity.fuItemSetParam(mToolController, "hair_color_intensity", getColor(hair_color, 0)[3]);
-                faceunity.fuItemSetParam(mToolController, "glass_color", getColor(glass_color, 0));
-                faceunity.fuItemSetParam(mToolController, "glass_frame_color", getColor(glass_frame_color, 0));
-                faceunity.fuItemSetParam(mToolController, "beard_color", getColor(beard_color, 0));
-                faceunity.fuItemSetParam(mToolController, "hat_color", getColor(hat_color, 0));
-                setMakeupColor(lipglossHandler, getMakeupColor(lip_color, 6));
+                        // 设置颜色
+                        faceunity.fuItemSetParam(mToolController, "iris_color", getColor(iris_color, 0));
+                        faceunity.fuItemSetParam(mToolController, "hair_color", getColor(hair_color, 0));
+                        faceunity.fuItemSetParam(mToolController, "hair_color_intensity", getColor(hair_color, 0)[3]);
+                        faceunity.fuItemSetParam(mToolController, "glass_color", getColor(glass_color, 0));
+                        faceunity.fuItemSetParam(mToolController, "glass_frame_color", getColor(glass_frame_color, 0));
+                        faceunity.fuItemSetParam(mToolController, "beard_color", getColor(beard_color, 0));
+                        faceunity.fuItemSetParam(mToolController, "hat_color", getColor(hat_color, 0));
+                        setMakeupColor(lipglossHandler, getMakeupColor(lip_color, 6));
+                    }
+                });
+
                 isFuItemLoading = false;
             }
         });
     }
 
     public void showImage02() {
-        isFuItemLoading = true;
         runInFuItemThread(new Runnable() {
             @Override
             public void run() {
@@ -429,6 +446,9 @@ public class FUManager {
      * @return 创建的道具句柄
      */
     public int loadFUItem(String bundle) {
+        if(bundlesLoaded.containsKey(bundle)){
+            return bundlesLoaded.get(bundle);
+        }
         int item = 0;
         long loadItemS = System.currentTimeMillis();
         try {
@@ -444,6 +464,7 @@ public class FUManager {
             long loadItemE = System.currentTimeMillis();
             Log.i("time", "load item:" + bundle + "--loadTime:" + (loadItemE - loadItemS) + "ms");
             Log.i(TAG, "bundle loadFUItem " + bundle + " item " + item);
+            bundlesLoaded.put(bundle, item);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -467,10 +488,26 @@ public class FUManager {
         int rendHeight = mRotatedImage.mHeight;
         faceunity.fuSetOutputResolution(rendWidth, rendHeight);
 
+        while (!mEventQueue.isEmpty()) {
+            Runnable r = mEventQueue.remove(0);
+            if (r != null)
+                r.run();
+        }
+
         int retTexId = faceunity.fuRenderBundlesWithCamera(mRotatedImage.mData,
                 texId,
                 faceunity.FU_ADM_FLAG_EXTERNAL_OES_TEXTURE,
                 rendWidth, rendHeight, mFrameId++, mItemsArray);
+
+        //获取faceunity错误信息，并调用回调接口
+        int error = faceunity.fuGetSystemError();
+        if (error != 0 && !TextUtils.isEmpty(faceunity.fuGetSystemErrorString(error))) {
+            Log.e(TAG, "fuGetSystemErrorString " + faceunity.fuGetSystemErrorString(error));
+        }
+
+        if(mFrameId < 3){
+            return null;
+        }
 
         return new FuVideoFrame(retTexId, IdentityMatrix, rendWidth, rendHeight, TEXTURE_TYPE_2D);
     }
@@ -479,11 +516,11 @@ public class FUManager {
         if(fuItemThread == null || !fuItemThread.isAlive() || runnable == null){
             return;
         }
-        if(Thread.currentThread() == fuItemThread){
-            runnable.run();
-        }else{
-            ThreadUtils.invokeAtFrontUninterruptibly(fuItemHandler, runnable);
-        }
+        ThreadUtils.invokeAtFrontUninterruptibly(fuItemHandler, runnable);
+    }
+
+    private void runInEventQueue(Runnable runnable){
+        mEventQueue.add(runnable);
     }
 
     public static final class FuVideoFrame {
