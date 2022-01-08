@@ -2594,13 +2594,13 @@ static int ARFilterID = 0 ;
 /// @param avatar 形象模型
 - (void)reloadAvatarToControllerWithAvatar:(FUAvatar *)avatar
 {
-   [self reloadAvatarToControllerWithAvatar:avatar :YES];
+   [self reloadAvatarToControllerWithAvatar:avatar isBg:YES];
 }
 
 /// 重新加载avatar的所有资源
 /// @param avatar 目标avatar
 /// @param isBg 是否渲染背景
-- (void)reloadAvatarToControllerWithAvatar:(FUAvatar *)avatar :(BOOL)isBg
+- (void)reloadAvatarToControllerWithAvatar:(FUAvatar *)avatar isBg:(BOOL)isBg
 {
     dispatch_semaphore_wait(self.signal, DISPATCH_TIME_FOREVER);
     
@@ -3165,10 +3165,12 @@ static float CenterScale = 0.3;
     [self loadDefaultBackGroundToController];
     FUAvatar *avatar = _currentAvatars.firstObject;
     [[FUManager shareInstance] destoryHairMask];
-    [[FUManager shareInstance] reloadAvatarToControllerWithAvatar:avatar : NO];
+    [[FUManager shareInstance] reloadAvatarToControllerWithAvatar:avatar isBg:NO];
     [avatar enterTrackBodyMode];
     [avatar loadFullAvatar];
     [self enableFaceCapture:1];
+    
+    [avatar resetScaleToFace];
 }
 
 - (void)loadDefaultAvatar

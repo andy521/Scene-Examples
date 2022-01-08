@@ -419,7 +419,7 @@
 /// 重新加载avatar的所有资源
 /// @param avatar 目标avatar
 /// @param isBg 是否渲染背景
-- (void)reloadAvatarToControllerWithAvatar:(FUAvatar *)avatar :(BOOL)isBg;
+- (void)reloadAvatarToControllerWithAvatar:(FUAvatar *)avatar isBg:(BOOL)isBg;
 /// 加载形象
 /// @param avatar 形象模型
 - (void)reloadAvatarToControllerWithAvatar:(FUAvatar *)avatar;

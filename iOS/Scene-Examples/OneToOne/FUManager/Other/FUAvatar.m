@@ -992,8 +992,8 @@
  缩放至面部正面
  */
 - (void)resetScaleToFace {
-    [FURenderer itemSetParam:items[FUItemTypeController] withName:@"target_scale" value:@(-145)];
-    [FURenderer itemSetParam:items[FUItemTypeController] withName:@"target_trans" value:@(8)];
+    [FURenderer itemSetParam:items[FUItemTypeController] withName:@"target_scale" value:@(-175)];
+    [FURenderer itemSetParam:items[FUItemTypeController] withName:@"target_trans" value:@(-7)];
     [FURenderer itemSetParam:items[FUItemTypeController] withName:@"target_angle" value:@(0.0)];
     [FURenderer itemSetParam:items[FUItemTypeController] withName:@"reset_all" value:@(6)];
 }

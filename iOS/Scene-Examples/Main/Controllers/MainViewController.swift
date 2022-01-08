@@ -8,7 +8,7 @@
 import UIKit
 import AgoraUIKit_iOS
 
-class MainViewController: BaseViewController {
+class MainViewController: BaseViewController, FUPoseTrackViewDelegate {
     private lazy var tableView: AGETableView = {
         let view = AGETableView()
         view.estimatedRowHeight = 100

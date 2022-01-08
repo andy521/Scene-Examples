@@ -156,7 +156,7 @@ class OneToOneViewController: BaseViewController {
             agoraKit?.switchCamera()
             
         case .game:
-            clickGameHandler()
+            clickAvaterHandler()
         
         case .mic:
             agoraKit?.muteLocalAudioStream(isSelected)
@@ -180,21 +180,14 @@ class OneToOneViewController: BaseViewController {
         }
     }
     
-    private func clickGameHandler() {
-        isSelfExitGame = false
-        if isCloseGame {
-            AlertManager.show(view: onoToOneGameView, alertPostion: .bottom, didCoverDismiss: false)
-            return
-        }
-        let gameCenterView = GameCenterView()
-        gameCenterView.didGameCenterItemClosure = { [weak self] gameCenterModel in
-            guard let self = self else { return }
-            self.onoToOneGameView.setLoadUrl(urlString: gameCenterModel.type.gameUrl, roomId: self.channelName, roleType: self.roleType)
-            AlertManager.show(view: self.onoToOneGameView, alertPostion: .bottom, didCoverDismiss: false)
-            let gameInfo = GameInfoModel(status: .playing, gameUid: UserInfo.uid, gameId: .you_draw_i_guess)
-            SyncUtil.update(id: self.channelName, key: SYNC_MANAGER_GAME_INFO, params: JSONObject.toJson(gameInfo))
-        }
-        AlertManager.show(view: gameCenterView, alertPostion: .bottom)
+    private func clickAvaterHandler() {
+        let poseTrackView = FUPoseTrackView()
+        poseTrackView.delegate = self
+        poseTrackView.translatesAutoresizingMaskIntoConstraints = false
+        poseTrackView.widthAnchor.constraint(equalToConstant: Screen.width).isActive = true
+        poseTrackView.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        AlertManager.show(view: poseTrackView, alertPostion: .bottom)
+        poseTrackView.setupData()
     }
     
     private func setupUI() {
@@ -237,13 +230,6 @@ class OneToOneViewController: BaseViewController {
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: rtcEngineConfig, delegate: self)
         agoraKit?.setLogFile(LogUtils.sdkLogPath())
         agoraKit?.setClientRole(.broadcaster)
-        
-//        let encodeConfig = AgoraVideoEncoderConfiguration(size: CGSize(width: 540, height: 960),
-//                                                          frameRate: .fps30,
-//                                                          bitrate: AgoraVideoBitrateStandard,
-//                                                          orientationMode: .fixedPortrait,
-//                                                          mirrorMode: .auto)
-//        agoraKit?.setVideoEncoderConfiguration(encodeConfig)
         agoraKit?.setVideoFrameDelegate(videoFrameHandler)
         let captureConfig = AgoraCameraCapturerConfiguration()
         captureConfig.cameraDirection = .front
@@ -336,13 +322,12 @@ extension OneToOneViewController: AgoraRtcEngineDelegate {
 }
 
 
-extension OneToOneViewController: AgoraVideoFrameDelegate {
-    func onCapture(_ srcFrame: AgoraOutputVideoFrame, dstFrame: AutoreleasingUnsafeMutablePointer<AgoraOutputVideoFrame?>?) -> Bool {
-        
-        return true
+extension OneToOneViewController: FUPoseTrackViewDelegate {
+    func poseTrackViewDidSelectedAvatar(_ avatar: FUAvatar) {
+        FUManager.shareInstance().reloadAvatarToController(with: avatar, isBg: false)
     }
     
-    func getVideoFrameProcessMode() -> AgoraVideoFrameProcessMode {
-        return .readWrite
-    }
+    func poseTrackViewDidShowTopView(_ show: Bool) {}
+    
+    func poseTrackViewDidSelectedInput(_ filterName: String) {}
 }
