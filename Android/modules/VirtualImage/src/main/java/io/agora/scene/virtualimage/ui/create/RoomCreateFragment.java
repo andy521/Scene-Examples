@@ -46,7 +46,7 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
         FUManager.getInstance().reset();
         FUManager.getInstance().initController();
         FUManager.getInstance().setDriveMode();
-        FUManager.getInstance().showImage01();
+        FUManager.getInstance().showFemaleImage();
 
         setupRandomName();
     }

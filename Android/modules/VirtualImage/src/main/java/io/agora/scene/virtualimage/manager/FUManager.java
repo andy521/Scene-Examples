@@ -288,7 +288,7 @@ public class FUManager {
         faceunity.fuItemSetParam(mToolController, jsonObject.toString(), makeupColor);
     }
 
-    public void showImage01() {
+    public void showMaleImage() {
         runInFuItemThread(new Runnable() {
             @Override
             public void run() {
@@ -346,7 +346,7 @@ public class FUManager {
         });
     }
 
-    public void showImage02() {
+    public void showFemaleImage() {
         runInFuItemThread(new Runnable() {
             @Override
             public void run() {
@@ -362,34 +362,41 @@ public class FUManager {
                 int planeRightHandler = loadFUItem("plane_shadow_right.bundle");
 
                 // 加载人物道具
-                int headHandler = loadFUItem("new/head/head_1/head.bundle");
-                int hairHandler = loadFUItem("new/hair/male_hair_3.bundle");
-                int bodyHandler = loadFUItem("new/body/male/midBody_male3.bundle");
-                int clothUpperHandler = loadFUItem("new/clothes/upper/shangyi_chenshan_3.bundle");
-                int clothLowerHandler = loadFUItem("new/clothes/lower/kuzi_changku_5.bundle");
+                int headHandler = loadFUItem("new/head/head_2/head.bundle");
+                int hairHandler = loadFUItem("new/head/head_2/female_hair_21.bundle");
+                int bodyHandler = loadFUItem("new/body/female/midBody_female3.bundle");
+                int clothHandler = loadFUItem("new/clothes/suit/taozhuang_10.bundle");
                 int shoesHandler = loadFUItem("new/shoes/xiezi_tuoxie_3.bundle");
                 int lipglossHandler = loadFUItem("new/makeup/lipgloss/lipgloss_1.bundle");
-                int expressionHandler = loadFUItem("new/expression/ani_huxi_hi.bundle");
-                int expressionScenesHandler = loadFUItem("new/expression/scenes/2d/keting_A_mesh.bundle");
+                int expressionHandler = loadFUItem("new/expression/ani_idle.bundle");
+                //int expressionScenesHandler = loadFUItem("new/expression/scenes/2d/keting_A_mesh.bundle");
                 int lightHandler = loadFUItem("new/light/light_0.6.bundle");
 
                 mToolHandlers = new int[]{
                         wholeBodyHandler,
                         defaultBgHandler, planeLeftHandler, planeRightHandler,
-                        headHandler,hairHandler,bodyHandler, clothUpperHandler, clothLowerHandler,
-                        shoesHandler, lipglossHandler, expressionHandler, expressionScenesHandler, lightHandler
+                        headHandler,hairHandler,bodyHandler, clothHandler,
+                        shoesHandler, lipglossHandler,
+                        expressionHandler,
+                        //expressionScenesHandler,
+                        lightHandler
                 };
-                faceunity.fuBindItems(mToolController, mToolHandlers);
+                runInEventQueue(new Runnable() {
+                    @Override
+                    public void run() {
+                        faceunity.fuBindItems(mToolController, mToolHandlers);
 
-                // 设置颜色
-                faceunity.fuItemSetParam(mToolController, "iris_color", getColor(iris_color, 0));
-                faceunity.fuItemSetParam(mToolController, "hair_color", getColor(hair_color, 0));
-                faceunity.fuItemSetParam(mToolController, "hair_color_intensity", getColor(hair_color, 0)[3]);
-                faceunity.fuItemSetParam(mToolController, "glass_color", getColor(glass_color, 0));
-                faceunity.fuItemSetParam(mToolController, "glass_frame_color", getColor(glass_frame_color, 0));
-                faceunity.fuItemSetParam(mToolController, "beard_color", getColor(beard_color, 0));
-                faceunity.fuItemSetParam(mToolController, "hat_color", getColor(hat_color, 0));
-                setMakeupColor(lipglossHandler, getMakeupColor(lip_color, 6));
+                        // 设置颜色
+                        faceunity.fuItemSetParam(mToolController, "iris_color", getColor(iris_color, 0));
+                        faceunity.fuItemSetParam(mToolController, "hair_color", getColor(hair_color, 0));
+                        faceunity.fuItemSetParam(mToolController, "hair_color_intensity", getColor(hair_color, 0)[3]);
+                        faceunity.fuItemSetParam(mToolController, "glass_color", getColor(glass_color, 0));
+                        faceunity.fuItemSetParam(mToolController, "glass_frame_color", getColor(glass_frame_color, 0));
+                        faceunity.fuItemSetParam(mToolController, "beard_color", getColor(beard_color, 0));
+                        faceunity.fuItemSetParam(mToolController, "hat_color", getColor(hat_color, 0));
+                        setMakeupColor(lipglossHandler, getMakeupColor(lip_color, 6));
+                    }
+                });
                 isFuItemLoading = false;
             }
         });
