@@ -1,0 +1,96 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme. -->
+    <style name="VirtualImageBaseTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/virtual_image_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/virtual_image_colorPrimaryDark</item>
+        <item name="colorAccent">@color/virtual_image_colorAccent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <item name="android:colorControlActivated" tools:targetApi="lollipop">
+            @color/virtual_image_colorAccent
+        </item>
+        <item name="android:colorControlHighlight" tools:targetApi="lollipop">
+            @color/virtual_image_colorAccent
+        </item>
+
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@android:color/transparent
+        </item>
+        <item name="android:navigationBarColor" tools:targetApi="lollipop">
+            @android:color/transparent
+        </item>
+
+        <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+    </style>
+
+    <style name="VirtualImageAppTheme" parent="VirtualImageBaseTheme">
+        <item name="colorSurface">@android:color/white</item>
+        <item name="colorOnSurface">@android:color/black</item>
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="colorOnBackground">@android:color/black</item>
+    </style>
+
+    <style name="VirtualImageLiveButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="backgroundTint">@color/virtual_image_colorHalfTransparent</item>
+        <item name="backgroundTintMode">src_in</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:stateListAnimator">@animator/virtual_image_scale_on_touch</item>
+        <item name="rippleColor">@android:color/transparent</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="iconTint">@null</item>
+        <item name="shapeAppearance">@style/VirtualImageroundStyle</item>
+    </style>
+
+    <style name="VirtualImageroundStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="VirtualImagecornerTinyStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">4dp</item>
+    </style>
+
+    <style name="VirtualImagecornerSmallStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/virtual_image_space_small</item>
+    </style>
+
+    <style name="VirtualImagecornerNormalStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/virtual_image_space_normal</item>
+    </style>
+
+    <style name="VirtualImagecornerBigStyle">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/virtual_image_space_big</item>
+    </style>
+
+    <style name="VirtualImagecornerNormalTopStyle">
+        <item name="cornerFamilyTopLeft">rounded</item>
+        <item name="cornerFamilyTopRight">rounded</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeTopLeft">@dimen/virtual_image_space_normal</item>
+        <item name="cornerSizeTopRight">@dimen/virtual_image_space_normal</item>
+    </style>
+
+    <style name="VirtualImagecornerTinyBottomStyle">
+        <item name="cornerFamilyBottomLeft">rounded</item>
+        <item name="cornerFamilyBottomRight">rounded</item>
+        <item name="cornerSizeBottomLeft">4dp</item>
+        <item name="cornerSizeBottomRight">4dp</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+    </style>
+
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="virtual_image_space_small">8dp</dimen>
+    <dimen name="virtual_image_space_normal">12dp</dimen>
+    <dimen name="virtual_image_space_medium">16dp</dimen>
+    <dimen name="virtual_image_space_big">24dp</dimen>
+</resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="io.agora.sample.virtualimage">
+    package="io.agora.scene.virtualimage">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -12,8 +12,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.CAMERA" />
-
-    <permission-group android:name="io.agora.sample.virtualimage.andpermission"/>
 
     <application
         android:allowBackup="false"
@@ -29,27 +27,15 @@
             android:value="2.4" />
 
         <activity
-            android:name=".RoomListActivity"
-            android:launchMode="singleTop"
-            android:exported="true">
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".PreviewActivity"
-            android:launchMode="singleTop"/>
-
-        <activity
-            android:name=".HostDetailActivity"
-            android:launchMode="singleTop"/>
-
-        <activity
-            android:name=".AudienceDetailActivity"
-            android:launchMode="singleTop"/>
 
 
     </application>

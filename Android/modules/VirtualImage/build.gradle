@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         if (isRunAlone.toBoolean()) {
-            applicationId "io.agora.sample.virtualimage"
+            applicationId "io.agora.scene.virtualimage"
         }
         minSdkVersion safeExtGetVersion('android', 'minSdkVersion', 21)
         targetSdkVersion safeExtGetVersion('android', 'targetSdkVersion', 31)
@@ -73,6 +73,12 @@ dependencies {
     implementation safeExtGetDependence('com.github.agorabuilder:agora-full-preview','4.0.0.preview.3')
     implementation safeExtGetDependence('com.github.AgoraIO-Community:SyncManager-Android', '1.0.0')
 
+    // Google
+    implementation("androidx.navigation:navigation-fragment:2.3.5")
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
+    // Third Part
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
 
     implementation project(':libs:ui-widget')
     implementation project(':libs:base-library')
