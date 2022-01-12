@@ -10,23 +10,24 @@ import AgoraRtcKit
 
 extension MainVM {
     func subscribeMedia(view: UIView, roomName: String) {
-        if players[roomName] == nil {
+        if agoraKit == nil {
             let config = AgoraRtcEngineConfig()
             let logConfig = AgoraLogConfig()
             config.appId = appId
             logConfig.level = .info
             config.logConfig = logConfig
-            let engine = AgoraRtcEngineKit.sharedEngine(with: config,
-                                                        delegate: nil)
-            let mp = engine.createMediaPlayer(with: self)
+            agoraKit = AgoraRtcEngineKit.sharedEngine(with: config,
+                                                      delegate: nil)
+        }
         
+        if players[roomName] == nil {
+            let mp = agoraKit.createMediaPlayer(with: self)
             players[roomName] = mp
         }
         
         let player = players[roomName]!
         player.setView(view)
-        player.open("https://webdemo-pull-hdl.agora.io/lbhd/\(roomName).flv", startPos: 0)
-        player.play()
+        player.open("http://pull.webdemo.agoraio.cn/lbhd/\(roomName).flv", startPos: 0)
     }
     
     func makeConnect(roomName: String) {

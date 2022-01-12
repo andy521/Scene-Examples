@@ -7,6 +7,7 @@
 
 import Foundation
 import AgoraRtcKit
+import CommonCrypto
 
 extension MainVM {
     /// 本地加入自己的频道
@@ -17,11 +18,13 @@ extension MainVM {
         
         let config = AgoraRtcEngineConfig()
         config.appId = appId
-
+        
         let logConfig = AgoraLogConfig()
         logConfig.level = .info
         config.logConfig = logConfig
-        agoraKit = AgoraRtcEngineKit.sharedEngine(with: config, delegate: nil)
+        agoraKit = AgoraRtcEngineKit.sharedEngine(with: config, delegate: self)
+        agoraKit.setParameters("{\"rtc.video.apas_aa_harq_enable\":true}");
+        agoraKit.setParameters("{\"rtc.audio.opensl.mode\": 0}");
         agoraKit.enableVideo()
         
         let channel = AgoraRtcConnection()
@@ -42,31 +45,27 @@ extension MainVM {
         agoraKit.setClientRole(.broadcaster)
         
         let mediaOptions = AgoraRtcChannelMediaOptions()
-        mediaOptions.clientRoleType = AgoraRtcIntOptional.of(1)
-        mediaOptions.autoSubscribeAudio = AgoraRtcBoolOptional.of(true)
-        mediaOptions.autoSubscribeVideo = AgoraRtcBoolOptional.of(true)
-        mediaOptions.publishAudioTrack = AgoraRtcBoolOptional.of(true)
-        mediaOptions.publishCameraTrack = AgoraRtcBoolOptional.of(true)
+        mediaOptions.clientRoleType = .of(1)
+        mediaOptions.autoSubscribeAudio = .of(true)
+        mediaOptions.autoSubscribeVideo = .of(true)
+        mediaOptions.publishAudioTrack = .of(true)
+        mediaOptions.publishCameraTrack = .of(true)
         
         let result =  agoraKit.joinChannel(byToken: nil,
                                            channelId: channel.channelId,
                                            uid: 0,
                                            mediaOptions: mediaOptions,
-                                           joinSuccess: { [weak self](_, _, _) in
-                                            guard let channelName = self?.loginInfo.roomName else {
-                                                return
-                                            }
-                                            let url = "rtmp://webdemo-push.agora.io/lbhd/\(channelName)"
-                                            self?.agoraKit.addPublishStreamUrl(url,
-                                                                               transcodingEnabled: false)
-                                           })
-
+                                           joinSuccess: nil)
+        
         if result != 0 {
             let text = "launchLocalChannel error: \(result)"
             Log.errorText(text: text, tag: "joinRtcChannelLocal")
             invokeShouldShowTips(tips: text)
             return
         }
+        
+        Log.info(text: "joinRtcChannelLocal success \(channelName)",
+                 tag: "joinRtcChannelLocal")
     }
     
     /// 加入远程的频道
@@ -76,11 +75,12 @@ extension MainVM {
         }
         
         let mediaOptions = AgoraRtcChannelMediaOptions()
-        mediaOptions.clientRoleType = AgoraRtcIntOptional.of(1)
-        mediaOptions.autoSubscribeAudio = AgoraRtcBoolOptional.of(true)
-        mediaOptions.autoSubscribeVideo = AgoraRtcBoolOptional.of(true)
-        mediaOptions.publishAudioTrack = AgoraRtcBoolOptional.of(false)
-        mediaOptions.publishCameraTrack = AgoraRtcBoolOptional.of(false)
+        mediaOptions.clientRoleType = .of(2)
+        mediaOptions.autoSubscribeAudio = .of(true)
+        mediaOptions.autoSubscribeVideo = .of(true)
+        mediaOptions.publishAudioTrack = .of(false)
+        mediaOptions.publishCameraTrack = .of(false)
+        mediaOptions.isInteractiveAudience = .of(true)
         
         agoraKit.enableVideo()
         
@@ -97,6 +97,8 @@ extension MainVM {
                                             delegate: remoteHandler,
                                             mediaOptions: mediaOptions,
                                             joinSuccess: nil)
+        agoraKit.setParameters("{\"rtc.video.apas_aa_harq_enable\":true}");
+        agoraKit.setParameters("{\"rtc.audio.opensl.mode\": 0}");
         if result != 0 {
             let text = "joinRtcChannelRemote channel:\(channelName) error: \(result)"
             Log.errorText(text: text)
@@ -109,5 +111,33 @@ extension MainVM {
     
     func switchCamera() {
         agoraKit.switchCamera()
+    }
+    
+    func createTxSecret(time: String, channelName: String) -> String {
+        ("hsP2t2CcM5WfpkJQSaJN" + channelName + time).md5
+    }
+}
+
+
+extension String {
+    /* ################################################################## */
+    /**
+     - returns: the String, as an MD5 hash.
+     */
+    var md5: String {
+        let str = self.cString(using: String.Encoding.utf8)
+        let strLen = CUnsignedInt(self.lengthOfBytes(using: String.Encoding.utf8))
+        let digestLen = 16
+        let result = UnsafeMutablePointer<CUnsignedChar>.allocate(capacity: digestLen)
+        CC_MD5(str!, strLen, result)
+        
+        let hash = NSMutableString()
+        
+        for i in 0..<digestLen {
+            hash.appendFormat("%02x", result[i])
+        }
+        
+        result.deallocate()
+        return hash as String
     }
 }

@@ -17,8 +17,22 @@ extension MainVM {
     class RemoteChannelHandler: NSObject, AgoraRtcEngineDelegate {
         weak var delegate: RemoteChannelHandlerDelegate?
         
+        override init() {
+            super.init()
+            Log.info(text: "RemoteChannelHandler init",
+                     tag: "RemoteChannelHandler")
+        }
+        
         deinit {
             Log.info(text: "RemoteChannelHandler deinit",
+                     tag: "RemoteChannelHandler")
+        }
+        
+        func rtcEngine(_ engine: AgoraRtcEngineKit,
+                       didJoinChannel channel: String,
+                       withUid uid: UInt,
+                       elapsed: Int) {
+            Log.info(text: "rtcChannel didJoinChannel: \(uid)",
                      tag: "RemoteChannelHandler")
         }
         

@@ -7,7 +7,7 @@ def commonPods
   pod 'RxCocoa', '6.1.0'
   pod 'RxRelay', '6.1.0'
   pod 'IGListKit', '~> 4.0.0'
-  pod 'AgoraRtcEngine_iOS',  :path => 'AgoraRtcEngine_iOS/AgoraRtcEngine_iOS.podspec'
+  pod 'AgoraRtcEngine_iOS', :path => 'AgoraRtcEngine_iOS/AgoraRtcEngine_iOS.podspec'
 end
 
 target 'Core' do
@@ -53,6 +53,6 @@ end
 target 'Scene-Examples_Firebase' do
   commonPods
   use_frameworks!
-  pod 'Firebase/Firestore'
-  pod 'FirebaseFirestoreSwift'
+#  pod 'Firebase/Firestore'
+#  pod 'FirebaseFirestoreSwift'
 end

@@ -35,19 +35,17 @@ extension MainVM: RemoteChannelHandlerDelegate {
                               didJoinedOfUid uid: UInt) {
         Log.info(text: "remoteChannelHandler didJoinedOfUid: \(uid)",
                  tag: "RemoteChannelHandlerDelegate")
-        guard let localChannel = channelLocal, let remoteChannel = channelRemote else {
+        guard let `remoteChannel` = channelRemote else {
             return
         }
-        if uid != localChannel.localUid, uid != remoteChannel.localUid, uid > 200 {
-            let info = RenderInfo(isLocal: false,
-                                  uid: uid,
-                                  roomName: remoteChannel.channelId,
-                                  type: .rtc)
-            
-            if !renderInfos.contains(where: { $0.uid == uid }) {
-                renderInfos.append(info)
-                invokeDidUpdateRenderInfos(renders: renderInfos)
-            }
+        let info = RenderInfo(isLocal: false,
+                              uid: uid,
+                              roomName: remoteChannel.channelId,
+                              type: .rtc)
+        
+        if !renderInfos.contains(where: { $0.uid == uid }) {
+            renderInfos.append(info)
+            invokeDidUpdateRenderInfos(renders: renderInfos)
         }
     }
 }
@@ -60,6 +58,24 @@ extension MainVM: AgoraRtcMediaPlayerDelegate {
                  tag: "AgoraRtcChannelDelegate")
         if state == .openCompleted {
             playerKit.play()
+        }
+    }
+}
+
+extension MainVM: AgoraRtcEngineDelegate {
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinChannel channel: String, withUid uid: UInt, elapsed: Int) {
+        let channelName = loginInfo.roomName
+        let timeValue = Int(Date().timeIntervalSince1970 + 60 * 60 * 24)
+        let time = String(timeValue, radix: 16).uppercased()
+        let txSecret = self.createTxSecret(time: time, channelName: channelName)
+        let url = "rtmp://push.webdemo.agoraio.cn/lbhd/\(channelName)?txSecret=\(txSecret)&txTime=\(time)"
+        let result = self.agoraKit.addPublishStreamUrl(url, transcodingEnabled: false)
+        if result < 0 {
+            Log.errorText(text: "addPublishStreamUrl fail \(result)", tag: "MainVM")
+        }
+        if result == 0 {
+            Log.info(text: "addPublishStreamUrl success", tag: "MainVM")
         }
     }
 }

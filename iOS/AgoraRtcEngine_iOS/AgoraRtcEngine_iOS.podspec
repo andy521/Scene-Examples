@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'AgoraRtcEngine_iOS'
-  s.version          = '3.5.1.201'
+  s.version          = '3.7.200.200'
   s.summary          = 'AgoraRtcEngine_iOS'
   
   s.description      = <<-DESC
@@ -14,15 +14,6 @@ Pod::Spec.new do |s|
   
   s.ios.deployment_target = '11.0'
   s.vendored_frameworks =
-      "AgoraAIDenoiseExtension.xcframework",
-      "AgoraCore.xcframework",
-      "AgoraDav1dExtension.xcframework",
-      "AgoraFDExtension.xcframework",
-      "AgoraJNDExtension.xcframework",
-      "AgoraRtcKit.xcframework",
-      "AgoraSoundTouch.xcframework",
-      "AgoraVideoSegmentationExtension.xcframework",
-      "Agorafdkaac.xcframework",
-      "Agoraffmpeg.xcframework"
+      "*.framework", "*.xcframework"
   s.platform = :ios
 end

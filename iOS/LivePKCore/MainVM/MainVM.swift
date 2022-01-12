@@ -53,8 +53,8 @@ class MainVM: NSObject {
     }
     
     func destory() {
-        if let localChannel = channelLocal {
-            agoraKit.leaveChannelEx(localChannel, leaveChannelBlock: nil)
+        if channelLocal != nil {
+            agoraKit.leaveChannel(nil)
             channelLocal = nil
         }
         
@@ -63,7 +63,15 @@ class MainVM: NSObject {
             channelRemote = nil
         }
         
+        for mp in players.values {
+            agoraKit.destroyMediaPlayer(mp)
+        }
+        
+        players = [:]
+        
         agoraKit = nil
         manager = nil
+        
+        AgoraRtcEngineKit.destroy()
     }
 }

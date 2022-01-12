@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AgoraRtcKit
 
 public class EntryVC: UIViewController {
     let roomNameTextField = UITextField()

@@ -1348,8 +1348,8 @@
 				571AA4662629862700B82B35 /* Sources */,
 				571AA4672629862700B82B35 /* Frameworks */,
 				571AA4682629862700B82B35 /* Resources */,
-				C0376A113C16BCE26A0D86BE /* [CP] Embed Pods Frameworks */,
 				5757D030262D81C600B4A785 /* Embed Frameworks */,
+				CB35EDD9A4C078B437DB283D /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1412,8 +1412,8 @@
 				57E8D500264A2C03007001BC /* Sources */,
 				57E8D508264A2C03007001BC /* Frameworks */,
 				57E8D50D264A2C03007001BC /* Resources */,
-				57E8D511264A2C03007001BC /* [CP] Embed Pods Frameworks */,
 				57E8D512264A2C03007001BC /* Embed Frameworks */,
+				9CAAA8BC7DF75D1192448F14 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1666,23 +1666,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		57E8D511264A2C03007001BC /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Scene-Examples_Firebase/Pods-Scene-Examples_Firebase-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Scene-Examples_Firebase/Pods-Scene-Examples_Firebase-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Scene-Examples_Firebase/Pods-Scene-Examples_Firebase-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		74E4C03C082C32B4407686E2 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1705,7 +1688,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C0376A113C16BCE26A0D86BE /* [CP] Embed Pods Frameworks */ = {
+		9CAAA8BC7DF75D1192448F14 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Scene-Examples_Firebase/Pods-Scene-Examples_Firebase-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Scene-Examples_Firebase/Pods-Scene-Examples_Firebase-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Scene-Examples_Firebase/Pods-Scene-Examples_Firebase-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CB35EDD9A4C078B437DB283D /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2370,7 +2370,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 15;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = HFDBB878GT;
 				INFOPLIST_FILE = "Scene-Examples/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -2396,7 +2396,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 15;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = 5459N9W32M;
 				INFOPLIST_FILE = "Scene-Examples/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;

@@ -34,12 +34,28 @@ class MainVC: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        Log.info(text: "deinit", tag: "MainVC")
+    }
+    
     func setup() {
         title = loginInfo.roomName
-        closeItem = UIBarButtonItem(title: "Close", style: .plain, target: self, action: #selector(closeOnClick))
-        pkItem = UIBarButtonItem(title: "PK", style: .plain, target: self, action: #selector(pkOnClick))
-        exitPkItem = UIBarButtonItem(title: "Exit PK", style: .plain, target: self, action: #selector(exitPkOnClick))
-        cameraItem = UIBarButtonItem(title: "Camera", style: .plain, target: self, action: #selector(cameraOnclick))
+        closeItem = UIBarButtonItem(title: "Close",
+                                    style: .plain,
+                                    target: self,
+                                    action: #selector(closeOnClick))
+        pkItem = UIBarButtonItem(title: "PK",
+                                 style: .plain,
+                                 target: self,
+                                 action: #selector(pkOnClick))
+        exitPkItem = UIBarButtonItem(title: "Exit PK",
+                                     style: .plain,
+                                     target: self,
+                                     action: #selector(exitPkOnClick))
+        cameraItem = UIBarButtonItem(title: "Camera",
+                                     style: .plain,
+                                     target: self,
+                                     action: #selector(cameraOnclick))
         view.addSubview(mainView)
         mainView.translatesAutoresizingMaskIntoConstraints = false
         mainView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
