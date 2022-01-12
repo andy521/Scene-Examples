@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="colorWhite">#FFFFFFFF</color>
+    <color name="colorBlack">#FF000000</color>
+    <color name="translate">#00000000</color>
+
+    <color name="color999999">#FF999999</color>
+    <color name="colorF8F8F8">#F8F8F8</color>
+    <color name="color3E99F4">#FF3E99F4</color>
+    <color name="colorC6C6C6">#C6C6C6</color>
+
+    <color name="color36B2FF">#36B2FF</color>
+    <color name="color4C96FF">#4C96FF</color>
+    <color name="color666666">#666666</color>
+    <color name="colorF7F7F7">#F7F7F7</color>
+
+    <color name="cD3D8DC">#D3D8DC</color>
+    <color name="c333333">#333333</color>
+    <color name="cCCF66969">#CCF66969</color>
+    <color name="cE6F66969">#E6F66969</color>
+
+    <color name="edit_face_bottom_title_checked">#4C96FF</color>
+    <color name="edit_face_bottom_title_normal">#B8C0CC</color>
+
+    <color name="customer_switch_center_view">#8A9099</color>
+    <color name="customer_switch_checked_text_color">#F5F7FA</color>
+    <color name="customer_switch_unchecked_text_color">#A3A8AF</color>
+    <color name="customer_switch_background">#F5F7FA</color>
+    <color name="customer_switch_border">#EBEDF0</color>
+</resources>

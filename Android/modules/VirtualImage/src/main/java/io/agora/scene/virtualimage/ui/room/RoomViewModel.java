@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.Objects;
 
+import io.agora.base.TextureBufferHelper;
 import io.agora.example.base.BaseUtil;
 import io.agora.rtc2.RtcEngine;
 import io.agora.scene.virtualimage.R;
@@ -19,6 +20,7 @@ import io.agora.scene.virtualimage.bean.AgoraGame;
 import io.agora.scene.virtualimage.bean.GameInfo;
 import io.agora.scene.virtualimage.bean.LocalUser;
 import io.agora.scene.virtualimage.bean.RoomInfo;
+import io.agora.scene.virtualimage.manager.FUDemoManager;
 import io.agora.scene.virtualimage.manager.RtcManager;
 import io.agora.scene.virtualimage.repo.GameRepo;
 import io.agora.scene.virtualimage.util.OneConstants;
@@ -71,6 +73,29 @@ public class RoomViewModel extends ViewModel {
         this.localUser = localUser;
 
         this.amHost = Objects.equals(currentRoom.getUserId(), localUser.getUserId());
+
+
+        RtcManager.getInstance().setVideoPreProcess(new RtcManager.VideoPreProcess() {
+            @Override
+            public void onTextureBufferHelperCreated(TextureBufferHelper helper) {
+                FUDemoManager.getInstance().start();
+            }
+
+            @Override
+            public RtcManager.ProcessVideoFrame processVideoFrameTex(byte[] img, int texId, float[] texMatrix, int width, int height, int cameraType) {
+                FUDemoManager.ResultFrame fuVideoFrame = FUDemoManager.getInstance().onDrawFrame(img, texId, texMatrix, width, height, cameraType);
+                if(fuVideoFrame == null){
+                    return null;
+                }
+                return new RtcManager.ProcessVideoFrame(fuVideoFrame.texId, fuVideoFrame.texMatrix, fuVideoFrame.width, fuVideoFrame.height,
+                        fuVideoFrame.texType == FUDemoManager.TEXTURE_TYPE_OES ? RtcManager.TEXTURE_TYPE_OES : RtcManager.TEXTURE_TYPE_2D);
+            }
+
+            @Override
+            public void onTextureBufferHelperDestroy() {
+                FUDemoManager.getInstance().stop();
+            }
+        });
 
         initRTC(context, new RtcManager.OnStreamMessageListener() {
             @Override
@@ -198,6 +223,7 @@ public class RoomViewModel extends ViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
+
         // destroy RTE
         RtcManager.getInstance().reset(true);
 

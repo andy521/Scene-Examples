@@ -10,13 +10,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.faceunity.pta_art.fragment.EditFaceFragment;
+
+import io.agora.base.TextureBufferHelper;
 import io.agora.example.base.BaseUtil;
 import io.agora.scene.virtualimage.GlobalViewModel;
 import io.agora.scene.virtualimage.R;
 import io.agora.scene.virtualimage.base.BaseNavFragment;
 import io.agora.scene.virtualimage.bean.RoomInfo;
 import io.agora.scene.virtualimage.databinding.VirtualImageFragmentCreateRoomBinding;
-import io.agora.scene.virtualimage.manager.FUManager;
+import io.agora.scene.virtualimage.manager.FUDemoManager;
 import io.agora.scene.virtualimage.manager.RtcManager;
 import io.agora.scene.virtualimage.util.EventObserver;
 import io.agora.scene.virtualimage.util.OneUtil;
@@ -24,6 +27,7 @@ import io.agora.scene.virtualimage.util.OneUtil;
 public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCreateRoomBinding> {
 
     private GlobalViewModel mGlobalModel;
+    private EditFaceFragment mEditFaceFragment;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -31,23 +35,29 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
         mGlobalModel = OneUtil.getViewModel(requireActivity(), GlobalViewModel.class);
         initListener();
 
+
         RtcManager.getInstance().setVideoPreProcess(new RtcManager.VideoPreProcess() {
             @Override
+            public void onTextureBufferHelperCreated(TextureBufferHelper helper) {
+                FUDemoManager.getInstance().start();
+            }
+
+            @Override
             public RtcManager.ProcessVideoFrame processVideoFrameTex(byte[] img, int texId, float[] texMatrix, int width, int height, int cameraType) {
-                FUManager.FuVideoFrame fuVideoFrame = FUManager.getInstance().processVideoFrame(img, texId, texMatrix, width, height, cameraType);
+                FUDemoManager.ResultFrame fuVideoFrame = FUDemoManager.getInstance().onDrawFrame(img, texId, texMatrix, width, height, cameraType);
                 if(fuVideoFrame == null){
                     return null;
                 }
                 return new RtcManager.ProcessVideoFrame(fuVideoFrame.texId, fuVideoFrame.texMatrix, fuVideoFrame.width, fuVideoFrame.height,
-                        fuVideoFrame.texType == FUManager.TEXTURE_TYPE_OES ? RtcManager.TEXTURE_TYPE_OES : RtcManager.TEXTURE_TYPE_2D);
+                        fuVideoFrame.texType == FUDemoManager.TEXTURE_TYPE_OES ? RtcManager.TEXTURE_TYPE_OES : RtcManager.TEXTURE_TYPE_2D);
+            }
+
+            @Override
+            public void onTextureBufferHelperDestroy() {
+                FUDemoManager.getInstance().stop();
             }
         });
         RtcManager.getInstance().renderLocalVideo(mBinding.videoContainer, null);
-        FUManager.getInstance().reset();
-        FUManager.getInstance().initController();
-        FUManager.getInstance().setDriveMode();
-        FUManager.getInstance().showFemaleImage();
-
         setupRandomName();
     }
 
@@ -68,13 +78,49 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
+                if(mEditFaceFragment != null){
+                    mEditFaceFragment.onBackPressed();
+                    return;
+                }
                 navigateToStartPage();
             }
         });
         mBinding.toolbarFgCreate.setNavigationOnClickListener((v) -> navigateToStartPage());
         mBinding.btnRandomFgCreate.setOnClickListener((v) -> setupRandomName());
-        mBinding.btnLiveFgCreate.setOnClickListener((v) -> startLive());
+        mBinding.btnLiveFgCreate.setOnClickListener((v) -> {
+            if(mEditFaceFragment != null){
+                mEditFaceFragment.onBackPressed();
+                return;
+            }
+            startLive();
+        });
         mGlobalModel.roomInfo.observe(getViewLifecycleOwner(), new EventObserver<>(this::onRoomInfoChanged));
+        mBinding.btnBeauty.setOnClickListener(v -> {
+            mEditFaceFragment = new EditFaceFragment();
+            mEditFaceFragment.setOnCloseListener(()->{
+                setCreateLiveViewsVisible(true);
+                if(mEditFaceFragment != null){
+                    getChildFragmentManager().beginTransaction()
+                            .remove(mEditFaceFragment)
+                            .commit();
+                    mEditFaceFragment = null;
+                }
+            });
+            setCreateLiveViewsVisible(false);
+            getChildFragmentManager().beginTransaction()
+                    .add(R.id.bottom_dialog_container, mEditFaceFragment, null)
+                    .commit();
+        });
+    }
+
+    private void setCreateLiveViewsVisible(boolean visible){
+        mBinding.toolbarFgCreate.setVisibility(visible ? View.VISIBLE: View.GONE);
+        mBinding.titleNameBg.setVisibility(visible ? View.VISIBLE: View.GONE);
+        mBinding.titleNameFgCreate.setVisibility(visible ? View.VISIBLE: View.GONE);
+        mBinding.nameFgCreate.setVisibility(visible ? View.VISIBLE: View.GONE);
+        mBinding.btnRandomFgCreate.setVisibility(visible ? View.VISIBLE: View.GONE);
+        mBinding.btnLiveFgCreate.setVisibility(visible ? View.VISIBLE: View.GONE);
+        mBinding.btnBeauty.setVisibility(visible ? View.VISIBLE: View.GONE);
     }
 
     /**
@@ -101,6 +147,7 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
     }
 
     private void navigateToStartPage() {
+        RtcManager.getInstance().reset(true);
         findNavController().popBackStack(R.id.roomListFragment, false);
     }
 }

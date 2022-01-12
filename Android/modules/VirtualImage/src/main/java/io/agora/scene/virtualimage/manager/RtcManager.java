@@ -144,30 +144,39 @@ public class RtcManager {
                 int width = textureBuffer.getWidth();
                 int height = textureBuffer.getHeight();
 
-                if(videoPreProcess != null){
+                final VideoPreProcess _videoPreProcess = RtcManager.this.videoPreProcess;
+                final AgoraGLSurfaceView _localGLSurfaceView = RtcManager.this.localGLSurfaceView;
+                if(_videoPreProcess != null){
                     if(videoPreTexBuffHelper == null){
                         videoPreTexBuffHelper = TextureBufferHelper.create("VideoPreProcess", textureBuffer.getEglBaseContext());
+                        videoPreTexBuffHelper.invoke(new Callable<Object>() {
+                            @Override
+                            public Object call() throws Exception {
+                                _videoPreProcess.onTextureBufferHelperCreated(videoPreTexBuffHelper);
+                                return null;
+                            }
+                        });
                     }
                     videoPreTexBuffHelper.invoke(new Callable<Boolean>() {
                         @Override
                         public Boolean call() throws Exception {
-                            ProcessVideoFrame processVideoFrame = videoPreProcess.processVideoFrameTex(convertToNV21(videoFrame), texId, texMatrix, width, height,
+                            ProcessVideoFrame processVideoFrame = _videoPreProcess.processVideoFrameTex(convertToNV21(videoFrame), texId, texMatrix, width, height,
                                     cameraDirection == CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT ? Camera.CameraInfo.CAMERA_FACING_FRONT: Camera.CameraInfo.CAMERA_FACING_BACK);
                             if(processVideoFrame == null){
                                 return false;
                             }
 
-                            if(localGLSurfaceView != null){
-                                localGLSurfaceView.init(videoPreTexBuffHelper.getEglBase().getEglBaseContext());
+                            if(_localGLSurfaceView != null){
+                                _localGLSurfaceView.init(videoPreTexBuffHelper.getEglBase().getEglBaseContext());
                                 if(processVideoFrame.texType == TEXTURE_TYPE_2D){
-                                    localGLSurfaceView.consume2DTexture(processVideoFrame.texId,
+                                    _localGLSurfaceView.consume2DTexture(processVideoFrame.texId,
                                             processVideoFrame.texMatrix,
                                             processVideoFrame.width,
                                             processVideoFrame.height
                                     );
                                 }
                                 else{
-                                    localGLSurfaceView.consumeOESTexture(processVideoFrame.texId,
+                                    _localGLSurfaceView.consumeOESTexture(processVideoFrame.texId,
                                             processVideoFrame.texMatrix,
                                             processVideoFrame.width,
                                             processVideoFrame.height
@@ -186,9 +195,9 @@ public class RtcManager {
                         }
                     });
                     return false;
-                }else if(localGLSurfaceView != null){
-                    localGLSurfaceView.init(textureBuffer.getEglBaseContext());
-                    localGLSurfaceView.consumeOESTexture(texId,
+                }else if(_localGLSurfaceView != null){
+                    _localGLSurfaceView.init(textureBuffer.getEglBaseContext());
+                    _localGLSurfaceView.consumeOESTexture(texId,
                             texMatrix,
                             width,
                             height
@@ -338,6 +347,7 @@ public class RtcManager {
             });
             engine.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING);
             engine.setClientRole(Constants.CLIENT_ROLE_BROADCASTER);
+            engine.setLogLevel(Constants.LogLevel.getValue(Constants.LogLevel.LOG_LEVEL_ERROR));
 
             engine.setAudioProfile(Constants.AUDIO_PROFILE_SPEECH_STANDARD, Constants.AUDIO_SCENARIO_GAME_STREAMING);
             engine.setDefaultAudioRoutetoSpeakerphone(true);
@@ -504,19 +514,31 @@ public class RtcManager {
             localGLSurfaceView.release();
             localGLSurfaceView = null;
         }
+        VideoPreProcess _videoPreProcess = this.videoPreProcess;
         videoPreProcess = null;
         if(isStopPreview){
             if(videoPreTexBuffHelper != null){
+                if(_videoPreProcess != null){
+                    videoPreTexBuffHelper.invoke(new Callable<Object>() {
+                        @Override
+                        public Object call() throws Exception {
+                            _videoPreProcess.onTextureBufferHelperDestroy();
+                            return null;
+                        }
+                    });
+                }
                 videoPreTexBuffHelper.dispose();
                 videoPreTexBuffHelper = null;
             }
         }
 
+        Log.d(TAG, "stopPreview --> reset isStopPreview=" + isStopPreview);
+
         if (engine != null) {
             engine.leaveChannel();
             if(isStopPreview){
                 engine.stopPreview();
-                engine.setCameraCapturerConfiguration(new CameraCapturerConfiguration(cameraDirection, new CameraCapturerConfiguration.CaptureFormat(encoderConfiguration.dimensions.width, encoderConfiguration.dimensions.height, encoderConfiguration.frameRate)));
+                //engine.setCameraCapturerConfiguration(new CameraCapturerConfiguration(cameraDirection, new CameraCapturerConfiguration.CaptureFormat(encoderConfiguration.dimensions.width, encoderConfiguration.dimensions.height, encoderConfiguration.frameRate)));
             }
         }
     }
@@ -565,7 +587,9 @@ public class RtcManager {
     }
 
     public interface VideoPreProcess {
+        void onTextureBufferHelperCreated(TextureBufferHelper helper);
         ProcessVideoFrame processVideoFrameTex(byte[] img, int texId, float[] texMatrix, int width, int height, int cameraType);
+        void onTextureBufferHelperDestroy();
     }
 
     public static final class ProcessVideoFrame{

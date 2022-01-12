@@ -3,6 +3,8 @@ package io.agora.scene.virtualimage;
 import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 import androidx.core.view.WindowCompat;
@@ -10,7 +12,7 @@ import androidx.core.view.WindowCompat;
 import io.agora.example.base.BaseActivity;
 import io.agora.rtc2.RtcEngine;
 import io.agora.scene.virtualimage.databinding.VirtualImageActivityMainBinding;
-import io.agora.scene.virtualimage.manager.FUManager;
+import io.agora.scene.virtualimage.manager.FUDemoManager;
 import io.agora.scene.virtualimage.manager.RtcManager;
 import io.agora.scene.virtualimage.util.OneUtil;
 import io.agora.syncmanager.rtm.Sync;
@@ -23,13 +25,20 @@ public class MainActivity extends BaseActivity<VirtualImageActivityMainBinding> 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         globalViewModel = OneUtil.getViewModel(this, GlobalViewModel.class);
 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         RtcManager.getInstance().init(this, getString(R.string.rtc_app_id), null);
-        FUManager.getInstance().init(this);
+        FUDemoManager.getInstance().initialize(this);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        FUDemoManager.getInstance().handleTouchEvent(event);
+        return super.onTouchEvent(event);
     }
 
     @Override

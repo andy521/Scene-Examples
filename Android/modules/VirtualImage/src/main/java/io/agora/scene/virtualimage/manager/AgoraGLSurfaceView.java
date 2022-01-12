@@ -33,7 +33,6 @@ public class AgoraGLSurfaceView extends SurfaceView {
 
     public AgoraGLSurfaceView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
         SurfaceHolder holder = getHolder();
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
@@ -97,7 +96,32 @@ public class AgoraGLSurfaceView extends SurfaceView {
             return;
         }
         ThreadUtils.invokeAtFrontUninterruptibly(mHandler, () -> {
-            mGlRectDrawer.drawOes(textureId, texMatrix, width, height, 0, 0, mSurfaceWidth, mSurfaceHeight);
+            int viewportX , viewportY , viewportWidth, viewportHeight;
+
+            // HIDDEN config
+            int _width = Math.min(width, height);
+            int _height = Math.max(width, height);
+            float frameRadio = _height * 1.0f / _width;
+            float surfaceRadio = mSurfaceHeight * 1.0f / mSurfaceWidth;
+            if(frameRadio < surfaceRadio){
+                // 以高缩放
+                viewportHeight = mSurfaceHeight;
+                viewportWidth = (int) (_width * 1.0f / _height * viewportHeight);
+                viewportX = -(viewportWidth - mSurfaceWidth) / 2;
+                viewportY = 0;
+            }else{
+                // 以宽缩放
+                viewportWidth = mSurfaceWidth;
+                viewportHeight = (int) (_height * 1.0f / _width * viewportWidth);
+                viewportY = -(viewportHeight - mSurfaceHeight) / 2;
+                viewportX = 0;
+            }
+
+            // FIT config
+            //viewportWidth = mSurfaceWidth;
+            //viewportHeight = mSurfaceHeight;
+
+            mGlRectDrawer.drawOes(textureId, texMatrix, width, height, viewportX, viewportY, viewportWidth, viewportHeight);
             mEglBase.swapBuffers();
         });
     }
@@ -107,7 +131,35 @@ public class AgoraGLSurfaceView extends SurfaceView {
             return;
         }
         ThreadUtils.invokeAtFrontUninterruptibly(mHandler, () -> {
-            mGlRectDrawer.drawRgb(textureId, texMatrix, width, height, 0, 0, mSurfaceWidth, mSurfaceHeight);
+            int viewportX , viewportY , viewportWidth, viewportHeight;
+
+            // HIDDEN config
+            int _width = Math.min(width, height);
+            int _height = Math.max(width, height);
+            float frameRadio = _height * 1.0f / _width;
+            float surfaceRadio = mSurfaceHeight * 1.0f / mSurfaceWidth;
+            if(frameRadio < surfaceRadio){
+                // 以高缩放
+                viewportHeight = mSurfaceHeight;
+                viewportWidth = (int) (_width * 1.0f / _height * viewportHeight);
+                viewportX = -(viewportWidth - mSurfaceWidth) / 2;
+                viewportY = 0;
+            }else{
+                // 以宽缩放
+                viewportWidth = mSurfaceWidth;
+                viewportHeight = (int) (_height * 1.0f / _width * viewportWidth);
+                viewportY = -(viewportHeight - mSurfaceHeight) / 2;
+                viewportX = 0;
+            }
+
+            // FIT config
+            //viewportWidth = mSurfaceWidth;
+            //viewportHeight = mSurfaceHeight;
+
+            mGlRectDrawer.drawRgb(textureId,
+                    texMatrix,
+                    width,
+                    height, viewportX, viewportY, viewportWidth, viewportHeight);
             mEglBase.swapBuffers();
         });
     }

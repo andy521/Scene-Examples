@@ -33,7 +33,7 @@ import io.agora.scene.virtualimage.util.ViewStatus;
 public class RoomListFragment extends BaseNavFragment<VirtualImageFragmentRoomListBinding> implements OnItemClickListener<RoomInfo> {
 
     ////////////////////////////////////// -- PERMISSION --//////////////////////////////////////////////////////////////
-    public static final String[] permissions = {Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
+    public static final String[] permissions = {Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,  Manifest.permission.READ_EXTERNAL_STORAGE};
 
     private final BaseUtil.PermissionResultCallback<String[]> callback = new BaseUtil.PermissionResultCallback<String[]>() {
         @Override

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/x80"
+    android:layout_height="match_parent">
+
+    <com.faceunity.pta_art.ui.CircleImageView
+        android:id="@+id/bottom_item_img"
+        android:layout_width="@dimen/x68"
+        android:layout_height="@dimen/x68"
+        android:layout_gravity="center"/>
+
+    <View
+        android:id="@+id/bottom_item_img_select"
+        android:layout_width="@dimen/x68"
+        android:layout_height="@dimen/x68"
+        android:layout_gravity="center"
+        android:background="@drawable/edit_face_item_select"/>
+</FrameLayout>

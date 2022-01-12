@@ -18,7 +18,7 @@
         android:id="@+id/roomListFragment"
         android:name="io.agora.scene.virtualimage.ui.list.RoomListFragment"
         android:label="RoomListFragment"
-        tools:layout="@layout/one_fragment_room_list">
+        tools:layout="@layout/virtual_image_fragment_room_list">
         <action
             android:id="@+id/action_roomListFragment_to_roomFragment"
             app:enterAnim="@anim/virtual_image_slide_in_right"
@@ -31,13 +31,15 @@
         android:id="@+id/roomCreateFragment"
         android:name="io.agora.scene.virtualimage.ui.create.RoomCreateFragment"
         android:label="RoomCreateFragment"
-        tools:layout="@layout/one_fragment_create_room">
+        tools:layout="@layout/virtual_image_fragment_create_room">
+
     </fragment>
+
     <fragment
         android:id="@+id/roomFragment"
         android:name="io.agora.scene.virtualimage.ui.room.RoomFragment"
         android:label="RoomFragment"
-        tools:layout="@layout/one_fragment_room">
+        tools:layout="@layout/virtual_image_fragment_room">
         <action
             android:id="@+id/action_roomFragment_to_roomCreateFragment"
             app:enterAnim="@anim/virtual_image_slide_in_right"

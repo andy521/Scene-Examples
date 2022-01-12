@@ -17,7 +17,7 @@ def safeExtGetDependence(key, fallback){
 android {
     compileSdkVersion safeExtGetVersion('android', 'compileSdkVersion', 31)
     buildToolsVersion safeExtGetVersion('android', 'buildToolsVersion', '30.0.3')
-    resourcePrefix "virtual_image_"
+    resourcePrefix ""
 
 
     defaultConfig {
@@ -57,6 +57,37 @@ android {
         }
     }
 
+    sourceSets {
+        main {
+            java.srcDirs += [
+                    "src/main/java",
+                    "src/main/fu_java"
+            ]
+            res.srcDirs += [
+                    "src/main/res",
+                    "src/main/fu_res",
+                    "src/main/fu_res_icon"
+            ]
+        }
+    }
+
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -68,7 +99,6 @@ dependencies {
     implementation safeExtGetDependence('androidx.appcompat:appcompat', '1.2.0')
     implementation safeExtGetDependence('androidx.recyclerview:recyclerview', '1.2.1')
     implementation safeExtGetDependence('androidx.work:work-runtime','2.7.0')
-    implementation safeExtGetDependence('com.yanzhenjie:permission', '2.0.2')
 
     implementation safeExtGetDependence('com.github.agorabuilder:agora-full-preview','4.0.0.preview.3')
     implementation safeExtGetDependence('com.github.AgoraIO-Community:SyncManager-Android', '1.0.0')
@@ -79,6 +109,20 @@ dependencies {
 
     // Third Part
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    // FU libs
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
+    implementation 'com.squareup.okio:okio:2.2.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.1'
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.github.microshow:RxFFmpeg:2.1.0'
+    implementation(name: 'FUTtsEngine', ext: 'aar')
 
     implementation project(':libs:ui-widget')
     implementation project(':libs:base-library')
