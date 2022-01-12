@@ -17,6 +17,10 @@
 //    CVPixelBufferRef mirrored_pixel = [[FUManager shareInstance] dealTheFrontCameraPixelBuffer:pixelBuffer returnNewBuffer:YES];
 //    [[FUManager shareInstance] renderARFilterItemWithBuffer:mirrored_pixel];
     
+    if ([_delegate respondsToSelector:@selector(videoHandlerDidRecvPixelData:)]) {
+        [_delegate videoHandlerDidRecvPixelData:pixelBuffer];
+    }
+    
     const int landmarks_cnt = 314;
     float landmarks[landmarks_cnt] ;
     CVPixelBufferRef mirrored_pixel = [[FUManager shareInstance] dealTheFrontCameraPixelBuffer:pixelBuffer returnNewBuffer:false];

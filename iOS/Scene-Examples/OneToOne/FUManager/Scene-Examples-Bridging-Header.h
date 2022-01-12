@@ -20,3 +20,5 @@
 #import "FUP2AColor.h"
 #import <objc/runtime.h>
 #import "UIColor+FU.h"
+
+#import "FUEditViewController.h"

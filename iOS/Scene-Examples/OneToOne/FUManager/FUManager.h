@@ -92,6 +92,7 @@
 @property (nonatomic, assign) BOOL isPlayingSpecialAni;  //是否正在进行特殊动画（出场动画，编辑页返回动画等仅播放一次的动画）
 @property (nonatomic, copy) NSString *nextSpecialAni;  //等待播放的特殊动画，在当前特殊动画执行完成后执行
 @property (nonatomic, assign) BOOL isEnterEditView;
+@property (nonatomic, strong) UIImage *editShotImage;
 
 // =======================   多选 类型 进行单独管理  ======================
 // 美妆类型数组

@@ -51,7 +51,7 @@ static FUManager *fuManager = nil;
         // 设置相机动画过渡时间
         [self SetCameraTransitionTime:0];
         
-        [self setOutputResolutionAdjustCamera];
+        [self setOutputResolutionAdjustScreen];
         
         
     }
@@ -158,9 +158,12 @@ static FUManager *fuManager = nil;
     if (firstSetup)
     {
         NSString *corePath = [[NSBundle mainBundle] pathForResource:@"p2a_client_core" ofType:@"bin"];
-        [[fuPTAClient shareInstance] setupCore:corePath authPackage:&g_auth_package authSize:sizeof(g_auth_package)];
+        BOOL ret = [[fuPTAClient shareInstance] setupCore:corePath authPackage:&g_auth_package authSize:sizeof(g_auth_package)];
+        NSLog(@"");
     }
-    [[fuPTAClient shareInstance] setupCustomData:qPath];
+    
+    BOOL ret = [[fuPTAClient shareInstance] setupCustomData:qPath];
+    NSLog(@"");
 }
 
 #pragma mark ------ 图像 ------
@@ -186,7 +189,6 @@ static FUManager *fuManager = nil;
     return pixelBufferCopy;
 }
 
-/// 初始化空白buffer
 - (void)initPixelBuffer
 {
     if (!renderTarget)
@@ -221,21 +223,6 @@ static FUManager *fuManager = nil;
     return ret;
 }
 
-- (CVPixelBufferRef)createEmptyPixelBuffer2:(CGSize)size
-{
-    CVPixelBufferRef ret;
-    NSDictionary* pixelBufferOptions = @{ (NSString*) kCVPixelBufferPixelFormatTypeKey :
-                                              @(kCVPixelFormatType_420YpCbCr8PlanarFullRange),
-                                          (NSString*) kCVPixelBufferWidthKey : @(size.width),
-                                          (NSString*) kCVPixelBufferHeightKey : @(size.height),
-                                          (NSString*) kCVPixelBufferOpenGLESCompatibilityKey : @YES};
-    CVPixelBufferCreate(kCFAllocatorDefault,
-                        size.width, size.height,
-                        kCVPixelFormatType_420YpCbCr8PlanarFullRange,
-                        (__bridge CFDictionaryRef)pixelBufferOptions,
-                        &ret);
-    return ret;
-}
 
 /**
  检测人脸接口
@@ -342,6 +329,7 @@ static int frameId = 0 ;
     int pixelBuffer_h = (int)CVPixelBufferGetHeight(pixelBuffer);
     int pixelBuffer_stride = (int)CVPixelBufferGetBytesPerRow(pixelBuffer);
     int pixelBuffer_w = pixelBuffer_stride/4;
+    
     if (renderMode == FURenderPreviewMode)
     {
         [[FURenderer shareRenderer] renderBundles:pixelBuffer_pod inFormat:FU_FORMAT_BGRA_BUFFER outPtr:renderTarget_pod outFormat:FU_FORMAT_BGRA_BUFFER width:pixelBuffer_w height:pixelBuffer_h frameId:frameId ++ items:mItems itemCount:sizeof(mItems)/sizeof(int)];
@@ -364,10 +352,20 @@ static int frameId = 0 ;
         info.rotation_mode = rotation_mode;
         info.pupil_pos = pupil_pos;
         info.is_valid = is_valid;
-        [[FURenderer shareRenderer] renderBundles:&info inFormat:FU_FORMAT_AVATAR_INFO outPtr:renderTarget_pod outFormat:FU_FORMAT_BGRA_BUFFER width:renderTarget_w height:renderTarget_h frameId:frameId ++ items:mItems itemCount:sizeof(mItems)/sizeof(int)];
+        [[FURenderer shareRenderer] setOutputResolution:renderTarget_w h:renderTarget_h];
+        int renderBundlesRet = [[FURenderer shareRenderer] renderBundles:&info
+                                                                inFormat:FU_FORMAT_AVATAR_INFO
+                                                                  outPtr:renderTarget_pod
+                                                               outFormat:FU_FORMAT_BGRA_BUFFER
+                                                                   width:renderTarget_w
+                                                                  height:renderTarget_h
+                                                                 frameId:frameId ++
+                                                                   items:mItems
+                                                               itemCount:sizeof(mItems)/sizeof(int)];
+        NSLog(@"renderBundlesRet: %d", renderBundlesRet);
     }
     
-    [FURenderer getFaceInfo:0 name:@"landmarks" pret:landmarks number:landmarksLength];
+    int faceRet = [FURenderer getFaceInfo:0 name:@"landmarks" pret:landmarks number:landmarksLength];
     [self rotateImage:renderTarget_pod inFormat:FU_FORMAT_BGRA_BUFFER w:renderTarget_w h:renderTarget_h rotationMode:FU_ROTATION_MODE_0 flipX:NO flipY:YES];
     memcpy(renderTarget_pod, self.rotatedImageManager.mData, renderTarget_w*renderTarget_h*4);
     CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
@@ -404,11 +402,8 @@ static int ARFilterID = 0 ;
     return pixelBuffer;
 }
 
-- (CVPixelBufferRef)renderBodyTrackWithBuffer:(CVPixelBufferRef)pixelBuffer
-                                          ptr:(void *)human3dPtr
-                                   RenderMode:(FURenderMode)renderMode
-                                    Landmarks:(float *)landmarks
-                              LandmarksLength:(int)landmarksLength {
+- (CVPixelBufferRef)renderBodyTrackWithBuffer:(CVPixelBufferRef)pixelBuffer ptr:(void *)human3dPtr RenderMode:(FURenderMode)renderMode Landmarks:(float *)landmarks LandmarksLength:(int)landmarksLength
+{
     dispatch_semaphore_wait(self.signal, DISPATCH_TIME_FOREVER);
      
     int h = (int)CVPixelBufferGetHeight(pixelBuffer);
@@ -427,14 +422,8 @@ static int ARFilterID = 0 ;
                                         items:mItems
                                     itemCount:sizeof(mItems)/sizeof(int)];
     
-    [self rotateImage:pod0
-             inFormat:FU_FORMAT_BGRA_BUFFER
-                    w:w
-                    h:h
-         rotationMode:FU_ROTATION_MODE_0
-                flipX:NO
-                flipY:YES];
-    memcpy(pod0, self.rotatedImageManager.mData, CVPixelBufferGetDataSize(pixelBuffer));
+    [self rotateImage:pod0 inFormat:FU_FORMAT_BGRA_BUFFER w:w h:h rotationMode:FU_ROTATION_MODE_0 flipX:NO flipY:YES];
+    memcpy(pod0, self.rotatedImageManager.mData, w*h*4);
     
     CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
     
@@ -2030,9 +2019,15 @@ static int ARFilterID = 0 ;
             coeffi[i] = [params[i] floatValue];
         }
         //重新生成head.bundle
-        headData = [[fuPTAClient shareInstance] deformHeadWithHeadData:headData deformParams:coeffi paramsSize:100 withExprOnly:NO withLowp:NO].bundle;
+        fuPTAHeadBundle *hb = [[fuPTAClient shareInstance] deformHeadWithHeadData:headData deformParams:coeffi paramsSize:100 withExprOnly:NO withLowp:NO];
+        headData = hb.bundle;
     }
-    [headData writeToFile:[filePath stringByAppendingPathComponent:@"/head.bundle"] atomically:YES];
+    if ([headData writeToFile:[filePath stringByAppendingPathComponent:@"/head.bundle"] atomically:YES]) {
+        NSLog(@"headData writeToFile sueeess");
+    }
+    else {
+        NSLog(@"headData writeToFile fail");
+    }
     
     if (deformHead)
     {
@@ -2594,7 +2589,7 @@ static int ARFilterID = 0 ;
 /// @param avatar 形象模型
 - (void)reloadAvatarToControllerWithAvatar:(FUAvatar *)avatar
 {
-   [self reloadAvatarToControllerWithAvatar:avatar isBg:YES];
+   [self reloadAvatarToControllerWithAvatar:avatar isBg:NO];
 }
 
 /// 重新加载avatar的所有资源
@@ -3170,7 +3165,8 @@ static float CenterScale = 0.3;
     [avatar loadFullAvatar];
     [self enableFaceCapture:1];
     
-    [avatar resetScaleToFace];
+    [avatar resetScaleToSmallBody_UseCam];
+    [avatar resetPositionToShowHalf];
 }
 
 - (void)loadDefaultAvatar
@@ -3500,7 +3496,7 @@ static int ranNum = 0;
 /// 设置输出精度与相机输入一致，目前相机设置为720*1280
 - (void)setOutputResolutionAdjustCamera
 {
-    [[FURenderer shareRenderer] setOutputResolution:540 h:960];
+    [[FURenderer shareRenderer] setOutputResolution:720 h:1280];
 }
 /// 根据屏幕尺寸设置输出精度
 - (void)setOutputResolutionAdjustScreen

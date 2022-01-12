@@ -177,6 +177,11 @@ class OneToOneViewController: BaseViewController {
             AlertManager.hiddenView()
             controlView.isHidden = false
             isCloseGame = true
+        case .edit:
+            let vc = FUEditViewController.instacneFromStoryBoard()!
+            vc.modalPresentationStyle = .fullScreen
+            self.present(vc, animated: true, completion: nil)
+            break
         }
     }
     
@@ -227,6 +232,7 @@ class OneToOneViewController: BaseViewController {
             agoraKit?.delegate = self
             return
         }
+        videoFrameHandler.delegate = self
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: rtcEngineConfig, delegate: self)
         agoraKit?.setLogFile(LogUtils.sdkLogPath())
         agoraKit?.setClientRole(.broadcaster)
@@ -235,8 +241,16 @@ class OneToOneViewController: BaseViewController {
         captureConfig.cameraDirection = .front
         captureConfig.cameraPixelFormat = kCVPixelFormatType_32BGRA
         agoraKit?.setCameraCapturerConfiguration(captureConfig)
+        
+        let encoderConfiguration = AgoraVideoEncoderConfiguration(width: 720,
+                                                                  height: 1280,
+                                                                  frameRate: AgoraVideoFrameRate.fps15,
+                                                                  bitrate: AgoraVideoBitrateStandard,
+                                                                  orientationMode: .fixedPortrait,
+                                                                  mirrorMode: .disabled)
+        agoraKit?.setVideoEncoderConfiguration(encoderConfiguration)
         agoraKit?.enableVideo()
-        agoraKit?.disableAudio()
+        agoraKit?.enableAudio()
     }
     
     private func createAgoraVideoCanvas(uid: UInt, isLocal: Bool = false) {
@@ -274,6 +288,16 @@ class OneToOneViewController: BaseViewController {
     deinit {
         LogUtils.log(message: "释放 === \(self)", level: .info)
     }
+    
+//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        guard let avatar = FUManager.shareInstance().currentAvatars.firstObject as? FUAvatar else {
+//            return
+//        }
+//        guard avatar.getAnimateProgress() > 1 else { /** 动画执行结束 **/
+//            return
+//        }
+//        FUManager.shareInstance().playSpecialAnimation()
+//    }
 }
 extension OneToOneViewController: AgoraRtcEngineDelegate {
     
@@ -322,12 +346,20 @@ extension OneToOneViewController: AgoraRtcEngineDelegate {
 }
 
 
-extension OneToOneViewController: FUPoseTrackViewDelegate {
+extension OneToOneViewController: FUPoseTrackViewDelegate { /** 选择形象列表的回调 **/
     func poseTrackViewDidSelectedAvatar(_ avatar: FUAvatar) {
+        avatar.loadIdleModePose()
         FUManager.shareInstance().reloadAvatarToController(with: avatar, isBg: false)
+        FUManager.shareInstance().setupForHalfMode()
     }
     
     func poseTrackViewDidShowTopView(_ show: Bool) {}
     
     func poseTrackViewDidSelectedInput(_ filterName: String) {}
+}
+
+extension OneToOneViewController: VideoFrameHandlerDelegate {
+    func videoHandlerDidRecvPixelData(_ pixelBuffer: CVPixelBuffer) {
+        
+    }
 }

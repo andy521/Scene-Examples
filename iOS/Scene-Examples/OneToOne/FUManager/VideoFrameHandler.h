@@ -10,10 +10,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol VideoFrameHandlerDelegate <NSObject>
+
+- (void)videoHandlerDidRecvPixelData:(CVPixelBufferRef)pixelBuffer;
+
+@end
+
 @interface VideoFrameHandler : NSObject<AgoraVideoFrameDelegate>
 
-- (BOOL)onCaptureVideoFrame:(AgoraOutputVideoFrame *)srcFrame dstFrame:(AgoraOutputVideoFrame * _Nullable __autoreleasing *)dstFrame;
+- (BOOL)onCaptureVideoFrame:(AgoraOutputVideoFrame *)srcFrame
+                   dstFrame:(AgoraOutputVideoFrame * _Nullable __autoreleasing *)dstFrame;
 - (AgoraVideoFrameProcessMode)getVideoFrameProcessMode;
+
+@property (nonatomic, weak)id<VideoFrameHandlerDelegate> delegate;
 
 @end
 

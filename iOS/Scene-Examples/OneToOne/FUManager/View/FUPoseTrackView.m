@@ -42,10 +42,10 @@ typedef enum : NSInteger {
         [self addSubview:self.collectionView];
         self.collectionView.translatesAutoresizingMaskIntoConstraints = false;
         
-        [NSLayoutConstraint activateConstraints:@[[self.collectionView.leftAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.leftAnchor],
-                                                  [self.collectionView.rightAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.rightAnchor],
+        [NSLayoutConstraint activateConstraints:@[[self.collectionView.leftAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.leftAnchor constant:5],
+                                                  [self.collectionView.rightAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.rightAnchor constant:5],
                                                   [self.collectionView.heightAnchor constraintEqualToConstant:69],
-                                                  [self.collectionView.topAnchor constraintEqualToAnchor:self.topAnchor]]];
+                                                  [self.collectionView.topAnchor constraintEqualToAnchor:self.topAnchor constant:5]]];
         
         
         self.collectionView.delegate = self;

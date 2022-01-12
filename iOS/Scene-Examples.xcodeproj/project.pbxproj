@@ -105,7 +105,6 @@
 		26D7159327882EA80079D430 /* FUP2AHelper.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 26C7A5162787E414009A8DA5 /* FUP2AHelper.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		26D7159827883DBD0079D430 /* CRender.m in Sources */ = {isa = PBXBuildFile; fileRef = 26D7159727883DBD0079D430 /* CRender.m */; };
 		26D7159E27883E0A0079D430 /* UIColor+FU.m in Sources */ = {isa = PBXBuildFile; fileRef = 26D7159C27883E090079D430 /* UIColor+FU.m */; };
-		26D715A127883E7C0079D430 /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 26D715A027883E7C0079D430 /* AppManager.m */; };
 		26D715A527883F480079D430 /* FUEditTypeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 26D715A327883F470079D430 /* FUEditTypeModel.m */; };
 		26D715A827883F7A0079D430 /* FUAvatarEditManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 26D715A727883F7A0079D430 /* FUAvatarEditManager.m */; };
 		26D715AB27883F960079D430 /* FUStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 26D715AA27883F960079D430 /* FUStack.m */; };
@@ -115,6 +114,26 @@
 		26D71E6C27885C1A0079D430 /* libCNamaSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 26D71E6B27885C1A0079D430 /* libCNamaSDK.a */; };
 		26D71E7127893A590079D430 /* FUPoseTrackView.m in Sources */ = {isa = PBXBuildFile; fileRef = 26D71E7027893A590079D430 /* FUPoseTrackView.m */; };
 		26EAC2C827893CA700CE0A1D /* FUPoseTrackCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC2C627893CA700CE0A1D /* FUPoseTrackCell.m */; };
+		26EAC2CD278C1C5400CE0A1D /* FUEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC2CC278C1C5400CE0A1D /* FUEditViewController.m */; };
+		26EAC2D0278C1CA600CE0A1D /* FUFigureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC2CE278C1CA600CE0A1D /* FUFigureViewController.m */; };
+		26EAC2D4278C1F6200CE0A1D /* FUNielianEditManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC2D3278C1F6200CE0A1D /* FUNielianEditManager.m */; };
+		26EAC2D8278C1F9300CE0A1D /* FUFigureView.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC2D7278C1F9300CE0A1D /* FUFigureView.m */; };
+		26EAC2DB278C1FC500CE0A1D /* FUFigureDecorationCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC2D9278C1FC500CE0A1D /* FUFigureDecorationCollection.m */; };
+		26EAC2E1278C201D00CE0A1D /* FUFigureColorCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC2DC278C201C00CE0A1D /* FUFigureColorCollection.m */; };
+		26EAC2E2278C201D00CE0A1D /* FUFIgureColorCollectionLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC2DF278C201D00CE0A1D /* FUFIgureColorCollectionLayout.m */; };
+		26EAC2E3278C201D00CE0A1D /* FUFigureColorCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26EAC2E0278C201D00CE0A1D /* FUFigureColorCollectionCell.xib */; };
+		26EAC2E7278C204700CE0A1D /* FUFigureHorizCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC2E4278C204600CE0A1D /* FUFigureHorizCollection.m */; };
+		26EAC2E8278C204700CE0A1D /* FUFigureHorizCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26EAC2E6278C204700CE0A1D /* FUFigureHorizCollectionCell.xib */; };
+		26EAC2EB278C206F00CE0A1D /* FUFigureSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC2E9278C206F00CE0A1D /* FUFigureSlider.m */; };
+		26EAC2EE278C208700CE0A1D /* FUGradientSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC2ED278C208700CE0A1D /* FUGradientSlider.m */; };
+		26EAC2F1278C20DF00CE0A1D /* FUFigureTopCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC2F0278C20DF00CE0A1D /* FUFigureTopCollection.m */; };
+		26EAC2F6278C211E00CE0A1D /* FUCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC2F3278C211D00CE0A1D /* FUCamera.m */; };
+		26EAC2FD278C224700CE0A1D /* AGLKContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC2F9278C224600CE0A1D /* AGLKContext.m */; };
+		26EAC2FE278C224700CE0A1D /* AGLKVertexAttribArrayBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC2FC278C224700CE0A1D /* AGLKVertexAttribArrayBuffer.m */; };
+		26EAC301278C22B300CE0A1D /* FUOpenGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC300278C22B300CE0A1D /* FUOpenGLView.m */; };
+		26EAC304278C23B300CE0A1D /* AppManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 26EAC302278C23B300CE0A1D /* AppManager.m */; };
+		26EAC306278C485900CE0A1D /* FUFigureDecorationCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26EAC305278C485900CE0A1D /* FUFigureDecorationCell.xib */; };
+		26EAC308278C48F400CE0A1D /* FUFigureTopCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 26EAC307278C48F400CE0A1D /* FUFigureTopCell.xib */; };
 		B5DF969B7ED11BACA57C6864 /* Pods_Scene_Examples.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AED837A3EC68965AC33FE2E6 /* Pods_Scene_Examples.framework */; };
 		E7440E262772CADF00CBF4D8 /* OneToOneControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7440E252772CADF00CBF4D8 /* OneToOneControlView.swift */; };
 		E7440E2C277420F200CBF4D8 /* LiveBaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7440E2B277420F200CBF4D8 /* LiveBaseView.swift */; };
@@ -338,8 +357,6 @@
 		26D7159727883DBD0079D430 /* CRender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRender.m; sourceTree = "<group>"; };
 		26D7159C27883E090079D430 /* UIColor+FU.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+FU.m"; sourceTree = "<group>"; };
 		26D7159D27883E090079D430 /* UIColor+FU.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+FU.h"; sourceTree = "<group>"; };
-		26D7159F27883E7B0079D430 /* AppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppManager.h; sourceTree = "<group>"; };
-		26D715A027883E7C0079D430 /* AppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppManager.m; sourceTree = "<group>"; };
 		26D715A327883F470079D430 /* FUEditTypeModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FUEditTypeModel.m; sourceTree = "<group>"; };
 		26D715A427883F480079D430 /* FUEditTypeModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FUEditTypeModel.h; sourceTree = "<group>"; };
 		26D715A627883F790079D430 /* FUAvatarEditManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FUAvatarEditManager.h; sourceTree = "<group>"; };
@@ -356,6 +373,42 @@
 		26D71E7227893A8D0079D430 /* FUPoseTrackView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FUPoseTrackView.h; sourceTree = "<group>"; };
 		26EAC2C527893CA700CE0A1D /* FUPoseTrackCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FUPoseTrackCell.h; sourceTree = "<group>"; };
 		26EAC2C627893CA700CE0A1D /* FUPoseTrackCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FUPoseTrackCell.m; sourceTree = "<group>"; };
+		26EAC2CB278C1C5400CE0A1D /* FUEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FUEditViewController.h; sourceTree = "<group>"; };
+		26EAC2CC278C1C5400CE0A1D /* FUEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FUEditViewController.m; sourceTree = "<group>"; };
+		26EAC2CE278C1CA600CE0A1D /* FUFigureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FUFigureViewController.m; sourceTree = "<group>"; };
+		26EAC2CF278C1CA600CE0A1D /* FUFigureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FUFigureViewController.h; sourceTree = "<group>"; };
+		26EAC2D2278C1F6200CE0A1D /* FUNielianEditManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FUNielianEditManager.h; sourceTree = "<group>"; };
+		26EAC2D3278C1F6200CE0A1D /* FUNielianEditManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FUNielianEditManager.m; sourceTree = "<group>"; };
+		26EAC2D6278C1F9200CE0A1D /* FUFigureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FUFigureView.h; sourceTree = "<group>"; };
+		26EAC2D7278C1F9300CE0A1D /* FUFigureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FUFigureView.m; sourceTree = "<group>"; };
+		26EAC2D9278C1FC500CE0A1D /* FUFigureDecorationCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FUFigureDecorationCollection.m; sourceTree = "<group>"; };
+		26EAC2DA278C1FC500CE0A1D /* FUFigureDecorationCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FUFigureDecorationCollection.h; sourceTree = "<group>"; };
+		26EAC2DC278C201C00CE0A1D /* FUFigureColorCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FUFigureColorCollection.m; sourceTree = "<group>"; };
+		26EAC2DD278C201C00CE0A1D /* FUFIgureColorCollectionLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FUFIgureColorCollectionLayout.h; sourceTree = "<group>"; };
+		26EAC2DE278C201C00CE0A1D /* FUFigureColorCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FUFigureColorCollection.h; sourceTree = "<group>"; };
+		26EAC2DF278C201D00CE0A1D /* FUFIgureColorCollectionLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FUFIgureColorCollectionLayout.m; sourceTree = "<group>"; };
+		26EAC2E0278C201D00CE0A1D /* FUFigureColorCollectionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FUFigureColorCollectionCell.xib; sourceTree = "<group>"; };
+		26EAC2E4278C204600CE0A1D /* FUFigureHorizCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FUFigureHorizCollection.m; sourceTree = "<group>"; };
+		26EAC2E5278C204600CE0A1D /* FUFigureHorizCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FUFigureHorizCollection.h; sourceTree = "<group>"; };
+		26EAC2E6278C204700CE0A1D /* FUFigureHorizCollectionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FUFigureHorizCollectionCell.xib; sourceTree = "<group>"; };
+		26EAC2E9278C206F00CE0A1D /* FUFigureSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FUFigureSlider.m; sourceTree = "<group>"; };
+		26EAC2EA278C206F00CE0A1D /* FUFigureSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FUFigureSlider.h; sourceTree = "<group>"; };
+		26EAC2EC278C208700CE0A1D /* FUGradientSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FUGradientSlider.h; sourceTree = "<group>"; };
+		26EAC2ED278C208700CE0A1D /* FUGradientSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FUGradientSlider.m; sourceTree = "<group>"; };
+		26EAC2EF278C20DE00CE0A1D /* FUFigureTopCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FUFigureTopCollection.h; sourceTree = "<group>"; };
+		26EAC2F0278C20DF00CE0A1D /* FUFigureTopCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FUFigureTopCollection.m; sourceTree = "<group>"; };
+		26EAC2F3278C211D00CE0A1D /* FUCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FUCamera.m; sourceTree = "<group>"; };
+		26EAC2F4278C211D00CE0A1D /* FUCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FUCamera.h; sourceTree = "<group>"; };
+		26EAC2F9278C224600CE0A1D /* AGLKContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AGLKContext.m; sourceTree = "<group>"; };
+		26EAC2FA278C224600CE0A1D /* AGLKVertexAttribArrayBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGLKVertexAttribArrayBuffer.h; sourceTree = "<group>"; };
+		26EAC2FB278C224700CE0A1D /* AGLKContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AGLKContext.h; sourceTree = "<group>"; };
+		26EAC2FC278C224700CE0A1D /* AGLKVertexAttribArrayBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AGLKVertexAttribArrayBuffer.m; sourceTree = "<group>"; };
+		26EAC2FF278C22B300CE0A1D /* FUOpenGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FUOpenGLView.h; sourceTree = "<group>"; };
+		26EAC300278C22B300CE0A1D /* FUOpenGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FUOpenGLView.m; sourceTree = "<group>"; };
+		26EAC302278C23B300CE0A1D /* AppManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppManager.m; path = ../../../../../../../FUP2A/FUP2AArt/FUP2A/Manager/AppManager.m; sourceTree = "<group>"; };
+		26EAC303278C23B300CE0A1D /* AppManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppManager.h; path = ../../../../../../../FUP2A/FUP2AArt/FUP2A/Manager/AppManager.h; sourceTree = "<group>"; };
+		26EAC305278C485900CE0A1D /* FUFigureDecorationCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FUFigureDecorationCell.xib; sourceTree = "<group>"; };
+		26EAC307278C48F400CE0A1D /* FUFigureTopCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FUFigureTopCell.xib; sourceTree = "<group>"; };
 		4C1A8B8E636109C2F8647D68 /* Pods-Agora-ScreenShare-Extension(Socket).debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Agora-ScreenShare-Extension(Socket).debug.xcconfig"; path = "Target Support Files/Pods-Agora-ScreenShare-Extension(Socket)/Pods-Agora-ScreenShare-Extension(Socket).debug.xcconfig"; sourceTree = "<group>"; };
 		4EAC22A0ABCEA5BE7ED7FCFA /* Pods-Agora-ScreenShare-Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Agora-ScreenShare-Extension.release.xcconfig"; path = "Target Support Files/Pods-Agora-ScreenShare-Extension/Pods-Agora-ScreenShare-Extension.release.xcconfig"; sourceTree = "<group>"; };
 		A6A12BD14C6C12D3D9AB21A6 /* Pods_Agora_ScreenShare_Extension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Agora_ScreenShare_Extension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -487,6 +540,7 @@
 		26C7A5142787E3FB009A8DA5 /* FUManager */ = {
 			isa = PBXGroup;
 			children = (
+				26EAC2D1278C1F4E00CE0A1D /* Edit */,
 				26D71E6D278938B70079D430 /* View */,
 				26D7159527883CF50079D430 /* FUP2A_PrefixHeader.pch */,
 				26C7A5F32787E80D009A8DA5 /* Other */,
@@ -839,6 +893,9 @@
 		26C7A5F32787E80D009A8DA5 /* Other */ = {
 			isa = PBXGroup;
 			children = (
+				26EAC303278C23B300CE0A1D /* AppManager.h */,
+				26EAC302278C23B300CE0A1D /* AppManager.m */,
+				26EAC2F8278C223600CE0A1D /* GL */,
 				26D715AF27883FF60079D430 /* Views */,
 				26D715A227883F3D0079D430 /* Model */,
 				26D7159D27883E090079D430 /* UIColor+FU.h */,
@@ -855,8 +912,6 @@
 				26D715AA27883F960079D430 /* FUStack.m */,
 				26D715A627883F790079D430 /* FUAvatarEditManager.h */,
 				26D715A727883F7A0079D430 /* FUAvatarEditManager.m */,
-				26D7159F27883E7B0079D430 /* AppManager.h */,
-				26D715A027883E7C0079D430 /* AppManager.m */,
 				26D7159627883DBD0079D430 /* CRender.h */,
 				26D7159727883DBD0079D430 /* CRender.m */,
 			);
@@ -892,6 +947,62 @@
 				26EAC2C627893CA700CE0A1D /* FUPoseTrackCell.m */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		26EAC2D1278C1F4E00CE0A1D /* Edit */ = {
+			isa = PBXGroup;
+			children = (
+				26EAC2D5278C1F8A00CE0A1D /* View */,
+				26EAC2CB278C1C5400CE0A1D /* FUEditViewController.h */,
+				26EAC2CC278C1C5400CE0A1D /* FUEditViewController.m */,
+				26EAC2CF278C1CA600CE0A1D /* FUFigureViewController.h */,
+				26EAC2CE278C1CA600CE0A1D /* FUFigureViewController.m */,
+				26EAC2D2278C1F6200CE0A1D /* FUNielianEditManager.h */,
+				26EAC2D3278C1F6200CE0A1D /* FUNielianEditManager.m */,
+			);
+			path = Edit;
+			sourceTree = "<group>";
+		};
+		26EAC2D5278C1F8A00CE0A1D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				26EAC2EC278C208700CE0A1D /* FUGradientSlider.h */,
+				26EAC2ED278C208700CE0A1D /* FUGradientSlider.m */,
+				26EAC2EA278C206F00CE0A1D /* FUFigureSlider.h */,
+				26EAC2E9278C206F00CE0A1D /* FUFigureSlider.m */,
+				26EAC2E5278C204600CE0A1D /* FUFigureHorizCollection.h */,
+				26EAC2E4278C204600CE0A1D /* FUFigureHorizCollection.m */,
+				26EAC2E6278C204700CE0A1D /* FUFigureHorizCollectionCell.xib */,
+				26EAC2D6278C1F9200CE0A1D /* FUFigureView.h */,
+				26EAC2D7278C1F9300CE0A1D /* FUFigureView.m */,
+				26EAC2DE278C201C00CE0A1D /* FUFigureColorCollection.h */,
+				26EAC2DC278C201C00CE0A1D /* FUFigureColorCollection.m */,
+				26EAC2E0278C201D00CE0A1D /* FUFigureColorCollectionCell.xib */,
+				26EAC2DD278C201C00CE0A1D /* FUFIgureColorCollectionLayout.h */,
+				26EAC2DF278C201D00CE0A1D /* FUFIgureColorCollectionLayout.m */,
+				26EAC2DA278C1FC500CE0A1D /* FUFigureDecorationCollection.h */,
+				26EAC2D9278C1FC500CE0A1D /* FUFigureDecorationCollection.m */,
+				26EAC305278C485900CE0A1D /* FUFigureDecorationCell.xib */,
+				26EAC2EF278C20DE00CE0A1D /* FUFigureTopCollection.h */,
+				26EAC2F0278C20DF00CE0A1D /* FUFigureTopCollection.m */,
+				26EAC307278C48F400CE0A1D /* FUFigureTopCell.xib */,
+				26EAC2F4278C211D00CE0A1D /* FUCamera.h */,
+				26EAC2F3278C211D00CE0A1D /* FUCamera.m */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		26EAC2F8278C223600CE0A1D /* GL */ = {
+			isa = PBXGroup;
+			children = (
+				26EAC2FB278C224700CE0A1D /* AGLKContext.h */,
+				26EAC2F9278C224600CE0A1D /* AGLKContext.m */,
+				26EAC2FA278C224600CE0A1D /* AGLKVertexAttribArrayBuffer.h */,
+				26EAC2FC278C224700CE0A1D /* AGLKVertexAttribArrayBuffer.m */,
+				26EAC2FF278C22B300CE0A1D /* FUOpenGLView.h */,
+				26EAC300278C22B300CE0A1D /* FUOpenGLView.m */,
+			);
+			path = GL;
 			sourceTree = "<group>";
 		};
 		639A589D923EE6D429888195 /* Frameworks */ = {
@@ -1367,6 +1478,7 @@
 				26C7A5A22787E469009A8DA5 /* LRPP_shanzi.bundle in Resources */,
 				26C7A5B12787E469009A8DA5 /* ani_pose_danren_01.bundle in Resources */,
 				E79BEF55273E50ED009FA838 /* SuperRocket.gif in Resources */,
+				26EAC306278C485900CE0A1D /* FUFigureDecorationCell.xib in Resources */,
 				26C7A5832787E469009A8DA5 /* MeshPoints.json in Resources */,
 				26C7A5BF2787E469009A8DA5 /* anim_unknown.bundle in Resources */,
 				E79BEF59273E50ED009FA838 /* sound.gif in Resources */,
@@ -1420,6 +1532,7 @@
 				26C7A5962787E469009A8DA5 /* ani_SZW_cam.bundle in Resources */,
 				26C7A58C2787E469009A8DA5 /* midBody_male0.bundle in Resources */,
 				26C7A5E12787E4C0009A8DA5 /* tongue.bundle in Resources */,
+				26EAC2E8278C204700CE0A1D /* FUFigureHorizCollectionCell.xib in Resources */,
 				26C7A5A62787E469009A8DA5 /* ani_dance_cam.bundle in Resources */,
 				26C7A5C62787E469009A8DA5 /* anim_palm.bundle in Resources */,
 				26C7A5A72787E469009A8DA5 /* ani_dance_mid.bundle in Resources */,
@@ -1449,6 +1562,7 @@
 				26C7A5C22787E469009A8DA5 /* anim_two.bundle in Resources */,
 				26C7A5952787E469009A8DA5 /* ani_change_01.bundle in Resources */,
 				E79BEF51273E50ED009FA838 /* SuperBell.gif in Resources */,
+				26EAC308278C48F400CE0A1D /* FUFigureTopCell.xib in Resources */,
 				26C7A5C12787E469009A8DA5 /* anim_rock.bundle in Resources */,
 				26C7A59B2787E469009A8DA5 /* ani_SJG_mid.bundle in Resources */,
 				26C7A5842787E469009A8DA5 /* ketingB.bundle in Resources */,
@@ -1456,6 +1570,7 @@
 				26C7A58A2787E469009A8DA5 /* midBody_male4.bundle in Resources */,
 				E79BEF58273E50ED009FA838 /* SuperDiamond.gif in Resources */,
 				26D71E6A2788511A0079D430 /* Resource in Resources */,
+				26EAC2E3278C201D00CE0A1D /* FUFigureColorCollectionCell.xib in Resources */,
 				26C7A5C52787E469009A8DA5 /* anim_one.bundle in Resources */,
 				26C7A5BD2787E469009A8DA5 /* anim_greet.bundle in Resources */,
 				26C7A5922787E469009A8DA5 /* midBody_female0.bundle in Resources */,
@@ -1514,9 +1629,12 @@
 				E79BEF37273D15D6009FA838 /* Screen.swift in Sources */,
 				E79C2611273B689B00909CD4 /* SyncUtil.swift in Sources */,
 				E79BEF5B273E5768009FA838 /* GIFImageView.swift in Sources */,
+				26EAC2E7278C204700CE0A1D /* FUFigureHorizCollection.m in Sources */,
 				E79BEF8A274644A9009FA838 /* BORLiveModel.swift in Sources */,
 				E79BEF45273E4D99009FA838 /* LiveGiftModel.swift in Sources */,
+				26EAC301278C22B300CE0A1D /* FUOpenGLView.m in Sources */,
 				E79C264E273D062400909CD4 /* LiveRoomListCell.swift in Sources */,
+				26EAC304278C23B300CE0A1D /* AppManager.m in Sources */,
 				E79C264A273D003B00909CD4 /* LiveRoomInfo.swift in Sources */,
 				E79C2610273B689B00909CD4 /* KeyCenter.swift in Sources */,
 				E79C262D273BC0CA00909CD4 /* ToastView.swift in Sources */,
@@ -1527,6 +1645,8 @@
 				26EAC2C827893CA700CE0A1D /* FUPoseTrackCell.m in Sources */,
 				E79BF0302754761A009FA838 /* GameApplyInfoModel.swift in Sources */,
 				E7499C2C2770537C00E799FF /* MessageCell.swift in Sources */,
+				26EAC2D4278C1F6200CE0A1D /* FUNielianEditManager.m in Sources */,
+				26EAC2CD278C1C5400CE0A1D /* FUEditViewController.m in Sources */,
 				E79BEF3F273D3EF0009FA838 /* LiveToolView.swift in Sources */,
 				E79BF02B274B81A0009FA838 /* GameInfoModel.swift in Sources */,
 				26D7159827883DBD0079D430 /* CRender.m in Sources */,
@@ -1537,6 +1657,8 @@
 				E79C261C273B712000909CD4 /* BaseViewController.swift in Sources */,
 				E79BEF752744FD8B009FA838 /* GCDTimer.swift in Sources */,
 				E79BEF68274203ED009FA838 /* PKLiveInviteView.swift in Sources */,
+				26EAC2EB278C206F00CE0A1D /* FUFigureSlider.m in Sources */,
+				26EAC2E1278C201D00CE0A1D /* FUFigureColorCollection.m in Sources */,
 				E79BEF33273D0F0C009FA838 /* LiveCanvasModel.swift in Sources */,
 				26D71E7127893A590079D430 /* FUPoseTrackView.m in Sources */,
 				E7499C2A2770534400E799FF /* NoticeCell.swift in Sources */,
@@ -1548,16 +1670,21 @@
 				E79C264C273D053E00909CD4 /* LiveRoomListController.swift in Sources */,
 				26D715A527883F480079D430 /* FUEditTypeModel.m in Sources */,
 				26C7A5F22787E4FC009A8DA5 /* FUManager.m in Sources */,
+				26EAC2E2278C201D00CE0A1D /* FUFIgureColorCollectionLayout.m in Sources */,
+				26EAC2FE278C224700CE0A1D /* AGLKVertexAttribArrayBuffer.m in Sources */,
 				26D715AE27883FBC0079D430 /* FUShapeParamsMode.m in Sources */,
+				26EAC2D0278C1CA600CE0A1D /* FUFigureViewController.m in Sources */,
 				E79C261F273B737100909CD4 /* MainTableViewCell.swift in Sources */,
 				E79BEF3D273D327F009FA838 /* LiveBottomView.swift in Sources */,
 				E79C2638273BC8DF00909CD4 /* MainModel.swift in Sources */,
 				E79C2613273B689B00909CD4 /* UIColor+Extension.swift in Sources */,
+				26EAC2F1278C20DF00CE0A1D /* FUFigureTopCollection.m in Sources */,
 				E79BF029274B77C7009FA838 /* GameViewModel.swift in Sources */,
 				E7440E262772CADF00CBF4D8 /* OneToOneControlView.swift in Sources */,
 				E79BEF6A27420933009FA838 /* PKApplyInfoModel.swift in Sources */,
 				E79BEF35273D1304009FA838 /* LivePlayerCell.swift in Sources */,
 				26C7A5FE2787EFE3009A8DA5 /* FUP2AColor.m in Sources */,
+				26EAC2F6278C211E00CE0A1D /* FUCamera.m in Sources */,
 				E79BEF8527463FA5009FA838 /* BORHomeViewController.swift in Sources */,
 				E79C2636273BC6C400909CD4 /* LiveRandomNameView.swift in Sources */,
 				E79C2642273BE5C500909CD4 /* AlertManager.swift in Sources */,
@@ -1565,6 +1692,7 @@
 				E79BEF772745036E009FA838 /* PKLiveProgressView.swift in Sources */,
 				26C7A6012787F7EE009A8DA5 /* FUAvatar.m in Sources */,
 				E79BEF9427474C36009FA838 /* GameLiveController.swift in Sources */,
+				26EAC2D8278C1F9300CE0A1D /* FUFigureView.m in Sources */,
 				E79BEF8427463FA5009FA838 /* BORCreateRoomController.swift in Sources */,
 				26D715AB27883F960079D430 /* FUStack.m in Sources */,
 				E7440E2C277420F200CBF4D8 /* LiveBaseView.swift in Sources */,
@@ -1572,18 +1700,20 @@
 				E79BEF41273E0C3A009FA838 /* LiveToolModel.swift in Sources */,
 				E79BEF31273D0EA4009FA838 /* SignleLiveController.swift in Sources */,
 				E79BEF9A274776F8009FA838 /* GameModeModel.swift in Sources */,
+				26EAC2EE278C208700CE0A1D /* FUGradientSlider.m in Sources */,
 				E79C2632273BC17B00909CD4 /* String+Extension.swift in Sources */,
 				E79C262A273B7D8900909CD4 /* DeviceAssistant.swift in Sources */,
 				E7499C282770308A00E799FF /* PlayTogetherViewController.swift in Sources */,
 				E79BEF43273E3709009FA838 /* LiveGiftView.swift in Sources */,
+				26EAC2FD278C224700CE0A1D /* AGLKContext.m in Sources */,
 				E7499C1B276A078500E799FF /* LiveOnlineView.swift in Sources */,
 				E79BEF9827475677009FA838 /* GameModeView.swift in Sources */,
 				E79C260F273B689B00909CD4 /* JSONObject.swift in Sources */,
 				E79C25DF273B67DB00909CD4 /* AppDelegate.swift in Sources */,
-				26D715A127883E7C0079D430 /* AppManager.m in Sources */,
 				E79C260E273B689B00909CD4 /* AgoraExtension.swift in Sources */,
 				E79C2646273CBA2700909CD4 /* LiveSettingModel.swift in Sources */,
 				E79BEF9C27477E16009FA838 /* GameCenterView.swift in Sources */,
+				26EAC2DB278C1FC500CE0A1D /* FUFigureDecorationCollection.m in Sources */,
 				E79BEF9627475239009FA838 /* GameWebView.swift in Sources */,
 				E7499C30277173BC00E799FF /* OneToOneViewController.swift in Sources */,
 				E79C260D273B689B00909CD4 /* Config.swift in Sources */,

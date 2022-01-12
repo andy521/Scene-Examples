@@ -15,6 +15,7 @@ enum OneToOneControlType: Int {
     case back = 4
     case exit = 5
     case close = 6
+    case edit = 7
 }
 
 class OneToOneControlView: UIView {
@@ -52,6 +53,13 @@ class OneToOneControlView: UIView {
         button.imageSize = CGSize(width: 20.fit, height: 25.fit)
         button.tag = OneToOneControlType.mic.rawValue
         button.addTarget(self, action: #selector(clickMicButton(sender:)), for: .touchUpInside)
+        return button
+    }()
+    private lazy var editButton: UIButton = {
+        let button = UIButton()
+        button.tag = OneToOneControlType.edit.rawValue
+        button.setTitle("编辑", for: .normal)
+        button.addTarget(self, action: #selector(clickEditButton), for: .touchUpInside)
         return button
     }()
     private lazy var backButton: AGEButton = {
@@ -95,6 +103,7 @@ class OneToOneControlView: UIView {
         gameButton.translatesAutoresizingMaskIntoConstraints = false
         micButton.translatesAutoresizingMaskIntoConstraints = false
         backButton.translatesAutoresizingMaskIntoConstraints = false
+        editButton.translatesAutoresizingMaskIntoConstraints = false
         
         addSubview(statckView)
         statckView.addArrangedSubview(switchCameraButton)
@@ -102,6 +111,7 @@ class OneToOneControlView: UIView {
         statckView.addArrangedSubview(micButton)
         statckView.addArrangedSubview(exitButton)
         addSubview(backButton)
+        addSubview(editButton)
         
         statckView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 54.fit).isActive = true
         statckView.topAnchor.constraint(equalTo: topAnchor).isActive = true
@@ -122,6 +132,9 @@ class OneToOneControlView: UIView {
         backButton.heightAnchor.constraint(equalToConstant: 60.fit).isActive = true
         backButton.topAnchor.constraint(equalTo: statckView.bottomAnchor, constant: 30.fit).isActive = true
         backButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -48).isActive = true
+        
+        editButton.centerXAnchor.constraint(equalTo: switchCameraButton.centerXAnchor).isActive = true
+        editButton.centerYAnchor.constraint(equalTo: backButton.centerYAnchor).isActive = true
     }
     
     @objc
@@ -149,5 +162,8 @@ class OneToOneControlView: UIView {
     @objc
     private func clickExitButton() {
         onClickControlButtonClosure?(.exit, false)
+    }
+    @objc private func clickEditButton() {
+        onClickControlButtonClosure?(.edit, false)
     }
 }

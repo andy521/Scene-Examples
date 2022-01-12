@@ -520,6 +520,9 @@ static const int tmpItemsCount  = 100;
  */
 - (void)resetScaleToHalfBody;
 
+/// 设置到展示半身
+- (void)resetPositionToShowHalf;
+
 /**
  缩放至小比例的全身
  */

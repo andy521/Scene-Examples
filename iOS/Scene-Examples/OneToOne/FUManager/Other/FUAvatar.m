@@ -1060,6 +1060,13 @@
     [FURenderer itemSetParam:items[FUItemTypeController] withName:@"reset_all" value:@(0)];
 }
 
+- (void)resetPositionToShowHalf {
+    double position[3] = {0,-50,300};
+    [FURenderer itemSetParamdv:items[FUItemTypeController] withName:@"target_position" value:position length:3];
+    [FURenderer itemSetParam:items[FUItemTypeController] withName:@"target_angle" value:@(0)];
+    [FURenderer itemSetParam:items[FUItemTypeController] withName:@"reset_all" value:@(0)];
+}
+
 /// 缩小至全身并在屏幕左边显示
 - (void)resetScaleSmallBodyToLeft
 {
