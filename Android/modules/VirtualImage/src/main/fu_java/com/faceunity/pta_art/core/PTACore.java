@@ -1,6 +1,7 @@
 package com.faceunity.pta_art.core;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.faceunity.pta_art.constant.FilePathFactory;
 import com.faceunity.pta_art.core.base.BaseCore;
@@ -64,6 +65,7 @@ public class PTACore extends BaseCore {
         return avatarHandle = new AvatarHandle(this, mFUItemHandler, new Runnable() {
             @Override
             public void run() {
+                Log.d(TAG, "createAvatarHandle success control=" + avatarHandle.controllerItem);
                 faceunity.fuBindItems(avatarHandle.controllerItem, new int[]{controller_config});
 
                 setNeedTrackFace(true);
@@ -100,7 +102,6 @@ public class PTACore extends BaseCore {
      */
     @Override
     public int onDrawFrame(byte[] img, int tex, int w, int h, int rotation) {
-
         int loadCount = avatarHandle.getLoadCount();
         if (loadCount != Integer.MAX_VALUE) {
             if (avatarHandle.expressionItem.handle > 0) {
@@ -191,6 +192,7 @@ public class PTACore extends BaseCore {
                 @Override
                 public void run() {
                     faceunity.fuUnBindItems(avatarHandle.controllerItem, new int[]{currentCameraItem});
+                    Log.d(TAG, "fuUnBindItems controller=" + avatarHandle.controllerItem + ", unBindItems=" + currentCameraItem);
                 }
             });
             avatarHandle.unBindAll();

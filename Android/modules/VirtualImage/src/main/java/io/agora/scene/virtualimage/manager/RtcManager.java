@@ -152,6 +152,7 @@ public class RtcManager {
                         videoPreTexBuffHelper.invoke(new Callable<Object>() {
                             @Override
                             public Object call() throws Exception {
+                                Log.d(TAG, "VideoPreProcess --> onTextureBufferHelperCreated thread=" + Thread.currentThread().getName());
                                 _videoPreProcess.onTextureBufferHelperCreated(videoPreTexBuffHelper);
                                 return null;
                             }
@@ -522,6 +523,7 @@ public class RtcManager {
                     videoPreTexBuffHelper.invoke(new Callable<Object>() {
                         @Override
                         public Object call() throws Exception {
+                            Log.d(TAG, "c --> onTextureBufferHelperDestroy thread=" + Thread.currentThread().getName() + ",_videoPreProcess=" + _videoPreProcess);
                             _videoPreProcess.onTextureBufferHelperDestroy();
                             return null;
                         }
@@ -538,7 +540,7 @@ public class RtcManager {
             engine.leaveChannel();
             if(isStopPreview){
                 engine.stopPreview();
-                //engine.setCameraCapturerConfiguration(new CameraCapturerConfiguration(cameraDirection, new CameraCapturerConfiguration.CaptureFormat(encoderConfiguration.dimensions.width, encoderConfiguration.dimensions.height, encoderConfiguration.frameRate)));
+                engine.setCameraCapturerConfiguration(new CameraCapturerConfiguration(cameraDirection, new CameraCapturerConfiguration.CaptureFormat(encoderConfiguration.dimensions.width, encoderConfiguration.dimensions.height, encoderConfiguration.frameRate)));
             }
         }
     }

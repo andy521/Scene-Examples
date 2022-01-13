@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
     <external-path
-        name="external_storage_root"
-        path="FaceUnity/"/>
-    <external-path
-        name="files_root"
-        path="Android/data/io.agora.meeting/" />
-    <external-path
-        name="download"
-        path="Download/" />
+        name="external_files"
+        path="."/>
 </paths>

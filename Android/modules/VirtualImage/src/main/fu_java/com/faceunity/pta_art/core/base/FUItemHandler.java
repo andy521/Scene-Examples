@@ -93,8 +93,13 @@ public class FUItemHandler extends Handler {
             long loadItemE = System.currentTimeMillis();
             Log.i("time", "load item:" + bundle + "--loadTime:" + (loadItemE - loadItemS) + "ms");
             Log.i(TAG, "bundle loadFUItem " + bundle + " item " + item);
+            int error = faceunity.fuGetSystemError();
+            if(error != 0){
+                Log.e(TAG, "bundle loadFUItem error code=" + error + " message=" + faceunity.fuGetSystemErrorString(error));
+            }
         } catch (IOException e) {
             e.printStackTrace();
+            Log.e(TAG, "bundle loadFUItem error=" + e.toString());
         }
         return item;
     }

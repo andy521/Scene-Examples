@@ -198,6 +198,7 @@ public abstract class BaseCore {
         return new Runnable() {
             @Override
             public void run() {
+                Log.d(TAG, "destroyAIFaceProcessorModel");
                 faceunity.fuReleaseAIModel(faceunity.FUAITYPE_FACEPROCESSOR);
             }
         };
@@ -208,6 +209,7 @@ public abstract class BaseCore {
         return new Runnable() {
             @Override
             public void run() {
+                Log.d(TAG, "destroyAIFaceProcessorModel");
                 faceunity.fuReleaseAIModel(faceunity.FUAITYPE_HUMAN_PROCESSOR);
             }
         };

@@ -174,26 +174,19 @@ public class FUDemoManager {
         });
         mP2ACore.loadWholeBodyCamera();
 
-
         isStarted = true;
     }
 
     public void stop(){
         isStarted = false;
         isFUAvatarPrepared = false;
-        if(mAvatarHandle != null){
-            mAvatarHandle.release();
-            mAvatarHandle = null;
-        }
-        if(mP2ACore != null){
-            mP2ACore.release();
-            mP2ACore = null;
-        }
         if(mFUP2ARenderer != null){
             mFUP2ARenderer.onSurfaceDestroyed();
-            mFUP2ARenderer.release();
-            mFUP2ARenderer = null;
         }
+
+        mFUP2ARenderer = null;
+        mAvatarHandle = null;
+        mP2ACore = null;
         mRotatedImage = null;
     }
 
@@ -216,6 +209,7 @@ public class FUDemoManager {
         if(mRotatedImage == null){
             mRotatedImage = new faceunity.RotatedImage();
         }
+
         faceunity.fuRotateImage(mRotatedImage, img, faceunity.FU_FORMAT_NV21_BUFFER, width, height, rotateMode, flipX, flipY);
         //设置texture的绘制方式
         faceunity.fuSetInputCameraMatrix(flipX, flipY, rotateMode);
@@ -224,9 +218,15 @@ public class FUDemoManager {
         faceunity.fuSetOutputResolution(rendWidth, rendHeight);
 
         int retTexId = mFUP2ARenderer.onDrawFrame(mRotatedImage.mData, texId, rendWidth, rendHeight, 0);
+        int error = faceunity.fuGetSystemError();
+        if(error != 0){
+            String errorInfo = faceunity.fuGetSystemErrorString(error);
+            Log.e(TAG, "faceunity error code=" + error + ",info=" + errorInfo);
+        }
         if(!isFUAvatarPrepared){
             return null;
         }
+
         return new ResultFrame(retTexId, IdentityMatrix, rendWidth, rendHeight, TEXTURE_TYPE_2D);
     }
 

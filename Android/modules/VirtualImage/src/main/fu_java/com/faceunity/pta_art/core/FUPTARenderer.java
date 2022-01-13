@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -194,6 +195,7 @@ public class FUPTARenderer {
         if (mNeedBenchmark) mFuCallStartTime = System.nanoTime();
         int fuTex = mFUCore.onDrawFrame(img, tex, w, h, rotation);
         if (mNeedBenchmark) mOneHundredFrameFUTime += System.nanoTime() - mFuCallStartTime;
+        Log.d(TAG, "onDrawFrame");
         return fuTex;
     }
 
@@ -204,11 +206,13 @@ public class FUPTARenderer {
     public void onSurfaceDestroyed() {
         mFUCore.unBind();
         mFUCore.release();
+        release();
         fuPTAClient.fuPTAReleaseData();
         faceunity.fuDestroyAllItems();
         faceunity.fuOnDeviceLost();
         faceunity.fuDone();
-        release();
+
+        Log.d(TAG, "onSurfaceDestroyed");
     }
 
     /**
@@ -229,11 +233,21 @@ public class FUPTARenderer {
         }
 
         if (mEventQueue != null) {
-            mEventQueue.clear();
+            Iterator<Runnable> iterator = mEventQueue.iterator();
+            while (iterator.hasNext()){
+                iterator.next().run();
+                iterator.remove();
+            }
+            //mEventQueue.clear();
             mEventQueue = null;
         }
         if (mNextEventQueue != null) {
-            mNextEventQueue.clear();
+            Iterator<Runnable> iterator = mNextEventQueue.iterator();
+            while (iterator.hasNext()){
+                iterator.next().run();
+                iterator.remove();
+            }
+            //mNextEventQueue.clear();
             mNextEventQueue = null;
         }
     }
