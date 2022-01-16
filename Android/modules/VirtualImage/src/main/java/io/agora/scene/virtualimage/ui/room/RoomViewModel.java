@@ -225,7 +225,7 @@ public class RoomViewModel extends ViewModel {
         super.onCleared();
 
         // destroy RTE
-        RtcManager.getInstance().reset(true);
+        RtcManager.getInstance().reset(false);
 
         new Thread(() -> {
             if (currentGame != null) {

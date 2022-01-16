@@ -147,7 +147,7 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
     }
 
     private void navigateToStartPage() {
-        RtcManager.getInstance().reset(true);
+        RtcManager.getInstance().reset(false);
         findNavController().popBackStack(R.id.roomListFragment, false);
     }
 }

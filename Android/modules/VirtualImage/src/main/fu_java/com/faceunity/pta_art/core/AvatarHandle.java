@@ -1,5 +1,6 @@
 package com.faceunity.pta_art.core;
 
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Message;
 import android.text.TextUtils;
@@ -144,7 +145,7 @@ public class AvatarHandle extends BasePTAHandle {
                 loadItem(pupilItem, avatar.getPupilFile());
 
                 loadItem(expressionItem, loadExpressionBundle(avatar));
-                loadItem(backgroundItem, isGroupPhoto ? "" : avatar.getBackgroundFile());
+                //loadItem(backgroundItem, isGroupPhoto ? "" : avatar.getBackgroundFile());
                 String[] others = avatar.getOtherFile();
                 for (int i = 0; i < otherItem.length; i++) {
                     if (others != null && i < others.length) {
@@ -816,6 +817,26 @@ public class AvatarHandle extends BasePTAHandle {
                         faceunity.fuDestroyItem(lightItem);
                         lightItem = 0;
                     }
+                }
+            });
+        }
+    }
+
+    /**
+     * 关闭光照
+     */
+    public void setBackgroundColor(String color) {
+        if (controllerItem > 0) {
+            int colorValue = Color.parseColor(color);
+            int r = Color.red(colorValue);
+            int g = Color.green(colorValue);
+            int b = Color.blue(colorValue);
+            int a = Color.alpha(colorValue);
+            mBaseCore.queueEvent(new Runnable() {
+                @Override
+                public void run() {
+                    fuItemSetParam("enable_background_color", 1.0);
+                    fuItemSetParam("set_background_color", new double[]{r, g, b, a});
                 }
             });
         }

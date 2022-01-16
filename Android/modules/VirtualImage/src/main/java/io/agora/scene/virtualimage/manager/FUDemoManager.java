@@ -169,6 +169,7 @@ public class FUDemoManager {
             public void run() {
                 mAvatarHandle.openLight(FilePathFactory.BUNDLE_light);
                 mAvatarHandle.setScale(new double[]{0.0, -50f, 300f});
+                mAvatarHandle.setBackgroundColor("#AE8EF0");
                 isFUAvatarPrepared = true;
             }
         });
