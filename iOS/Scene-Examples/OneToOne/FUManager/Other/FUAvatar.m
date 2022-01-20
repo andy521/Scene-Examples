@@ -6,7 +6,7 @@
 //  Copyright © 2018年 L. All rights reserved.
 //
 #include "objc/runtime.h"
-
+#import "FUP2AColor.h"
 @interface FUAvatar ()
 @property (nonatomic, strong) dispatch_semaphore_t signal ;
 @end
@@ -637,7 +637,19 @@
     [FURenderer itemSetParamdv:items[FUItemTypeController] withName:paramDicStr value:c length:3];
 }
 
-
+- (void)setBackGroundColor:(UIColor *)color {
+    FUP2AColor *fucolor = [FUP2AColor color:color];
+    double c[3] = {
+        fucolor.r ,
+        fucolor.g ,
+        fucolor.b 
+    };
+    
+    int ret1 = fuItemSetParamd(items[FUItemTypeController], "enable_background_color", 1.0);
+    int ret2 = fuItemSetParamdv(items[FUItemTypeController], "set_background_color", c, 3);
+//    int ret3 = fuItemSetParamd(items[FUItemTypeController], "enable_background_color", 0.0);
+    NSLog(@"");
+}
 
 #pragma mark ----- 以下动画相关
 

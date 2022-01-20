@@ -724,6 +724,9 @@ static const int tmpItemsCount  = 100;
 /// @param y_offset 偏移量
 - (void)human3dSetYOffset:(float)y_offset;
 
+/// 设置背景颜色
+- (void)setBackGroundColor:(UIColor *)color;
+
 @end
 
 
