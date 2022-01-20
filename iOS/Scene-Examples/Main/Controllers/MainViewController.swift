@@ -43,20 +43,20 @@ extension MainViewController: AGETableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        let sceneType = MainModel.mainDatas()[indexPath.row].sceneType
-//        SyncUtil.initSyncManager(sceneId: sceneType.rawValue)
-//        if sceneType == .breakoutRoom {
-//            let breakoutRoomVC = BORHomeViewController()
-//            breakoutRoomVC.title = MainModel.mainDatas()[indexPath.row].title
-//            navigationController?.pushViewController(breakoutRoomVC, animated: true)
-//        } else {
-//            let roomListVC = LiveRoomListController(sceneType: sceneType)
-//            roomListVC.title = MainModel.mainDatas()[indexPath.row].title
-//            navigationController?.pushViewController(roomListVC, animated: true)
-//        }
-        let vc = AEAViewController()
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true, completion: nil)
+        let sceneType = MainModel.mainDatas()[indexPath.row].sceneType
+        SyncUtil.initSyncManager(sceneId: sceneType.rawValue)
+        if sceneType == .breakoutRoom {
+            let breakoutRoomVC = BORHomeViewController()
+            breakoutRoomVC.title = MainModel.mainDatas()[indexPath.row].title
+            navigationController?.pushViewController(breakoutRoomVC, animated: true)
+        } else {
+            let roomListVC = LiveRoomListController(sceneType: sceneType)
+            roomListVC.title = MainModel.mainDatas()[indexPath.row].title
+            navigationController?.pushViewController(roomListVC, animated: true)
+        }
+//        let vc = AEAViewController()
+//        vc.modalPresentationStyle = .fullScreen
+//        present(vc, animated: true, completion: nil)
     }
     
     func pullToRefreshHandler() {
