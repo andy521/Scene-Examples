@@ -75,7 +75,7 @@ struct MainModel {
         
         model = MainModel()
         model.title = "1V1直播"
-        model.desc = "你画我猜"
+        model.desc = "元直播"
         model.imageNmae = "pic-Virtual"
         model.sceneType = .oneToOne
         dataArray.append(model)

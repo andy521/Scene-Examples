@@ -43,6 +43,7 @@ class CreateLiveController: BaseViewController {
         return button
     }()
     private var agoraKit: AgoraRtcEngineKit?
+    private var avaterEngine: AvatarEngineProtocol!
     private lazy var rtcEngineConfig: AgoraRtcEngineConfig = {
        let config = AgoraRtcEngineConfig()
         config.appId = KeyCenter.AppId
@@ -128,23 +129,56 @@ class CreateLiveController: BaseViewController {
     
     private func setupAgoraKit() {
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: rtcEngineConfig, delegate: nil)
+        avaterEngine = agoraKit!.queryAvatarEngine()
         agoraKit?.setLogFile(LogUtils.sdkLogPath())
-        agoraKit?.setClientRole(.broadcaster)
-        agoraKit?.enableVideo()
-        agoraKit?.setVideoEncoderConfiguration(
-            AgoraVideoEncoderConfiguration(size: CGSize(width: 320, height: 240),
-                                           frameRate: .fps30,
-                                           bitrate: AgoraVideoBitrateStandard,
-                                           orientationMode: .fixedPortrait,
-                                           mirrorMode: .auto))
-        /// 开启扬声器
-        agoraKit?.setDefaultAudioRouteToSpeakerphone(true)
+        
+        let _ = AuthPack.bytes.withUnsafeBytes { pointer in
+            avaterEngine?.initialize(Data(bytes: pointer))
+        }
+        
+        let avatarConfigs = AgoraAvatarConfigs()
+        avatarConfigs.mode = .avatar
+        avatarConfigs.enable_face_detection = 1
+        avatarConfigs.enable_human_detection = 1
+        avaterEngine?.enableOrUpdateLocalAvatarVideo(true, configs: avatarConfigs)
+        
+//        var path:String!
+//        path = getPath("hair_hat_6")
+//        avaterEngine?.enableAvatarGeneratorItem(true, type: 0, bundle: path)
+//
+//        path = getPath("head")
+//        avaterEngine?.enableAvatarGeneratorItem(true, type: 1, bundle: path)
+//
+//        path = getPath("wuguan_mesh", dir: "Resource/QItems/background/dress_2d/mid/")
+//        avaterEngine?.enableAvatarGeneratorItem(true, type: 2, bundle: path)
+//
+//        path = getPath("midBody_male0", dir: nil)
+//        avaterEngine?.enableAvatarGeneratorItem(true, type: 3, bundle: path)
+//
+//
+//        path = getPath("taozhuang_2_shoes", dir: "/Resource/QItems/cloth/shoes/mid")
+//        avaterEngine?.enableAvatarGeneratorItem(true, type: 4, bundle: path)
+//
+//        path = getPath("yiqun_3", dir: "Resource/QItems/cloth/dress/mid")
+//        avaterEngine?.enableAvatarGeneratorItem(true, type: 5, bundle: path)
+//
+//
+//        path = getPath("cam_02", dir: "Resource/page_cam")
+//        avaterEngine?.enableAvatarGeneratorItem(true, type: 6, bundle: path)
+//
+//        path = getPath("ani_idle", dir: nil)
+//        avaterEngine?.enableAvatarGeneratorItem(true, type: 7, bundle: path)
+        
+        let _ = FUManager.shareInstance()
+        FUManager.shareInstance().avatarEngine = avaterEngine
+        FUManager.shareInstance().setAvatarStyleDefault()
+        FUManager.shareInstance().setupForHalfMode()
         
         let canvas = AgoraRtcVideoCanvas()
         canvas.uid = UserInfo.userId
         canvas.renderMode = .hidden
         canvas.view = localView
-        agoraKit?.setupLocalVideo(canvas)
+        avaterEngine.setupLocalVideoCanvas(canvas)
         agoraKit?.startPreview()
     }
     
@@ -214,10 +248,17 @@ class CreateLiveController: BaseViewController {
             navigationController?.pushViewController(playTogetherVC, animated: true)
             
         case .oneToOne:
+            
+            let canvas = AgoraRtcVideoCanvas()
+            canvas.uid = UserInfo.userId
+            canvas.renderMode = .hidden
+            canvas.view = nil
+            avaterEngine.setupLocalVideoCanvas(canvas)
             let oneToOneVC = OneToOneViewController(channelName: channelName ?? "",
                                                     sceneType: sceneType,
                                                     userId: UserInfo.uid,
-                                                    agoraKit: agoraKit)
+                                                    agoraKit: agoraKit,
+                                                    avaterEngine: avaterEngine)
             navigationController?.pushViewController(oneToOneVC, animated: true)
         
         default: break
@@ -227,4 +268,13 @@ class CreateLiveController: BaseViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
     }
+    
+    func getPath(_ name: String, dir: String? = "Resource/4") -> String? {
+        return Bundle.main.path(forResource: name,
+                                ofType: "bundle",
+                                inDirectory: dir)
+    }
 }
+
+
+

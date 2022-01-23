@@ -556,38 +556,8 @@ static CRender *_shareRenderer = nil;
 	return [self cutoutPixelBuffer:pixelBuffer option:op];
 }
 
-
-/// 使用C语言方法水平翻转pixelBuffer
-/// @param pixelBuffer 源pixelBuffer
-/// @return CVPixelBufferRef 翻转后的pixelBuffer
 - (CVPixelBufferRef)mirrorPixelBufferInXUseC:(CVPixelBufferRef)pixelBuffer {
-	dispatch_semaphore_wait(signal, DISPATCH_TIME_FOREVER);
-	CVPixelBufferLockBaseAddress(pixelBuffer, 0);
-	void* pixelBuffer_pod = (void *)CVPixelBufferGetBaseAddress(pixelBuffer);
-	int pixelBuffer_stride = (int)CVPixelBufferGetBytesPerRow(pixelBuffer) ;
-	int pixelBuffer_height = (int)CVPixelBufferGetHeight(pixelBuffer) ;
-	int pixelBuffer_width = (int)CVPixelBufferGetWidth(pixelBuffer);
-	CVPixelBufferRef mirrored_x_pixel = NULL;
-	NSDictionary* pixelBufferOptions = @{ (NSString*) kCVPixelBufferPixelFormatTypeKey :
-											  @(kCVPixelFormatType_32BGRA),
-										  (NSString*) kCVPixelBufferWidthKey : @(pixelBuffer_width),
-										  (NSString*) kCVPixelBufferHeightKey : @(pixelBuffer_height),
-										  (NSString*) kCVPixelBufferOpenGLESCompatibilityKey : @YES,
-										  (NSString*) kCVPixelBufferIOSurfacePropertiesKey : @{}};
-	CVPixelBufferCreate(kCFAllocatorDefault,
-						pixelBuffer_width, pixelBuffer_height,
-						kCVPixelFormatType_32BGRA,
-						(__bridge CFDictionaryRef)pixelBufferOptions,
-						&mirrored_x_pixel);
-	
-	CVPixelBufferLockBaseAddress(mirrored_x_pixel, 0);
-	void* mirrored_x_pod = (void *)CVPixelBufferGetBaseAddress(mirrored_x_pixel);
-	fuRotateImage(pixelBuffer_pod, 0, pixelBuffer_stride / 4, pixelBuffer_height, 0, 1, 0, mirrored_x_pod,NULL);
-	CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
-	CVPixelBufferUnlockBaseAddress(mirrored_x_pixel, 0);
-	dispatch_semaphore_signal(signal);
-//    CVPixelBufferRelease(pixelBuffer);
-	return mirrored_x_pixel;
+	return pixelBuffer;
 }
 
 -(void)setBgImage:(UIImage *)bgImage {

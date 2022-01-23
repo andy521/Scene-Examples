@@ -9,11 +9,10 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 #import <AgoraRtcKit/AgoraRtcEngineKit.h>
-#import "FURenderer.h"
 #import "FUFigureDefine.h"
 #import "FUP2ADefine.h"
 #import "FUItemModel.h"
-#import <FUP2AHelper/FUP2AHelper.h>
+#import <AgoraRtcKit/AgoraRtcKit.h>
 
 @class FUAvatar, FUP2AColor;
 @interface FUManager : NSObject
@@ -48,10 +47,9 @@
     int light_ptr;   // 绑定在q_controller上的_cam.bundle道具句柄
 }
 
-//@property void* faceCapture ;
-//@property BOOL useFaceCapure;
-//@property BOOL isFaceCaptureEnabled;
-@property (nonatomic, strong) FURotatedImage *rotatedImageManager;
+@property (nonatomic, strong)id<AvatarEngineProtocol> _Nonnull avatarEngine;
+
+//@property (nonatomic, strong) FURotatedImage *rotatedImageManager;
 
 @property (nonatomic, assign) CGSize outPutSize;  //输出图片尺寸
 // 同步信号量
@@ -143,35 +141,9 @@
 //创建一个空buffer
 - (void)initPixelBuffer;
 
-/**
- 检测人脸接口
- 
- @param sampleBuffer  图像数据
- @return              图像数据
- */
-- (CVPixelBufferRef)trackFaceWithBuffer:(CMSampleBufferRef)sampleBuffer CurrentlLightingValue:(float *)currntLightingValue;
-//
-///**
-// AR 滤镜处理接口 同时返回捕捉到的脸部点位
-//
-// @param pixelBuffer 图像数据
-// @return            处理之后的图像数据
-// */
-//- (CVPixelBufferRef)renderARFilterItemWithBuffer:(CVPixelBufferRef)pixelBuffer Landmarks:(float *)landmarks LandmarksLength:(int)landmarksLength;
-
-
 
 - (CVPixelBufferRef)renderARFilterItemWithBuffer:(CVPixelBufferRef)pixelBuffer;
 
-/**
- Avatar 处理接口
- 
- @param pixelBuffer 图像数据
- @param renderMode  render 模式
- @param landmarks   landmarks 数组
- @return            处理之后的图像
- */
-- (CVPixelBufferRef)renderP2AItemWithPixelBuffer:(CVPixelBufferRef)pixelBuffer RenderMode:(FURenderMode)renderMode Landmarks:(float *)landmarks LandmarksLength:(int)landmarksLength;
 
 /**
  Avatar 处理接口

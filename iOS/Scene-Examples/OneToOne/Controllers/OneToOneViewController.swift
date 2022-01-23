@@ -42,10 +42,10 @@ class OneToOneViewController: BaseViewController {
     }()
     private lazy var channelMediaOptions: AgoraRtcChannelMediaOptions = {
         let option = AgoraRtcChannelMediaOptions()
-        option.autoSubscribeAudio = .of(true)
-        option.autoSubscribeVideo = .of(true)
-        option.publishAudioTrack = .of(true)
+        option.publishCameraTrack = AgoraRtcBoolOptional.of(false)
+        option.publishAvatarTrack = AgoraRtcBoolOptional.of(true)
         option.clientRoleType = .of((Int32)(AgoraClientRole.broadcaster.rawValue))
+        option.autoSubscribeVideo = AgoraRtcBoolOptional.of(true)
         return option
     }()
     
@@ -61,16 +61,20 @@ class OneToOneViewController: BaseViewController {
     private(set) var currentUserId: String = ""
     private var isCloseGame: Bool = false
     private var isSelfExitGame: Bool = false
-    
-    private let videoFrameHandler = VideoFrameHandler()
+
     var avaterEngine: AvatarEngineProtocol!
     
-    init(channelName: String, sceneType: SceneType, userId: String, agoraKit: AgoraRtcEngineKit? = nil) {
+    init(channelName: String,
+         sceneType: SceneType,
+         userId: String,
+         agoraKit: AgoraRtcEngineKit? = nil,
+         avaterEngine: AvatarEngineProtocol? = nil) {
         super.init(nibName: nil, bundle: nil)
         self.channelName = channelName
         self.currentUserId = userId
         self.sceneType = sceneType
         self.agoraKit = agoraKit
+        self.avaterEngine = avaterEngine
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -182,6 +186,11 @@ class OneToOneViewController: BaseViewController {
             let vc = FUEditViewController.instacneFromStoryBoard()!
             vc.modalPresentationStyle = .fullScreen
             self.present(vc, animated: true, completion: nil)
+            
+            let renderView = vc.getVideoView()!
+            createAgoraVideoCanvas(uid: UserInfo.userId,
+                                   isLocal: true,
+                                   specialView: renderView)
             break
         }
     }
@@ -234,7 +243,7 @@ class OneToOneViewController: BaseViewController {
             return
         }
     
-        agoraKit = AgoraRtcEngineKit.sharedEngine(with: rtcEngineConfig, delegate: nil)
+        agoraKit = AgoraRtcEngineKit.sharedEngine(with: rtcEngineConfig, delegate: self)
         avaterEngine = agoraKit!.queryAvatarEngine()
         agoraKit?.setLogFile(LogUtils.sdkLogPath())
         
@@ -248,69 +257,92 @@ class OneToOneViewController: BaseViewController {
         avatarConfigs.enable_human_detection = 1
         avaterEngine?.enableOrUpdateLocalAvatarVideo(true, configs: avatarConfigs)
         
-        var path:String!
+        let _ = FUManager.shareInstance()
+        FUManager.shareInstance().avatarEngine = avaterEngine
+        FUManager.shareInstance().setAvatarStyleDefault()
+        FUManager.shareInstance().setupForHalfMode()
         
-        path = getPath("hair_hat_6")
-        avaterEngine?.enableAvatarGeneratorItem(true, type: 0, bundle: path)
+//        var path:String!
+//
+//        path = getPath("hair_hat_6")
+//        avaterEngine?.enableAvatarGeneratorItem(true, type: 0, bundle: path)
+//
+//        path = getPath("head")
+//        avaterEngine?.enableAvatarGeneratorItem(true, type: 1, bundle: path)
+//
+//        path = getPath("wuguan_mesh", dir: "Resource/QItems/background/dress_2d/mid/")
+//        avaterEngine?.enableAvatarGeneratorItem(true, type: 2, bundle: path)
+//
+//        path = getPath("midBody_male0", dir: nil)
+//        avaterEngine?.enableAvatarGeneratorItem(true, type: 3, bundle: path)
+//
+//        path = getPath("taozhuang_2_shoes", dir: "/Resource/QItems/cloth/shoes/mid")
+//        avaterEngine?.enableAvatarGeneratorItem(true, type: 4, bundle: path)
+//
+//        path = getPath("yiqun_3", dir: "Resource/QItems/cloth/dress/mid")
+//        avaterEngine?.enableAvatarGeneratorItem(true, type: 5, bundle: path)
+//
+//        path = getPath("cam_02", dir: "Resource/page_cam")
+//        avaterEngine?.enableAvatarGeneratorItem(true, type: 6, bundle: path)
+//
+//        path = getPath("ani_idle", dir: nil)
+//        avaterEngine?.enableAvatarGeneratorItem(true, type: 7, bundle: path)
         
-        path = getPath("head")
-        avaterEngine?.enableAvatarGeneratorItem(true, type: 1, bundle: path)
-        
-        path = getPath("wuguan_mesh", dir: "Resource/QItems/background/dress_2d/mid/")
-        avaterEngine?.enableAvatarGeneratorItem(true, type: 2, bundle: path)
-        
-        path = getPath("midBody_male0", dir: nil)
-        avaterEngine?.enableAvatarGeneratorItem(true, type: 3, bundle: path)
-        
-        
-        path = getPath("taozhuang_2_shoes", dir: "/Resource/QItems/cloth/shoes/mid")
-        avaterEngine?.enableAvatarGeneratorItem(true, type: 4, bundle: path)
-        
-        path = getPath("yiqun_3", dir: "Resource/QItems/cloth/dress/mid")
-        avaterEngine?.enableAvatarGeneratorItem(true, type: 5, bundle: path)
-        
-        
-        path = getPath("cam_02", dir: "Resource/page_cam")
-        avaterEngine?.enableAvatarGeneratorItem(true, type: 6, bundle: path)
-        
-        path = getPath("ani_idle", dir: nil)
-        avaterEngine?.enableAvatarGeneratorItem(true, type: 7, bundle: path)
-        
-        createAgoraVideoCanvas(uid: 0, isLocal: true)
+//        head.bundle
+//        midBody_male4.bundle
+//        male_hair_3.bundle
+//        midBody_male4.bundle
+//        shangyi_chenshan_3.bundle
+//        kuzi_changku_5.bundle
+//        xiezi_tuoxie_3.bundle
+//        lipgloss_1.bundle
+//        ani_idle.bundle
+//        ani_huxi_hi.bundle
+//
+//        head.bundle
+//        midBody_male4.bundle
+//        male_hair_3.bundle
+//        midBody_male4.bundle
+//        shangyi_chenshan_3.bundle
+//        kuzi_changku_5.bundle
+//        xiezi_tuoxie_3.bundle
+//        lipgloss_1.bundle
+//        ani_idle.bundle
     }
     
-    private func createAgoraVideoCanvas(uid: UInt, isLocal: Bool = false) {
+    private func createAgoraVideoCanvas(uid: UInt,
+                                        isLocal: Bool = false,
+                                        specialView: UIView? = nil) {
         let canvas = AgoraRtcVideoCanvas()
         canvas.uid = uid
         canvas.renderMode = .hidden
         if isLocal {
-            canvas.view = localView
-            let canvas = AgoraRtcVideoCanvas()
-            canvas.view = localView
+            canvas.view = specialView ?? localView
             avaterEngine?.setupLocalVideoCanvas(canvas)
+            agoraKit?.startPreview()
         } else {
-            canvas.view = remoteView
+            canvas.view = specialView ?? remoteView
             agoraKit?.setupRemoteVideo(canvas)
         }
-        agoraKit?.startPreview()
     }
     
     public func joinChannel(channelName: String) {
-//        self.channelName = channelName
-//        let result = agoraKit?.joinChannel(byToken: KeyCenter.Token,
-//                                           channelId: channelName,
-//                                           uid: UserInfo.userId,
-//                                           mediaOptions: channelMediaOptions)
-//        guard result != 0 else { return }
-//        // Error code description can be found at:
-//        // en: https://docs.agora.io/en/Voice/API%20Reference/oc/Constants/AgoraErrorCode.html
-//        // cn: https://docs.agora.io/cn/Voice/API%20Reference/oc/Constants/AgoraErrorCode.html
-//        self.showAlert(title: "Error", message: "joinChannel call failed: \(String(describing: result)), please check your params")
+        self.channelName = channelName
+        
+        let result = agoraKit?.joinChannel(byToken: KeyCenter.Token,
+                                           channelId: channelName,
+                                           uid: UserInfo.userId,
+                                           mediaOptions: channelMediaOptions)
+        guard result != 0 else { return }
+        // Error code description can be found at:
+        // en: https://docs.agora.io/en/Voice/API%20Reference/oc/Constants/AgoraErrorCode.html
+        // cn: https://docs.agora.io/cn/Voice/API%20Reference/oc/Constants/AgoraErrorCode.html
+        self.showAlert(title: "Error", message: "joinChannel call failed: \(String(describing: result)), please check your params")
     }
     public func leaveChannel() {
-//        agoraKit?.leaveChannel({ state in
-//            LogUtils.log(message: "left channel, duration: \(state.duration)", level: .info)
-//        })
+        agoraKit?.leaveChannel({ state in
+            LogUtils.log(message: "left channel, duration: \(state.duration)", level: .info)
+        })
     }
     
     deinit {
@@ -370,9 +402,9 @@ extension OneToOneViewController: AgoraRtcEngineDelegate {
 
 extension OneToOneViewController: FUPoseTrackViewDelegate { /** 选择形象列表的回调 **/
     func poseTrackViewDidSelectedAvatar(_ avatar: FUAvatar) {
-        avatar.loadIdleModePose()
-        FUManager.shareInstance().reloadAvatarToController(with: avatar, isBg: false)
-        FUManager.shareInstance().setupForHalfMode()
+//        avatar.loadIdleModePose()
+//        FUManager.shareInstance().reloadAvatarToController(with: avatar, isBg: false)
+//        FUManager.shareInstance().setupForHalfMode()
     }
     
     func poseTrackViewDidShowTopView(_ show: Bool) {}

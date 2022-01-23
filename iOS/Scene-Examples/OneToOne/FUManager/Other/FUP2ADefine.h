@@ -6,6 +6,8 @@
 //  Copyright © 2018年 L. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
 typedef NS_ENUM(NSInteger, FUAvatarStyle){
     FUAvatarStyleNormal           = 0,
     FUAvatarStyleQ                = 1,

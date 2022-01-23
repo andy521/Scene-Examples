@@ -54,9 +54,6 @@ extension MainViewController: AGETableViewDelegate {
             roomListVC.title = MainModel.mainDatas()[indexPath.row].title
             navigationController?.pushViewController(roomListVC, animated: true)
         }
-//        let vc = AEAViewController()
-//        vc.modalPresentationStyle = .fullScreen
-//        present(vc, animated: true, completion: nil)
     }
     
     func pullToRefreshHandler() {

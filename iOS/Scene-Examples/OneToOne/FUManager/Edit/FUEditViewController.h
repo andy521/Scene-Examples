@@ -11,5 +11,5 @@
 @interface FUEditViewController : UIViewController
 @property (copy, nonatomic) void(^editAvatarSuccessBlock) (void);
 + (instancetype)instacneFromStoryBoard;
-- (void)revc:(CVPixelBufferRef)pixelBuffer;
+- (UIView *)getVideoView;
 @end

@@ -309,11 +309,11 @@ typedef enum : NSUInteger {
         case PhotoTakeMode:{
             runMode = CommonMode;
             CVPixelBufferRef buffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-            UIImage *image = [[FUP2AHelper shareInstance] createImageWithBuffer:buffer mirr:photoMirr];
+//            UIImage *image = [[FUP2AHelper shareInstance] createImageWithBuffer:buffer mirr:photoMirr];
             photoMirr = NO ;
-            if (image) {
-                UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), NULL);
-            }
+//            if (image) {
+//                UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), NULL);
+//            }
         }
             break ;
         case VideoRecordMode:{

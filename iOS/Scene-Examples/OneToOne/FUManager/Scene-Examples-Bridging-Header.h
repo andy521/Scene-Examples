@@ -14,7 +14,6 @@
 #import "fuPTAClient.h"
 #import "FUEditTypeModel.h"
 
-#import <FUP2AHelper/FUP2AHelper.h>
 #import "CRender.h"
 #import "AppManager.h"
 #import "FUP2AColor.h"

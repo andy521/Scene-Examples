@@ -14,14 +14,9 @@
 #import "FUFigureView.h"
 #import "FUMeshPoint.h"
 #import "FUShapeParamsMode.h"
-#import "FUCamera.h"
 #import "FUOpenGLView.h"
 
-@interface FUEditViewController ()
-<
-FUCameraDelegate,
-FUFigureViewDelegate
->
+@interface FUEditViewController ()<FUFigureViewDelegate>
 {
 	BOOL transforming;
 	BOOL customFaceuped;  // YES为已经完成自定义捏脸，NO，为没有自定义捏脸
@@ -31,7 +26,6 @@ FUFigureViewDelegate
 	UIButton *_figureViewUndoBtn;
 	UIButton *_figureViewRedoBtn;
 }
-@property (nonatomic, strong) FUCamera *camera;
 @property (weak, nonatomic) IBOutlet FUOpenGLView *renderView;
 @property (weak, nonatomic) IBOutlet UIButton *downloadBtn;
 @property (weak, nonatomic) IBOutlet UIView *containerView;
@@ -81,22 +75,39 @@ FUFigureViewDelegate
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
-    [[FUManager shareInstance]configEditInfo];
-	//[self setUPContainerView];
+    [[FUManager shareInstance] configEditInfo];
+	
     AppManager *manager = AppManager.sharedInstance;
     [manager setup];
     manager.editVC = self;
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(HairsWriteToLocalSuccessNotMethod) name:HairsWriteToLocalSuccessNot object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(FUAvatarEditManagerStackNotEmptyMethod) name:FUAvatarEditManagerStackNotEmptyNot object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(FUNielianEditManagerStackNotEmptyNotMethod) name:FUNielianEditManagerStackNotEmptyNot object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(enterNieLianNotMethod) name:FUEnterNileLianNot object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(creatingHairBundleNotMethod:) name:FUCreatingHairBundleNot object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(creatingHairHatBundleNotMethod:) name:FUCreatingHairHatBundleNot object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(HairsWriteToLocalSuccessNotMethod)
+                                                 name:HairsWriteToLocalSuccessNot
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(FUAvatarEditManagerStackNotEmptyMethod)
+                                                 name:FUAvatarEditManagerStackNotEmptyNot
+                                               object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(FUNielianEditManagerStackNotEmptyNotMethod)
+                                                 name:FUNielianEditManagerStackNotEmptyNot
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(enterNieLianNotMethod)
+                                                 name:FUEnterNileLianNot object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(creatingHairBundleNotMethod:)
+                                                 name:FUCreatingHairBundleNot
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(creatingHairHatBundleNotMethod:)
+                                                 name:FUCreatingHairHatBundleNot
+                                               object:nil];
     
 	self.currentAvatar = [FUManager shareInstance].currentAvatars.firstObject;
-//    [self.currentAvatar closeHairAnimation];
+
 	[self.currentAvatar enterFacepupMode];
-	[[FUShapeParamsMode shareInstance]recordOrignalParamsWithAvatar:self.currentAvatar];
+	[[FUShapeParamsMode shareInstance] recordOrignalParamsWithAvatar:self.currentAvatar];
 	[self.currentAvatar loadIdleModePose];
 	self.currentMeshPoints = [NSMutableArray arrayWithCapacity:1];
 	
@@ -118,7 +129,6 @@ FUFigureViewDelegate
     [[FUAvatarEditManager sharedInstance] clear];
     [[FUNielianEditManager sharedInstance] clear];
     [FUAvatarEditManager sharedInstance].enterEditVC = YES;
-    [self.camera startCapture];
     
     [self.currentAvatar resetScaleToBody_UseCam];
 }
@@ -183,40 +193,16 @@ FUFigureViewDelegate
 }
 
 - (void)revc:(CVPixelBufferRef)pixelBuffer {
-    CVPixelBufferRef mirrored_pixel = [[FUManager shareInstance] dealTheFrontCameraPixelBuffer:pixelBuffer];
-    CGSize size = [AppManager getSuitablePixelBufferSizeForCurrentDevice];
     
-    self.pixelBufferW = size.width;
-    self.pixelBufferH = size.height;
-    CVPixelBufferRef buffer = [[FUManager shareInstance] renderP2AItemWithPixelBuffer:pixelBuffer RenderMode:FURenderCommonMode Landmarks:nil LandmarksLength:0];
-    [self.renderView displayPixelBuffer:buffer withLandmarks:nil count:0 Mirr:NO];
-   
-    
-    if (transforming)
-    {
-        [self reloadPointCoordinates];
-    }
-    CVPixelBufferRelease(mirrored_pixel);
 }
 
 - (void)didOutputVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
-    CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-	CVPixelBufferRef mirrored_pixel = [[FUManager shareInstance] dealTheFrontCameraPixelBuffer:pixelBuffer];
-	CGSize size = [AppManager getSuitablePixelBufferSizeForCurrentDevice];
-	
-	self.pixelBufferW = size.width;
-	self.pixelBufferH = size.height;
-    CVPixelBufferRef buffer = [[FUManager shareInstance] renderP2AItemWithPixelBuffer:pixelBuffer RenderMode:FURenderCommonMode Landmarks:nil LandmarksLength:0];
+    
+}
 
-    [self.renderView displayPixelBuffer:buffer withLandmarks:nil count:0 Mirr:NO];
-   
-	
-	if (transforming)
-    {
-		[self reloadPointCoordinates];
-	}
-	CVPixelBufferRelease(mirrored_pixel);
+- (UIView *)getVideoView {
+    return self.renderView;
 }
 
 // 返回
@@ -257,7 +243,7 @@ FUFigureViewDelegate
             
             [[FUManager shareInstance]reloadItemBeforeEdit];
             
-            [self.camera stopCapture];
+//            [self.camera stopCapture];
 
             [self.currentAvatar quitFacepupMode];
             [self.currentAvatar resetScaleToBody_UseCam];
@@ -276,7 +262,7 @@ FUFigureViewDelegate
     }
     else
     {
-        [self.camera stopCapture];
+//        [self.camera stopCapture];
         [self.currentAvatar quitFacepupMode];
         [self.currentAvatar resetScaleToBody_UseCam];
         [self dismissViewControllerAnimated:true completion:nil];
@@ -331,7 +317,7 @@ FUFigureViewDelegate
     
 //    UIImage *image = [self getImageFromView:self.renderView];
     
-    [self.camera stopCapture];
+//    [self.camera stopCapture];
     [self startLoadingSaveAvartAnimation];
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         [[FUManager shareInstance]saveAvatar];
@@ -483,18 +469,6 @@ FUFigureViewDelegate
 		self.view.userInteractionEnabled = true;
 		[self stopLoadingAnimation];
 	});
-}
-
-- (FUCamera *)camera
-{
-	if (!_camera)
-    {
-		_camera = [[FUCamera alloc] init];
-		_camera.delegate = self;
-		_camera.shouldMirror = NO;
-		[_camera changeCameraInputDeviceisFront:YES];
-	}
-	return _camera;
 }
 
 #pragma mark ---- FUFigureViewDelegate

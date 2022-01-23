@@ -10,6 +10,8 @@
 #import <UIKit/UIKit.h>
 #import "FUItemModel.h"
 #import "FUP2ADefine.h"
+#import <AgoraRtcKit/AgoraRtcKit.h>
+#import "FURendererObj.h"
 
 #define fu_skin_color_progress @"skin_color_progress"
 
@@ -76,6 +78,9 @@ static const int tmpItemsCount  = 100;
 @property (nonatomic, copy) NSString *uuid;
 @property (nonatomic, assign) FUGender gender;
 @property (nonatomic, copy) NSString *imagePath;
+
+@property (nonatomic, strong)id<AvatarEngineProtocol> _Nonnull avatarEngine;
+@property (nonatomic, strong)FURendererObj * _Nonnull renderer;
 
 // 是否是新版本
 @property (nonatomic, assign) BOOL isQType;
