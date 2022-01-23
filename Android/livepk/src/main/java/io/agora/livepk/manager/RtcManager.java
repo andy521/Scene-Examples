@@ -1,5 +1,10 @@
 package io.agora.livepk.manager;
 
+import static io.agora.rtc2.video.VideoCanvas.RENDER_MODE_HIDDEN;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_FIXED_PORTRAIT;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_640x360;
+
 import android.content.Context;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -9,7 +14,6 @@ import android.widget.FrameLayout;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -19,7 +23,6 @@ import io.agora.rtc2.ChannelMediaOptions;
 import io.agora.rtc2.ClientRoleOptions;
 import io.agora.rtc2.Constants;
 import io.agora.rtc2.IRtcEngineEventHandler;
-import io.agora.rtc2.LeaveChannelOptions;
 import io.agora.rtc2.RtcConnection;
 import io.agora.rtc2.RtcEngine;
 import io.agora.rtc2.RtcEngineConfig;
@@ -28,11 +31,6 @@ import io.agora.rtc2.live.LiveTranscoding;
 import io.agora.rtc2.video.CameraCapturerConfiguration;
 import io.agora.rtc2.video.VideoCanvas;
 import io.agora.rtc2.video.VideoEncoderConfiguration;
-
-import static io.agora.rtc2.video.VideoCanvas.RENDER_MODE_HIDDEN;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_FIXED_PORTRAIT;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_640x360;
 
 public class RtcManager {
     private static final String TAG = "RtcManager";
@@ -128,9 +126,12 @@ public class RtcManager {
             engine.enableVideo();
             engine.enableAudio();
 
-            engine.setParameters("{\"rtc.dual_signaling_mode\":2}");
-            engine.setParameters("{\"rtc.work_manager_account_list\":[\"WM-raw_streaming-119.188.27.100\"]}");
-            engine.setParameters("{\"rtc.work_manager_addr_list\":[\"119.188.27.100:30555\"]}");
+            //engine.setParameters("{\"rtc.dual_signaling_mode\":2}");
+            //engine.setParameters("{\"rtc.work_manager_account_list\":[\"WM-raw_streaming-119.188.27.100\"]}");
+            //engine.setParameters("{\"rtc.work_manager_addr_list\":[\"119.188.27.100:30555\"]}");
+            engine.setParameters("{\"rtc.video.apas_aa_harq_enable\":true}");
+            engine.setParameters("{\"rtc.audio.opensl.mode\": 0}");
+            engine.setParameters("\"rtc.audio.neteq.dump_level\": 1");
 
             engine.setCameraCapturerConfiguration(new CameraCapturerConfiguration(sCameraDirection));
             if(sCameraDirection == CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT){
@@ -169,7 +170,8 @@ public class RtcManager {
         if(publish){
             ClientRoleOptions clientRoleOptions = new ClientRoleOptions();
             clientRoleOptions.audienceLatencyLevel = Constants.AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
-            engine.setClientRole(IRtcEngineEventHandler.ClientRole.CLIENT_ROLE_BROADCASTER, clientRoleOptions);
+            engine.setClientRole(Constants.CLIENT_ROLE_BROADCASTER, clientRoleOptions);
+            // engine.setClientRole(Constants.CLIENT_ROLE_BROADCASTER);
             engine.setVideoEncoderConfiguration(encoderConfiguration);
             publishChannelListener = new OnChannelListener() {
                 @Override
@@ -232,7 +234,8 @@ public class RtcManager {
 
         channelMediaOptions.publishAudioTrack = publish;
         channelMediaOptions.publishCameraTrack = publish;
-        channelMediaOptions.clientRoleType = Constants.CLIENT_ROLE_BROADCASTER;
+        channelMediaOptions.clientRoleType = Constants.CLIENT_ROLE_AUDIENCE;
+        channelMediaOptions.isInteractiveAudience = true;
         int ret = engine.joinChannelEx(null, connection, channelMediaOptions, new IRtcEngineEventHandler() {
             @Override
             public void onError(int err) {

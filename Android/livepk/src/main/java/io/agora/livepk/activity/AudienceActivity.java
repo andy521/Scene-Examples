@@ -1,5 +1,7 @@
 package io.agora.livepk.activity;
 
+import static io.agora.mediaplayer.Constants.PLAYER_RENDER_MODE_HIDDEN;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,8 +36,6 @@ import io.agora.mediaplayer.IMediaPlayerObserver;
 import io.agora.rtm.ErrorInfo;
 import io.agora.rtm.ResultCallback;
 import io.agora.rtm.RtmChannelAttribute;
-
-import static io.agora.mediaplayer.Constants.PLAYER_RENDER_MODE_HIDDEN;
 
 public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding> {
     private static final String TAG = "AudienceActivity";
@@ -256,9 +256,10 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
             }
 
             @Override
-            public void onPlayerEvent(Constants.MediaPlayerEvent mediaPlayerEvent) {
+            public void onPlayerEvent(Constants.MediaPlayerEvent mediaPlayerEvent, long l, String s) {
 
             }
+
 
             @Override
             public void onMetaData(Constants.MediaPlayerMetadataType mediaPlayerMetadataType, byte[] bytes) {
@@ -271,7 +272,32 @@ public class AudienceActivity extends DataBindBaseActivity<ActivityVideoBinding>
             }
 
             @Override
+            public void onPreloadEvent(String s, Constants.MediaPlayerPreloadEvent mediaPlayerPreloadEvent) {
+
+            }
+
+            @Override
             public void onCompleted() {
+
+            }
+
+            @Override
+            public void onAgoraCDNTokenWillExpire() {
+
+            }
+
+            @Override
+            public void onPlayerSrcInfoChanged(io.agora.mediaplayer.data.SrcInfo srcInfo, io.agora.mediaplayer.data.SrcInfo srcInfo1) {
+
+            }
+
+            @Override
+            public void onPlayerInfoUpdated(io.agora.mediaplayer.data.PlayerUpdatedInfo playerUpdatedInfo) {
+
+            }
+
+            @Override
+            public void onAudioVolumeIndication(int i) {
 
             }
 
