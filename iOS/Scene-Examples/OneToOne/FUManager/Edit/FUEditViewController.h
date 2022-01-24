@@ -8,8 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol FUEditViewControllerDelegate <NSObject>
+
+- (void)editViewControllerDidClose;
+
+@end
+
 @interface FUEditViewController : UIViewController
 @property (copy, nonatomic) void(^editAvatarSuccessBlock) (void);
+@property (nonatomic, weak)id<FUEditViewControllerDelegate> delegate;
 + (instancetype)instacneFromStoryBoard;
 - (UIView *)getVideoView;
 @end

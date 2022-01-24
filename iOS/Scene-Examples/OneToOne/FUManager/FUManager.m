@@ -130,7 +130,10 @@ static int ARFilterID = 0 ;
 }
 - (void)enableFaceCapture:(int)enable
 {
-   
+    AgoraAvatarOptionValue *value = [[AgoraAvatarOptionValue alloc] initWith:AgoraAvatarValueTypeDouble
+                                                                        num:1
+                                                                      bytes:&enable];
+    [_avatarEngine setGeneratorOptions:@"enable_face_processor" value:value];
 }
 
 
@@ -1503,6 +1506,7 @@ static int ARFilterID = 0 ;
 //如果是预制形象生成新的形象，如果不是预制模型保存新的信息
 - (void)saveAvatar
 {
+    return;
     FUAvatar *currentAvatar = self.currentAvatars.lastObject;
     BOOL deformHead = [[FUShapeParamsMode shareInstance]propertiesIsChanged]||[self faceHasChanged];
     
@@ -2372,17 +2376,13 @@ static float CenterScale = 0.3;
 }
 
 - (void)setupForHalfMode {
-    [self loadDefaultBackGroundToController];
-    FUAvatar *avatar = _currentAvatars.firstObject;
-    [[FUManager shareInstance] destoryHairMask];
-    [[FUManager shareInstance] reloadAvatarToControllerWithAvatar:avatar isBg:NO];
-    [avatar enterTrackBodyMode];
-    [avatar loadFullAvatar];
-    [self enableFaceCapture:1];
     
-    [avatar resetScaleToSmallBody_UseCam];
+    FUAvatar *avatar = _currentAvatars.firstObject;
+//    [[FUManager shareInstance] reloadAvatarToControllerWithAvatar:avatar isBg:NO];
+    
+//    [avatar resetScaleToSmallBody_UseCam];
     [avatar resetPositionToShowHalf];
-//    [avatar setBackGroundColor:[UIColor colorWithHexColorString:@"AE8EF0"]];
+    [avatar setBackGroundColor:[UIColor colorWithHexColorString:@"AE8EF0"]];
 }
 
 - (void)loadDefaultAvatar

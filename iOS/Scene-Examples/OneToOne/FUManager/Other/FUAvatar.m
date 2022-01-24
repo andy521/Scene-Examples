@@ -92,19 +92,6 @@
  */
 - (void)destroyAvatarResouce {
     
-    // 先销毁普通道具
-//    for (int i = 1 ; i < sizeof(items)/sizeof(int); i ++) {
-//        if (items[i] != 0) {
-//
-//            // 先解绑
-//            fuUnbindItems(items[FUItemTypeController], &items[i], 1) ;
-//            // 再销毁
-//            [FURenderer destroyItem:items[i]];
-//            items[i] = 0 ;
-//        }
-//    }
-//    // 销毁临时道具
-//    [self destoryAllTmpItems];
 }
 
 
@@ -365,29 +352,13 @@
  @return        顶点坐标
  */
 - (CGPoint)getMeshPointOfIndex:(NSInteger)index {
+    [_renderer itemSetWithName:@"query_vert" value:index];
     
-    double queryVertValue = index;
-    AgoraAvatarOptionValue *queryVert = [[AgoraAvatarOptionValue alloc]
-                                           initWith:AgoraAvatarValueTypeDouble
-                                           num:1
-                                           bytes:&queryVertValue];
-    [_avatarEngine setGeneratorOptions:@"query_vert"
-                                 value:queryVert];
     
-    double x = 0;
-    AgoraAvatarOptionValue *query_vert_x;
-    [_avatarEngine getGeneratorOptions:@"query_vert_x"
-                                  type:AgoraAvatarValueTypeDouble
-                                result:&query_vert_x];
     
-    double y = 0;
-    AgoraAvatarOptionValue *query_vert_y;
-    [_avatarEngine getGeneratorOptions:@"query_vert_y"
-                                  type:AgoraAvatarValueTypeDouble
-                                result:&query_vert_y];
+    double x = [_renderer fuItemGetParamd:@"query_vert_x"];
     
-    NSAssert(query_vert_x == nil, @"y not nil");
-    NSAssert(query_vert_y == nil, @"y not nil");
+    double y = [_renderer fuItemGetParamd:@"query_vert_y"];
     
     CGSize size = [AppManager getSuitablePixelBufferSizeForCurrentDevice];
     
@@ -475,33 +446,43 @@
     if ([key isEqualToString:@"lip_color"])
     {
         
-        NSString * paramDicStr = [NSString stringWithFormat:@"fmt#{\"name\":\"global\",\"type\":\"face_detail\",\"param\":\"blend_color\",\"UUID\":{#type#%d#}}",items[FUItemTypeLipGloss]];
+        NSString * paramDicStr = [NSString stringWithFormat:@"fmt#{\"name\":\"global\",\"type\":\"face_detail\",\"param\":\"blend_color\",\"UUID\":{#type#%ld#}}",FUItemTypeLipGloss];
+        
+        if (color == nil) {
+            color = [FUP2AColor color:UIColor.redColor];
+        }
         [_renderer itemSetParam:0
                        withName:paramDicStr
                    fucolorValue:color
                          sub255:YES];
+        
+        
         return;
     }
     else if ([key isEqualToString:@"eyelash_color"])
     {
         
-        NSString * paramDicStr = [NSString stringWithFormat:@"fmt#{\"name\":\"global\",\"type\":\"face_detail\",\"param\":\"blend_color\",\"UUID\":{#type#%d#}}",items[FUItemTypeEyeLash]];
+        NSString * paramDicStr = [NSString stringWithFormat:@"fmt#{\"name\":\"global\",\"type\":\"face_detail\",\"param\":\"blend_color\",\"UUID\":{#type#%ld#}}",FUItemTypeEyeLash];
+        if (color != nil) {
+            [_renderer itemSetParam:0
+                           withName:paramDicStr
+                       fucolorValue:color
+                             sub255:YES];
+        }
         
-        [_renderer itemSetParam:0
-                       withName:paramDicStr
-                   fucolorValue:color
-                         sub255:YES];
         return;
     }
     else if ([key isEqualToString:@"eyeshadow_color"])
     {
-        NSString * paramDicStr = [NSString stringWithFormat:@"fmt#{\"name\":\"global\",\"type\":\"face_detail\",\"param\":\"blend_color\",\"UUID\":{#type#%d#}}",items[FUItemTypeEyeShadow]];
+        NSString * paramDicStr = [NSString stringWithFormat:@"fmt#{\"name\":\"global\",\"type\":\"face_detail\",\"param\":\"blend_color\",\"UUID\":{#type#%ld#}}",FUItemTypeEyeShadow];
         
+        if (color != nil) {
+            [_renderer itemSetParam:0
+                           withName:paramDicStr
+                       fucolorValue:color
+                             sub255:YES];
+        }
         
-        [_renderer itemSetParam:0
-                       withName:paramDicStr
-                   fucolorValue:color
-                         sub255:YES];
                                      
         return;
     }
@@ -520,12 +501,14 @@
 
 - (void)facepupModeSetEyebrowColor:(FUP2AColor *)color
 {
-    NSString * paramDicStr = [NSString stringWithFormat:@"fmt#{\"name\":\"global\",\"type\":\"face_detail\",\"param\":\"blend_color\",\"UUID\":{#type#%d#}}",items[FUItemTypeEyeBrow]];
+    NSString * paramDicStr = [NSString stringWithFormat:@"fmt#{\"name\":\"global\",\"type\":\"face_detail\",\"param\":\"blend_color\",\"UUID\":{#type#%ld#}}",(long)FUItemTypeEyeBrow];
     
-    [_renderer itemSetParam:0
-                   withName:paramDicStr
-               fucolorValue:color
-                     sub255:YES];
+    if (color != nil) {
+        [_renderer itemSetParam:0
+                       withName:paramDicStr
+                   fucolorValue:color
+                         sub255:YES];
+    }
 }
 
 - (void)setBackGroundColor:(UIColor *)color {
@@ -680,7 +663,7 @@
     NSMutableArray *params = [[NSMutableArray alloc]init];
     for (int i = 0; i < length; i++)
     {
-        [params addObject:[NSNumber numberWithDouble:*arrPtr[i]]];
+        [params addObject:[NSNumber numberWithDouble:*(arrPtr[i])]];
     }
     
     return params;
@@ -946,7 +929,7 @@
 }
 
 - (void)resetPositionToShowHalf {
-    double position[3] = {0,-50,300};
+    double position[3] = {0,-20,0};
     [_renderer itemSetParamdv:@"target_position" value:position];
     [_renderer itemSetWithName:@"target_angle" value:0];
     [_renderer itemSetWithName:@"reset_all" value:0];
@@ -1220,8 +1203,8 @@
     if (self.skinColorProgress == -1)
     {
         NSString * paramDicStr = [NSString stringWithFormat:@"skin_color_index"];
-//        int index = [_renderer fuItemGetParamd:paramDicStr];
-        self.skinColorProgress = 1/10.0;
+        int index = [_renderer fuItemGetParamd:paramDicStr];
+        self.skinColorProgress = index/10.0;
     }
     // load Body
     NSString *bodyPath;
@@ -1583,9 +1566,11 @@
     
     NSLog(@"enableAvatarGeneratorItem:%@", path);
     
-    [_avatarEngine enableAvatarGeneratorItem:YES
+   NSInteger ret = [_avatarEngine enableAvatarGeneratorItem:YES
                                         type:(int)itemType
                                       bundle:path];
+    
+    NSLog(@"enableAvatarGeneratorItem ret %ld", ret);
 }
 
 @end

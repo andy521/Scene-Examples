@@ -9,7 +9,9 @@ import UIKit
 import AgoraRtcKit
 import AgoraSyncManager
 
-class CreateLiveController: BaseViewController {
+class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
+    
+    
     private lazy var randomNameView: LiveRandomNameView = {
         let view = LiveRandomNameView()
         return view
@@ -29,6 +31,12 @@ class CreateLiveController: BaseViewController {
         button.setImage(UIImage(named: "icon-setting-normal"), for: .normal)
         button.setImage(UIImage(named: "icon-setting"), for: .selected)
         button.addTarget(self, action: #selector(clickSettingLiveButton(sender:)), for: .touchUpInside)
+        return button
+    }()
+    private lazy var editButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("编辑", for: .normal)
+        button.addTarget(self, action: #selector(clickEditButton(sender:)), for: .touchUpInside)
         return button
     }()
     private lazy var startLiveButton: UIButton = {
@@ -96,10 +104,12 @@ class CreateLiveController: BaseViewController {
         startLiveButton.translatesAutoresizingMaskIntoConstraints = false
         settingButton.translatesAutoresizingMaskIntoConstraints = false
         localView.translatesAutoresizingMaskIntoConstraints = false
+        editButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(localView)
         view.addSubview(randomNameView)
         view.addSubview(startLiveButton)
         view.addSubview(settingButton)
+        view.addSubview(editButton)
         
         localView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         localView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
@@ -118,6 +128,9 @@ class CreateLiveController: BaseViewController {
         
         settingButton.centerYAnchor.constraint(equalTo: startLiveButton.centerYAnchor).isActive = true
         settingButton.leadingAnchor.constraint(equalTo: startLiveButton.trailingAnchor, constant: 25).isActive = true
+        
+        editButton.centerYAnchor.constraint(equalTo: startLiveButton.centerYAnchor).isActive = true
+        editButton.rightAnchor.constraint(equalTo: startLiveButton.leftAnchor, constant: -25).isActive = true
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: cameraChangeButton)
         
@@ -205,6 +218,21 @@ class CreateLiveController: BaseViewController {
                           alertPostion: .bottom)
     }
     @objc
+    private func clickEditButton(sender: UIButton) {
+        let vc = FUEditViewController.instacneFromStoryBoard()!
+        vc.delegate = self
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: true, completion: nil)
+        let renderView = vc.getVideoView()!
+        let canvas = AgoraRtcVideoCanvas()
+        canvas.uid = UserInfo.userId
+        canvas.renderMode = .hidden
+        canvas.view = renderView
+        avaterEngine?.setupLocalVideoCanvas(canvas)
+        agoraKit?.startPreview()
+    }
+    
+    @objc
     private func clickStartLiveButton() {
         let roomInfo = LiveRoomInfo(roomName: randomNameView.text)
         let params = JSONObject.toJson(roomInfo)
@@ -274,7 +302,17 @@ class CreateLiveController: BaseViewController {
                                 ofType: "bundle",
                                 inDirectory: dir)
     }
+    
+    func editViewControllerDidClose() {
+        let canvas = AgoraRtcVideoCanvas()
+        canvas.uid = UserInfo.userId
+        canvas.renderMode = .hidden
+        canvas.view = localView
+        avaterEngine.setupLocalVideoCanvas(canvas)
+        agoraKit?.startPreview()
+    }
 }
+
 
 
 

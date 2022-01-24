@@ -121,6 +121,8 @@
 	self.doAndUndoView.layer.shadowOpacity = 1;
 	self.doAndUndoView.layer.shadowRadius = 6;
     self.downloadBtn.enabled = NO;
+    
+    [[FUManager shareInstance] enableFaceCapture:0];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -247,7 +249,11 @@
 
             [self.currentAvatar quitFacepupMode];
             [self.currentAvatar resetScaleToBody_UseCam];
+            [[FUManager shareInstance] enableFaceCapture:1];
             [self dismissViewControllerAnimated:true completion:nil];
+            if ([_delegate respondsToSelector:@selector(editViewControllerDidClose)]) {
+                [_delegate editViewControllerDidClose];
+            }
         }];
         
         [alertController addAction:cancel];
@@ -265,7 +271,11 @@
 //        [self.camera stopCapture];
         [self.currentAvatar quitFacepupMode];
         [self.currentAvatar resetScaleToBody_UseCam];
+        [[FUManager shareInstance] enableFaceCapture:1];
         [self dismissViewControllerAnimated:true completion:nil];
+        if ([_delegate respondsToSelector:@selector(editViewControllerDidClose)]) {
+            [_delegate editViewControllerDidClose];
+        }
     }
 }
 
@@ -326,7 +336,11 @@
             [self.currentAvatar resetPositionToShowHalf];
 //            [self.currentAvatar resetPositionToShowHalf];
             [self stopLoadingSaveAvartAnimation];
+            [[FUManager shareInstance] enableFaceCapture:1];
             [self dismissViewControllerAnimated:true completion:nil];
+            if ([self.delegate respondsToSelector:@selector(editViewControllerDidClose)]) {
+                [self.delegate editViewControllerDidClose];
+            }
         });
     });
 }

@@ -10,6 +10,17 @@
 
 @implementation FURendererObj
 
+- (void)setGeneratorOptionsInternal:(NSString*)key value:(AgoraAvatarOptionValue *)value {
+    
+//    if ([key containsString:@"facepup"]) {
+//        double *result = (double *) value.value.bytes;
+//
+//        NSLog(@"setGeneratorOptions key %@ valu: %f", key , *result);
+//    }
+    NSLog(@"setGeneratorOptions key %@", key);
+    [_avatarEngine setGeneratorOptions:key value:value];
+}
+
 - (void)itemSetWithName:(NSString *)name
                   value:(double)value {
     
@@ -18,19 +29,18 @@
     AgoraAvatarOptionValue *optionValue = [[AgoraAvatarOptionValue alloc] initWith:type
                                                                                num:1
                                                                              bytes:bytes];
-    NSLog(@"setGeneratorOptions key %@", name);
-    [_avatarEngine setGeneratorOptions:name value:optionValue];
+
+    [self setGeneratorOptionsInternal:name value:optionValue];
+    
 }
 
 - (void)itemSetParamdv:(NSString *)name
                  value:(double [3])value {
-
     AgoraAvatarValueType type = AgoraAvatarValueTypeDoubleArray;
     AgoraAvatarOptionValue *optionValue = [[AgoraAvatarOptionValue alloc] initWith:type
                                                                                num:3
                                                                              bytes:value];
-    NSLog(@"setGeneratorOptions key %@", name);
-    [_avatarEngine setGeneratorOptions:name value:optionValue];
+    [self setGeneratorOptionsInternal:name value:optionValue];
 }
 
 - (double)getDoubleWithName:(NSString *)name {
@@ -53,14 +63,14 @@
     AgoraAvatarOptionValue *optionValue = [[AgoraAvatarOptionValue alloc] initWith:type
                                                                                num:1
                                                                              bytes:bytes];
-    NSLog(@"setGeneratorOptions key %@", name);
-    [_avatarEngine setGeneratorOptions:name value:optionValue];
+    
+    [self setGeneratorOptionsInternal:name value:optionValue];
 }
 
 
 - (void)itemSetParam:(int)pa
             withName:(NSString *)name
-               fucolorValue:(FUP2AColor *)color
+        fucolorValue:(FUP2AColor *)color
               sub255:(BOOL)sub255 {
     double s = sub255 ? 255 : 1;
     double c[3] = {
@@ -71,15 +81,14 @@
     AgoraAvatarValueType type = AgoraAvatarValueTypeDoubleArray;
     AgoraAvatarOptionValue *value = [[AgoraAvatarOptionValue alloc] initWith:type
                                                                          num:3
-                                                                       bytes:&c];
-    NSLog(@"setGeneratorOptions key %@", name);
-    [_avatarEngine setGeneratorOptions:name
-                                 value:value];
+                                                                       bytes:c];
+    
+    [self setGeneratorOptionsInternal:name value:value];
 }
 
 - (void)itemSetParam:(int)pa
             withName:(NSString *)name
-               colorValue:(UIColor *)color
+          colorValue:(UIColor *)color
               sub255:(BOOL)sub255 {
     FUP2AColor *fucolor = [FUP2AColor color:color];
     [self itemSetParam:pa
@@ -109,10 +118,9 @@
     AgoraAvatarValueType type = AgoraAvatarValueTypeDoubleArray;
     AgoraAvatarOptionValue *value = [[AgoraAvatarOptionValue alloc] initWith:type
                                                                          num:3
-                                                                       bytes:&c];
-    NSLog(@"setGeneratorOptions key %@", name);
-    [_avatarEngine setGeneratorOptions:name
-                                 value:value];
+                                                                       bytes:c];
+    
+    [self setGeneratorOptionsInternal:name value:value];
 }
 
 - (double)fuItemGetParamd:(NSString *)name {
@@ -132,43 +140,11 @@
 
 @end
 
-// fmt#{"name":"global","type":"face_detail","param":"blend_color","UUID":{#type#0#}}
-// fmt#{"name":"global","type":"face_detail","param":"blend_color","UUID":{#type#0#}}
-// fmt#{"name":"global","type":"face_detail","param":"blend_color","UUID":{#type#0#}}
-// hair_color
-// hair_color_intensity
-// key skin_color
-// iris_color
-// fmt#{"name":"global","type":"face_detail","param":"blend_color","UUID":{#type#0#}}
-// beard_color
-// hat_color
-// eyebrow_color
-// fmt#{"name":"global","type":"face_detail","param":"blend_color","UUID":{#type#0#}}
-// glass_frame_color
-// fmt#{"name":"global","type":"face_detail","param":"blend_color","UUID":{#type#0#}}
-// modelmat_to_bone
-// fmt#{"name":"global","type":"face_detail","param":"blend_color","UUID":{#type#0#}}
-// fmt#{"name":"global","type":"face_detail","param":"blend_color","UUID":{#type#0#}}
-// fmt#{"name":"global","type":"face_detail","param":"blend_color","UUID":{#type#0#}}
-// fmt#{"name":"global","type":"face_detail","param":"blend_color","UUID":{#type#0#}}
-// hair_color
-// hair_color_intensity
-// key skin_color
-// key iris_color
-// fmt#{"name":"global","type":"face_detail","param":"blend_color","UUID":{#type#0#}}
-// beard_color
-// hat_color
-// eyebrow_color
-// fmt#{"name":"global","type":"face_detail","param":"blend_color","UUID":{#type#0#}}
-// glass_color
-// glass_frame_color
-// fmt#{"name":"global","type":"face_detail","param":"blend_color","UUID":{#type#0#}}
-// modelmat_to_bone
-// target_position
-// target_angle
-// reset_all
-// target_position
-// target_angle
-// reset_all
-// enable_background_color
-// set_background_color
+//2022-01-23 21:02:38.974248+0800 Scene-Examples[63033:18404689] setGeneratorOptions key target_position
+//2022-01-23 21:02:38.974318+0800 Scene-Examples[63033:18404689] setGeneratorOptions key target_angle
+//2022-01-23 21:02:38.974341+0800 Scene-Examples[63033:18404689] setGeneratorOptions key reset_all
+//2022-01-23 21:02:38.975669+0800 Scene-Examples[63033:18404689] setGeneratorOptions key enter_facepup_mode
+//2022-01-23 21:02:38.975699+0800 Scene-Examples[63033:18404689] setGeneratorOptions key animState
+//2022-01-23 21:02:38.986962+0800 Scene-Examples[63033:18404689] setGeneratorOptions key target_position
+//2022-01-23 21:02:38.987121+0800 Scene-Examples[63033:18404689] setGeneratorOptions key target_angle
+//2022-01-23 21:02:39.005274+0800 Scene-Examples[63033:18404689] setGeneratorOptions key reset_all

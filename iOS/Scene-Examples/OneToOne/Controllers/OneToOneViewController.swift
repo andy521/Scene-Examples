@@ -9,7 +9,7 @@ import UIKit
 import AgoraRtcKit
 import AgoraUIKit_iOS
 
-class OneToOneViewController: BaseViewController {
+class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
     public lazy var localView = AGEView()
     public lazy var remoteView: AGEButton = {
         let button = AGEButton()
@@ -104,11 +104,8 @@ class OneToOneViewController: BaseViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        agoraKit?.disableAudio()
-        agoraKit?.disableVideo()
         agoraKit?.muteAllRemoteAudioStreams(true)
         agoraKit?.muteAllRemoteVideoStreams(true)
-        agoraKit?.destroyMediaPlayer(nil)
         leaveChannel()
         navigationTransparent(isTransparent: false)
         UIApplication.shared.isIdleTimerDisabled = false
@@ -183,14 +180,17 @@ class OneToOneViewController: BaseViewController {
             controlView.isHidden = false
             isCloseGame = true
         case .edit:
+            
             let vc = FUEditViewController.instacneFromStoryBoard()!
             vc.modalPresentationStyle = .fullScreen
+            vc.delegate = self
             self.present(vc, animated: true, completion: nil)
             
             let renderView = vc.getVideoView()!
             createAgoraVideoCanvas(uid: UserInfo.userId,
                                    isLocal: true,
                                    specialView: renderView)
+            
             break
         }
     }
@@ -287,27 +287,6 @@ class OneToOneViewController: BaseViewController {
 //
 //        path = getPath("ani_idle", dir: nil)
 //        avaterEngine?.enableAvatarGeneratorItem(true, type: 7, bundle: path)
-        
-//        head.bundle
-//        midBody_male4.bundle
-//        male_hair_3.bundle
-//        midBody_male4.bundle
-//        shangyi_chenshan_3.bundle
-//        kuzi_changku_5.bundle
-//        xiezi_tuoxie_3.bundle
-//        lipgloss_1.bundle
-//        ani_idle.bundle
-//        ani_huxi_hi.bundle
-//
-//        head.bundle
-//        midBody_male4.bundle
-//        male_hair_3.bundle
-//        midBody_male4.bundle
-//        shangyi_chenshan_3.bundle
-//        kuzi_changku_5.bundle
-//        xiezi_tuoxie_3.bundle
-//        lipgloss_1.bundle
-//        ani_idle.bundle
     }
     
     private func createAgoraVideoCanvas(uid: UInt,
@@ -351,6 +330,10 @@ class OneToOneViewController: BaseViewController {
     
     func getPath(_ name: String, dir: String? = "Resource/4") -> String? {
         return Bundle.main.path(forResource: name, ofType: "bundle", inDirectory: dir)
+    }
+    
+    func editViewControllerDidClose() {
+        createAgoraVideoCanvas(uid: UserInfo.userId, isLocal: true, specialView: nil)
     }
 }
 extension OneToOneViewController: AgoraRtcEngineDelegate {
