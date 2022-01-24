@@ -20,6 +20,7 @@
 		26118AD6279A94C10026E27C /* fuPTAClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 26118AD5279A94C10026E27C /* fuPTAClient.m */; };
 		26118ADA279A974C0026E27C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26118AD9279A974C0026E27C /* Foundation.framework */; };
 		26118ADF279D23330026E27C /* FURendererObj.m in Sources */ = {isa = PBXBuildFile; fileRef = 26118ADE279D23320026E27C /* FURendererObj.m */; };
+		26118AE1279E9DBE0026E27C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E79C25E7273B67DD00909CD4 /* Assets.xcassets */; };
 		26C7A5822787E469009A8DA5 /* sta_bs_blend_weight.json in Resources */ = {isa = PBXBuildFile; fileRef = 26C7A5222787E468009A8DA5 /* sta_bs_blend_weight.json */; };
 		26C7A5832787E469009A8DA5 /* MeshPoints.json in Resources */ = {isa = PBXBuildFile; fileRef = 26C7A5232787E468009A8DA5 /* MeshPoints.json */; };
 		26C7A5842787E469009A8DA5 /* ketingB.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 26C7A5262787E468009A8DA5 /* ketingB.bundle */; };
@@ -194,7 +195,6 @@
 		E79C25E1273B67DB00909CD4 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79C25E0273B67DB00909CD4 /* SceneDelegate.swift */; };
 		E79C25E3273B67DB00909CD4 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79C25E2273B67DB00909CD4 /* MainViewController.swift */; };
 		E79C25E6273B67DB00909CD4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E79C25E4273B67DB00909CD4 /* Main.storyboard */; };
-		E79C25E8273B67DD00909CD4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E79C25E7273B67DD00909CD4 /* Assets.xcassets */; };
 		E79C25EB273B67DD00909CD4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E79C25E9273B67DD00909CD4 /* LaunchScreen.storyboard */; };
 		E79C260C273B689B00909CD4 /* MBHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79C25FF273B689A00909CD4 /* MBHUD.swift */; };
 		E79C260D273B689B00909CD4 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79C2600273B689A00909CD4 /* Config.swift */; };
@@ -1590,8 +1590,8 @@
 				26C7A5E32787E4C0009A8DA5 /* ani_mg.bundle in Resources */,
 				26C7A5EA2787E4C0009A8DA5 /* youjiao_plane_shadow.bundle in Resources */,
 				E79C263B273BCC0A00909CD4 /* Localizable.strings in Resources */,
+				26118AE1279E9DBE0026E27C /* Assets.xcassets in Resources */,
 				E79BEF56273E50ED009FA838 /* SuperRing.gif in Resources */,
-				E79C25E8273B67DD00909CD4 /* Assets.xcassets in Resources */,
 				26C7A5992787E469009A8DA5 /* ani_ok_mid.bundle in Resources */,
 				26C7A5C92787E469009A8DA5 /* default_bg.bundle in Resources */,
 				26C7A5AF2787E469009A8DA5 /* ani_pose_shuangren_03_02_mid.bundle in Resources */,
@@ -2035,10 +2035,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1212;
-				DEVELOPMENT_TEAM = HFDBB878GT;
+				DEVELOPMENT_TEAM = 4G288PA4VS;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2077,9 +2077,9 @@
 					"$(PROJECT_DIR)/Scene-Examples/OneToOne/FUManager/Lib/FaceUnity-SDK-iOS",
 				);
 				MARKETING_VERSION = 3.6.201;
-				PRODUCT_BUNDLE_IDENTIFIER = io.agora.scene.examplesz;
+				PRODUCT_BUNDLE_IDENTIFIER = io.agora.metaLive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = rte_team_ios;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Scene-Examples/OneToOne/FUManager/Scene-Examples-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

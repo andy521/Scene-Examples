@@ -70,21 +70,7 @@
  -- 包括 controller, head, body, hair, clothes, glasses, beard, hat, animatiom, arfilter.
  */
 - (void)destroyAvatar {
-    
-    // 先销毁普通道具
-//    for (int i = 1 ; i < sizeof(items)/sizeof(int); i ++) {
-//        if (items[i] != 0) {
-//
-//            // 先解绑
-//            fuUnbindItems(items[FUItemTypeController], &items[i], 1) ;
-//            // 再销毁
-//            [FURenderer destroyItem:items[i]];
-//            items[i] = 0 ;
-//        }
-//    }
-//    // 再销毁 controller
-//    [FURenderer destroyItem:items[FUItemTypeController]];
-//    items[FUItemTypeController] = 0 ;
+   
 }
 /**
  销毁此模型,只包括avatar资源
@@ -101,7 +87,9 @@
  @param camPath 辅助道具路径
  */
 - (void)reloadCamItemWithPath:(NSString * __nullable)camPath {
+    dispatch_semaphore_wait(self.signal, DISPATCH_TIME_FOREVER);
     [self loadItemWithtype:FUItemTypeCamera filePath:camPath];
+    dispatch_semaphore_signal(self.signal);
 }
 /**
  更换动画
@@ -375,7 +363,8 @@
 - (CGPoint)getMeshPointOfIndex:(NSInteger)index
                   PixelBufferW:(int)pixelBufferW
                   PixelBufferH:(int)pixelBufferH {
-    [_renderer itemSetWithName:@"query_vert" value:index];
+    double temp = index;
+    [_renderer itemSetWithName:@"query_vert" value:temp];
     
     double x = [_renderer getDoubleWithName:@"query_vert_x"];
     double y = [_renderer getDoubleWithName:@"query_vert_y"];
@@ -514,9 +503,9 @@
 - (void)setBackGroundColor:(UIColor *)color {
     [_renderer fuItemSetParamd:@"enable_background_color"
                          value:1];
-    [_renderer fuItemSetParamd:@"set_background_color"
-                    colorValue:color
-                        sub255:NO];
+    [_renderer fuItemSetParamdUseAlph:@"set_background_color"
+                           colorValue:color
+                               sub255:NO];
 }
 
 #pragma mark ----- 以下动画相关
@@ -923,7 +912,6 @@
 {
     double position[3] = {0,0,0};
     [_renderer itemSetParamdv:@"target_position" value:position];
-    
     [_renderer itemSetWithName:@"target_angle" value:0];
     [_renderer itemSetWithName:@"reset_all" value:0];
 }
@@ -1050,12 +1038,7 @@
  */
 - (void)resetScaleToBody_UseCam
 {
-    [self resetPosition];
-    
-    // 获取当前相机动画bundle路径
-    NSString *camPath = [[NSBundle mainBundle].resourcePath stringByAppendingFormat:@"/Resource/page_cam/cam_35mm_full_80mm_jinjing.bundle"];
-    // 将相机动画绑定到controller上
-    [[FUManager shareInstance] reloadCamItemWithPath:camPath];
+    [self resetScaleToOriginal];
 }
 
 /**
@@ -1063,12 +1046,7 @@
  */
 - (void)resetScaleChange_UseCam
 {
-    [self resetPosition];
-    
-    // 获取当前相机动画bundle路径
-    NSString *camPath = [[NSBundle mainBundle].resourcePath stringByAppendingFormat:@"/Resource/page_cam/cam_quanshen.bundle"];
-    // 将相机动画绑定到controller上
-    [[FUManager shareInstance] reloadCamItemWithPath:camPath];
+    [self resetScaleToShowShoes];
 }
 
 

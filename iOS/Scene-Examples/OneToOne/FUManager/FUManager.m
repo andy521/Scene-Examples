@@ -108,28 +108,15 @@ static FUManager *fuManager = nil;
 
 
 static int frameId = 0 ;
-
-
 static int ARFilterID = 0 ;
-
 
 #pragma mark ----- 脸部识别
 /// 初始化脸部识别
-- (void)initFaceCapture
-{
-    
-}
+- (void)initFaceCapture {}
+- (void)initHuman3D {}
+- (void)destroyFaceCapture {}
 
-- (void)initHuman3D
-{
-    
-}
-- (void)destroyFaceCapture
-{
-    
-}
-- (void)enableFaceCapture:(int)enable
-{
+- (void)enableFaceCapture:(double)enable {
     AgoraAvatarOptionValue *value = [[AgoraAvatarOptionValue alloc] initWith:AgoraAvatarValueTypeDouble
                                                                         num:1
                                                                       bytes:&enable];
@@ -139,8 +126,7 @@ static int ARFilterID = 0 ;
 
 #pragma mark ------ 加载道具 ------
 /// 加载道具等信息
-- (void)loadSubData
-{
+- (void)loadSubData {
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:AvatarQPath])
     {

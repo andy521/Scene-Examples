@@ -123,6 +123,26 @@
     [self setGeneratorOptionsInternal:name value:value];
 }
 
+- (void)fuItemSetParamdUseAlph:(NSString *)name
+             colorValue:(UIColor *)color
+                 sub255:(BOOL)sub255 {
+    FUP2AColor *fucolor = [FUP2AColor color:color];
+    double s = sub255 ? 255 : 1;
+    double c[4] = {
+        fucolor.r / s,
+        fucolor.g / s,
+        fucolor.b /s,
+        fucolor.intensity /s
+    };
+    
+    AgoraAvatarValueType type = AgoraAvatarValueTypeDoubleArray;
+    AgoraAvatarOptionValue *value = [[AgoraAvatarOptionValue alloc] initWith:type
+                                                                         num:4
+                                                                       bytes:c];
+    
+    [self setGeneratorOptionsInternal:name value:value];
+}
+
 - (double)fuItemGetParamd:(NSString *)name {
     return [self getDoubleWithName:name];
 }

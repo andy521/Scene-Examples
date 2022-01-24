@@ -16,8 +16,7 @@
 #import "FUShapeParamsMode.h"
 #import "FUOpenGLView.h"
 
-@interface FUEditViewController ()<FUFigureViewDelegate>
-{
+@interface FUEditViewController ()<FUFigureViewDelegate>{
 	BOOL transforming;
 	BOOL customFaceuped;  // YES为已经完成自定义捏脸，NO，为没有自定义捏脸
 	__block FUFigureShapeType shapeType;
@@ -62,10 +61,10 @@
     return vc;
 }
 
-- (BOOL)prefersStatusBarHidden
-{
+- (BOOL)prefersStatusBarHidden{
 	return YES;
 }
+
 -(instancetype)initWithCoder:(NSCoder *)coder{
 	if (self = [super initWithCoder:coder]) {
 		[[FUManager shareInstance]enterEditMode];
@@ -123,6 +122,10 @@
     self.downloadBtn.enabled = NO;
     
     [[FUManager shareInstance] enableFaceCapture:0];
+    
+    CGSize size = [AppManager getSuitablePixelBufferSizeForCurrentDevice];
+    self.pixelBufferW = size.width;
+    self.pixelBufferH = size.height;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -194,14 +197,6 @@
 	}
 }
 
-- (void)revc:(CVPixelBufferRef)pixelBuffer {
-    
-}
-
-- (void)didOutputVideoSampleBuffer:(CMSampleBufferRef)sampleBuffer
-{
-    
-}
 
 - (UIView *)getVideoView {
     return self.renderView;
@@ -251,8 +246,8 @@
             [self.currentAvatar resetScaleToBody_UseCam];
             [[FUManager shareInstance] enableFaceCapture:1];
             [self dismissViewControllerAnimated:true completion:nil];
-            if ([_delegate respondsToSelector:@selector(editViewControllerDidClose)]) {
-                [_delegate editViewControllerDidClose];
+            if ([self.delegate respondsToSelector:@selector(editViewControllerDidClose)]) {
+                [self.delegate editViewControllerDidClose];
             }
         }];
         
@@ -654,7 +649,7 @@
 	self.doAndUndoView.hidden = show;
 }
 
-		 // 撤销
+// 撤销
 - (void)reset:(UIButton*)btn{
 	[[FUManager shareInstance]reloadItemBeforeEdit];
     [[FUManager shareInstance]getSelectedInfo];

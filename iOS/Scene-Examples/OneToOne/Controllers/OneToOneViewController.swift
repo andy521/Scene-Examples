@@ -158,8 +158,8 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
             agoraKit?.switchCamera()
             
         case .game:
-            clickAvaterHandler()
-        
+//            clickAvaterHandler()
+            break
         case .mic:
             agoraKit?.muteLocalAudioStream(isSelected)
             
@@ -246,7 +246,6 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: rtcEngineConfig, delegate: self)
         avaterEngine = agoraKit!.queryAvatarEngine()
         agoraKit?.setLogFile(LogUtils.sdkLogPath())
-        
         let _ = AuthPack.bytes.withUnsafeBytes { pointer in
             avaterEngine?.initialize(Data(bytes: pointer))
         }
@@ -261,32 +260,6 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         FUManager.shareInstance().avatarEngine = avaterEngine
         FUManager.shareInstance().setAvatarStyleDefault()
         FUManager.shareInstance().setupForHalfMode()
-        
-//        var path:String!
-//
-//        path = getPath("hair_hat_6")
-//        avaterEngine?.enableAvatarGeneratorItem(true, type: 0, bundle: path)
-//
-//        path = getPath("head")
-//        avaterEngine?.enableAvatarGeneratorItem(true, type: 1, bundle: path)
-//
-//        path = getPath("wuguan_mesh", dir: "Resource/QItems/background/dress_2d/mid/")
-//        avaterEngine?.enableAvatarGeneratorItem(true, type: 2, bundle: path)
-//
-//        path = getPath("midBody_male0", dir: nil)
-//        avaterEngine?.enableAvatarGeneratorItem(true, type: 3, bundle: path)
-//
-//        path = getPath("taozhuang_2_shoes", dir: "/Resource/QItems/cloth/shoes/mid")
-//        avaterEngine?.enableAvatarGeneratorItem(true, type: 4, bundle: path)
-//
-//        path = getPath("yiqun_3", dir: "Resource/QItems/cloth/dress/mid")
-//        avaterEngine?.enableAvatarGeneratorItem(true, type: 5, bundle: path)
-//
-//        path = getPath("cam_02", dir: "Resource/page_cam")
-//        avaterEngine?.enableAvatarGeneratorItem(true, type: 6, bundle: path)
-//
-//        path = getPath("ani_idle", dir: nil)
-//        avaterEngine?.enableAvatarGeneratorItem(true, type: 7, bundle: path)
     }
     
     private func createAgoraVideoCanvas(uid: UInt,
@@ -333,7 +306,9 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
     }
     
     func editViewControllerDidClose() {
-        createAgoraVideoCanvas(uid: UserInfo.userId, isLocal: true, specialView: nil)
+        createAgoraVideoCanvas(uid: UserInfo.userId,
+                               isLocal: true,
+                               specialView: nil)
     }
 }
 extension OneToOneViewController: AgoraRtcEngineDelegate {
@@ -380,6 +355,7 @@ extension OneToOneViewController: AgoraRtcEngineDelegate {
     func rtcEngine(_ engine: AgoraRtcEngineKit, remoteAudioStats stats: AgoraRtcRemoteAudioStats) {
 //        remoteVideo.statsInfo?.updateAudioStats(stats)
     }
+    
 }
 
 
@@ -393,12 +369,6 @@ extension OneToOneViewController: FUPoseTrackViewDelegate { /** 选择形象列�
     func poseTrackViewDidShowTopView(_ show: Bool) {}
     
     func poseTrackViewDidSelectedInput(_ filterName: String) {}
-}
-
-extension OneToOneViewController: VideoFrameHandlerDelegate {
-    func videoHandlerDidRecvPixelData(_ pixelBuffer: CVPixelBuffer) {
-        
-    }
 }
 
 

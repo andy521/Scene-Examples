@@ -26,7 +26,6 @@
     point.downKey = dict[@"down"] ;
     
     point.selected = NO ;
-    
     return point ;
 }
 

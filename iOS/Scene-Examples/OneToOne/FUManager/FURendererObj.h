@@ -30,6 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
             withName:(NSString *)name
         fucolorValue:(FUP2AColor *)color
               sub255:(BOOL)sub255;
+/// 使用透明度
+- (void)fuItemSetParamdUseAlph:(NSString *)name
+                    colorValue:(UIColor *)color
+                        sub255:(BOOL)sub255;
 
 - (void)fuItemSetParamd:(NSString *)name value:(double)value;
 

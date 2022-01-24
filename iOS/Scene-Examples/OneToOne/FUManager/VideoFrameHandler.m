@@ -20,15 +20,15 @@
 //    CVPixelBufferRef mirrored_pixel = [[FUManager shareInstance] dealTheFrontCameraPixelBuffer:pixelBuffer returnNewBuffer:YES];
 //    [[FUManager shareInstance] renderARFilterItemWithBuffer:mirrored_pixel];
     
-    const int landmarks_cnt = 314;
-    float landmarks[landmarks_cnt] ;
-    CVPixelBufferRef mirrored_pixel = [[FUManager shareInstance] dealTheFrontCameraPixelBuffer:pixelBuffer returnNewBuffer:false];
-    [[FUManager shareInstance] renderBodyTrackWithBuffer:mirrored_pixel
-                                                     ptr:nil
-                                              RenderMode:FURenderPreviewMode
-                                               Landmarks:landmarks
-                                         LandmarksLength:landmarks_cnt];
-    srcFrame.pixelBuffer = mirrored_pixel;
+//    const int landmarks_cnt = 314;
+//    float landmarks[landmarks_cnt] ;
+//    CVPixelBufferRef mirrored_pixel = [[FUManager shareInstance] dealTheFrontCameraPixelBuffer:pixelBuffer returnNewBuffer:false];
+//    [[FUManager shareInstance] renderBodyTrackWithBuffer:mirrored_pixel
+//                                                     ptr:nil
+//                                              RenderMode:FURenderPreviewMode
+//                                               Landmarks:landmarks
+//                                         LandmarksLength:landmarks_cnt];
+//    srcFrame.pixelBuffer = mirrored_pixel;
     *dstFrame = srcFrame;
     return YES;
 }
