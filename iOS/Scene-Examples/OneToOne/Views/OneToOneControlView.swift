@@ -55,10 +55,12 @@ class OneToOneControlView: UIView {
         button.addTarget(self, action: #selector(clickMicButton(sender:)), for: .touchUpInside)
         return button
     }()
-    private lazy var editButton: UIButton = {
-        let button = UIButton()
-        button.tag = OneToOneControlType.edit.rawValue
-        button.setTitle("编辑", for: .normal)
+    private lazy var editButton: AGEButton = {
+        let button = AGEButton(style: .imageName(name: "oneToOne/beauty"))
+        button.backgroundColor = .init(hex: "#737374")
+        button.imageSize = CGSize(width: 26.fit, height: 22.fit)
+        button.cornerRadius = 30.fit
+        button.tag = OneToOneControlType.switchCamera.rawValue
         button.addTarget(self, action: #selector(clickEditButton), for: .touchUpInside)
         return button
     }()
@@ -106,20 +108,20 @@ class OneToOneControlView: UIView {
         editButton.translatesAutoresizingMaskIntoConstraints = false
         
         addSubview(statckView)
-        statckView.addArrangedSubview(switchCameraButton)
-        statckView.addArrangedSubview(gameButton)
+//        statckView.addArrangedSubview(switchCameraButton)
+        statckView.addArrangedSubview(editButton)
+//        statckView.addArrangedSubview(gameButton)
         statckView.addArrangedSubview(micButton)
         statckView.addArrangedSubview(exitButton)
         addSubview(backButton)
-        addSubview(editButton)
         
         statckView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 54.fit).isActive = true
         statckView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         statckView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -54).isActive = true
         statckView.heightAnchor.constraint(equalToConstant: 60.fit).isActive = true
         
-        switchCameraButton.widthAnchor.constraint(equalToConstant: 60.fit).isActive = true
-        switchCameraButton.heightAnchor.constraint(equalToConstant: 60.fit).isActive = true
+        editButton.widthAnchor.constraint(equalToConstant: 60.fit).isActive = true
+        editButton.heightAnchor.constraint(equalToConstant: 60.fit).isActive = true
         gameButton.widthAnchor.constraint(equalToConstant: 60.fit).isActive = true
         gameButton.heightAnchor.constraint(equalToConstant: 60.fit).isActive = true
         micButton.widthAnchor.constraint(equalToConstant: 60.fit).isActive = true
@@ -132,9 +134,6 @@ class OneToOneControlView: UIView {
         backButton.heightAnchor.constraint(equalToConstant: 60.fit).isActive = true
         backButton.topAnchor.constraint(equalTo: statckView.bottomAnchor, constant: 30.fit).isActive = true
         backButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -48).isActive = true
-        
-        editButton.centerXAnchor.constraint(equalTo: switchCameraButton.centerXAnchor).isActive = true
-        editButton.centerYAnchor.constraint(equalTo: backButton.centerYAnchor).isActive = true
     }
     
     @objc

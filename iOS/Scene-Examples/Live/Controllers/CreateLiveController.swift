@@ -35,7 +35,7 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
     }()
     private lazy var editButton: UIButton = {
         let button = UIButton()
-        button.setTitle("编辑", for: .normal)
+        button.setImage(.init(named: "oneToOne/beauty"), for: .normal)
         button.addTarget(self, action: #selector(clickEditButton(sender:)), for: .touchUpInside)
         return button
     }()

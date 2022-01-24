@@ -162,7 +162,7 @@
 
 // 销毁某个道具
 - (void)destroyItemWithType:(FUItemType)itemType {
-    
+    [_avatarEngine enableAvatarGeneratorItem:NO type:(int)itemType bundle:@""];
 }
 
 /// 获取 tmpItems 第一个空闲的位置
