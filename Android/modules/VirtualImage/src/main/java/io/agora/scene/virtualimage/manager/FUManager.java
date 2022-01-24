@@ -16,8 +16,6 @@ import com.faceunity.pta_art.core.AvatarHandle;
 import com.faceunity.pta_art.core.FUPTARenderer;
 import com.faceunity.pta_art.core.PTACore;
 import com.faceunity.pta_art.core.client.PTAClientWrapper;
-import com.faceunity.pta_art.core.driver.ar.AvatarARDriveHandle;
-import com.faceunity.pta_art.core.driver.ar.PTAARDriveCore;
 import com.faceunity.pta_art.entity.AvatarPTA;
 import com.faceunity.pta_art.entity.DBHelper;
 import com.faceunity.pta_art.fragment.BaseFragment;
@@ -31,8 +29,6 @@ public class FUManager {
     static {
         Matrix.setIdentityM(IdentityMatrix, 0);
     }
-
-
 
     private static volatile FUManager INSTANCE;
     public static FUManager getInstance(){
@@ -138,26 +134,26 @@ public class FUManager {
             @Override
             public void run() {
                 mAvatarHandle.openLight(FilePathFactory.BUNDLE_light);
-                //mAvatarHandle.setScale(new double[]{0.0, -50f, 300f});
+                mAvatarHandle.setScale(new double[]{0.0, -50f, 300f});
                 //mAvatarHandle.setBackgroundColor("#AE8EF0");
+
+//                mP2ACore.unBind();
+//                PTAARDriveCore driveCore = new PTAARDriveCore(mContext, mFUP2ARenderer);
+//                mFUP2ARenderer.setFUCore(driveCore);
+//                AvatarARDriveHandle avatarARHandle = driveCore.createAvatarARHandle();
+//                avatarARHandle.setARAvatar(getShowAvatarP2A(), new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//                    }
+//                });
             }
         });
         mP2ACore.loadWholeBodyCamera();
 
-        mP2ACore.unBindDefault();
-        mP2ACore.unBind();
-        PTAARDriveCore driveCore = new PTAARDriveCore(mContext, mFUP2ARenderer);
-        mFUP2ARenderer.setFUCore(driveCore);
-        AvatarARDriveHandle avatarARHandle = driveCore.createAvatarARHandle();
-        avatarARHandle.setARAvatar(getShowAvatarP2A(), new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        });
-
         isStarted = true;
     }
+
 
     public void stop(){
         isStarted = false;

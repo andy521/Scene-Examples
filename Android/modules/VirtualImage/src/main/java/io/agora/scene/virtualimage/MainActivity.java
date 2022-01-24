@@ -13,7 +13,6 @@ import io.agora.example.base.BaseActivity;
 import io.agora.rtc2.RtcEngine;
 import io.agora.scene.virtualimage.databinding.VirtualImageActivityMainBinding;
 import io.agora.scene.virtualimage.manager.FUManager;
-import io.agora.scene.virtualimage.manager.RtcManager;
 import io.agora.scene.virtualimage.util.OneUtil;
 import io.agora.syncmanager.rtm.Sync;
 
@@ -31,8 +30,6 @@ public class MainActivity extends BaseActivity<VirtualImageActivityMainBinding> 
 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
-        RtcManager.getInstance().init(this, getString(R.string.rtc_app_id), null);
-        FUManager.getInstance().initialize(this);
     }
 
     @Override

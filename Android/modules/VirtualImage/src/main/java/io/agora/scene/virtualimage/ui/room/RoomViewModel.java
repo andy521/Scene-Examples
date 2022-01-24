@@ -328,6 +328,7 @@ public class RoomViewModel extends ViewModel {
 
     public void setupLocalView(@NonNull FrameLayout view) {
         RtcManager.getInstance().renderLocalVideo(view, null);
+        FUManager.getInstance().start();
     }
 
     /**

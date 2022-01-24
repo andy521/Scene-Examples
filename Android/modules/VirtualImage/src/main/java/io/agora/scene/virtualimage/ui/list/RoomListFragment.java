@@ -1,7 +1,5 @@
 package io.agora.scene.virtualimage.ui.list;
 
-import static java.lang.Boolean.TRUE;
-
 import android.Manifest;
 import android.os.Bundle;
 import android.view.View;
@@ -25,10 +23,14 @@ import io.agora.scene.virtualimage.base.BaseNavFragment;
 import io.agora.scene.virtualimage.bean.RoomInfo;
 import io.agora.scene.virtualimage.databinding.VirtualImageFragmentRoomListBinding;
 import io.agora.scene.virtualimage.databinding.VirtualImageItemRoomListBinding;
+import io.agora.scene.virtualimage.manager.FUManager;
+import io.agora.scene.virtualimage.manager.RtcManager;
 import io.agora.scene.virtualimage.util.Event;
 import io.agora.scene.virtualimage.util.EventObserver;
 import io.agora.scene.virtualimage.util.OneUtil;
 import io.agora.scene.virtualimage.util.ViewStatus;
+
+import static java.lang.Boolean.TRUE;
 
 public class RoomListFragment extends BaseNavFragment<VirtualImageFragmentRoomListBinding> implements OnItemClickListener<RoomInfo> {
 
@@ -150,6 +152,9 @@ public class RoomListFragment extends BaseNavFragment<VirtualImageFragmentRoomLi
     private void toNextPage() {
         if (tempRoom != null)
             mGlobalModel.roomInfo.setValue(new Event<>(tempRoom));
+
+        RtcManager.getInstance().init(getContext(), getString(R.string.rtc_app_id), null);
+        FUManager.getInstance().initialize(getContext());
 
         findNavController().navigate(R.id.action_roomListFragment_to_roomFragment);
     }

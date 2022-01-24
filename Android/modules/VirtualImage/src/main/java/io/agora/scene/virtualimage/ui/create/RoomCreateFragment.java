@@ -36,6 +36,7 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
 
         RtcManager.getInstance().renderLocalVideo(mBinding.videoContainer, null);
         FUManager.getInstance().start();
+
         setupRandomName();
     }
 

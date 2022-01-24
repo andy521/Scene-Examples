@@ -1,44 +1,5 @@
 package com.faceunity.pta_art.fragment;
 
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.BUNDLE_NAME_BEARD;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.BUNDLE_NAME_EYE;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.BUNDLE_NAME_FACE;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.BUNDLE_NAME_GLASSES;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.BUNDLE_NAME_MOUTH;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.BUNDLE_NAME_NOSE;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.BUNDLE_NAME_SCENES_2D;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.BUNDLE_NAME_SHOSE;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.EDIT_FACE_TYPE_APPAREL;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.EDIT_FACE_TYPE_MAKEUPS;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.EDIT_FACE_TYPE_PINCH;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_BEARD_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_CLOTHES_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_CLOTHES_LOWER_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_CLOTHES_UPPER_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_DECORATIONS_EAR_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_DECORATIONS_FOOT_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_DECORATIONS_HAND_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_DECORATIONS_HEAD_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_DECORATIONS_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_DECORATIONS_NECK_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYEBROW_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYELASH_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYELINER_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYESHADOW_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYE_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_FACEMAKEUP_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_FACE_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_GLASSES_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_HAIR_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_HAT_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_LIPGLOSS_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_MAKE_UP;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_MOUTH_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_NOSE_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_PUPIL_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_SCENES_2D;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_SHOE_INDEX;
-
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -113,6 +74,45 @@ import java.util.concurrent.Executors;
 import io.agora.base.VideoFrame;
 import io.agora.scene.virtualimage.R;
 import io.agora.scene.virtualimage.manager.RtcManager;
+
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.BUNDLE_NAME_BEARD;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.BUNDLE_NAME_EYE;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.BUNDLE_NAME_FACE;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.BUNDLE_NAME_GLASSES;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.BUNDLE_NAME_MOUTH;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.BUNDLE_NAME_NOSE;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.BUNDLE_NAME_SCENES_2D;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.BUNDLE_NAME_SHOSE;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.EDIT_FACE_TYPE_APPAREL;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.EDIT_FACE_TYPE_MAKEUPS;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.EDIT_FACE_TYPE_PINCH;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_BEARD_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_CLOTHES_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_CLOTHES_LOWER_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_CLOTHES_UPPER_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_DECORATIONS_EAR_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_DECORATIONS_FOOT_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_DECORATIONS_HAND_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_DECORATIONS_HEAD_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_DECORATIONS_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_DECORATIONS_NECK_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYEBROW_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYELASH_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYELINER_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYESHADOW_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYE_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_FACEMAKEUP_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_FACE_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_GLASSES_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_HAIR_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_HAT_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_LIPGLOSS_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_MAKE_UP;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_MOUTH_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_NOSE_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_PUPIL_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_SCENES_2D;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_SHOE_INDEX;
 
 
 /**
@@ -224,22 +224,7 @@ public class EditFaceFragment extends BaseFragment
         mAvatarHandle.setNeedFacePUP(true);
         mAvatarHandle.setAvatar(mAvatarP2A);
 
-        mEditP2ACore = new PTACore(mP2ACore) {
-//            @Override
-//            public int onDrawFrame(byte[] img, int tex, int w, int h, int rotation) {
-//                int fuTex = super.onDrawFrame(img, tex, w, h, rotation);
-//                if (mEditFacePoints != null) {
-//                    parsePoint(mEditFacePoints,
-//                               w,
-//                               h,
-//                               view.getWidth(),
-//                               view.getHeight()
-//                    );
-//                    mEditPointLayout.setPointList(mEditFacePoints);
-//                }
-//                return fuTex;
-//            }
-        };
+        mEditP2ACore = new PTACore(mP2ACore);
         RtcManager.getInstance().setOnVideoFrameRenderListener(new RtcManager.OnVideoFrameRenderListener() {
             @Override
             public void onVideoFrameRender(VideoFrame videoFrame) {
@@ -406,7 +391,7 @@ public class EditFaceFragment extends BaseFragment
                 mActivity.setShowAvatarP2A(avatarP2A);
             }
 
-            mAvatarHandle.setAvatar(avatarP2A, false, true, null);
+            mAvatarHandle.setAvatar(avatarP2A, true, true, null);
         }
 
         mEditFaceParameter.release();
@@ -1405,10 +1390,12 @@ public class EditFaceFragment extends BaseFragment
         new AvatarEditor(requireContext()).saveAvatar(mAvatarP2A, mEditFaceParameter, new AvatarEditor.SaveAvatarListener() {
             @Override
             public void saveComplete(final AvatarPTA newAvatarP2A) {
+                Log.d(TAG, "saveAvatar >> saveComplete newAvatarP2A=" + newAvatarP2A);
                 task = new Runnable() {
                     @Override
                     public void run() {
-                        if (mLoadingDialog != null && mActivity != null && newAvatarP2A.getBundleDir().equals(mActivity.getShowAvatarP2A().getBundleDir())) {
+                        if (mLoadingDialog != null && mActivity != null) {
+                            Log.d(TAG, "saveAvatar >> saveComplete stop run task=" + task);
                             mLoadingDialog.dismiss();
                             mLoadingDialog = null;
                             backToHome(newAvatarP2A);
@@ -1416,6 +1403,7 @@ public class EditFaceFragment extends BaseFragment
                     }
                 };
                 if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
+                    Log.d(TAG, "saveAvatar >> saveComplete start run task=" + task);
                     requireActivity().runOnUiThread(task);
                     task = null;
                 }
@@ -1423,15 +1411,18 @@ public class EditFaceFragment extends BaseFragment
 
             @Override
             public void saveFailure() {
+                Log.d(TAG, "saveAvatar >> saveFailure");
                 task = new Runnable() {
                     @Override
                     public void run() {
+                        Log.d(TAG, "saveAvatar >> saveFailure stop run task=" + task);
                         mLoadingDialog.dismiss();
                         mLoadingDialog = null;
                         ToastUtil.showCenterToast(requireContext(), "模型保存失败，请重试");
                     }
                 };
                 if (mLoadingDialog != null && mLoadingDialog.isShowing()) {
+                    Log.d(TAG, "saveAvatar >> saveFailure start run task=" + task);
                     requireActivity().runOnUiThread(task);
                     task = null;
                 }

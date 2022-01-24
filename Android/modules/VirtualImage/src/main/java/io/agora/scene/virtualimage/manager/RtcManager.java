@@ -1,33 +1,6 @@
 package io.agora.scene.virtualimage.manager;
 
 
-import static io.agora.rtc2.video.VideoCanvas.RENDER_MODE_HIDDEN;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_1;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_10;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_24;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_30;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_7;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.MIRROR_MODE_TYPE;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_FIXED_PORTRAIT;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_120x120;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_1280x720;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_160x120;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_180x180;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_240x180;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_240x240;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_320x180;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_320x240;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_360x360;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_424x240;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_480x360;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_480x480;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_640x360;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_640x480;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_840x480;
-import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_960x720;
-
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
@@ -56,12 +29,38 @@ import io.agora.rtc2.RtcConnection;
 import io.agora.rtc2.RtcEngine;
 import io.agora.rtc2.RtcEngineEx;
 import io.agora.rtc2.video.AvatarConfigs;
-import io.agora.rtc2.video.AvatarItemType;
 import io.agora.rtc2.video.AvatarOptionValue;
 import io.agora.rtc2.video.CameraCapturerConfiguration;
 import io.agora.rtc2.video.IVideoFrameObserver;
 import io.agora.rtc2.video.VideoCanvas;
 import io.agora.rtc2.video.VideoEncoderConfiguration;
+
+import static io.agora.rtc2.video.VideoCanvas.RENDER_MODE_HIDDEN;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_1;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_10;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_15;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_24;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_30;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_7;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.MIRROR_MODE_TYPE;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_FIXED_PORTRAIT;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_120x120;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_1280x720;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_160x120;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_180x180;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_240x180;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_240x240;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_320x180;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_320x240;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_360x360;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_424x240;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_480x360;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_480x480;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_640x360;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_640x480;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_840x480;
+import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_960x720;
 
 
 public class RtcManager {
@@ -336,7 +335,9 @@ public class RtcManager {
 
         container.addView(avatarSurfaceView);
         engine.startPreview();
-        avatarEngine.setupLocalVideoCanvas(new VideoCanvas(avatarSurfaceView, RENDER_MODE_HIDDEN));
+        VideoCanvas videoCanvas = new VideoCanvas(avatarSurfaceView, RENDER_MODE_HIDDEN);
+        videoCanvas.mirrorMode = MIRROR_MODE_TYPE.MIRROR_MODE_DISABLED.getValue();
+        avatarEngine.setupLocalVideoCanvas(videoCanvas);
     }
 
     public void joinChannel(String channelId, String uid, String token, boolean publish, OnChannelListener listener) {
@@ -472,17 +473,18 @@ public class RtcManager {
         if(avatarEngine == null){
             return;
         }
-
         Log.d(TAG, "Avatar >> enableAvatarGeneratorItems enable=" + enable + ", type=" + type + ", bundlePath=" + bundlePath + ", replaceOld=" + replaceOld);
         String oldBundlePath = avatarItemEnableMap.get(type);
         if(Objects.equals(bundlePath, oldBundlePath) && !replaceOld){
             return;
         }
-        if(type == AvatarItemType.AvatarItemType_BACKGROUND){
-            return;
+        String setBundlePath = bundlePath;
+        if(TextUtils.isEmpty(setBundlePath)){
+            enable = false;
+            setBundlePath = avatarItemEnableMap.get(type);
         }
         avatarItemEnableMap.put(type, bundlePath);
-        avatarEngine.enableAvatarGeneratorItems(enable, type, bundlePath);
+        avatarEngine.enableAvatarGeneratorItems(enable, type, setBundlePath);
     }
 
     public void setGeneratorOptions(String option, AvatarOptionValue value){
