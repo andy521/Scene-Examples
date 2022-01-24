@@ -21,26 +21,28 @@
 
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_flip_fg_room"
+            android:id="@+id/btn_beauty"
+            style="@style/VirtualImageLiveButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginBottom="32dp"
+            android:gravity="center"
+            app:iconSize="@dimen/preview_control_button_size"
+            app:icon="@drawable/preview_control_beauty_button"
+            app:layout_constraintBottom_toTopOf="@id/btn_end_call_fg_room"
+            app:layout_constraintEnd_toStartOf="@id/btn_mode"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_mode"
             style="@style/VirtualImageLiveButton"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginBottom="32dp"
             app:icon="@drawable/virtual_image_ic_switch_camera"
             app:layout_constraintBottom_toTopOf="@id/btn_end_call_fg_room"
-            app:layout_constraintEnd_toStartOf="@id/btn_start_game_fg_room"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_start_game_fg_room"
-            style="@style/VirtualImageLiveButton"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginBottom="32dp"
-            app:icon="@drawable/virtual_image_ic_game"
-            app:layout_constraintBottom_toTopOf="@id/btn_end_call_fg_room"
             app:layout_constraintEnd_toStartOf="@id/btn_mic_fg_room"
-            app:layout_constraintStart_toEndOf="@id/btn_flip_fg_room" />
+            app:layout_constraintStart_toEndOf="@id/btn_beauty" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_mic_fg_room"
@@ -51,7 +53,7 @@
             app:icon="@drawable/virtual_image_ic_microphone"
             app:layout_constraintBottom_toTopOf="@id/btn_end_call_fg_room"
             app:layout_constraintEnd_toStartOf="@id/btn_end_live_fg_room"
-            app:layout_constraintStart_toEndOf="@id/btn_start_game_fg_room" />
+            app:layout_constraintStart_toEndOf="@id/btn_mode" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_end_live_fg_room"
@@ -71,6 +73,7 @@
             android:layout_height="60dp"
             android:layout_marginBottom="48dp"
             android:visibility="gone"
+            tools:visibility="visible"
             app:backgroundTint="#E23E51"
             app:icon="@drawable/virtual_image_ic_dial_off"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -79,78 +82,10 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!--    遮罩层-->
-    <View
-        android:id="@+id/scrim_bgd_fg_room"
+
+    <FrameLayout
+        android:id="@+id/face_up_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0"
-        android:background="?scrimBackground"
-        android:clickable="false"
-        android:focusable="false" />
+        android:layout_height="match_parent"/>
 
-    <!--    弹出层-->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/overlay_fg_room"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_mic_2_fg_room"
-            style="@style/VirtualImageLiveButton"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="40dp"
-            android:layout_marginEnd="36dp"
-            app:icon="@drawable/virtual_image_ic_microphone"
-            app:layout_constraintEnd_toStartOf="@id/btn_exit_game_fg_room"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_exit_game_fg_room"
-            style="@style/VirtualImageLiveButton"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            app:icon="@drawable/virtual_image_ic_logout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btn_mic_2_fg_room"
-            app:layout_constraintTop_toTopOf="@id/btn_mic_2_fg_room" />
-
-        <androidx.coordinatorlayout.widget.CoordinatorLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:layout_marginTop="140dp">
-
-            <FrameLayout
-                android:id="@+id/bottom_sheet_fg_room"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:behavior_hideable="true"
-                app:behavior_peekHeight="36dp"
-                app:layout_behavior="@string/bottom_sheet_behavior">
-
-<!--                FIXME Inflate WebView in MainThread is so slow-->
-                <WebView
-                    android:id="@+id/game_view_fg_room"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-
-                <io.agora.uiwidget.IndicatorView
-                    android:id="@+id/indicator_sheet_fg_room"
-                    android:layout_width="72dp"
-                    android:layout_height="36dp"
-                    android:layout_gravity="top|center_horizontal" />
-            </FrameLayout>
-        </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/top_btn_group_fg_room"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:constraint_referenced_ids="btn_exit_game_fg_room, btn_mic_2_fg_room" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

@@ -3,6 +3,8 @@ package com.faceunity.pta_art.fragment;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
@@ -68,8 +70,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import io.agora.base.VideoFrame;
 import io.agora.scene.virtualimage.R;
@@ -121,6 +121,9 @@ import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.T
 public class EditFaceFragment extends BaseFragment
         implements View.OnClickListener, RevokeHelper.RevokeHelperListener {
     public static final String TAG = EditFaceFragment.class.getSimpleName();
+
+    private HandlerThread workerThread;
+    private Handler workerHandler;
 
     private AvatarPTA mDefaultAvatarP2A;
     private AvatarPTA mAvatarP2A;
@@ -325,6 +328,14 @@ public class EditFaceFragment extends BaseFragment
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        workerThread = new HandlerThread("EditFaceWorkerThread");
+        workerThread.start();
+        workerHandler = new Handler(workerThread.getLooper());
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         if (task != null) {
@@ -393,7 +404,8 @@ public class EditFaceFragment extends BaseFragment
 
             mAvatarHandle.setAvatar(avatarP2A, true, true, null);
         }
-
+        workerHandler.removeCallbacksAndMessages(null);
+        workerThread.quit();
         mEditFaceParameter.release();
         EditFacePointFactory.release();
         EditParamFactory.release();
@@ -1172,8 +1184,7 @@ public class EditFaceFragment extends BaseFragment
      * @param pos
      */
     private void downHair(int pos) {
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
-        executorService.execute(new Runnable() {
+        workerHandler.post(new Runnable() {
             @Override
             public void run() {
                 byte[] objData = FileUtil.readBytes(mAvatarP2A.getHeadFile());
@@ -1182,6 +1193,7 @@ public class EditFaceFragment extends BaseFragment
                 List<BundleRes> hairBundles = FilePathFactory.hairBundleRes(mAvatarP2A.getGender());
                 BundleRes hair = hairBundles.get(pos);
                 try {
+                    Log.d(TAG, "downHair pos" + pos + ", hair=" + hair);
                     PTAClientWrapper.deformHairByServer(requireContext(), objData, hair.path, mAvatarP2A.getBundleDir() + hair.name);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -1204,8 +1216,7 @@ public class EditFaceFragment extends BaseFragment
      * @param pos
      */
     private void downHat(int pos) {
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
-        executorService.execute(new Runnable() {
+        workerHandler.post(new Runnable() {
             @Override
             public void run() {
                 byte[] objData = FileUtil.readBytes(mAvatarP2A.getHeadFile());

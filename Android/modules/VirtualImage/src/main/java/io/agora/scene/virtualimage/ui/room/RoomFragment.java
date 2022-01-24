@@ -1,19 +1,10 @@
 package io.agora.scene.virtualimage.ui.room;
 
 
-import android.annotation.SuppressLint;
-import android.graphics.Color;
-import android.graphics.Outline;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.FrameLayout;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -24,18 +15,15 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.faceunity.pta_art.fragment.EditFaceFragment;
 
 import io.agora.example.base.BaseUtil;
 import io.agora.scene.virtualimage.GlobalViewModel;
 import io.agora.scene.virtualimage.R;
 import io.agora.scene.virtualimage.base.BaseNavFragment;
-import io.agora.scene.virtualimage.bean.AgoraGame;
 import io.agora.scene.virtualimage.bean.GameInfo;
 import io.agora.scene.virtualimage.bean.RoomInfo;
 import io.agora.scene.virtualimage.databinding.VirtualImageFragmentRoomBinding;
-import io.agora.scene.virtualimage.repo.GameRepo;
-import io.agora.scene.virtualimage.ui.room.game.GameListDialog;
 import io.agora.scene.virtualimage.util.NormalContainerInsetsListener;
 import io.agora.scene.virtualimage.util.OneUtil;
 import io.agora.scene.virtualimage.util.ViewStatus;
@@ -43,7 +31,6 @@ import io.agora.scene.virtualimage.util.ViewStatus;
 public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBinding> {
     private boolean amHost;
     private RoomInfo currentRoom;
-    private BottomSheetBehavior<FrameLayout> sheetBehavior;
 
     private RoomViewModel mViewModel;
 
@@ -77,37 +64,7 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
     }
 
 
-    @SuppressLint("SetJavaScriptEnabled")
     public void initView() {
-        // BottomSheet indicator
-        mBinding.indicatorSheetFgRoom.setIndicatorColor(Color.WHITE);
-        // WebView
-        WebSettings settings = mBinding.gameViewFgRoom.getSettings();
-        settings.setJavaScriptEnabled(true);
-
-        mBinding.gameViewFgRoom.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                if (request.getUrl().getScheme().startsWith("http"))
-                    view.loadUrl(request.getUrl().toString());
-                return true;
-            }
-        });
-        mBinding.gameViewFgRoom.setBackgroundColor(BaseUtil.getColorInt(requireContext(), R.attr.colorPrimary));
-        float webViewCorner = BaseUtil.dp2px(8);
-        mBinding.gameViewFgRoom.setOutlineProvider(new ViewOutlineProvider() {
-            @Override
-            public void getOutline(View view, Outline outline) {
-                outline.setRoundRect(view.getLeft(), view.getTop(), view.getRight(), (int) (view.getBottom() + webViewCorner), webViewCorner);
-            }
-        });
-        mBinding.gameViewFgRoom.setClipToOutline(true);
-
-        // BottomSheetBehavior
-        sheetBehavior = BottomSheetBehavior.from(mBinding.bottomSheetFgRoom);
-        sheetBehavior.setGestureInsetBottomIgnored(true);
-        sheetBehavior.setDraggable(false);
-        sheetBehavior.setHideable(false);
         if (amHost)
             onSingleHostState();
         else
@@ -124,25 +81,25 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
             }
         });
 
-        // Indicator
-        sheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                RoomFragment.this.onSheetStateChanged(newState);
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                RoomFragment.this.onSlide(slideOffset);
-            }
-        });
-        // 游戏 Sheet 指示器
-        mBinding.indicatorSheetFgRoom.setOnClickListener(v -> toggleBottomSheet());
         // 翻转相机 按钮
-        mBinding.btnFlipFgRoom.setOnClickListener(v -> mViewModel.flipCamera());
-        // 游戏 按钮
-        mBinding.btnStartGameFgRoom.setOnClickListener(v -> RoomFragment.this.showGameCenterDialog());
-        mBinding.btnExitGameFgRoom.setOnClickListener(v -> showAlertExitGameDialog());
+        mBinding.btnBeauty.setOnClickListener(v -> {
+            EditFaceFragment fragment = new EditFaceFragment();
+            fragment.setOnCloseListener(() -> {
+                mBinding.containerFgRoom.setVisibility(View.VISIBLE);
+                getChildFragmentManager().beginTransaction()
+                        .remove(fragment)
+                        .commit();
+            });
+            mBinding.containerFgRoom.setVisibility(View.GONE);
+            getChildFragmentManager().beginTransaction()
+                    .replace(R.id.face_up_container, fragment)
+                    .commit();
+
+        });
+        mBinding.btnMode.setOnClickListener(v -> {
+            // TODO 切换AR和Avatar模式
+
+        });
         // 退出房间按钮
         mBinding.btnEndLiveFgRoom.setOnClickListener(v -> {
             if (amHost)
@@ -154,7 +111,6 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
         mBinding.btnEndCallFgRoom.setOnClickListener(v -> RoomFragment.this.showAlertEndCallDialog());
 
         mBinding.btnMicFgRoom.setOnClickListener(v -> mViewModel.toggleMute());
-        mBinding.btnMic2FgRoom.setOnClickListener(v -> mViewModel.toggleMute());
 
     }
 
@@ -189,7 +145,6 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
             int resId = isMute ? R.drawable.virtual_image_ic_microphone_off : R.drawable.virtual_image_ic_microphone;
 
             mBinding.btnMicFgRoom.setIconResource(resId);
-            mBinding.btnMic2FgRoom.setIconResource(resId);
         });
 
         mViewModel.viewStatus().observe(getViewLifecycleOwner(), viewStatus -> {
@@ -212,9 +167,11 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
                 .setMessage(R.string.virtual_image_end_call_msg)
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    if (amHost)
+                    if (amHost) {
                         mViewModel.endCall();
-                    else findNavController().popBackStack();
+                    } else {
+                        findNavController().popBackStack();
+                    }
                 })
                 .setMessage(R.string.virtual_image_exit_game_msg)
                 .setCancelable(false)
@@ -246,22 +203,14 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
                 .show();
     }
 
-    private void showGameCenterDialog() {
-        new GameListDialog().show(getChildFragmentManager(), GameListDialog.TAG);
-    }
-    //</editor-fold>
 
     private void onSingleHostState() {
         BaseUtil.logD("onSingleHostState");
         mBinding.hostViewFgRoom.setSingleHost(true);
 
         mBinding.btnEndLiveFgRoom.setVisibility(View.VISIBLE);
-        mBinding.btnStartGameFgRoom.setVisibility(View.GONE);
+        mBinding.btnMode.setVisibility(View.GONE);
         mBinding.btnEndCallFgRoom.setVisibility(View.GONE);
-
-        mBinding.topBtnGroupFgRoom.setVisibility(View.GONE);
-        mBinding.overlayFgRoom.setVisibility(View.GONE);
-        sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     private void onDoubleHostState() {
@@ -269,64 +218,16 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
         mBinding.hostViewFgRoom.setSingleHost(false);
 
         mBinding.btnEndLiveFgRoom.setVisibility(View.GONE);
-        mBinding.btnStartGameFgRoom.setVisibility(View.VISIBLE);
+        mBinding.btnMode.setVisibility(View.VISIBLE);
         mBinding.btnEndCallFgRoom.setVisibility(View.VISIBLE);
 
-        mBinding.topBtnGroupFgRoom.setVisibility(View.GONE);
-        if (sheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)
-            mBinding.scrimBgdFgRoom.setAlpha(0f);
-
-        if (mViewModel.currentGame != null) {
-            mBinding.overlayFgRoom.setVisibility(View.VISIBLE);
-        } else {
-            mBinding.overlayFgRoom.setVisibility(View.GONE);
-        }
     }
 
     private void onGameStatusChanged(@NonNull GameInfo gameInfo) {
         BaseUtil.logD("onGameStatusChanged:" + gameInfo.getStatus());
         boolean btnGameEnabled = gameInfo.getStatus() != GameInfo.START;
-        mBinding.btnStartGameFgRoom.setEnabled(btnGameEnabled);
-        mBinding.btnStartGameFgRoom.setAlpha(btnGameEnabled ? 1f : 0.5f);
-
-        switch (gameInfo.getStatus()) {
-            case GameInfo.IDLE:
-                break;
-            case GameInfo.START:
-                AgoraGame agoraGame = mViewModel.currentGame;
-                if (agoraGame != null) {
-                    mBinding.overlayFgRoom.setVisibility(View.VISIBLE);
-                    mBinding.getRoot().post(() -> sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED));
-                    GameRepo.gameStart(mBinding.gameViewFgRoom, agoraGame, mViewModel.localUser, amHost, Integer.parseInt(currentRoom.getId()));
-                }
-                break;
-            default:
-                mBinding.gameViewFgRoom.loadUrl("");
-                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                mBinding.overlayFgRoom.setVisibility(View.GONE);
-                break;
-        }
-    }
-
-    private void onSheetStateChanged(int newState) {
-        boolean isExpanded = newState == BottomSheetBehavior.STATE_EXPANDED;
-        mBinding.topBtnGroupFgRoom.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
-        if (isExpanded)
-            mBinding.scrimBgdFgRoom.setAlpha(1f);
-        else if (newState == BottomSheetBehavior.STATE_COLLAPSED)
-            mBinding.scrimBgdFgRoom.setAlpha(0f);
-    }
-
-    private void onSlide(float slideOffset) {
-        mBinding.indicatorSheetFgRoom.setCurrentFraction(slideOffset);
-        mBinding.scrimBgdFgRoom.setAlpha(slideOffset);
-    }
-
-    private void toggleBottomSheet() {
-        if (sheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)
-            sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        else if (sheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED)
-            sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        mBinding.btnMode.setEnabled(btnGameEnabled);
+        mBinding.btnMode.setAlpha(btnGameEnabled ? 1f : 0.5f);
     }
 
     private void setupInsets() {
@@ -337,12 +238,9 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
             lp.rightMargin = (int) (inset.right + BaseUtil.dp2px(16));
             lp.topMargin = (int) (inset.top + BaseUtil.dp2px(16));
             mBinding.hostViewFgRoom.getViewportContainer().setLayoutParams(lp);
-            return WindowInsetsCompat.CONSUMED;
-        });
-        ViewCompat.setOnApplyWindowInsetsListener(mBinding.overlayFgRoom, (v, insets) -> {
-            Insets inset = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            mBinding.overlayFgRoom.setPadding(0, inset.top, 0, 0);
-            sheetBehavior.setPeekHeight((int) BaseUtil.dp2px(36) + inset.bottom);
+
+            mBinding.getRoot().setPaddingRelative(inset.left, 0, inset.right, inset.bottom);
+            mBinding.faceUpContainer.setPaddingRelative(inset.left, inset.top, inset.right, 0);
             return WindowInsetsCompat.CONSUMED;
         });
     }
