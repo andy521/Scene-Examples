@@ -3,11 +3,12 @@ package com.faceunity.pta_art.constant;
 import android.os.Build;
 import android.os.Environment;
 
-import com.faceunity.pta_art.FUApplication;
 import com.faceunity.pta_art.utils.FileUtil;
 
 import java.io.File;
 import java.util.regex.Pattern;
+
+import io.agora.scene.virtualimage.manager.FUManager;
 
 /**
  * Created by tujh on 2018/2/7.
@@ -32,7 +33,7 @@ public abstract class Constant {
     public static String web_url_check = "";
     public static String netType = "";//请求的风格类型
 
-    public static final String filePath = FUApplication.getInstance().getExternalCacheDir().getAbsolutePath()
+    public static final String filePath = FUManager.getInstance().getContext().getExternalCacheDir().getAbsolutePath()
             + File.separator + "FaceUnity" + File.separator + APP_NAME + File.separator;
 
     public static final String versionPath = filePath + "versionPath.json";//版本号

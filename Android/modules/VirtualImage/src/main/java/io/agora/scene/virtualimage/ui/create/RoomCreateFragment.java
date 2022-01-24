@@ -12,14 +12,13 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.faceunity.pta_art.fragment.EditFaceFragment;
 
-import io.agora.base.TextureBufferHelper;
 import io.agora.example.base.BaseUtil;
 import io.agora.scene.virtualimage.GlobalViewModel;
 import io.agora.scene.virtualimage.R;
 import io.agora.scene.virtualimage.base.BaseNavFragment;
 import io.agora.scene.virtualimage.bean.RoomInfo;
 import io.agora.scene.virtualimage.databinding.VirtualImageFragmentCreateRoomBinding;
-import io.agora.scene.virtualimage.manager.FUDemoManager;
+import io.agora.scene.virtualimage.manager.FUManager;
 import io.agora.scene.virtualimage.manager.RtcManager;
 import io.agora.scene.virtualimage.util.EventObserver;
 import io.agora.scene.virtualimage.util.OneUtil;
@@ -35,29 +34,8 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
         mGlobalModel = OneUtil.getViewModel(requireActivity(), GlobalViewModel.class);
         initListener();
 
-
-        RtcManager.getInstance().setVideoPreProcess(new RtcManager.VideoPreProcess() {
-            @Override
-            public void onTextureBufferHelperCreated(TextureBufferHelper helper) {
-                FUDemoManager.getInstance().start();
-            }
-
-            @Override
-            public RtcManager.ProcessVideoFrame processVideoFrameTex(byte[] img, int texId, float[] texMatrix, int width, int height, int cameraType) {
-                FUDemoManager.ResultFrame fuVideoFrame = FUDemoManager.getInstance().onDrawFrame(img, texId, texMatrix, width, height, cameraType);
-                if(fuVideoFrame == null){
-                    return null;
-                }
-                return new RtcManager.ProcessVideoFrame(fuVideoFrame.texId, fuVideoFrame.texMatrix, fuVideoFrame.width, fuVideoFrame.height,
-                        fuVideoFrame.texType == FUDemoManager.TEXTURE_TYPE_OES ? RtcManager.TEXTURE_TYPE_OES : RtcManager.TEXTURE_TYPE_2D);
-            }
-
-            @Override
-            public void onTextureBufferHelperDestroy() {
-                FUDemoManager.getInstance().stop();
-            }
-        });
         RtcManager.getInstance().renderLocalVideo(mBinding.videoContainer, null);
+        FUManager.getInstance().start();
         setupRandomName();
     }
 
@@ -147,7 +125,7 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
     }
 
     private void navigateToStartPage() {
-        RtcManager.getInstance().reset(false);
+        RtcManager.getInstance().reset(true);
         findNavController().popBackStack(R.id.roomListFragment, false);
     }
 }

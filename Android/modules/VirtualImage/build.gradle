@@ -52,7 +52,7 @@ android {
     if (isRunAlone.toBoolean()) {
         applicationVariants.all { variant ->
             variant.outputs.all {
-                outputFileName = "VirtualImage-${versionName}-${variant.buildType.name}.apk"
+                outputFileName = "VirtualImage-RTC-${versionName}.apk"
             }
         }
     }
@@ -100,7 +100,7 @@ dependencies {
     implementation safeExtGetDependence('androidx.recyclerview:recyclerview', '1.2.1')
     implementation safeExtGetDependence('androidx.work:work-runtime','2.7.0')
 
-    implementation safeExtGetDependence('com.github.agorabuilder:agora-full-preview','4.0.0.preview.3')
+    //implementation safeExtGetDependence('com.github.agorabuilder:agora-full-preview','4.0.0.preview.3')
     implementation safeExtGetDependence('com.github.AgoraIO-Community:SyncManager-Android', '1.0.0')
 
     // Google

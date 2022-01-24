@@ -4,17 +4,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.faceunity.pta_art.constant.Constant;
-import com.faceunity.pta_art.utils.FileUtil;
-import com.faceunity.wrapper.faceunity;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * 异步消息的处理
@@ -72,35 +61,35 @@ public class FUItemHandler extends Handler {
      */
     public int loadFUItem(String bundle) {
         int item = 0;
-        long loadItemS = System.currentTimeMillis();
-        try {
-            if (TextUtils.isEmpty(bundle)) {
-                item = 0;
-            } else {
-                InputStream is;
-                File testBundle = new File(Constant.TestFilePath + FileUtil.getLastName(bundle));
-                if (testBundle.exists()) {
-                    is = new FileInputStream(testBundle);
-                    Log.i(TAG, "~~~~~~~~~~~~~~~~~~使用本地测试bundle : " + Constant.TestFilePath + bundle);
-                } else {
-                    is = bundle.startsWith(Constant.filePath) ? new FileInputStream(new File(bundle)) : mContext.getAssets().open(bundle);
-                }
-                byte[] itemData = new byte[is.available()];
-                is.read(itemData);
-                is.close();
-                item = faceunity.fuCreateItemFromPackage(itemData);
-            }
-            long loadItemE = System.currentTimeMillis();
-            Log.i("time", "load item:" + bundle + "--loadTime:" + (loadItemE - loadItemS) + "ms");
-            Log.i(TAG, "bundle loadFUItem " + bundle + " item " + item);
-            int error = faceunity.fuGetSystemError();
-            if(error != 0){
-                Log.e(TAG, "bundle loadFUItem error code=" + error + " message=" + faceunity.fuGetSystemErrorString(error));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e(TAG, "bundle loadFUItem error=" + e.toString());
-        }
+//        long loadItemS = System.currentTimeMillis();
+//        try {
+//            if (TextUtils.isEmpty(bundle)) {
+//                item = 0;
+//            } else {
+//                InputStream is;
+//                File testBundle = new File(Constant.TestFilePath + FileUtil.getLastName(bundle));
+//                if (testBundle.exists()) {
+//                    is = new FileInputStream(testBundle);
+//                    Log.i(TAG, "~~~~~~~~~~~~~~~~~~使用本地测试bundle : " + Constant.TestFilePath + bundle);
+//                } else {
+//                    is = bundle.startsWith(Constant.filePath) ? new FileInputStream(new File(bundle)) : mContext.getAssets().open(bundle);
+//                }
+//                byte[] itemData = new byte[is.available()];
+//                is.read(itemData);
+//                is.close();
+//                item = faceunity.fuCreateItemFromPackage(itemData);
+//            }
+//            long loadItemE = System.currentTimeMillis();
+//            Log.i("time", "load item:" + bundle + "--loadTime:" + (loadItemE - loadItemS) + "ms");
+//            Log.i(TAG, "bundle loadFUItem " + bundle + " item " + item);
+//            int error = faceunity.fuGetSystemError();
+//            if(error != 0){
+//                Log.e(TAG, "bundle loadFUItem error code=" + error + " message=" + faceunity.fuGetSystemErrorString(error));
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            Log.e(TAG, "bundle loadFUItem error=" + e.toString());
+//        }
         return item;
     }
 

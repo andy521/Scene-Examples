@@ -3,7 +3,6 @@ package com.faceunity.pta_art.constant;
 import android.content.Context;
 import android.util.Log;
 
-import com.faceunity.pta_art.FUApplication;
 import com.faceunity.pta_art.entity.BundleRes;
 import com.faceunity.pta_art.entity.Scenes;
 import com.faceunity.pta_art.entity.SpecialBundleRes;
@@ -17,6 +16,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import io.agora.scene.virtualimage.manager.FUManager;
 
 public class JsonUtils {
     /**
@@ -34,7 +35,7 @@ public class JsonUtils {
     private Context context;
 
     public JsonUtils() {
-        this.context = FUApplication.getInstance();
+        this.context = FUManager.getInstance().getContext();
     }
 
 

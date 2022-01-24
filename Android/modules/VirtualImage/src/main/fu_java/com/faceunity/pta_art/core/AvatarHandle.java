@@ -9,17 +9,17 @@ import android.util.Log;
 import com.faceunity.pta_art.constant.FilePathFactory;
 import com.faceunity.pta_art.core.base.BaseCore;
 import com.faceunity.pta_art.core.base.BasePTAHandle;
-import com.faceunity.pta_art.core.base.FUItem;
 import com.faceunity.pta_art.core.base.FUItemHandler;
 import com.faceunity.pta_art.entity.AvatarPTA;
 import com.faceunity.pta_art.entity.BundleRes;
-import com.faceunity.wrapper.faceunity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
+import io.agora.rtc2.Constants;
+import io.agora.rtc2.video.AvatarItemType;
+import io.agora.rtc2.video.AvatarOptionValue;
+import io.agora.scene.virtualimage.manager.RtcManager;
 
 /**
  * Avatar Controller
@@ -34,63 +34,32 @@ public class AvatarHandle extends BasePTAHandle {
     private boolean mIsNeedIdle;// 是否需要idle动画
     // 当前是否为合影界面
     private boolean isGroupPhoto = false;
-    // 设置Avatar以后是否需要在下一帧再进行回调
-    private boolean needNextEventCallback = true;
 
-    public final FUItem headItem = new FUItem();
-    public final FUItem hairItem = new FUItem();
-    public final FUItem glassItem = new FUItem();
-    public final FUItem beardItem = new FUItem();
-    public final FUItem eyebrowItem = new FUItem();
-    public final FUItem eyelashItem = new FUItem();
-    public final FUItem hatItem = new FUItem();
-    public final FUItem bodyItem = new FUItem();
-    public final FUItem clothesItem = new FUItem();
-    public final FUItem clothesUpperItem = new FUItem();
-    public final FUItem clothesLowerItem = new FUItem();
-    public final FUItem shoeItem = new FUItem();
-    public final FUItem decorationsEarItem = new FUItem();
-    public final FUItem decorationsFootItem = new FUItem();
-    public final FUItem decorationsHandItem = new FUItem();
-    public final FUItem decorationsHeadItem = new FUItem();
-    public final FUItem decorationsNeckItem = new FUItem();
-
-    public final FUItem eyelinerItem = new FUItem();
-    public final FUItem eyeshadowItem = new FUItem();
-    public final FUItem facemakeupItem = new FUItem();
-    public final FUItem lipglossItem = new FUItem();
-    public final FUItem pupilItem = new FUItem();
-
-    public final FUItem expressionItem = new FUItem();
-    public final FUItem backgroundItem = new FUItem();
-    public final FUItem otherItem[] = new FUItem[5];
-
-
-    {
-        for (int i = 0; i < otherItem.length; i++) {
-            otherItem[i] = new FUItem();
-        }
-    }
+    public int eyebrowItemTypeId;
+    public int eyelashItemTypeId;
+    public int eyeshadowItemTypeId;
+    public int lipglossItemTypeId;
+    public int[] otherItem = new int[]{
+            RtcManager.AVATAR_ITEM_TYPE_OTHER_01,
+            RtcManager.AVATAR_ITEM_TYPE_OTHER_02,
+            RtcManager.AVATAR_ITEM_TYPE_OTHER_03,
+            RtcManager.AVATAR_ITEM_TYPE_OTHER_04,
+            RtcManager.AVATAR_ITEM_TYPE_OTHER_05
+    };
 
     public AvatarHandle(BaseCore baseCore, FUItemHandler FUItemHandler, final Runnable prepare) {
         super(baseCore, FUItemHandler);
         isPose = false;
-        mFUItemHandler.loadFUItem(FUItemHandler_what_controller, new com.faceunity.pta_art.core.base.FUItemHandler.LoadFUItemListener(FilePathFactory.bundleController()) {
-
-            @Override
-            public void onLoadComplete(FUItem fuItem) {
-                openHairFollowing(true);
-                controllerItem = fuItem.handle;
-                if (prepare != null)
-                    prepare.run();
-            }
+        openHairFollowing(true);
+        FUItemHandler.post(() -> {
+            if (prepare != null)
+                prepare.run();
         });
     }
 
-    public AvatarHandle(BaseCore baseCore, FUItemHandler FUItemHandler, int controller) {
+    public AvatarHandle(BaseCore baseCore, FUItemHandler FUItemHandler) {
         super(baseCore, FUItemHandler);
         isPose = false;
-        controllerItem = controller;
     }
 
     public void setAvatar(AvatarPTA avatar) {
@@ -111,64 +80,60 @@ public class AvatarHandle extends BasePTAHandle {
         Message msg = Message.obtain(mFUItemHandler, new Runnable() {
             @Override
             public void run() {
-                loadItem(headItem, avatar.getHeadFile(), mustLoadHead);
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HEAD, avatar.getHeadFile(), mustLoadHead);
                 // 当前的帽子都是帽子头发道具，所以就不需要原先的头发道具了
                 if (TextUtils.isEmpty(avatar.getHatFile())) {
-                    loadItem(hairItem, avatar.getHairFile(), mistLoadHair);
-                    loadItem(hatItem, avatar.getHatFile());
-
+                    RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAIR, avatar.getHairFile(), mistLoadHair);
+                    RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAT, avatar.getHatFile());
                 } else {
-                    loadItem(hairItem, "");
-                    loadItem(hatItem, avatar.getHatFile());
+                    RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAIR);
+                    RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAT, avatar.getHatFile());
                 }
-                loadItem(glassItem, avatar.getGlassesFile());
-                loadItem(beardItem, avatar.getBeardFile());
-                loadItem(eyebrowItem, avatar.getEyebrowFile());
-                loadItem(eyelashItem, avatar.getEyelashFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_GLASS, avatar.getGlassesFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BEARD, avatar.getBeardFile());
 
-                loadItem(bodyItem, FilePathFactory.bodyBundle(avatar.getClothesGender(), avatar.getBodyLevel()));
-                loadItem(clothesItem, avatar.getClothesFile());
+                eyebrowItemTypeId = AvatarItemType.AvatarItemType_BROW;
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BROW, avatar.getEyebrowFile());
+                eyelashItemTypeId = AvatarItemType.AvatarItemType_ELASH;
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_ELASH, avatar.getEyelashFile());
 
-                loadItem(clothesUpperItem, avatar.getClothesUpperFile());
-                loadItem(clothesLowerItem, avatar.getClothesLowerFile());
-                loadItem(shoeItem, avatar.getShoeFile());
-                loadItem(decorationsEarItem, avatar.getEarDecorationsFile());
-                loadItem(decorationsFootItem, avatar.getFootDecorationsFile());
-                loadItem(decorationsHandItem, avatar.getHandDecorationsFile());
-                loadItem(decorationsHeadItem, avatar.getHeadDecorationsFile());
-                loadItem(decorationsNeckItem, avatar.getNeckDecorationsFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_BODY, FilePathFactory.bodyBundle(avatar.getClothesGender(), avatar.getBodyLevel()));
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_CLOTHES_SUIT, avatar.getClothesFile());
 
-                loadItem(eyelinerItem, avatar.getEyelinerFile());
-                loadItem(eyeshadowItem, avatar.getEyeshadowFile());
-                loadItem(facemakeupItem, avatar.getFacemakeupFile());
-                loadItem(lipglossItem, avatar.getLipglossFile());
-                loadItem(pupilItem, avatar.getPupilFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_CLOTHES_UPPER, avatar.getClothesUpperFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_CLOTHES_LOWER, avatar.getClothesLowerFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_SHOES, avatar.getShoeFile());
 
-                loadItem(expressionItem, loadExpressionBundle(avatar));
-                //loadItem(backgroundItem, isGroupPhoto ? "" : avatar.getBackgroundFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_TOUSHI, avatar.getHeadDecorationsFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_ER_SHI, avatar.getEarDecorationsFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_JIAO_SHI, avatar.getFootDecorationsFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_SHOU_SHI, avatar.getHandDecorationsFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_BO_SHI, avatar.getNeckDecorationsFile());
+
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_EYE_LINER, avatar.getEyelinerFile());
+                eyeshadowItemTypeId = AvatarItemType.AvatarItemType_EYE_SHADOW;
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_EYE_SHADOW, avatar.getEyeshadowFile());
+                lipglossItemTypeId = AvatarItemType.AvatarItemType_LIP_GLOSS;
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_LIP_GLOSS, avatar.getLipglossFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_PUPIL, avatar.getPupilFile());
+
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_MAKEUP, avatar.getFacemakeupFile());
+
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_ANIMATION, loadExpressionBundle(avatar));
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BACKGROUND, isGroupPhoto ? "" : avatar.getBackgroundFile());
+
+                // 其他？
                 String[] others = avatar.getOtherFile();
                 for (int i = 0; i < otherItem.length; i++) {
                     if (others != null && i < others.length) {
-                        loadItem(otherItem[i], others[i]);
-                    } else if (otherItem[i] != null) {
-                        final int finalI = i;
-                        mBaseCore.queueEvent(new Runnable() {
-                            @Override
-                            public void run() {
-                                faceunity.fuUnBindItems(controllerItem, new int[]{otherItem[finalI].handle});
-                                mBaseCore.destroyItem(otherItem[finalI].handle).run();
-                                otherItem[finalI].clear();
-                            }
-                        });
+                        RtcManager.getInstance().enableAvatarGeneratorItems(otherItem[i], others[i]);
+                    } else {
+                        RtcManager.getInstance().disableAvatarGeneratorItems(otherItem[i]);
                     }
                 }
                 commitItem(avatar);
                 if (completeListener != null) {
-                    if (needNextEventCallback) {
-                        mBaseCore.queueNextEvent(completeListener);
-                    } else {
-                        mBaseCore.queueEvent(completeListener);
-                    }
+                    completeListener.run();
                 }
             }
         });
@@ -198,61 +163,55 @@ public class AvatarHandle extends BasePTAHandle {
      * @param id
      */
     public void setCurrentInstancceId(int id) {
-        if (controllerItem > 0) {
-            mBaseCore.queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    faceunity.fuItemSetParam(controllerItem,
-                                             "current_instance_id", id);
-                    faceunity.fuItemSetParam(controllerItem, "target_position", new double[]{0, 0, 0});//必须重新设置初始值
-                    faceunity.fuItemSetParam(controllerItem, "reset_all", 1.0f);//必须设置后生效
-                }
-            });
-        }
+        RtcManager.getInstance().setGeneratorOptions("current_instance_id", new AvatarOptionValue(id));
+        RtcManager.getInstance().setGeneratorOptions("target_position", new AvatarOptionValue(new double[]{0, 0, 0}));
+        RtcManager.getInstance().setGeneratorOptions("reset_all", new AvatarOptionValue(1.0f));
     }
 
     @Override
     protected void bindAll() {
-        if (controllerItem > 0)
-            mBaseCore.queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    int[] items = new int[]{
-                            backgroundItem.handle,
-                            headItem.handle, hairItem.handle, glassItem.handle, beardItem.handle,
-                            eyebrowItem.handle, eyelashItem.handle, hatItem.handle, bodyItem.handle, clothesItem.handle,
-                            clothesUpperItem.handle, clothesLowerItem.handle, shoeItem.handle, decorationsEarItem.handle,
-                            decorationsFootItem.handle, decorationsHandItem.handle, decorationsHeadItem.handle, decorationsNeckItem.handle,
-                            eyelinerItem.handle, eyeshadowItem.handle, facemakeupItem.handle, lipglossItem.handle, pupilItem.handle,
-                            expressionItem.handle, otherItem[0] == null ? 0 : otherItem[0].handle, otherItem[1] == null ? 0 : otherItem[1].handle, otherItem[2] == null ? 0 : otherItem[2].handle, otherItem[3] == null ? 0 : otherItem[3].handle, otherItem[4] == null ? 0 : otherItem[4].handle};
-                    Log.i(TAG, "bundle avatarBindItem controlItem " + controllerItem + " bindAll " + Arrays.toString(items));
-                    faceunity.fuBindItems(controllerItem, items);
-                    setAvatarColor();
-                }
-            });
+        setAvatarColor();
     }
 
     @Override
     protected void unBindAll() {
-        if (controllerItem > 0)
-            mBaseCore.queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    int[] items = new int[]{backgroundItem.handle, headItem.handle, hairItem.handle, glassItem.handle, beardItem.handle,
-                            eyebrowItem.handle, eyelashItem.handle, hatItem.handle, bodyItem.handle, clothesItem.handle,
-                            clothesUpperItem.handle, clothesLowerItem.handle, shoeItem.handle, decorationsEarItem.handle,
-                            decorationsFootItem.handle, decorationsHandItem.handle, decorationsHeadItem.handle, decorationsNeckItem.handle,
-                            eyelinerItem.handle, eyeshadowItem.handle, facemakeupItem.handle, lipglossItem.handle,
-                            pupilItem.handle, expressionItem.handle,
-                            otherItem[0] == null ? 0 : otherItem[0].handle,
-                            otherItem[1] == null ? 0 : otherItem[1].handle,
-                            otherItem[2] == null ? 0 : otherItem[2].handle,
-                            otherItem[3] == null ? 0 : otherItem[3].handle,
-                            otherItem[4] == null ? 0 : otherItem[4].handle};
-                    Log.i(TAG, "bundle avatarBindItem controlItem " + controllerItem + " unBindAll " + Arrays.toString(items));
-                    faceunity.fuUnBindItems(controllerItem, items);
-                }
-            });
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HEAD);
+            RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAIR);
+            RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAT);
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_GLASS);
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BEARD);
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BROW);
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_ELASH);
+
+        RtcManager.getInstance().disableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_BODY);
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_CLOTHES_SUIT);
+
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_CLOTHES_UPPER);
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_CLOTHES_LOWER);
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_SHOES);
+
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_TOUSHI);
+        RtcManager.getInstance().disableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_ER_SHI);
+        RtcManager.getInstance().disableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_JIAO_SHI);
+        RtcManager.getInstance().disableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_SHOU_SHI);
+        RtcManager.getInstance().disableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_BO_SHI);
+
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_EYE_LINER);
+        eyeshadowItemTypeId = AvatarItemType.AvatarItemType_EYE_SHADOW;
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_EYE_SHADOW);
+        lipglossItemTypeId = AvatarItemType.AvatarItemType_LIP_GLOSS;
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_LIP_GLOSS);
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_PUPIL);
+
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_MAKEUP);
+
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_ANIMATION);
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BACKGROUND);
+
+        // 其他？
+        for (int i = 0; i < otherItem.length; i++) {
+            RtcManager.getInstance().disableAvatarGeneratorItems(otherItem[i]);
+        }
     }
 
     @Override
@@ -262,92 +221,14 @@ public class AvatarHandle extends BasePTAHandle {
     }
 
     public void setMakeupHandleId() {
-        eyebrowHandleId = eyebrowItem.handle;
-        eyeshadowHandleId = eyeshadowItem.handle;
-        lipglossHandleId = lipglossItem.handle;
-        eyelashHandleId = eyelashItem.handle;
+        eyebrowHandleId = eyebrowItemTypeId;
+        eyeshadowHandleId = eyeshadowItemTypeId;
+        lipglossHandleId = lipglossItemTypeId;
+        eyelashHandleId = eyelashItemTypeId;
     }
 
-    /*
-     * controllerItem不释放
-     */
-    public void releaseNoController() {
-        unBindAll();
-        releaseAll(false);
-    }
 
     public void releaseAll(boolean isControllerRelease) {
-        mBaseCore.queueEvent(mBaseCore.destroyItem(headItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(hairItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(glassItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(beardItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(eyebrowItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(eyelashItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(hatItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(bodyItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(clothesItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(clothesLowerItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(clothesUpperItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(shoeItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(expressionItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(decorationsEarItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(decorationsFootItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(decorationsHandItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(decorationsHeadItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(decorationsNeckItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(backgroundItem.handle));
-
-        mBaseCore.queueEvent(mBaseCore.destroyItem(eyelinerItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(eyeshadowItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(facemakeupItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(lipglossItem.handle));
-        mBaseCore.queueEvent(mBaseCore.destroyItem(pupilItem.handle));
-
-        for (FUItem item : otherItem) {
-            mBaseCore.queueEvent(mBaseCore.destroyItem(item.handle));
-        }
-        if (isControllerRelease) {
-            mBaseCore.queueEvent(mBaseCore.destroyItem(controllerItem));
-        }
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                headItem.clear();
-                hairItem.clear();
-                glassItem.clear();
-                beardItem.clear();
-                eyebrowItem.clear();
-                eyelashItem.clear();
-                hatItem.clear();
-                bodyItem.clear();
-                clothesItem.clear();
-                clothesUpperItem.clear();
-                clothesLowerItem.clear();
-                shoeItem.clear();
-                decorationsEarItem.clear();
-                decorationsFootItem.clear();
-                decorationsHandItem.clear();
-                decorationsHeadItem.clear();
-                decorationsNeckItem.clear();
-                expressionItem.clear();
-                backgroundItem.clear();
-
-                eyelinerItem.clear();
-                eyeshadowItem.clear();
-                facemakeupItem.clear();
-                lipglossItem.clear();
-                pupilItem.clear();
-                for (FUItem item : otherItem) {
-                    item.clear();
-                }
-                if (isControllerRelease) {
-                    controllerItem = 0;
-                }
-                if (isControllerRelease) {
-                    closeLight();
-                }
-            }
-        });
     }
 
     /**
@@ -356,12 +237,7 @@ public class AvatarHandle extends BasePTAHandle {
      * @param rotDelta 水平方向旋转角度增量
      */
     public void setRotDelta(final float rotDelta) {
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuItemSetParam(controllerItem, "rot_delta", rotDelta);
-            }
-        });
+        RtcManager.getInstance().setGeneratorOptions("rot_delta", new AvatarOptionValue(rotDelta));
     }
 
     /**
@@ -370,12 +246,7 @@ public class AvatarHandle extends BasePTAHandle {
      * @param translateDelta avatar所在位置高度增量
      */
     public void setTranslateDelta(final float translateDelta) {
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuItemSetParam(controllerItem, "translate_delta", translateDelta);
-            }
-        });
+        RtcManager.getInstance().setGeneratorOptions("translate_delta", new AvatarOptionValue(translateDelta));
     }
 
     /**
@@ -384,12 +255,7 @@ public class AvatarHandle extends BasePTAHandle {
      * @param scaleDelta avatar缩放比例增量
      */
     public void setScaleDelta(final float scaleDelta) {
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuItemSetParam(controllerItem, "scale_delta", scaleDelta);
-            }
-        });
+        RtcManager.getInstance().setGeneratorOptions("scale_delta", new AvatarOptionValue(scaleDelta));
     }
 
     /**
@@ -398,22 +264,17 @@ public class AvatarHandle extends BasePTAHandle {
      * @param scaleDelta avatar缩放比例增量
      */
     public void setScaleDelta(final float scaleDelta, double maxScale, double minScale) {
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                double[] lastScale = getCurrent_position();
-                if ((lastScale[2] >= maxScale && scaleDelta > 0) || (lastScale[2] <= minScale && scaleDelta < 0)) {
-                    return;
-                }
-                if (scaleDelta > 0 && lastScale[2] + scaleDelta > maxScale) {
-                    faceunity.fuItemSetParam(controllerItem, "scale_delta", maxScale - lastScale[2]);
-                } else if (scaleDelta < 0 && lastScale[2] + scaleDelta < minScale) {
-                    faceunity.fuItemSetParam(controllerItem, "scale_delta", minScale - lastScale[2]);
-                } else {
-                    faceunity.fuItemSetParam(controllerItem, "scale_delta", scaleDelta);
-                }
-            }
-        });
+        double[] lastScale = getCurrent_position();
+        if ((lastScale[2] >= maxScale && scaleDelta > 0) || (lastScale[2] <= minScale && scaleDelta < 0)) {
+            return;
+        }
+        if (scaleDelta > 0 && lastScale[2] + scaleDelta > maxScale) {
+            RtcManager.getInstance().setGeneratorOptions("scale_delta", new AvatarOptionValue(maxScale - lastScale[2]));
+        } else if (scaleDelta < 0 && lastScale[2] + scaleDelta < minScale) {
+            RtcManager.getInstance().setGeneratorOptions("scale_delta", new AvatarOptionValue(minScale - lastScale[2]));
+        } else {
+            RtcManager.getInstance().setGeneratorOptions("scale_delta", new AvatarOptionValue(scaleDelta));
+        }
     }
 
     /**
@@ -422,13 +283,8 @@ public class AvatarHandle extends BasePTAHandle {
      * @param xyz
      */
     public void setScale(double[] xyz) {
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuItemSetParam(controllerItem, "target_position", new double[]{xyz[0], xyz[1], xyz[2]});
-                faceunity.fuItemSetParam(controllerItem, "reset_all", 1);
-            }
-        });
+        RtcManager.getInstance().setGeneratorOptions("target_position", new AvatarOptionValue(new double[]{xyz[0], xyz[1], xyz[2]}));
+        RtcManager.getInstance().setGeneratorOptions("reset_all", new AvatarOptionValue(1));
     }
 
     /**
@@ -437,50 +293,33 @@ public class AvatarHandle extends BasePTAHandle {
      * @return
      */
     public double[] getCurrent_position() {
-        if (controllerItem > 0) {
-            return faceunity.fuItemGetParamdv(controllerItem, "current_position");
-        } else {
-            return new double[]{0, 0, 0};
-        }
+        AvatarOptionValue outValue = new AvatarOptionValue(new double[]{0, 0, 0});
+        RtcManager.getInstance().GetGeneratorOptions("current_position", Constants.AvatarValueType.DoubleArray, outValue);
+        return (double[]) outValue.value;
     }
 
     /**
      * 该方法只做对模型的旋转
      */
     public void resetAllFront() {
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuItemSetParam(controllerItem, "target_position", new double[]{0, 0, 0});
-                faceunity.fuItemSetParam(controllerItem, "target_angle", 0);
-                faceunity.fuItemSetParam(controllerItem, "reset_all", 3);
-            }
-        });
+        RtcManager.getInstance().setGeneratorOptions("target_position", new AvatarOptionValue(new double[]{0, 0, 0}));
+        RtcManager.getInstance().setGeneratorOptions("target_angle", new AvatarOptionValue(0));
+        RtcManager.getInstance().setGeneratorOptions("reset_all", new AvatarOptionValue(3));
     }
 
     /**
      * 该方法只做对模型的旋转
      */
     public void resetAllSide() {
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuItemSetParam(controllerItem, "target_position", new double[]{0, 0, 0});
-                faceunity.fuItemSetParam(controllerItem, "target_angle", 0.125);
-                faceunity.fuItemSetParam(controllerItem, "reset_all", 3);
-            }
-        });
+        RtcManager.getInstance().setGeneratorOptions("target_position", new AvatarOptionValue(new double[]{0, 0, 0}));
+        RtcManager.getInstance().setGeneratorOptions("target_angle", new AvatarOptionValue(0.125));
+        RtcManager.getInstance().setGeneratorOptions("reset_all", new AvatarOptionValue(3));
     }
 
 
     public void setNeedTrackFace(boolean needTrackFace) {
         mIsNeedTrack = needTrackFace;
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuItemSetParam(controllerItem, mIsNeedTrack ? "enter_track_rotation_mode" : "quit_track_rotation_mode", 1);
-            }
-        });
+        RtcManager.getInstance().setGeneratorOptions(mIsNeedTrack ? "enter_track_rotation_mode" : "quit_track_rotation_mode", new AvatarOptionValue(1));
     }
 
     /**
@@ -494,13 +333,7 @@ public class AvatarHandle extends BasePTAHandle {
     }
 
     public void setFaceCapture(boolean isOpen) {
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                //3.设置enable_face_processor，说明启用或者关闭面部追踪，value = 1.0表示开启，value = 0.0表示关闭
-                faceunity.fuItemSetParam(controllerItem, "enable_face_processor", isOpen ? 1.0 : 0.0);
-            }
-        });
+        RtcManager.getInstance().setGeneratorOptions("enable_face_processor", new AvatarOptionValue(isOpen ? 1.0 : 0.0));
     }
 
     public void setPose(boolean isPose) {
@@ -511,71 +344,11 @@ public class AvatarHandle extends BasePTAHandle {
         isGroupPhoto = groupPhoto;
     }
 
-    public void setNeedNextEventCallback(boolean needNextEventCallback) {
-        this.needNextEventCallback = needNextEventCallback;
-    }
-
     //--------------------------------------动画----------------------------------------
-
-    /**
-     * 相机动画控制
-     * <p>
-     * start_camera_animation 方法表示开启相机动画
-     * pause_camera_animation 方法表示暂停相机动画
-     * stop_camera_animation 方法表示停止相机动画并且回到第一帧
-     * <p>
-     * camera_animation_loop 方法表示相机动画是否需要循环  1表示循环  0 表示不需要循环，也就是播放一遍
-     *
-     * @param state
-     */
-    public void setCameraAnim(int state) {
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                switch (state) {
-                    case 1:
-                        // 启动当前Camera动画
-                        faceunity.fuItemSetParam(controllerItem, "play_camera_animation", 1);
-                        break;
-                    case 2:
-                        // 停止当前Camera动画
-                        faceunity.fuItemSetParam(controllerItem, "stop_camera_animation", 1);
-                        break;
-                    case 3:
-                        // 暂停当前Camera动画
-                        faceunity.fuItemSetParam(controllerItem, "pause_camera_animation", 1);
-                        break;
-                    case 4:
-                        //重置相机动画，参数无意义，效果相当于先调用stop_camera_animation再调用start_camera_animation
-                        faceunity.fuItemSetParam(controllerItem, "reset_camera_animation", 1);
-                        break;
-                }
-            }
-        });
-    }
-
-    /**
-     * 从头播放句柄为cameraId的相机动画（不循环）
-     *
-     * @param cameraId
-     */
-    public void setCameraAnimPlayOnce(int cameraId) {
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuItemSetParam(controllerItem, "play_camera_animation_once", cameraId);
-            }
-        });
-    }
 
     //从头播放句柄为anim_id的动画（循环）
     public void seekToAnimBegin(final int anim_id) {
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuItemSetParam(controllerItem, "play_animation", anim_id);
-            }
-        });
+        RtcManager.getInstance().setGeneratorOptions("play_animation", new AvatarOptionValue(anim_id));
     }
 
     /**
@@ -583,24 +356,22 @@ public class AvatarHandle extends BasePTAHandle {
      * @param role_id 角色id
      */
     public void setAnimState(final int state, int role_id) {
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuItemSetParam(controllerItem,
-                                         "current_instance_id", role_id);
-                switch (state) {
-                    case 1:
-                        faceunity.fuItemSetParam(controllerItem, "start_animation", role_id);//当前帧开始播放
-                        break;
-                    case 2:
-                        faceunity.fuItemSetParam(controllerItem, "pause_animation", role_id);
-                        break;
-                    case 3:
-                        faceunity.fuItemSetParam(controllerItem, "stop_animation", role_id);//删除所有帧
-                        break;
-                }
-            }
-        });
+        RtcManager.getInstance().setGeneratorOptions(
+                "current_instance_id", new AvatarOptionValue(role_id));
+        switch (state) {
+            case 1:
+                RtcManager.getInstance().setGeneratorOptions(
+                        "start_animation", new AvatarOptionValue(role_id));
+                break;
+            case 2:
+                RtcManager.getInstance().setGeneratorOptions(
+                        "pause_animation", new AvatarOptionValue(role_id));
+                break;
+            case 3:
+                RtcManager.getInstance().setGeneratorOptions(
+                        "stop_animation", new AvatarOptionValue(role_id));
+                break;
+        }
     }
 
     /**
@@ -619,19 +390,16 @@ public class AvatarHandle extends BasePTAHandle {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        float progress = (float) faceunity.fuItemGetParam(controllerItem, jsonObject.toString());
-        return progress;
+        AvatarOptionValue outValue = new AvatarOptionValue();
+        RtcManager.getInstance().GetGeneratorOptions(jsonObject.toString(), Constants.AvatarValueType.Float, outValue);
+        return (float) outValue.value;
     }
     //--------------------------------------捏脸----------------------------------------
 
     public void setNeedFacePUP(boolean needFacePUP) {
         mIsNeedFacePUP = needFacePUP;
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuItemSetParam(controllerItem, mIsNeedFacePUP ? "enter_facepup_mode" : "quit_facepup_mode", 1);
-            }
-        });
+        RtcManager.getInstance().setGeneratorOptions(
+                mIsNeedFacePUP ? "enter_facepup_mode" : "quit_facepup_mode", new AvatarOptionValue(1));
     }
 
     public void fuItemSetParamFaceShape(final String key, final double values) {
@@ -639,54 +407,44 @@ public class AvatarHandle extends BasePTAHandle {
             Log.e(TAG, "fuItemSetParamFaceShape error key " + key + " values " + values);
             return;
         }
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuItemSetParam(controllerItem, "{\"name\":\"facepup\",\"param\":\"" + key + "\"}", values);
-            }
-        });
+        RtcManager.getInstance().setGeneratorOptions(
+                "{\"name\":\"facepup\",\"param\":\"" + key + "\"}", new AvatarOptionValue(values));
     }
 
     /**
      * 隐藏脖子
      */
     public void hide_neck() {
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuItemSetParam(controllerItem, "hide_neck", 1.0);
-            }
-        });
+        RtcManager.getInstance().setGeneratorOptions(
+                "hide_neck", new AvatarOptionValue(1.0));
     }
 
     public float fuItemGetParamShape(final String key) {
-        return (float) faceunity.fuItemGetParam(controllerItem, "{\"name\":\"facepup\",\"param\":\"" + key + "\"}");
+        AvatarOptionValue outValue = new AvatarOptionValue(0f);
+        RtcManager.getInstance().GetGeneratorOptions("{\"name\":\"facepup\",\"param\":\"" + key + "\"}", Constants.AvatarValueType.Float, outValue);
+        return (float) outValue.value;
     }
 
     private float[] expressions;
 
     public float[] fuItemGetParamFaceShape() {
         expressions = null;
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                expressions = faceunity.fuItemGetParamfv(controllerItem, "facepup_expression");
-                countDownLatch.countDown();
-            }
-        });
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        AvatarOptionValue outValue = new AvatarOptionValue(new float[0]);
+        RtcManager.getInstance().GetGeneratorOptions("facepup_expression", Constants.AvatarValueType.FloatArray, outValue);
+        expressions = (float[]) outValue.value;
         return expressions;
     }
 
     public Point getPointByIndex(int index) {
-        faceunity.fuItemSetParam(controllerItem, "query_vert", index);
-        int x = (int) faceunity.fuItemGetParam(controllerItem, "query_vert_x");
-        int y = (int) faceunity.fuItemGetParam(controllerItem, "query_vert_y");
+        RtcManager.getInstance().setGeneratorOptions("query_vert", new AvatarOptionValue(index));
+
+        AvatarOptionValue xOutValue = new AvatarOptionValue();
+        RtcManager.getInstance().GetGeneratorOptions("query_vert_x", Constants.AvatarValueType.UInt64, xOutValue);
+        int x = (int)((long)xOutValue.value);
+
+        AvatarOptionValue yOutValue = new AvatarOptionValue();
+        RtcManager.getInstance().GetGeneratorOptions("query_vert_y", Constants.AvatarValueType.UInt64, yOutValue);
+        int y = (int)((long)yOutValue.value);
         return new Point(x, y);
     }
 
@@ -697,35 +455,14 @@ public class AvatarHandle extends BasePTAHandle {
      *               false 关闭
      */
     public void openHairFollowing(boolean isOpen) {
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                /**
-                 * 1 为开启，0 为关闭，开启的时候移动角色的值会被设进骨骼系统，这时候带DynamicBone的模型会有相关效果
-                 * 如果添加了没有骨骼的模型，请关闭这个值，否则无法移动模型
-                 * 默认开启
-                 * 每个角色的这个值都是独立的
-                 */
-                faceunity.fuItemSetParam(controllerItem, "modelmat_to_bone", isOpen ? 1.0 : 0.0);
-            }
-        });
-
+        RtcManager.getInstance().setGeneratorOptions("modelmat_to_bone", new AvatarOptionValue(isOpen ? 1.0 : 0.0));
     }
 
     /**
      * 关闭加载的头发物理动效
      */
     public void setDynamicBone(boolean isOpen) {
-        mBaseCore.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                //1为开启，0为关闭，开启的时候已加载的物理会生效，同时加载新的带物理的bundle也会生效，
-                // 关闭的时候已加载的物理会停止生效，但不会清除缓存（这时候再次开启物理会在此生效），
-                // 这时加载带物理的bundle不会生效，且不会产生缓存，即关闭后加载的带物理的bundle，
-                // 即时再次开启，物理也不会生效，需要重新加载
-                faceunity.fuItemSetParam(controllerItem, "enable_dynamicbone", isOpen ? 1.0 : 0.0);
-            }
-        });
+        RtcManager.getInstance().setGeneratorOptions("enable_dynamicbone", new AvatarOptionValue(isOpen ? 1.0 : 0.0));
     }
 
 
@@ -782,64 +519,32 @@ public class AvatarHandle extends BasePTAHandle {
     private int loadCount = Integer.MAX_VALUE;
 
     /**
-     * 光照
-     */
-    private int lightItem;
-
-    /**
      * 开启光照
      */
     public void openLight(String lightPath) {
-        if (controllerItem > 0) {
-            closeLight();
-            mBaseCore.queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    lightItem = mFUItemHandler.loadFUItem(lightPath);
-                    if (lightItem > 0) {
-                        faceunity.fuBindItems(controllerItem, new int[]{lightItem});
-                    }
-                }
-            });
-        }
+        RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_LIGHT, lightPath);
     }
 
     /**
      * 关闭光照
      */
     public void closeLight() {
-        if (controllerItem > 0) {
-            mBaseCore.queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    if (lightItem > 0) {
-                        faceunity.fuUnBindItems(controllerItem, new int[]{lightItem});
-                        faceunity.fuDestroyItem(lightItem);
-                        lightItem = 0;
-                    }
-                }
-            });
-        }
+        RtcManager.getInstance().disableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_LIGHT);
     }
 
     /**
      * 关闭光照
      */
     public void setBackgroundColor(String color) {
-        if (controllerItem > 0) {
-            int colorValue = Color.parseColor(color);
-            int r = Color.red(colorValue);
-            int g = Color.green(colorValue);
-            int b = Color.blue(colorValue);
-            int a = Color.alpha(colorValue);
-            mBaseCore.queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    fuItemSetParam("enable_background_color", 1.0);
-                    fuItemSetParam("set_background_color", new double[]{r, g, b, a});
-                }
-            });
-        }
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BACKGROUND);
+
+        int colorValue = Color.parseColor(color);
+        int r = Color.red(colorValue);
+        int g = Color.green(colorValue);
+        int b = Color.blue(colorValue);
+        int a = Color.alpha(colorValue);
+        RtcManager.getInstance().setGeneratorOptions("enable_background_color", new AvatarOptionValue(1.0));
+        RtcManager.getInstance().setGeneratorOptions("set_background_color", new AvatarOptionValue(new double[]{r, g, b, a}));
     }
 
     public void setmIsNeedIdle(boolean mIsNeedIdle) {

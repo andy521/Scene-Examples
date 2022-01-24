@@ -10,7 +10,6 @@ import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.T
 
 import androidx.collection.ArrayMap;
 
-import com.faceunity.pta_art.FUApplication;
 import com.faceunity.pta_art.entity.AvatarPTA;
 import com.faceunity.pta_art.entity.BundleRes;
 import com.faceunity.pta_art.entity.Scenes;
@@ -23,6 +22,7 @@ import java.util.List;
 import java.util.Random;
 
 import io.agora.scene.virtualimage.R;
+import io.agora.scene.virtualimage.manager.FUManager;
 
 /**
  * Created by tujh on 2019/3/27.
@@ -176,7 +176,7 @@ public abstract class FilePathFactory {
     private static final BundleRes[] BODY_INPUT = {
             new BundleRes("", R.drawable.icon_live_55),
             new BundleRes("", R.drawable.icon_album_55),
-            new BundleRes("android.resource://" + FUApplication.getInstance().getPackageName() + "/" + R.raw.prefab_one),
+            new BundleRes("android.resource://" + FUManager.getInstance().getContext().getPackageName() + "/" + R.raw.prefab_one),
     };
     /**
      * filter:ar滤镜

@@ -11,6 +11,8 @@ public class LocalUser {
     private @NonNull
     final String userId;
 
+    public final String channelId;
+
     //    格式为 "User-"+id
     private @NonNull
     final String name;
@@ -23,6 +25,11 @@ public class LocalUser {
     }
 
     public LocalUser(@NonNull String userId) {
+        this("", userId);
+    }
+
+    public LocalUser(String channelId, @NonNull String userId) {
+        this.channelId = channelId;
         this.userId = userId;
         this.name = "User-" + userId;
         this.avatar = OneUtil.randomAvatar();

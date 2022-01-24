@@ -171,7 +171,7 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
                     e.printStackTrace();
                 }
                 if (uid != -1)
-                    mViewModel.setupRemoteView(mBinding.hostViewFgRoom.getTargetViewport(), uid);
+                    mViewModel.setupRemoteView(mBinding.hostViewFgRoom.getTargetViewport(),localUser.channelId,  uid);
             } else {
                 mBinding.hostViewFgRoom.setSingleHost(true);
                 RoomFragment.this.onSingleHostState();

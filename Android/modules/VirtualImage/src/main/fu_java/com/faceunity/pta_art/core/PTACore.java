@@ -1,13 +1,16 @@
 package com.faceunity.pta_art.core;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.faceunity.pta_art.constant.FilePathFactory;
 import com.faceunity.pta_art.core.base.BaseCore;
 import com.faceunity.wrapper.faceunity;
 
 import java.util.Arrays;
+
+import io.agora.rtc2.video.AvatarItemType;
+import io.agora.rtc2.video.AvatarOptionValue;
+import io.agora.scene.virtualimage.manager.RtcManager;
 
 /**
  * Created by tujh on 2018/12/17.
@@ -17,42 +20,19 @@ public class PTACore extends BaseCore {
 
     private AvatarHandle avatarHandle;
 
-    public static final int ITEM_ARRAYS_EFFECT = 0;
-    public static final int ITEM_ARRAYS_CONTROLLER = 1;
-    public static final int ITEM_ARRAYS_FXAA = 2;
-    public static final int ITEM_ARRAYS_COUNT = 3;
-    private final int[] mItemsArray = new int[ITEM_ARRAYS_COUNT];
-
-    public int fxaaItem;
-    private int controller_config;
     private boolean isNeedTrackFace = false;
     // 设置即将要播放的动画位置
     private int currentHomeAnimationPosition = -1;
     // 是否可以再次设置下一个播放动画
     private boolean canResetHomeAnimationPosition = true;
-    // 默认背景
-    public int defaultItem;
-    // 平地阴影道具
-    public int planeItemLeft, planeItemRight;
-    private int lastLoadCompletedFrameId = 0;
 
     public PTACore(PTACore core) {
         super(core.mContext, core.mFUP2ARenderer);
         avatarHandle = core.avatarHandle;
-        System.arraycopy(core.mItemsArray, 0, mItemsArray, 0, ITEM_ARRAYS_COUNT);
-        fxaaItem = core.fxaaItem;
-        currentCameraItem = mFUItemHandler.loadFUItem(FilePathFactory.CAMERA_WHOLE_BODY);
     }
 
     public PTACore(Context context, FUPTARenderer fuP2ARenderer) {
         super(context, fuP2ARenderer);
-
-        controller_config = mFUItemHandler.loadFUItem(FilePathFactory.BUNDLE_controller_config_new);
-        mItemsArray[ITEM_ARRAYS_FXAA] = fxaaItem = mFUItemHandler.loadFUItem(FilePathFactory.BUNDLE_fxaa);
-        currentCameraItem = mFUItemHandler.loadFUItem(FilePathFactory.CAMERA_WHOLE_BODY);
-        defaultItem = mFUItemHandler.loadFUItem(FilePathFactory.BUNDLE_default_bg);
-        planeItemLeft = mFUItemHandler.loadFUItem(FilePathFactory.BUNDLE_plane_left);
-        planeItemRight = mFUItemHandler.loadFUItem(FilePathFactory.BUNDLE_plane_right);
 
         Arrays.fill(avatarInfo.mRotation, 0.0f);
         Arrays.fill(avatarInfo.mExpression, 0.0f);
@@ -65,67 +45,9 @@ public class PTACore extends BaseCore {
         return avatarHandle = new AvatarHandle(this, mFUItemHandler, new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "createAvatarHandle success control=" + avatarHandle.controllerItem);
-                faceunity.fuBindItems(avatarHandle.controllerItem, new int[]{controller_config});
-
                 setNeedTrackFace(true);
-
-                faceunity.fuItemSetParam(avatarHandle.controllerItem, "arMode", (360 - mInputImageOrientation) / 90);
-                //faceunity.fuItemSetParam(avatarHandle.controllerItem, "target_position", new double[]{0.0, -50f, 300f});
-                faceunity.fuItemSetParam(avatarHandle.controllerItem, "target_angle", 0);
-                faceunity.fuItemSetParam(avatarHandle.controllerItem, "reset_all", 3);
-                faceunity.fuBindItems(avatarHandle.controllerItem, new int[]{currentCameraItem});
-
-                bindPlane();
-                // 将相机与相机之间的过度动画时间设置为0
-                faceunity.fuItemSetParam(avatarHandle.controllerItem, "camera_animation_transition_time", 0.0);
             }
         });
-    }
-
-    @Override
-    public int[] itemsArray() {
-        if (avatarHandle != null) {
-            mItemsArray[ITEM_ARRAYS_CONTROLLER] = avatarHandle.controllerItem;
-        }
-        return mItemsArray;
-    }
-
-    /**
-     * fuAvatarToTexture 用于人脸驱动
-     *
-     * @param img 图片buffer
-     * @param tex 图片纹理
-     * @param w   图片宽
-     * @param h   图片高
-     * @return
-     */
-    @Override
-    public int onDrawFrame(byte[] img, int tex, int w, int h, int rotation) {
-        int loadCount = avatarHandle.getLoadCount();
-        if (loadCount != Integer.MAX_VALUE) {
-            if (avatarHandle.expressionItem.handle > 0) {
-                float progress = avatarHandle.getAnimateProgress(avatarHandle.expressionItem.handle);
-                if (loadCount - progress < 0.05 && loadCount - progress > 0) {
-                    // progress并不是一个整型，我们这里取一个范围，也就是loadCount± 0.05 就算是播放完毕
-
-                    if (aniLoadCompletedListener != null && (mFrameId - lastLoadCompletedFrameId > 1)) {
-                        // (mFrameId - lastLoadCompletedFrameId > 1) 表示上次结束动画在上一帧，这一帧又结束一个新动画，
-                        // 这显然是不合理的，所以做过滤
-                        aniLoadCompletedListener.loadCompleted(Math.round(progress), currentHomeAnimationPosition, !canResetHomeAnimationPosition);
-                        canResetHomeAnimationPosition = true;
-                        lastLoadCompletedFrameId = mFrameId;
-                    }
-                }
-            }
-        }
-
-        if (isNeedTrackFace) {
-            return faceunity.fuRenderBundlesWithCamera(img, tex, faceunity.FU_ADM_FLAG_EXTERNAL_OES_TEXTURE, w, h, mFrameId++, itemsArray());
-        } else {
-            return faceunity.fuRenderBundles(avatarInfo,
-                                             0, w, h, mFrameId++, itemsArray());
-        }
     }
 
     public void setCurrentInstancceId(int id) {
@@ -133,13 +55,6 @@ public class PTACore extends BaseCore {
             avatarHandle.setCurrentInstancceId(id);
     }
 
-    /**
-     * 关闭dde
-     */
-    public void closeDDE() {
-        faceunity.fuItemSetParam(avatarHandle.controllerItem, "is_close_dde", 1.0);
-        avatarHandle.setFaceCapture(false);
-    }
 
     /**
      * 解绑之前的2D背景，并绑定上默认背景
@@ -150,95 +65,36 @@ public class PTACore extends BaseCore {
     }
 
     public void unBindDefault() {
-        queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuUnBindItems(avatarHandle.controllerItem, new int[]{defaultItem});
-            }
-        });
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BACKGROUND);
     }
 
     public void bindDefault() {
-        queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuBindItems(avatarHandle.controllerItem, new int[]{defaultItem});
-            }
-        });
-    }
-
-    public void bindPlane() {
-        queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuBindItems(avatarHandle.controllerItem, new int[]{planeItemLeft, planeItemRight});
-            }
-        });
-    }
-
-    public void unBindPlane() {
-        queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuUnBindItems(avatarHandle.controllerItem, new int[]{planeItemLeft, planeItemRight});
-            }
-        });
+        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BACKGROUND, FilePathFactory.BUNDLE_default_bg);
     }
 
     @Override
     public void unBind() {
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BODY);
         if (avatarHandle != null) {
-            queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    faceunity.fuUnBindItems(avatarHandle.controllerItem, new int[]{currentCameraItem});
-                    Log.d(TAG, "fuUnBindItems controller=" + avatarHandle.controllerItem + ", unBindItems=" + currentCameraItem);
-                }
-            });
             avatarHandle.unBindAll();
         }
     }
 
     @Override
     public void bind() {
+        RtcManager.getInstance().setGeneratorOptions("target_position", new AvatarOptionValue(new double[]{0.0, 0.0f, 0.0f}));
+        RtcManager.getInstance().setGeneratorOptions("target_angle", new AvatarOptionValue(0));
+        RtcManager.getInstance().setGeneratorOptions("reset_all", new AvatarOptionValue(3));
+        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BODY, FilePathFactory.CAMERA_WHOLE_BODY);
         if (avatarHandle != null) {
-            queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    faceunity.fuItemSetParam(avatarHandle.controllerItem, "target_position", new double[]{0.0, 0.0f, 0.0f});
-                    faceunity.fuItemSetParam(avatarHandle.controllerItem, "target_angle", 0);
-                    faceunity.fuItemSetParam(avatarHandle.controllerItem, "reset_all", 3);
-                    faceunity.fuBindItems(avatarHandle.controllerItem, new int[]{currentCameraItem});
-                }
-            });
             avatarHandle.bindAll();
         }
     }
 
     @Override
     public void release() {
-        wholeBodyCameraItem = 0;
-        smallWholeBodyCameraItem = 0;
-        halfLengthBodyCameraItem = 0;
-        bigHalfLengthBodyCameraItem = 0;
-        currentCameraItem = 0;
         canResetHomeAnimationPosition = true;
         currentHomeAnimationPosition = -1;
-
-        unBindPlane();
-        faceunity.fuUnBindItems(avatarHandle.controllerItem, new int[]{controller_config});
-        queueEvent(destroyItem(controller_config));
-
-        queueEvent(destroyItem(defaultItem));
-        queueEvent(destroyItem(fxaaItem));
-        queueEvent(destroyItem(wholeBodyCameraItem));
-        queueEvent(destroyItem(smallWholeBodyCameraItem));
-        queueEvent(destroyItem(halfLengthBodyCameraItem));
-        queueEvent(destroyItem(bigHalfLengthBodyCameraItem));
-        queueEvent(destroyItem(planeItemLeft));
-        queueEvent(destroyItem(planeItemRight));
-        queueEvent(destroyAIFaceProcessorModel());
-
         avatarHandle.release();
     }
 
@@ -330,25 +186,9 @@ public class PTACore extends BaseCore {
     }
 
     @Override
-    protected int createAndLoadCameraItem(int itemId, String bundlePath) {
-        if (itemId == 0) {
-            itemId = mFUItemHandler.loadFUItem(bundlePath);
-        }
-        int finalItemId = itemId;
-        queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                faceunity.fuUnBindItems(avatarHandle.controllerItem, new int[]{currentCameraItem});
-                faceunity.fuBindItems(avatarHandle.controllerItem, new int[]{currentCameraItem = finalItemId});
-            }
-        });
-        return itemId;
-    }
-
-    @Override
     public float[] getLandmarksData() {
         Arrays.fill(landmarksData, 0.0f);
-        if (isNeedTrackFace && isTracking() > 0)
+        if (isNeedTrackFace )
             faceunity.fuGetFaceInfo(0, "landmarks", landmarksData);
         return landmarksData;
     }

@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.Objects;
 
-import io.agora.base.TextureBufferHelper;
 import io.agora.example.base.BaseUtil;
 import io.agora.rtc2.RtcEngine;
 import io.agora.scene.virtualimage.R;
@@ -20,7 +19,7 @@ import io.agora.scene.virtualimage.bean.AgoraGame;
 import io.agora.scene.virtualimage.bean.GameInfo;
 import io.agora.scene.virtualimage.bean.LocalUser;
 import io.agora.scene.virtualimage.bean.RoomInfo;
-import io.agora.scene.virtualimage.manager.FUDemoManager;
+import io.agora.scene.virtualimage.manager.FUManager;
 import io.agora.scene.virtualimage.manager.RtcManager;
 import io.agora.scene.virtualimage.repo.GameRepo;
 import io.agora.scene.virtualimage.util.OneConstants;
@@ -75,28 +74,6 @@ public class RoomViewModel extends ViewModel {
         this.amHost = Objects.equals(currentRoom.getUserId(), localUser.getUserId());
 
 
-        RtcManager.getInstance().setVideoPreProcess(new RtcManager.VideoPreProcess() {
-            @Override
-            public void onTextureBufferHelperCreated(TextureBufferHelper helper) {
-                FUDemoManager.getInstance().start();
-            }
-
-            @Override
-            public RtcManager.ProcessVideoFrame processVideoFrameTex(byte[] img, int texId, float[] texMatrix, int width, int height, int cameraType) {
-                FUDemoManager.ResultFrame fuVideoFrame = FUDemoManager.getInstance().onDrawFrame(img, texId, texMatrix, width, height, cameraType);
-                if(fuVideoFrame == null){
-                    return null;
-                }
-                return new RtcManager.ProcessVideoFrame(fuVideoFrame.texId, fuVideoFrame.texMatrix, fuVideoFrame.width, fuVideoFrame.height,
-                        fuVideoFrame.texType == FUDemoManager.TEXTURE_TYPE_OES ? RtcManager.TEXTURE_TYPE_OES : RtcManager.TEXTURE_TYPE_2D);
-            }
-
-            @Override
-            public void onTextureBufferHelperDestroy() {
-                FUDemoManager.getInstance().stop();
-            }
-        });
-
         initRTC(context, new RtcManager.OnStreamMessageListener() {
             @Override
             public void onMessageReceived(int dataStreamId, int fromUid, String message) {
@@ -115,11 +92,11 @@ public class RoomViewModel extends ViewModel {
             }
 
             @Override
-            public void onJoinSuccess(int uid) {
+            public void onJoinSuccess(String channelId, int uid) {
                 BaseUtil.logD("onJoinChannelSuccess:" + uid);
                 if (!amHost)
                     // 副主播只能与房主连线
-                    _targetUser.postValue(new LocalUser(currentRoom.getUserId()));
+                    _targetUser.postValue(new LocalUser(channelId, currentRoom.getUserId()));
             }
 
             @Override
@@ -127,7 +104,7 @@ public class RoomViewModel extends ViewModel {
                 BaseUtil.logD("onUserJoined:" + uid);
                 if (!amHost) return;
                 if (_targetUser.getValue() == null)
-                    _targetUser.postValue(new LocalUser(String.valueOf(uid)));
+                    _targetUser.postValue(new LocalUser(channelId, String.valueOf(uid)));
             }
 
             @Override
@@ -225,7 +202,8 @@ public class RoomViewModel extends ViewModel {
         super.onCleared();
 
         // destroy RTE
-        RtcManager.getInstance().reset(false);
+        RtcManager.getInstance().reset(true);
+        FUManager.getInstance().stop();
 
         new Thread(() -> {
             if (currentGame != null) {
@@ -355,8 +333,8 @@ public class RoomViewModel extends ViewModel {
     /**
      * @param view 用来构造 videoCanvas
      */
-    public void setupRemoteView(@NonNull FrameLayout view, int uid) {
-        RtcManager.getInstance().renderRemoteVideo(view, uid);
+    public void setupRemoteView(@NonNull FrameLayout view, String channelId, int uid) {
+        RtcManager.getInstance().renderRemoteVideo(view, channelId, uid);
     }
 
     //</editor-fold>

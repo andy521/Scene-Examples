@@ -110,7 +110,9 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import io.agora.base.VideoFrame;
 import io.agora.scene.virtualimage.R;
+import io.agora.scene.virtualimage.manager.RtcManager;
 
 
 /**
@@ -173,6 +175,7 @@ public class EditFaceFragment extends BaseFragment
      */
     private int currentShapeIndex;
     private OnCloseListener onCloseListener;
+    private View mRootView;
 
     public interface OnCloseListener{
         void onClose();
@@ -189,15 +192,15 @@ public class EditFaceFragment extends BaseFragment
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_edit_face, container, false);
-        view.findViewById(R.id.edit_face_back).setOnClickListener(this);
-        mSaveBtn = view.findViewById(R.id.edit_face_save);
+        mRootView = inflater.inflate(R.layout.fragment_edit_face, container, false);
+        mRootView.findViewById(R.id.edit_face_back).setOnClickListener(this);
+        mSaveBtn = mRootView.findViewById(R.id.edit_face_save);
         mSaveBtn.setOnClickListener(this);
 
-        mFragmentLayout = view.findViewById(R.id.edit_face_bottom_layout);
-        mFragmentLayoutBg = view.findViewById(R.id.edit_face_fragment_bg);
+        mFragmentLayout = mRootView.findViewById(R.id.edit_face_bottom_layout);
+        mFragmentLayoutBg = mRootView.findViewById(R.id.edit_face_fragment_bg);
 
-        mEditFaceTitle = view.findViewById(R.id.edit_face_bottom_title);
+        mEditFaceTitle = mRootView.findViewById(R.id.edit_face_bottom_title);
         mEditFaceTitle.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -222,24 +225,38 @@ public class EditFaceFragment extends BaseFragment
         mAvatarHandle.setAvatar(mAvatarP2A);
 
         mEditP2ACore = new PTACore(mP2ACore) {
+//            @Override
+//            public int onDrawFrame(byte[] img, int tex, int w, int h, int rotation) {
+//                int fuTex = super.onDrawFrame(img, tex, w, h, rotation);
+//                if (mEditFacePoints != null) {
+//                    parsePoint(mEditFacePoints,
+//                               w,
+//                               h,
+//                               view.getWidth(),
+//                               view.getHeight()
+//                    );
+//                    mEditPointLayout.setPointList(mEditFacePoints);
+//                }
+//                return fuTex;
+//            }
+        };
+        RtcManager.getInstance().setOnVideoFrameRenderListener(new RtcManager.OnVideoFrameRenderListener() {
             @Override
-            public int onDrawFrame(byte[] img, int tex, int w, int h, int rotation) {
-                int fuTex = super.onDrawFrame(img, tex, w, h, rotation);
+            public void onVideoFrameRender(VideoFrame videoFrame) {
                 if (mEditFacePoints != null) {
                     parsePoint(mEditFacePoints,
-                               w,
-                               h,
-                               view.getWidth(),
-                               view.getHeight()
+                            videoFrame.getRotatedWidth(),
+                            videoFrame.getRotatedHeight(),
+                            mRootView.getWidth(),
+                            mRootView.getHeight()
                     );
                     mEditPointLayout.setPointList(mEditFacePoints);
                 }
-                return fuTex;
             }
-        };
+        });
         mFUP2ARenderer.setFUCore(mEditP2ACore);
         mEditFaceParameter = new EditFaceParameter(mAvatarHandle);
-        mEditPointLayout = view.findViewById(R.id.point_layout);
+        mEditPointLayout = mRootView.findViewById(R.id.point_layout);
         mEditPointLayout.setOnScrollListener(new EditPointLayout.OnScrollListener() {
 
             @Override
@@ -265,18 +282,18 @@ public class EditFaceFragment extends BaseFragment
             }
         });
 
-        mIsFrontBox = view.findViewById(R.id.edit_shape_position);
+        mIsFrontBox = mRootView.findViewById(R.id.edit_shape_position);
 
-        iv_reset = view.findViewById(R.id.iv_reset);
+        iv_reset = mRootView.findViewById(R.id.iv_reset);
         iv_reset.setEnabled(false);
         iv_reset.setOnClickListener(this);
 
-        ll_redo = view.findViewById(R.id.ll_redo);
-        iv_redo_left = view.findViewById(R.id.iv_redo_left);
+        ll_redo = mRootView.findViewById(R.id.ll_redo);
+        iv_redo_left = mRootView.findViewById(R.id.iv_redo_left);
         iv_redo_left.setOnClickListener(this);
         iv_redo_left.setEnabled(false);
 
-        iv_redo_right = view.findViewById(R.id.iv_redo_right);
+        iv_redo_right = mRootView.findViewById(R.id.iv_redo_right);
         iv_redo_right.setOnClickListener(this);
         iv_redo_right.setEnabled(false);
 
@@ -295,31 +312,31 @@ public class EditFaceFragment extends BaseFragment
         EditFacePointFactory.init(getContext());
         EditParamFactory.init(getContext());
 
-        iv_model_reset = view.findViewById(R.id.iv_model_reset);
+        iv_model_reset = mRootView.findViewById(R.id.iv_model_reset);
         iv_model_reset.setEnabled(false);
         iv_model_reset.setOnClickListener(this);
 
-        ll_model_redo = view.findViewById(R.id.ll_model_redo);
-        iv_model_redo_left = view.findViewById(R.id.iv_model_redo_left);
+        ll_model_redo = mRootView.findViewById(R.id.ll_model_redo);
+        iv_model_redo_left = mRootView.findViewById(R.id.iv_model_redo_left);
         iv_model_redo_left.setOnClickListener(this);
         iv_model_redo_left.setEnabled(false);
 
-        iv_model_redo_right = view.findViewById(R.id.iv_model_redo_right);
+        iv_model_redo_right = mRootView.findViewById(R.id.iv_model_redo_right);
         iv_model_redo_right.setOnClickListener(this);
         iv_model_redo_right.setEnabled(false);
         helper.setListener(this);
 
-        ll_slide_title = view.findViewById(R.id.ll_slide_title);
-        tv_slide_edit_face = view.findViewById(R.id.tv_slide_edit_face);
-        tv_slide_makeup = view.findViewById(R.id.tv_slide_makeup);
-        tv_slide_apparel = view.findViewById(R.id.tv_slide_apparel);
+        ll_slide_title = mRootView.findViewById(R.id.ll_slide_title);
+        tv_slide_edit_face = mRootView.findViewById(R.id.tv_slide_edit_face);
+        tv_slide_makeup = mRootView.findViewById(R.id.tv_slide_makeup);
+        tv_slide_apparel = mRootView.findViewById(R.id.tv_slide_apparel);
 
         tv_slide_edit_face.setOnClickListener(this);
         tv_slide_makeup.setOnClickListener(this);
         tv_slide_apparel.setOnClickListener(this);
 
         changeSlideMode(EDIT_FACE_TYPE_PINCH);
-        return view;
+        return mRootView;
     }
 
     @Override
@@ -375,6 +392,7 @@ public class EditFaceFragment extends BaseFragment
 
     public void backToHome(AvatarPTA avatarP2A) {
         helper.clearRevoke();
+        RtcManager.getInstance().setOnVideoFrameRenderListener(null);
         if(avatarP2A != null){
             mAvatarHandle.clearExpression(avatarP2A, false);
             mAvatarHandle.setNeedFacePUP(false);
@@ -578,7 +596,15 @@ public class EditFaceFragment extends BaseFragment
                 switch (id) {
                     case TITLE_HAIR_INDEX:
                         show = new EditFaceColorItemFragment();
-                        ((EditFaceColorItemFragment) show).initData(ColorConstant.hair_color, (int) mAvatarP2A.getHairColorValue(), mColorValuesChangeListener, FilePathFactory.hairBundleRes(mAvatarP2A.getGender()), mAvatarP2A.getHairIndex(), mItemChangeListener);
+                        ((EditFaceColorItemFragment) show).initData(
+                                ColorConstant.hair_color,
+                                (int) mAvatarP2A.getHairColorValue(),
+                                mColorValuesChangeListener,
+
+                                FilePathFactory.hairBundleRes(mAvatarP2A.getGender()),
+                                mAvatarP2A.getHairIndex(),
+                                mItemChangeListener
+                        );
                         break;
                     case TITLE_FACE_INDEX:
                         show = new EditShapeFragment();
@@ -590,7 +616,15 @@ public class EditFaceFragment extends BaseFragment
                         } else {
                             value = mAvatarP2A.getSkinColorValue();
                         }
-                        ((EditShapeFragment) show).initDate(EditParamFactory.mEditParamFace, mEditFaceStatusChaneListener, checkSelectPos(EditParamFactory.mEditParamFace), ColorConstant.skin_color, value, mColorValuesChangeListener);
+                        ((EditShapeFragment) show).initDate(
+                                EditParamFactory.mEditParamFace,
+                                mEditFaceStatusChaneListener,
+                                checkSelectPos(EditParamFactory.mEditParamFace),
+
+                                ColorConstant.skin_color,
+                                value,
+                                mColorValuesChangeListener
+                        );
                         value = ((EditShapeFragment) show).setColorPickGradient(value, index);
                         if (index != -1) {
                             mAvatarP2A.setSkinColorValue(value);
@@ -1317,28 +1351,28 @@ public class EditFaceFragment extends BaseFragment
                                   "", 0.0,
                                   "eyelash_color", mAvatarP2A.getEyelashColorValue());
                     mAvatarP2A.setEyelashColorValue(pos);
-                    mAvatarHandle.setMakeupColor(mAvatarHandle.eyelashItem.handle, Arrays.copyOf(makeup_color, 3));
+                    mAvatarHandle.setMakeupColor(mAvatarHandle.eyelashItemTypeId, Arrays.copyOf(makeup_color, 3));
                     break;
                 case TITLE_EYESHADOW_INDEX:
                     helper.record(TITLE_EYESHADOW_INDEX,
                                   "", 0.0,
                                   "eyeshadow_color", mAvatarP2A.getEyeshadowColorValue());
                     mAvatarP2A.setEyeshadowColorValue(pos);
-                    mAvatarHandle.setMakeupColor(mAvatarHandle.eyeshadowItem.handle, Arrays.copyOf(makeup_color, 3));
+                    mAvatarHandle.setMakeupColor(mAvatarHandle.eyeshadowItemTypeId, Arrays.copyOf(makeup_color, 3));
                     break;
                 case TITLE_EYEBROW_INDEX:
                     helper.record(TITLE_EYEBROW_INDEX,
                                   "", 0.0,
                                   "eyebrow_color", mAvatarP2A.getEyebrowColorValue());
                     mAvatarP2A.setEyebrowColorValue(pos);
-                    mAvatarHandle.setMakeupColor(mAvatarHandle.eyebrowItem.handle, Arrays.copyOf(makeup_color, 3));
+                    mAvatarHandle.setMakeupColor(mAvatarHandle.eyebrowItemTypeId, Arrays.copyOf(makeup_color, 3));
                     break;
                 case TITLE_LIPGLOSS_INDEX:
                     helper.record(TITLE_LIPGLOSS_INDEX,
                                   "", 0.0,
                                   "lipgloss_color", mAvatarP2A.getLipglossColorValue());
                     mAvatarP2A.setLipglossColorValue(pos);
-                    mAvatarHandle.setMakeupColor(mAvatarHandle.lipglossItem.handle, Arrays.copyOf(makeup_color, 3));
+                    mAvatarHandle.setMakeupColor(mAvatarHandle.lipglossItemTypeId, Arrays.copyOf(makeup_color, 3));
                     break;
             }
         }
@@ -1654,7 +1688,7 @@ public class EditFaceFragment extends BaseFragment
                 break;
             case TITLE_EYELASH_INDEX:
                 if (TextUtils.isEmpty(recordEditBean.getBundleName())) {
-                    revokeMakeupColor(TITLE_EYELASH_INDEX, mAvatarHandle.eyelashItem.handle, mAvatarP2A.getEyelashColorValue(), recordEditBean, goAheadBean);
+                    revokeMakeupColor(TITLE_EYELASH_INDEX, mAvatarHandle.eyelashItemTypeId, mAvatarP2A.getEyelashColorValue(), recordEditBean, goAheadBean);
                     mAvatarP2A.setEyelashColorValue(recordEditBean.getColorValus());
                 } else {
                     goAheadBean.setSel(mAvatarP2A.getEyelashIndex() > 0);
@@ -1669,7 +1703,7 @@ public class EditFaceFragment extends BaseFragment
                 break;
             case TITLE_EYESHADOW_INDEX:
                 if (TextUtils.isEmpty(recordEditBean.getBundleName())) {
-                    revokeMakeupColor(TITLE_EYESHADOW_INDEX, mAvatarHandle.eyeshadowItem.handle, mAvatarP2A.getEyeshadowColorValue(), recordEditBean, goAheadBean);
+                    revokeMakeupColor(TITLE_EYESHADOW_INDEX, mAvatarHandle.eyeshadowItemTypeId, mAvatarP2A.getEyeshadowColorValue(), recordEditBean, goAheadBean);
                     mAvatarP2A.setEyeshadowColorValue(recordEditBean.getColorValus());
                 } else {
                     goAheadBean.setSel(mAvatarP2A.getEyeshadowIndex() > 0);
@@ -1679,7 +1713,7 @@ public class EditFaceFragment extends BaseFragment
                 break;
             case TITLE_EYEBROW_INDEX:
                 if (TextUtils.isEmpty(recordEditBean.getBundleName())) {
-                    revokeMakeupColor(TITLE_EYEBROW_INDEX, mAvatarHandle.eyebrowItem.handle, mAvatarP2A.getEyebrowColorValue(), recordEditBean, goAheadBean);
+                    revokeMakeupColor(TITLE_EYEBROW_INDEX, mAvatarHandle.eyebrowItemTypeId, mAvatarP2A.getEyebrowColorValue(), recordEditBean, goAheadBean);
                     mAvatarP2A.setEyebrowColorValue(recordEditBean.getColorValus());
                 } else {
                     goAheadBean.setSel(mAvatarP2A.getEyebrowIndex() > 0);
@@ -1694,7 +1728,7 @@ public class EditFaceFragment extends BaseFragment
                 break;
             case TITLE_LIPGLOSS_INDEX:
                 if (TextUtils.isEmpty(recordEditBean.getBundleName())) {
-                    revokeMakeupColor(TITLE_LIPGLOSS_INDEX, mAvatarHandle.lipglossItem.handle, mAvatarP2A.getLipglossColorValue(), recordEditBean, goAheadBean);
+                    revokeMakeupColor(TITLE_LIPGLOSS_INDEX, mAvatarHandle.lipglossItemTypeId, mAvatarP2A.getLipglossColorValue(), recordEditBean, goAheadBean);
                     mAvatarP2A.setLipglossColorValue(recordEditBean.getColorValus());
                 } else {
                     goAheadBean.setSel(mAvatarP2A.getLipglossIndex() > 0);

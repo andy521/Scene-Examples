@@ -12,7 +12,7 @@ import androidx.core.view.WindowCompat;
 import io.agora.example.base.BaseActivity;
 import io.agora.rtc2.RtcEngine;
 import io.agora.scene.virtualimage.databinding.VirtualImageActivityMainBinding;
-import io.agora.scene.virtualimage.manager.FUDemoManager;
+import io.agora.scene.virtualimage.manager.FUManager;
 import io.agora.scene.virtualimage.manager.RtcManager;
 import io.agora.scene.virtualimage.util.OneUtil;
 import io.agora.syncmanager.rtm.Sync;
@@ -32,17 +32,18 @@ public class MainActivity extends BaseActivity<VirtualImageActivityMainBinding> 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         RtcManager.getInstance().init(this, getString(R.string.rtc_app_id), null);
-        FUDemoManager.getInstance().initialize(this);
+        FUManager.getInstance().initialize(this);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        FUDemoManager.getInstance().handleTouchEvent(event);
+        FUManager.getInstance().handleTouchEvent(event);
         return super.onTouchEvent(event);
     }
 
     @Override
     public void finish() {
+        FUManager.getInstance().stop();
         super.finish();
 
         new Thread(() -> {

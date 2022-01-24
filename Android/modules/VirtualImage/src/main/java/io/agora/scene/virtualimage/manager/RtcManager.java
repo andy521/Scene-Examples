@@ -29,30 +29,35 @@ import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_840x480;
 import static io.agora.rtc2.video.VideoEncoderConfiguration.VD_960x720;
 
 import android.content.Context;
-import android.graphics.Matrix;
-import android.hardware.Camera;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.SurfaceView;
 import android.view.TextureView;
 import android.widget.FrameLayout;
 
-import java.nio.ByteBuffer;
+import com.faceunity.pta_art.core.authpack;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
+import java.util.Objects;
 
 import io.agora.base.TextureBufferHelper;
 import io.agora.base.VideoFrame;
-import io.agora.base.internal.video.RendererCommon;
 import io.agora.rtc2.ChannelMediaOptions;
 import io.agora.rtc2.Constants;
 import io.agora.rtc2.DataStreamConfig;
+import io.agora.rtc2.IAvatarEngine;
 import io.agora.rtc2.IRtcEngineEventHandler;
+import io.agora.rtc2.RtcConnection;
 import io.agora.rtc2.RtcEngine;
+import io.agora.rtc2.RtcEngineEx;
+import io.agora.rtc2.video.AvatarConfigs;
+import io.agora.rtc2.video.AvatarItemType;
+import io.agora.rtc2.video.AvatarOptionValue;
 import io.agora.rtc2.video.CameraCapturerConfiguration;
 import io.agora.rtc2.video.IVideoFrameObserver;
 import io.agora.rtc2.video.VideoCanvas;
@@ -89,6 +94,19 @@ public class RtcManager {
             FRAME_RATE_FPS_30
     );
 
+    public static final int AVATAR_ITEM_TYPE_OTHER_01 = 1001;
+    public static final int AVATAR_ITEM_TYPE_OTHER_02 = 1002;
+    public static final int AVATAR_ITEM_TYPE_OTHER_03 = 1003;
+    public static final int AVATAR_ITEM_TYPE_OTHER_04 = 1004;
+    public static final int AVATAR_ITEM_TYPE_OTHER_05 = 1005;
+    public static final int AVATAR_ITEM_TYPE_BODY     = 1006;
+    public static final int AVATAR_ITEM_TYPE_ER_SHI = 1007;
+    public static final int AVATAR_ITEM_TYPE_JIAO_SHI = 1008;
+    public static final int AVATAR_ITEM_TYPE_SHOU_SHI = 1009;
+    public static final int AVATAR_ITEM_TYPE_BO_SHI = 1010;
+    public static final int AVATAR_ITEM_TYPE_HAIR_MASK = 1011;
+    public static final int AVATAR_ITEM_TYPE_LIGHT = 1012;
+
 
     private static CameraCapturerConfiguration.CAMERA_DIRECTION cameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT;
     public static final VideoEncoderConfiguration encoderConfiguration = new VideoEncoderConfiguration(
@@ -99,111 +117,25 @@ public class RtcManager {
     );
 
     private volatile boolean isInitialized = false;
-    private RtcEngine engine;
+    private RtcEngineEx engine;
     private final Map<Integer, Runnable> firstVideoFramePendingRuns = new HashMap<>();
-    private OnChannelListener publishChannelListener;
-    private String publishChannelId;
 
-    private final Matrix localRenderMatrix = new Matrix();
-    private AgoraGLSurfaceView localGLSurfaceView;
-
-    private VideoPreProcess videoPreProcess;
     private TextureBufferHelper videoPreTexBuffHelper;
     private final SparseArray<OnStreamMessageListener> dataStreamListener = new SparseArray<>();
 
     private static volatile RtcManager INSTANCE;
-    public static RtcManager getInstance(){
-        if(INSTANCE == null){
-            synchronized (RtcManager.class){
-                if(INSTANCE== null){
-                    INSTANCE = new RtcManager();
-                }
-            }
-        }
-        return INSTANCE;
-    }
+    private IAvatarEngine avatarEngine;
 
-    private RtcManager(){}
+    public Map<String, RtcConnection> connectionMap = new HashMap<>();
+    public Map<Integer, String> avatarItemEnableMap = new HashMap<>();
 
-    private volatile boolean isPushExtVideoFrame = false;
-    private IVideoFrameObserver videoFrameObserver = new IVideoFrameObserver() {
+
+    private OnVideoFrameRenderListener onVideoFrameRenderListener;
+    private IVideoFrameObserver mVideoFrameObserver = new IVideoFrameObserver() {
         @Override
         public boolean onCaptureVideoFrame(VideoFrame videoFrame) {
-            VideoFrame.Buffer buffer = videoFrame.getBuffer();
-            if(buffer instanceof VideoFrame.TextureBuffer){
-                VideoFrame.TextureBuffer textureBuffer = (VideoFrame.TextureBuffer) buffer;
-
-                localRenderMatrix.reset();
-                localRenderMatrix.preTranslate(0.5f, 0.5f);
-                localRenderMatrix.preScale(1f, -1f); // I420-frames are upside down
-                localRenderMatrix.preRotate(videoFrame.getRotation());
-                localRenderMatrix.preTranslate(-0.5f, -0.5f);
-
-                float[] texMatrix = RendererCommon.convertMatrixFromAndroidGraphicsMatrix(localRenderMatrix);
-                int texId = textureBuffer.getTextureId();
-                int width = textureBuffer.getWidth();
-                int height = textureBuffer.getHeight();
-
-                final VideoPreProcess _videoPreProcess = RtcManager.this.videoPreProcess;
-                final AgoraGLSurfaceView _localGLSurfaceView = RtcManager.this.localGLSurfaceView;
-                if(_videoPreProcess != null){
-                    if(videoPreTexBuffHelper == null){
-                        videoPreTexBuffHelper = TextureBufferHelper.create("VideoPreProcess", textureBuffer.getEglBaseContext());
-                        videoPreTexBuffHelper.invoke(new Callable<Object>() {
-                            @Override
-                            public Object call() throws Exception {
-                                Log.d(TAG, "VideoPreProcess --> onTextureBufferHelperCreated thread=" + Thread.currentThread().getName());
-                                _videoPreProcess.onTextureBufferHelperCreated(videoPreTexBuffHelper);
-                                return null;
-                            }
-                        });
-                    }
-                    videoPreTexBuffHelper.invoke(new Callable<Boolean>() {
-                        @Override
-                        public Boolean call() throws Exception {
-                            ProcessVideoFrame processVideoFrame = _videoPreProcess.processVideoFrameTex(convertToNV21(videoFrame), texId, texMatrix, width, height,
-                                    cameraDirection == CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT ? Camera.CameraInfo.CAMERA_FACING_FRONT: Camera.CameraInfo.CAMERA_FACING_BACK);
-                            if(processVideoFrame == null){
-                                return false;
-                            }
-
-                            if(_localGLSurfaceView != null){
-                                _localGLSurfaceView.init(videoPreTexBuffHelper.getEglBase().getEglBaseContext());
-                                if(processVideoFrame.texType == TEXTURE_TYPE_2D){
-                                    _localGLSurfaceView.consume2DTexture(processVideoFrame.texId,
-                                            processVideoFrame.texMatrix,
-                                            processVideoFrame.width,
-                                            processVideoFrame.height
-                                    );
-                                }
-                                else{
-                                    _localGLSurfaceView.consumeOESTexture(processVideoFrame.texId,
-                                            processVideoFrame.texMatrix,
-                                            processVideoFrame.width,
-                                            processVideoFrame.height
-                                    );
-                                }
-                            }
-
-                            if(isPushExtVideoFrame){
-                                VideoFrame.TextureBuffer pushTextBuffer = videoPreTexBuffHelper.wrapTextureBuffer(processVideoFrame.width, processVideoFrame.height,
-                                        processVideoFrame.texType == TEXTURE_TYPE_2D ? VideoFrame.TextureBuffer.Type.RGB : VideoFrame.TextureBuffer.Type.OES,
-                                        processVideoFrame.texId, RendererCommon.convertMatrixToAndroidGraphicsMatrix(processVideoFrame.texMatrix));
-                                engine.pushExternalVideoFrame(new VideoFrame(pushTextBuffer, 0, System.nanoTime()));
-                            }
-
-                            return null;
-                        }
-                    });
-                    return false;
-                }else if(_localGLSurfaceView != null){
-                    _localGLSurfaceView.init(textureBuffer.getEglBaseContext());
-                    _localGLSurfaceView.consumeOESTexture(texId,
-                            texMatrix,
-                            width,
-                            height
-                    );
-                }
+            if (onVideoFrameRenderListener != null) {
+                onVideoFrameRenderListener.onVideoFrameRender(videoFrame);
             }
             return true;
         }
@@ -220,12 +152,13 @@ public class RtcManager {
 
         @Override
         public boolean onRenderVideoFrame(String s, int i, VideoFrame videoFrame) {
+
             return true;
         }
 
         @Override
         public int getVideoFrameProcessMode() {
-            return PROCESS_MODE_READ_WRITE;
+            return IVideoFrameObserver.PROCESS_MODE_READ_ONLY;
         }
 
         @Override
@@ -234,8 +167,8 @@ public class RtcManager {
         }
 
         @Override
-        public int getRotationApplied() {
-            return 0;
+        public boolean getRotationApplied() {
+            return false;
         }
 
         @Override
@@ -244,13 +177,26 @@ public class RtcManager {
         }
     };
 
+    public static RtcManager getInstance(){
+        if(INSTANCE == null){
+            synchronized (RtcManager.class){
+                if(INSTANCE== null){
+                    INSTANCE = new RtcManager();
+                }
+            }
+        }
+        return INSTANCE;
+    }
+
+    private RtcManager(){}
+
     public void init(Context context, String appId, OnInitializeListener listener) {
         if (isInitialized) {
             return;
         }
         try {
             // 0. create engine
-            engine = RtcEngine.create(context.getApplicationContext(), appId, new IRtcEngineEventHandler() {
+            engine = (RtcEngineEx)RtcEngineEx.create(context.getApplicationContext(), appId, new IRtcEngineEventHandler() {
                 @Override
                 public void onWarning(int warn) {
                     super.onWarning(warn);
@@ -269,9 +215,6 @@ public class RtcManager {
                         if (listener != null) {
                             listener.onError(err, err == ErrorCode.ERR_INVALID_TOKEN ? "invalid token" : "");
                         }
-                        if (publishChannelListener != null) {
-                            publishChannelListener.onError(err, "");
-                        }
                     }
                 }
 
@@ -287,31 +230,6 @@ public class RtcManager {
                     }
                 }
 
-                @Override
-                public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
-                    super.onJoinChannelSuccess(channel, uid, elapsed);
-                    if (publishChannelId.equals(channel)) {
-                        if (publishChannelListener != null) {
-                            publishChannelListener.onJoinSuccess(uid);
-                        }
-                    }
-                }
-
-                @Override
-                public void onUserJoined(int uid, int elapsed) {
-                    super.onUserJoined(uid, elapsed);
-                    if (publishChannelListener != null) {
-                        publishChannelListener.onUserJoined(publishChannelId, uid);
-                    }
-                }
-
-                @Override
-                public void onUserOffline(int uid, int reason) {
-                    super.onUserOffline(uid, reason);
-                    if (publishChannelListener != null) {
-                        publishChannelListener.onUserOffline(publishChannelId, uid);
-                    }
-                }
 
                 @Override
                 public void onRtcStats(RtcStats stats) {
@@ -345,7 +263,25 @@ public class RtcManager {
                     Log.d(TAG, "onStreamMessageError uid=" + uid + ",streamId=" + streamId + ",error=" + error + ",missed=" + missed + ",cached=" + cached);
                 }
 
+                @Override
+                public void onUserJoined(int uid, int elapsed) {
+                    super.onUserJoined(uid, elapsed);
+                }
             });
+
+            engine.registerVideoFrameObserver(mVideoFrameObserver);
+            engine.setLogLevel(Constants.LogLevel.getValue(Constants.LogLevel.LOG_LEVEL_ERROR));
+            avatarEngine = engine.queryAvatarEngine();
+            avatarEngine.initialize(authpack.A(), authpack.A().length);
+
+            AvatarConfigs avatarConfigs = new AvatarConfigs(
+                    Constants.MediaSourceType.PRIMARY_CAMERA_SOURCE,
+                    true,
+                    true,
+                    Constants.AvatarProcessingMode.AVATAR_PROCESSING_MODE_AVATAR
+            );
+            avatarEngine.enableOrUpdateLocalAvatarVideo(true, avatarConfigs);
+
             engine.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING);
             engine.setClientRole(Constants.CLIENT_ROLE_BROADCASTER);
             engine.setLogLevel(Constants.LogLevel.getValue(Constants.LogLevel.LOG_LEVEL_ERROR));
@@ -353,7 +289,6 @@ public class RtcManager {
             engine.setAudioProfile(Constants.AUDIO_PROFILE_SPEECH_STANDARD, Constants.AUDIO_SCENARIO_GAME_STREAMING);
             engine.setDefaultAudioRoutetoSpeakerphone(true);
             engine.enableDualStreamMode(false);
-            engine.registerVideoFrameObserver(videoFrameObserver);
 
             engine.enableVideo();
             engine.enableAudio();
@@ -361,10 +296,8 @@ public class RtcManager {
             engine.setCameraCapturerConfiguration(new CameraCapturerConfiguration(cameraDirection, new CameraCapturerConfiguration.CaptureFormat(encoderConfiguration.dimensions.width, encoderConfiguration.dimensions.height, encoderConfiguration.frameRate)));
             if(cameraDirection == CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT){
                 encoderConfiguration.mirrorMode = MIRROR_MODE_TYPE.MIRROR_MODE_ENABLED;
-                engine.setVideoEncoderConfiguration(encoderConfiguration);
             }else{
                 encoderConfiguration.mirrorMode = MIRROR_MODE_TYPE.MIRROR_MODE_DISABLED;
-                engine.setVideoEncoderConfiguration(encoderConfiguration);
             }
 
             isInitialized = true;
@@ -375,21 +308,8 @@ public class RtcManager {
         }
     }
 
-    private byte[] convertToNV21(VideoFrame videoFrame) {
-        VideoFrame.Buffer buffer = videoFrame.getBuffer();
-
-        VideoFrame.I420Buffer i420Buffer = buffer.toI420();
-        int width = i420Buffer.getWidth();
-        int height = i420Buffer.getHeight();
-
-        ByteBuffer bufferY = i420Buffer.getDataY();
-        ByteBuffer bufferU = i420Buffer.getDataU();
-        ByteBuffer bufferV = i420Buffer.getDataV();
-
-        byte[] i420 = YUVUtils.toWrappedI420(bufferY, bufferU, bufferV, width, height);
-        byte[] nv21 = YUVUtils.I420ToNV21(i420, width, height);
-        i420Buffer.release();
-        return nv21;
+    public void setOnVideoFrameRenderListener(OnVideoFrameRenderListener onVideoFrameRenderListener) {
+        this.onVideoFrameRenderListener = onVideoFrameRenderListener;
     }
 
     public int createDataStream(OnStreamMessageListener listener){
@@ -412,13 +332,11 @@ public class RtcManager {
         if (engine == null) {
             return;
         }
-        if(localGLSurfaceView != null){
-            localGLSurfaceView.release();
-        }
-        AgoraGLSurfaceView glSurfaceView = new AgoraGLSurfaceView(container.getContext());
-        container.addView(glSurfaceView);
-        localGLSurfaceView = glSurfaceView;
+        SurfaceView avatarSurfaceView = new SurfaceView(container.getContext());
+
+        container.addView(avatarSurfaceView);
         engine.startPreview();
+        avatarEngine.setupLocalVideoCanvas(new VideoCanvas(avatarSurfaceView, RENDER_MODE_HIDDEN));
     }
 
     public void joinChannel(String channelId, String uid, String token, boolean publish, OnChannelListener listener) {
@@ -435,106 +353,75 @@ public class RtcManager {
             }
         }
         ChannelMediaOptions options = new ChannelMediaOptions();
+        options.publishAvatarTrack = publish;
+        options.publishAudioTrack = publish;
         options.autoSubscribeAudio = true;
         options.autoSubscribeVideo = true;
+        options.clientRoleType = publish ? Constants.CLIENT_ROLE_BROADCASTER : Constants.CLIENT_ROLE_AUDIENCE;
 
-        if(publish && videoPreProcess != null){
-            /**Configures the external video source.
-             * @param enable Sets whether or not to use the external video source:
-             *                 true: Use the external video source.
-             *                 false: Do not use the external video source.
-             * @param useTexture Sets whether or not to use texture as an input:
-             *                     true: Use texture as an input.
-             *                     false: (Default) Do not use texture as an input.
-             * @param pushMode Sets whether or not the external video source needs to call the PushExternalVideoFrame
-             *                 method to send the video frame to the Agora SDK:
-             *                   true: Use the push mode.
-             *                   false: Use the pull mode (not supported).*/
-            engine.setExternalVideoSource(true, true, false);
-            isPushExtVideoFrame = true;
-        }else{
-            options.publishAudioTrack = publish;
-            options.publishAudioTrack = publish;
-        }
+        RtcConnection connection = new RtcConnection(channelId, _uid);
+        connectionMap.put(channelId, connection);
+        engine.setVideoEncoderConfigurationEx(encoderConfiguration, connection);
 
-        engine.setClientRole(publish ? Constants.CLIENT_ROLE_BROADCASTER : Constants.CLIENT_ROLE_AUDIENCE);
-
-        publishChannelId = channelId;
-        publishChannelListener = new OnChannelListener() {
+        int ret = engine.joinChannelEx(token, connection, options, new IRtcEngineEventHandler() {
             @Override
-            public void onError(int code, String message) {
+            public void onError(int err) {
+                super.onError(err);
                 if (listener != null) {
-                    listener.onError(code, message);
+                    listener.onError(err, "");
                 }
             }
 
             @Override
-            public void onJoinSuccess(int uid) {
+            public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
+                super.onJoinChannelSuccess(channel, uid, elapsed);
                 if (listener != null) {
-                    listener.onJoinSuccess(uid);
+                    listener.onJoinSuccess(channel, uid);
                 }
             }
 
             @Override
-            public void onUserJoined(String channelId, int uid) {
+            public void onUserJoined(int uid, int elapsed) {
+                super.onUserJoined(uid, elapsed);
                 if (listener != null) {
                     listener.onUserJoined(channelId, uid);
                 }
             }
 
             @Override
-            public void onUserOffline(String channelId, int uid) {
+            public void onUserOffline(int uid, int reason) {
+                super.onUserOffline(uid, reason);
                 if (listener != null) {
                     listener.onUserOffline(channelId, uid);
                 }
             }
-
-        };
-
-        int ret = engine.joinChannel(token, channelId, _uid, options);
+        });
         Log.i(TAG, String.format("joinChannel channel %s ret %d", channelId, ret));
     }
 
-    public void renderRemoteVideo(FrameLayout container, int uid) {
+    public void renderRemoteVideo(FrameLayout container, String channelId, int uid) {
         if (engine == null) {
             return;
         }
         TextureView view = new TextureView(container.getContext());
         container.addView(view);
-        engine.setupRemoteVideo(new VideoCanvas(view, RENDER_MODE_HIDDEN, uid));
-    }
-
-    public void setVideoPreProcess(VideoPreProcess videoPreProcess) {
-        this.videoPreProcess = videoPreProcess;
+        engine.setupRemoteVideoEx(new VideoCanvas(view, RENDER_MODE_HIDDEN, uid), connectionMap.get(channelId));
     }
 
     public void reset(boolean isStopPreview) {
-        isPushExtVideoFrame = false;
-        publishChannelListener = null;
-        if(localGLSurfaceView != null){
-            localGLSurfaceView.release();
-            localGLSurfaceView = null;
-        }
-        VideoPreProcess _videoPreProcess = this.videoPreProcess;
-        videoPreProcess = null;
         if(isStopPreview){
             if(videoPreTexBuffHelper != null){
-                if(_videoPreProcess != null){
-                    videoPreTexBuffHelper.invoke(new Callable<Object>() {
-                        @Override
-                        public Object call() throws Exception {
-                            Log.d(TAG, "c --> onTextureBufferHelperDestroy thread=" + Thread.currentThread().getName() + ",_videoPreProcess=" + _videoPreProcess);
-                            _videoPreProcess.onTextureBufferHelperDestroy();
-                            return null;
-                        }
-                    });
-                }
                 videoPreTexBuffHelper.dispose();
                 videoPreTexBuffHelper = null;
             }
         }
 
         Log.d(TAG, "stopPreview --> reset isStopPreview=" + isStopPreview);
+
+        for (String s : connectionMap.keySet()) {
+            engine.leaveChannelEx(connectionMap.get(s));
+        }
+        connectionMap.clear();
 
         if (engine != null) {
             engine.leaveChannel();
@@ -557,7 +444,9 @@ public class RtcManager {
             cameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT;
             encoderConfiguration.mirrorMode = MIRROR_MODE_TYPE.MIRROR_MODE_ENABLED;
         }
-        engine.setVideoEncoderConfiguration(encoderConfiguration);
+        for (String s : connectionMap.keySet()) {
+            engine.setVideoEncoderConfigurationEx(encoderConfiguration, connectionMap.get(s));
+        }
     }
 
     public void muteLocalAudio(boolean mute){
@@ -565,6 +454,73 @@ public class RtcManager {
             return;
         }
         engine.muteLocalAudioStream(mute);
+    }
+
+    public void disableAvatarGeneratorItems(int type){
+        this.enableAvatarGeneratorItems(false, type, "", true);
+    }
+
+    public void enableAvatarGeneratorItems(int type, String bundlePath){
+        this.enableAvatarGeneratorItems(true, type, bundlePath, false);
+    }
+
+    public void enableAvatarGeneratorItems(int type, String bundlePath, boolean replaceOld){
+        this.enableAvatarGeneratorItems(true, type, bundlePath, replaceOld);
+    }
+
+    private void enableAvatarGeneratorItems(boolean enable, int type, String bundlePath, boolean replaceOld){
+        if(avatarEngine == null){
+            return;
+        }
+
+        Log.d(TAG, "Avatar >> enableAvatarGeneratorItems enable=" + enable + ", type=" + type + ", bundlePath=" + bundlePath + ", replaceOld=" + replaceOld);
+        String oldBundlePath = avatarItemEnableMap.get(type);
+        if(Objects.equals(bundlePath, oldBundlePath) && !replaceOld){
+            return;
+        }
+        if(type == AvatarItemType.AvatarItemType_BACKGROUND){
+            return;
+        }
+        avatarItemEnableMap.put(type, bundlePath);
+        avatarEngine.enableAvatarGeneratorItems(enable, type, bundlePath);
+    }
+
+    public void setGeneratorOptions(String option, AvatarOptionValue value){
+        if(avatarEngine == null){
+            return;
+        }
+
+        Log.d(TAG, "Avatar >> setGeneratorOptions option=" + option + ", value=" + toString(value));
+        avatarEngine.setGeneratorOptions(option, value);
+    }
+
+    public void GetGeneratorOptions(String option, Constants.AvatarValueType type, AvatarOptionValue outValue){
+        if(avatarEngine == null){
+            return;
+        }
+        avatarEngine.GetGeneratorOptions(option, type, outValue);
+        Log.d(TAG, "Avatar >> GetGeneratorOptions option=" + option + ", type=" + type + ", outValue=" + toString(outValue));
+    }
+
+    private String toString(AvatarOptionValue value){
+        StringBuilder sb = new StringBuilder("{");
+        sb.append("type=").append(value.type).append(",");
+
+        String valueStr = "";
+        if(value.type == Constants.AvatarValueType.DoubleArray){
+            valueStr = Arrays.toString((double[]) value.value);
+        }
+        else if(value.type == Constants.AvatarValueType.UInt8Array){
+            valueStr = Arrays.toString((int[]) value.value);
+        }
+        else if(value.type == Constants.AvatarValueType.FloatArray){
+            valueStr = Arrays.toString((float[]) value.value);
+        }
+        else {
+            valueStr = String.valueOf(value.value);
+        }
+        sb.append("value=").append(valueStr).append("}");
+        return sb.toString();
     }
 
 
@@ -577,40 +533,19 @@ public class RtcManager {
     public interface OnChannelListener {
         void onError(int code, String message);
 
-        void onJoinSuccess(int uid);
+        void onJoinSuccess(String channelId, int uid);
 
         void onUserJoined(String channelId, int uid);
 
         void onUserOffline(String channelId, int uid);
     }
 
+    public interface OnVideoFrameRenderListener{
+        void onVideoFrameRender(VideoFrame videoFrame);
+    }
+
     public interface OnStreamMessageListener {
         void onMessageReceived(int dataStreamId, int fromUid, String message);
     }
-
-    public interface VideoPreProcess {
-        void onTextureBufferHelperCreated(TextureBufferHelper helper);
-        ProcessVideoFrame processVideoFrameTex(byte[] img, int texId, float[] texMatrix, int width, int height, int cameraType);
-        void onTextureBufferHelperDestroy();
-    }
-
-    public static final class ProcessVideoFrame{
-        public final int texId;
-        public final float[] texMatrix;
-        public final int width;
-        public final int height;
-        public final int texType;
-
-        public ProcessVideoFrame(int texId, float[] texMatrix, int width, int height, int texType) {
-            this.texId = texId;
-            this.texMatrix = texMatrix;
-            this.width = width;
-            this.height = height;
-            this.texType = texType;
-        }
-    }
-
-    public static final int TEXTURE_TYPE_OES = 1;
-    public static final int TEXTURE_TYPE_2D = 2;
 
 }
