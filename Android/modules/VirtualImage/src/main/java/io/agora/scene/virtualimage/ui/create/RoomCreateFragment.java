@@ -43,8 +43,9 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
     private void initListener() {
         ViewCompat.setOnApplyWindowInsetsListener(mBinding.getRoot(), (v, insets) -> {
             Insets inset = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            mBinding.toolbarFgCreate.setPaddingRelative(inset.left,inset.top,inset.right,inset.bottom);
-            mBinding.bottomDialogContainer.setPaddingRelative(inset.left,inset.top,inset.right,inset.bottom);
+            mBinding.getRoot().setPaddingRelative(inset.left,0,inset.right,inset.bottom);
+            mBinding.toolbarFgCreate.setPaddingRelative(inset.left,inset.top,inset.right,0);
+            mBinding.bottomDialogContainer.setPaddingRelative(inset.left,inset.top,inset.right,0);
             return WindowInsetsCompat.CONSUMED;
         });
         // 监听"返回键"
@@ -81,7 +82,7 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
             });
             setCreateLiveViewsVisible(false);
             getChildFragmentManager().beginTransaction()
-                    .add(R.id.bottom_dialog_container, mEditFaceFragment, null)
+                    .replace(R.id.bottom_dialog_container, mEditFaceFragment, null)
                     .commit();
         });
     }

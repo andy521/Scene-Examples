@@ -466,6 +466,9 @@ public class AvatarPTA implements Serializable {
     public String getHairFile() {
         List<BundleRes> lists = FilePathFactory.hairBundleRes(gender);
         String name = lists == null || lists.isEmpty() || hairIndex < 0 || hairIndex >= lists.size() ? "" : lists.get(hairIndex).name;
+        if(TextUtils.isEmpty(name)){
+            return "";
+        }
         return bundleDir + name;
     }
 
