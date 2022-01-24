@@ -130,9 +130,9 @@
                                                         isDirectory:&isDirectory];
     
     if (path == nil || !isExist || isDirectory) {
-        
-        NSString *tips = [NSString stringWithFormat:@"没有这个资源 %@", path];
-        NSLog(@"%@", tips);
+//        NSString *tips = [NSString stringWithFormat:@"销毁这个资源 %@", path];
+//        NSLog(@"%@", tips);
+//        [_avatarEngine enableAvatarGeneratorItem:NO type:(int)itemType bundle:@""];
         return ;
     }
     
@@ -1537,8 +1537,10 @@
     
     if (path == nil || !isExist || isDirectory)
     {
-        NSString *tips = [NSString stringWithFormat:@"没有这个资源 %@", path];
+        NSString *tips = [NSString stringWithFormat:@"销毁这个资源 %ld", itemType];
         NSLog(@"%@", tips);
+        
+        [_avatarEngine enableAvatarGeneratorItem:NO type:(int)itemType bundle:@""];
         return ;
     }
     
