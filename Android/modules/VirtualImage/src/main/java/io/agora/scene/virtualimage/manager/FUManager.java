@@ -154,7 +154,6 @@ public class FUManager {
         isStarted = true;
     }
 
-
     public void stop(){
         isStarted = false;
         if(mFUP2ARenderer != null){

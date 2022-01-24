@@ -34,23 +34,17 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
         mGlobalModel = OneUtil.getViewModel(requireActivity(), GlobalViewModel.class);
         initListener();
 
+        setupRandomName();
+
         RtcManager.getInstance().renderLocalVideo(mBinding.videoContainer, null);
         FUManager.getInstance().start();
-
-        setupRandomName();
     }
 
     private void initListener() {
         ViewCompat.setOnApplyWindowInsetsListener(mBinding.getRoot(), (v, insets) -> {
             Insets inset = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            mBinding.getRoot().setPaddingRelative(inset.left,inset.top,inset.right,inset.bottom);
-//            // 顶部
-//            mBinding.toolbarFgCreate.setPadding(0,inset.top,0,0);
-//            // 底部
-//            ConstraintLayout.LayoutParams lpBtn = (ConstraintLayout.LayoutParams) mBinding.btnLiveFgCreate.getLayoutParams();
-//            lpBtn.bottomMargin = inset.bottom + ((int) BaseUtil.dp2px(36));
-//            mBinding.btnLiveFgCreate.setLayoutParams(lpBtn);
-
+            mBinding.toolbarFgCreate.setPaddingRelative(inset.left,inset.top,inset.right,inset.bottom);
+            mBinding.bottomDialogContainer.setPaddingRelative(inset.left,inset.top,inset.right,inset.bottom);
             return WindowInsetsCompat.CONSUMED;
         });
         // 监听"返回键"

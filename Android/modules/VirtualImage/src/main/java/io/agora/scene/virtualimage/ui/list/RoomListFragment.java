@@ -126,6 +126,29 @@ public class RoomListFragment extends BaseNavFragment<VirtualImageFragmentRoomLi
             mAdapter.submitListAndPurge(resList);
         });
 
+        initRtcAnFU();
+    }
+
+    private void initRtcAnFU() {
+        BaseUtil.PermissionResultCallback<String[]> callback = new BaseUtil.PermissionResultCallback<String[]>() {
+            @Override
+            public void onAllPermissionGranted() {
+                RtcManager.getInstance().init(getContext(), getString(R.string.rtc_app_id), null);
+                FUManager.getInstance().initialize(getContext());
+            }
+
+            @Override
+            public void onPermissionRefused(String[] refusedPermissions) {
+                showPermissionAlertDialog();
+            }
+
+            @Override
+            public void showReasonDialog(String[] refusedPermissions) {
+                showPermissionRequestDialog();
+            }
+        };
+        ActivityResultLauncher<String[]> requestPermissionLauncher = BaseUtil.registerForActivityResult(RoomListFragment.this, callback);
+        BaseUtil.checkPermissionBeforeNextOP(this, requestPermissionLauncher, permissions, callback);
     }
 
     private void onViewStatusChanged(ViewStatus viewStatus) {
@@ -152,9 +175,6 @@ public class RoomListFragment extends BaseNavFragment<VirtualImageFragmentRoomLi
     private void toNextPage() {
         if (tempRoom != null)
             mGlobalModel.roomInfo.setValue(new Event<>(tempRoom));
-
-        RtcManager.getInstance().init(getContext(), getString(R.string.rtc_app_id), null);
-        FUManager.getInstance().initialize(getContext());
 
         findNavController().navigate(R.id.action_roomListFragment_to_roomFragment);
     }

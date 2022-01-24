@@ -44,7 +44,7 @@
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="@id/btn_random_fg_create"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/btn_random_fg_create" />
+        app:layout_constraintTop_toTopOf="@id/title_name_bg" />
 
     <TextView
         android:id="@+id/name_fg_create"

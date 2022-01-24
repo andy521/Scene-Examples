@@ -54,7 +54,7 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
         // hold current RoomInfo
         if (mGlobalModel.roomInfo.getValue() != null)
             currentRoom = mGlobalModel.roomInfo.getValue().peekContent();
-        if (currentRoom == null) {
+        if (currentRoom == null ) {
             findNavController().navigate(R.id.action_roomFragment_to_roomCreateFragment);
             return null;
         }
