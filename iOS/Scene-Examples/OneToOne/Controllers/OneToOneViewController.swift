@@ -40,6 +40,8 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         config.areaCode = .global
         return config
     }()
+    private var videoPixelSize: CGSize?
+    private let videoHandler = VideoFrameHandler()
     private lazy var channelMediaOptions: AgoraRtcChannelMediaOptions = {
         let option = AgoraRtcChannelMediaOptions()
         option.publishCameraTrack = AgoraRtcBoolOptional.of(false)
@@ -184,6 +186,9 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
             let vc = FUEditViewController.instacneFromStoryBoard()!
             vc.modalPresentationStyle = .fullScreen
             vc.delegate = self
+            if let size = videoPixelSize {
+                vc.setPixelBufferSize(size)
+            }
             self.present(vc, animated: true, completion: nil)
             
             let renderView = vc.getVideoView()!
@@ -246,6 +251,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: rtcEngineConfig, delegate: self)
         avaterEngine = agoraKit!.queryAvatarEngine()
         agoraKit?.setLogFile(LogUtils.sdkLogPath())
+        agoraKit?.setVideoFrameDelegate(videoHandler)
         let _ = AuthPack.bytes.withUnsafeBytes { pointer in
             avaterEngine?.initialize(Data(bytes: pointer))
         }
@@ -260,6 +266,8 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         FUManager.shareInstance().avatarEngine = avaterEngine
         FUManager.shareInstance().setAvatarStyleDefault()
         FUManager.shareInstance().setupForHalfMode()
+        
+        videoHandler.delegate = self
     }
     
     private func createAgoraVideoCanvas(uid: UInt,
@@ -369,6 +377,18 @@ extension OneToOneViewController: FUPoseTrackViewDelegate { /** 选择形象列�
     func poseTrackViewDidShowTopView(_ show: Bool) {}
     
     func poseTrackViewDidSelectedInput(_ filterName: String) {}
+}
+
+extension OneToOneViewController: VideoFrameHandlerDelegate {
+    func videoHandlerDidRecvPixelData(_ pixelBuffer: CVPixelBuffer) {
+        let width = CVPixelBufferGetWidth(pixelBuffer)
+        let height = CVPixelBufferGetHeight(pixelBuffer)
+        videoPixelSize = CGSize(width: width,
+                                height: height)
+        
+//        let size = AppManager.getSuitablePixelBufferSizeForCurrentDevice()
+//        videoPixelSize = size
+    }
 }
 
 

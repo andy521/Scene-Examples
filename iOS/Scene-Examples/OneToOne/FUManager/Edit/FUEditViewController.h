@@ -19,4 +19,5 @@
 @property (nonatomic, weak)id<FUEditViewControllerDelegate> delegate;
 + (instancetype)instacneFromStoryBoard;
 - (UIView *)getVideoView;
+- (void)setPixelBufferSize:(CGSize)size;
 @end

@@ -122,10 +122,6 @@
     self.downloadBtn.enabled = NO;
     
     [[FUManager shareInstance] enableFaceCapture:0];
-    
-    CGSize size = [AppManager getSuitablePixelBufferSizeForCurrentDevice];
-    self.pixelBufferW = size.width;
-    self.pixelBufferH = size.height;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -197,6 +193,10 @@
 	}
 }
 
+- (void)setPixelBufferSize:(CGSize)size {
+    self.pixelBufferH = size.height;
+    self.pixelBufferW = size.width;
+}
 
 - (UIView *)getVideoView {
     return self.renderView;
