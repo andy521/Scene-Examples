@@ -23,6 +23,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -228,6 +231,7 @@ public class EditFaceFragment extends BaseFragment
         mAvatarHandle.setAvatar(mAvatarP2A);
 
         mEditP2ACore = new PTACore(mP2ACore);
+
         RtcManager.getInstance().setOnVideoFrameRenderListener(new RtcManager.OnVideoFrameRenderListener() {
             @Override
             public void onVideoFrameRender(VideoFrame videoFrame) {
@@ -333,6 +337,15 @@ public class EditFaceFragment extends BaseFragment
         workerThread = new HandlerThread("EditFaceWorkerThread");
         workerThread.start();
         workerHandler = new Handler(workerThread.getLooper());
+        View topLayoutView = mRootView.findViewById(R.id.edit_face_top_layout);
+        ViewCompat.setOnApplyWindowInsetsListener(topLayoutView, (v, insets) -> {
+            Insets inset = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) topLayoutView.getLayoutParams();
+            layoutParams.topMargin = inset.top;
+            topLayoutView.setLayoutParams(layoutParams);
+
+            return WindowInsetsCompat.CONSUMED;
+        });
     }
 
     @Override

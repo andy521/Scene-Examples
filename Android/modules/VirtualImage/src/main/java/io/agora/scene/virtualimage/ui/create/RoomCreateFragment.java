@@ -41,11 +41,10 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
     }
 
     private void initListener() {
-        ViewCompat.setOnApplyWindowInsetsListener(mBinding.getRoot(), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(mBinding.toolbarFgCreate, (v, insets) -> {
             Insets inset = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             mBinding.getRoot().setPaddingRelative(inset.left,0,inset.right,inset.bottom);
             mBinding.toolbarFgCreate.setPaddingRelative(inset.left,inset.top,inset.right,0);
-            mBinding.bottomDialogContainer.setPaddingRelative(inset.left,inset.top,inset.right,0);
             return WindowInsetsCompat.CONSUMED;
         });
         // 监听"返回键"

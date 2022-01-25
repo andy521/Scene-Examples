@@ -28,9 +28,12 @@
     <string name="virtual_image_exit_game">退出游戏</string>
     <string name="virtual_image_exit_game_msg">确定要退出游戏？</string>
     <string name="virtual_image_exit_room">关闭直播间</string>
-    <string name="virtual_image_exit_room_msg">关闭直播间后，其他用户将不能再和您连线。确定关闭？</string>
+    <string name="virtual_image_exit_room_msg">关闭直播间后，将与其他用户断线。确定关闭？</string>
     <!--    权限-->
     <string name="virtual_image_permission_refused">APP运行所必需的权限被拒绝</string>
     <string name="virtual_image_permission_alert">此APP功能为视频通话，录音及摄像头权限为功能必需，是否继续？</string>
+
+
+    <string name="virtual_image_remote_video">远端视频</string>
 
 </resources>

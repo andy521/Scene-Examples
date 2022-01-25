@@ -34,6 +34,7 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
     private RoomInfo currentRoom;
 
     private RoomViewModel mViewModel;
+    private EditFaceFragment mEditFaceFragment;
 
     @Nullable
     @Override
@@ -42,7 +43,7 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
         // hold current RoomInfo
         if (mGlobalModel.roomInfo.getValue() != null)
             currentRoom = mGlobalModel.roomInfo.getValue().peekContent();
-        if (currentRoom == null ) {
+        if (currentRoom == null) {
             findNavController().navigate(R.id.action_roomFragment_to_roomCreateFragment);
             return null;
         }
@@ -59,48 +60,47 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
 
         setupInsets();
 
-        initView();
+        mBinding.hostViewFgRoom.setSingleHost(true);
         initListener();
         initLiveDataObserver();
     }
 
 
-    public void initView() {
-        if (amHost)
-            onSingleHostState();
-        else
-            onDoubleHostState();
-    }
-
     private void initListener() {
-
         // 监听"返回键"
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                // No-OP
+                if (mEditFaceFragment != null) {
+                    mEditFaceFragment.onBackPressed();
+                } else {
+                    showAlertEndLiveDialog();
+                }
             }
         });
 
         // 翻转相机 按钮
         mBinding.btnBeauty.setOnClickListener(v -> {
             boolean arMode = FUManager.getInstance().isARMode();
-            if(arMode){
+            if (arMode) {
                 FUManager.getInstance().switchMode();
             }
-            EditFaceFragment fragment = new EditFaceFragment();
-            fragment.setOnCloseListener(() -> {
+            mEditFaceFragment = new EditFaceFragment();
+            mEditFaceFragment.setOnCloseListener(() -> {
+                mBinding.hostViewFgRoom.setViewportContainerVisible(true);
                 mBinding.containerFgRoom.setVisibility(View.VISIBLE);
                 getChildFragmentManager().beginTransaction()
-                        .remove(fragment)
+                        .remove(mEditFaceFragment)
                         .commit();
-                if(arMode){
+                if (arMode) {
                     FUManager.getInstance().switchMode();
                 }
+                mEditFaceFragment = null;
             });
             mBinding.containerFgRoom.setVisibility(View.GONE);
+            mBinding.hostViewFgRoom.setViewportContainerVisible(false);
             getChildFragmentManager().beginTransaction()
-                    .replace(R.id.face_up_container, fragment)
+                    .replace(R.id.face_up_container, mEditFaceFragment)
                     .commit();
 
         });
@@ -108,15 +108,8 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
             // 切换AR和Avatar模式
             FUManager.getInstance().switchMode();
         });
-        // 退出房间按钮
-        mBinding.btnEndLiveFgRoom.setOnClickListener(v -> {
-            if (amHost)
-                RoomFragment.this.showAlertEndLiveDialog();
-            else
-                findNavController().popBackStack();
-        });
         // 停止连麦 按钮
-        mBinding.btnEndCallFgRoom.setOnClickListener(v -> RoomFragment.this.showAlertEndCallDialog());
+        mBinding.btnEndCallFgRoom.setOnClickListener(v -> RoomFragment.this.showAlertEndLiveDialog());
 
         mBinding.btnMicFgRoom.setOnClickListener(v -> mViewModel.toggleMute());
 
@@ -127,7 +120,6 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
         mViewModel.targetUser().observe(getViewLifecycleOwner(), localUser -> {
             if (localUser != null) {
                 mBinding.hostViewFgRoom.setSingleHost(false);
-                RoomFragment.this.onDoubleHostState();
                 int uid = -1;
                 try {
                     uid = Integer.parseInt(localUser.getUserId());
@@ -135,14 +127,14 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
                     e.printStackTrace();
                 }
                 if (uid != -1)
-                    mViewModel.setupRemoteView(mBinding.hostViewFgRoom.getTargetViewport(),localUser.channelId,  uid);
+                    mViewModel.setupRemoteView(mBinding.hostViewFgRoom.getTargetViewport(), localUser.channelId, uid);
             } else {
                 mBinding.hostViewFgRoom.setSingleHost(true);
-                RoomFragment.this.onSingleHostState();
             }
         });
 
         // RTC 引擎初始化
+
         mViewModel.setupLocalView(mBinding.hostViewFgRoom.getCurrentViewport());
 
         // 当前游戏信息
@@ -163,29 +155,6 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
         });
     }
 
-    //<editor-fold desc="Dialog Related">
-
-    /**
-     * 终止连线 弹窗
-     * 主播：通知 观众 下线==》观众下线 ==》endGame、单用户视图
-     * 观众：endGame、退出
-     */
-    private void showAlertEndCallDialog() {
-        new AlertDialog.Builder(requireContext()).setTitle(R.string.virtual_image_end_call)
-                .setMessage(R.string.virtual_image_end_call_msg)
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    if (amHost) {
-                        mViewModel.endCall();
-                    } else {
-                        findNavController().popBackStack();
-                    }
-                })
-                .setMessage(R.string.virtual_image_exit_game_msg)
-                .setCancelable(false)
-                .show();
-    }
-
     /**
      * 关闭直播间 弹窗
      */
@@ -198,25 +167,6 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
                 .show();
     }
 
-
-    private void onSingleHostState() {
-        BaseUtil.logD("onSingleHostState");
-        mBinding.hostViewFgRoom.setSingleHost(true);
-
-        mBinding.btnEndLiveFgRoom.setVisibility(View.VISIBLE);
-        mBinding.btnMicFgRoom.setVisibility(View.GONE);
-        mBinding.btnEndCallFgRoom.setVisibility(View.GONE);
-    }
-
-    private void onDoubleHostState() {
-        BaseUtil.logD("onDoubleHostState");
-        mBinding.hostViewFgRoom.setSingleHost(false);
-
-        mBinding.btnEndLiveFgRoom.setVisibility(View.GONE);
-        mBinding.btnMicFgRoom.setVisibility(View.VISIBLE);
-        mBinding.btnEndCallFgRoom.setVisibility(View.VISIBLE);
-
-    }
 
     private void onGameStatusChanged(@NonNull GameInfo gameInfo) {
         BaseUtil.logD("onGameStatusChanged:" + gameInfo.getStatus());
@@ -235,7 +185,6 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
             mBinding.hostViewFgRoom.getViewportContainer().setLayoutParams(lp);
 
             mBinding.getRoot().setPaddingRelative(inset.left, 0, inset.right, inset.bottom);
-            mBinding.faceUpContainer.setPaddingRelative(inset.left, inset.top, inset.right, 0);
             return WindowInsetsCompat.CONSUMED;
         });
     }

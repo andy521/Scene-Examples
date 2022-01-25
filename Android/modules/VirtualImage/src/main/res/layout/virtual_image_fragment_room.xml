@@ -52,19 +52,9 @@
             android:layout_marginBottom="32dp"
             app:icon="@drawable/virtual_image_ic_microphone"
             app:layout_constraintBottom_toTopOf="@id/btn_end_call_fg_room"
-            app:layout_constraintEnd_toStartOf="@id/btn_end_live_fg_room"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/btn_mode" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_end_live_fg_room"
-            style="@style/VirtualImageLiveButton"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginBottom="32dp"
-            app:icon="@drawable/virtual_image_ic_close"
-            app:layout_constraintBottom_toTopOf="@id/btn_end_call_fg_room"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btn_mic_fg_room" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_end_call_fg_room"
@@ -72,8 +62,7 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginBottom="48dp"
-            android:visibility="gone"
-            tools:visibility="visible"
+            android:visibility="visible"
             app:backgroundTint="#E23E51"
             app:icon="@drawable/virtual_image_ic_dial_off"
             app:layout_constraintBottom_toBottomOf="parent"

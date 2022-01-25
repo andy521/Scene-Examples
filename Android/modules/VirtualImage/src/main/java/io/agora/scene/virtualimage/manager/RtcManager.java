@@ -311,20 +311,29 @@ public class RtcManager {
         this.onVideoFrameRenderListener = onVideoFrameRenderListener;
     }
 
-    public int createDataStream(OnStreamMessageListener listener){
+    public int createDataStream(String channelId, OnStreamMessageListener listener){
         if(engine == null){
             return 0;
         }
-        int dataStream = engine.createDataStream(new DataStreamConfig());
+
+        RtcConnection rtcConnection = connectionMap.get(channelId);
+        if(rtcConnection == null){
+            return 0;
+        }
+        int dataStream = engine.createDataStreamEx(new DataStreamConfig(), rtcConnection);
         dataStreamListener.put(dataStream, listener);
         return dataStream;
     }
 
-    public void sendDataStreamMsg(int streamId, String msg){
+    public void sendDataStreamMsg(String channelId, int streamId, String msg){
         if(engine == null){
             return;
         }
-        engine.sendStreamMessage(streamId, msg.getBytes(StandardCharsets.UTF_8));
+        RtcConnection rtcConnection = connectionMap.get(channelId);
+        if(rtcConnection == null){
+            return;
+        }
+        engine.sendStreamMessageEx(streamId, msg.getBytes(StandardCharsets.UTF_8), rtcConnection);
     }
 
     public void renderLocalVideo(FrameLayout container, Runnable firstFrame) {
@@ -394,6 +403,15 @@ public class RtcManager {
                 super.onUserOffline(uid, reason);
                 if (listener != null) {
                     listener.onUserOffline(channelId, uid);
+                }
+            }
+
+            @Override
+            public void onStreamMessage(int uid, int streamId, byte[] data) {
+                super.onStreamMessage(uid, streamId, data);
+                OnStreamMessageListener listener = dataStreamListener.get(streamId);
+                if(listener != null){
+                    listener.onMessageReceived(streamId, uid, new String(data));
                 }
             }
         });

@@ -67,7 +67,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:overScrollMode="never"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="12"
             tools:listitem="@layout/virtual_image_item_room_list"
             tools:paddingTop="?attr/actionBarSize" />

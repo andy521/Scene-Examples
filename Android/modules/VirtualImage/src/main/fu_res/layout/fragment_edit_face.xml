@@ -199,29 +199,34 @@
         app:text_color="@color/bottom_title_text_color"
         app:text_size="@dimen/text_size_28" />
 
-    <ImageButton
-        android:id="@+id/edit_face_back"
-        android:layout_width="@dimen/x108"
-        android:layout_height="@dimen/x108"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/x2"
-        android:background="@android:color/transparent"
-        android:padding="@dimen/x12"
-        android:scaleType="centerInside"
-        android:src="@drawable/edit_face_back"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <ImageButton
-        android:id="@+id/edit_face_save"
-        android:layout_width="wrap_content"
+    <FrameLayout
+        android:id="@+id/edit_face_top_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/x14"
-        android:layout_marginRight="@dimen/x12"
-        android:visibility="visible"
-        android:background="@android:color/transparent"
-        android:src="@drawable/edit_face_save_selector"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/edit_face_back"
+            android:layout_width="@dimen/x108"
+            android:layout_height="@dimen/x108"
+            android:layout_marginTop="@dimen/x2"
+            android:background="@android:color/transparent"
+            android:padding="@dimen/x12"
+            android:scaleType="centerInside"
+            android:src="@drawable/edit_face_back"/>
+
+
+        <ImageButton
+            android:id="@+id/edit_face_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/x14"
+            android:layout_marginEnd="@dimen/x12"
+            android:layout_gravity="end"
+            android:visibility="visible"
+            android:background="@android:color/transparent"
+            android:src="@drawable/edit_face_save_selector"/>
+
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

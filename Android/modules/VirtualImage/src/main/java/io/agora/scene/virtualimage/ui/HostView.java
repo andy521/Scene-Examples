@@ -1,10 +1,13 @@
 package io.agora.scene.virtualimage.ui;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -54,15 +57,22 @@ public class HostView extends ConstraintLayout {
 
         viewportContainer = new CardView(context);
         viewportContainer.setCardElevation(BaseUtil.dp2px(4));
-        viewportContainer.setCardBackgroundColor(BaseUtil.getColorInt(context, R.attr.colorSurface));
+        viewportContainer.setCardBackgroundColor(Color.GRAY);
         viewportContainer.setRadius(BaseUtil.dp2px(8));
         viewportContainer.setLayoutParams(layoutParams);
+
+        TextView viewportTextView = new TextView(context);
+        viewportTextView.setText(R.string.virtual_image_remote_video);
+        viewportTextView.setTextColor(Color.WHITE);
+        viewportTextView.setGravity(Gravity.CENTER);
+        viewportContainer.addView(viewportTextView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }
 
     private void configViewForCurrentState() {
         if (isSingleHost) { // 只有一个人
             safeAddView(currentViewport);
-            safeDetachView(viewportContainer);
+            safeAddView(viewportContainer);
+            safeDetachView(targetViewport);
         } else { // 两个人
             safeAddView(currentViewport);
             safeAddView(viewportContainer);
@@ -85,8 +95,9 @@ public class HostView extends ConstraintLayout {
     }
 
     private void safeDetachView(View view) {
-        if (view.getParent() == this)
-            this.removeView(view);
+        if (view.getParent() instanceof ViewGroup){
+            ((ViewGroup)view.getParent()).removeView(view);
+        }
     }
 
     public boolean isSingleHost() {
@@ -96,6 +107,10 @@ public class HostView extends ConstraintLayout {
     public void setSingleHost(boolean singleHost) {
         isSingleHost = singleHost;
         configViewForCurrentState();
+    }
+
+    public void setViewportContainerVisible(boolean visible){
+        viewportContainer.setVisibility(visible ? View.VISIBLE: View.GONE);
     }
 
     @NonNull

@@ -51,7 +51,6 @@ public class RoomViewModel extends ViewModel {
     // SyncManager 必须
     @Nullable
     public SceneReference currentSceneRef = null;
-    private int dataStreamId = -1;
     //</editor-fold>
 
 
@@ -74,18 +73,7 @@ public class RoomViewModel extends ViewModel {
         this.amHost = Objects.equals(currentRoom.getUserId(), localUser.getUserId());
 
 
-        initRTC(context, new RtcManager.OnStreamMessageListener() {
-            @Override
-            public void onMessageReceived(int dataStreamId, int fromUid, String message) {
-                String userId = String.valueOf(fromUid);
-                if (Objects.equals(userId, currentRoom.getUserId())) {
-                    BaseUtil.logD("onStreamMessage:" + message);
-                    if (Objects.equals("kill-" + localUser.getUserId(), message)) {
-                        _viewStatus.postValue(new ViewStatus.Error(""));
-                    }
-                }
-            }
-        }, new RtcManager.OnChannelListener() {
+        initRTC(context, new RtcManager.OnChannelListener() {
             @Override
             public void onError(int code, String message) {
                 BaseUtil.logD("err: " + code + " ==> " + RtcEngine.getErrorDescription(code));
@@ -285,43 +273,13 @@ public class RoomViewModel extends ViewModel {
         RtcManager.getInstance().switchCamera();
     }
 
-    /**
-     * 给对方发消息结束通话
-     */
-    public void endCall() {
-        new Thread(() -> {
-            LocalUser targetUser = _targetUser.getValue();
-            if (targetUser != null && !targetUser.getName().isEmpty()) {
-                // 对方 userId
-                int uid = -1;
-                try {
-                    uid = Integer.parseInt(targetUser.getUserId());
-                } catch (Exception ignored) {
-                }
-                // 本地userId
-                int localUserId = -1;
-                try {
-                    localUserId = Integer.parseInt(localUser.getUserId());
-                } catch (Exception ignored) {
-                }
-                if (uid != -1 && localUserId != -1 && dataStreamId != -1)
-                    RtcManager.getInstance().sendDataStreamMsg(dataStreamId, "kill-" + uid);
-            }
-        }).start();
-    }
-
-    public void createDataStream(RtcManager.OnStreamMessageListener msgListener) {
-        dataStreamId = RtcManager.getInstance().createDataStream(msgListener);
-    }
-
     public void joinRoom(Context context, RtcManager.OnChannelListener listener) {
         RtcManager.getInstance().joinChannel(currentRoom.getId(), localUser.getUserId(),
                 context.getString(R.string.rtc_app_token),
                 true, listener);
     }
 
-    public void initRTC(@NonNull Context mContext, RtcManager.OnStreamMessageListener msgListener, @NonNull RtcManager.OnChannelListener channelListener) {
-        createDataStream(msgListener);
+    public void initRTC(@NonNull Context mContext, @NonNull RtcManager.OnChannelListener channelListener) {
         joinRoom(mContext, channelListener);
         initRTM();
     }

@@ -12,6 +12,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import io.agora.example.base.BaseRecyclerViewAdapter;
 import io.agora.example.base.BaseUtil;
@@ -89,9 +90,10 @@ public class RoomListFragment extends BaseNavFragment<VirtualImageFragmentRoomLi
 //    }
 
     private void initView() {
+        mBinding.recyclerViewFgList.setLayoutManager(new GridLayoutManager(getContext(), 2));
         mAdapter = new BaseRecyclerViewAdapter<>(null, this, RoomListHolder.class);
         mBinding.recyclerViewFgList.setAdapter(mAdapter);
-        mBinding.recyclerViewFgList.addItemDecoration(new DividerDecoration(1));
+        mBinding.recyclerViewFgList.addItemDecoration(new DividerDecoration(2));
         mBinding.swipeFgList.setProgressViewOffset(true, 0, mBinding.swipeFgList.getProgressViewEndOffset());
         mBinding.swipeFgList.setColorSchemeResources(R.color.virtual_image_btn_gradient_start_color, R.color.virtual_image_btn_gradient_end_color);
         int backgroundColor = OneUtil.getMaterialBackgroundColor(BaseUtil.getColorInt(requireContext(), R.attr.colorSurface));
