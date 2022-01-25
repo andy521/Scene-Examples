@@ -117,12 +117,7 @@ static int ARFilterID = 0 ;
 - (void)destroyFaceCapture {}
 
 - (void)enableFaceCapture:(double)enable {
-    AgoraAvatarOptionValue *value = [[AgoraAvatarOptionValue alloc] initWith:AgoraAvatarValueTypeDouble
-                                                                        num:1
-                                                                      bytes:&enable];
-    [_avatarEngine setGeneratorOptions:@"enable_face_processor" value:value];
-    
-    
+    [_renderer itemSetWithName:@"enable_face_processor" value:enable];
 }
 
 
@@ -1833,11 +1828,9 @@ static int ARFilterID = 0 ;
 - (FUAvatar *)getAvatarWithInfoDic:(NSDictionary *)dict
 {
     FUAvatar *avatar = [[FUAvatar alloc] init];
-    
-    avatar.avatarEngine = self.avatarEngine;
     avatar.renderer = [FURendererObj new];
-    avatar.renderer.avatarEngine = self.avatarEngine;
-    NSAssert(_avatarEngine != nil, @"_avatarEngine should not nil");
+    avatar.renderer.avatarEngine = _renderer.avatarEngine;
+    NSAssert(_renderer.avatarEngine != nil, @"_avatarEngine should not nil");
     
     avatar.name = dict[@"name"];
     avatar.gender = (FUGender)[dict[@"gender"] intValue];

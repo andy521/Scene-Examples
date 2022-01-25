@@ -157,7 +157,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
     private func clickControlViewHandler(controlType: OneToOneControlType, isSelected: Bool) {
         switch controlType {
         case .switchCamera:
-            agoraKit?.switchCamera()
+            break
             
         case .game:
 //            clickAvaterHandler()
@@ -264,7 +264,9 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         avaterEngine?.enableOrUpdateLocalAvatarVideo(true, configs: avatarConfigs)
         
         let _ = FUManager.shareInstance()
-        FUManager.shareInstance().avatarEngine = avaterEngine
+        let renderer = FURendererObj()
+        renderer.avatarEngine = avaterEngine
+        FUManager.shareInstance().renderer = renderer
         FUManager.shareInstance().setAvatarStyleDefault()
         FUManager.shareInstance().setupForHalfMode()
         

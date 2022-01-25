@@ -44,6 +44,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (double)fuItemGetParamd:(NSString *)name;
 - (int)fuItemGetParamdInt:(NSString *)name;
 
+/// 获取一个数组 length是数组的长度
+- (NSArray <NSNumber *>*)getArrayByKey:(NSString *)key
+                                length:(int)length;
+
+/// 设置、取消设置一个资源或属性
+- (int)enableAvatarGeneratorItem:(BOOL) enable
+                            type:(AgoraAvatarItemType)type
+                          bundle:(NSString *  _Nonnull)bundle;
+
 @end
 
 NS_ASSUME_NONNULL_END

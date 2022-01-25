@@ -136,9 +136,9 @@
         return ;
     }
     
-    [_avatarEngine enableAvatarGeneratorItem:YES
-                                        type:(int)itemType
-                                      bundle:path];
+    [_renderer enableAvatarGeneratorItem:YES
+                                    type:(int)itemType
+                                  bundle:path];
     
 }
 
@@ -162,7 +162,7 @@
 
 // 销毁某个道具
 - (void)destroyItemWithType:(FUItemType)itemType {
-    [_avatarEngine enableAvatarGeneratorItem:NO type:(int)itemType bundle:@""];
+    [_renderer enableAvatarGeneratorItem:NO type:(int)itemType bundle:@""];
 }
 
 /// 获取 tmpItems 第一个空闲的位置
@@ -306,8 +306,12 @@
 - (void)loadHalfAvatar {}
 - (void)loadFullAvatar {}
 - (void)human3dSetYOffset:(float)y_offset {}
-- (void)enterARMode {}
-- (void)quitARMode {}
+- (void)enterARMode {
+    
+}
+- (void)quitARMode {
+    
+}
 
 #pragma mark --- 捏脸模式
 
@@ -373,15 +377,18 @@
     CGSize size = [UIScreen mainScreen].bounds.size;
     double realScreenWidth  = size.width;
     double realScreenHeight = size.height;
-    double xR = realScreenWidth / pixelBufferW;
-    double yR = realScreenHeight / pixelBufferH;
+    double xR = pixelBufferW / realScreenWidth;
+    double yR = pixelBufferH / realScreenHeight;
+    
+    double nx = x / pixelBufferW;
+    double ny = y / pixelBufferH;
     
     if (xR < yR){
-        x = x * xR;
-        y = y*xR;// - (pixelBufferH*xR - realScreenHeight)/2;
+        x = nx * realScreenWidth;
+        y = (ny * yR - (yR - 1) * 0.5) * realScreenHeight;
     } else {
-        x = x* yR;// - (pixelBufferW * yR - realScreenWidth) / 2;
-        y = y * yR;
+        y = ny * realScreenHeight;
+        x = (nx * xR - (xR - 1) * 0.5) * realScreenWidth;
     }
     return CGPointMake( x , y);
 }
@@ -599,7 +606,6 @@
 -(id)copyWithZone:(NSZone *)zone
 {
     FUAvatar * copyAvatar = [[FUAvatar alloc]init];
-    copyAvatar.avatarEngine = self.avatarEngine;
     copyAvatar.renderer = self.renderer;
     unsigned int outCount, i;
     objc_property_t *properties = class_copyPropertyList([self class], &outCount);
@@ -637,25 +643,9 @@
 
 
 #pragma mark  ------ 捏脸 ------
-- (NSArray *)getFacepupModeParamsWithLength:(int)length
-{
-    AgoraAvatarOptionValue *optionValue;
-    [_avatarEngine getGeneratorOptions:@"facepup_expression"
-                                  type:AgoraAvatarValueTypeDoubleArray
-                                result:&optionValue];
-    
-    NSAssert(optionValue != nil, @"optionValue not nil");
-    
-    double (* arrPtr)[length] = NULL;
-    arrPtr = (double (*)[length]) optionValue.value.bytes;
-    
-    NSMutableArray *params = [[NSMutableArray alloc]init];
-    for (int i = 0; i < length; i++)
-    {
-        [params addObject:[NSNumber numberWithDouble:*(arrPtr[i])]];
-    }
-    
-    return params;
+- (NSArray *)getFacepupModeParamsWithLength:(int)length {
+    return [_renderer getArrayByKey:@"facepup_expression"
+                             length:length];
 }
 
 /// 设置捏脸参数
@@ -1540,13 +1530,13 @@
         NSString *tips = [NSString stringWithFormat:@"销毁这个资源 %ld", itemType];
         NSLog(@"%@", tips);
         
-        [_avatarEngine enableAvatarGeneratorItem:NO type:(int)itemType bundle:@""];
+        [_renderer enableAvatarGeneratorItem:NO type:(int)itemType bundle:@""];
         return ;
     }
     
     NSLog(@"enableAvatarGeneratorItem:%@", path);
     
-   NSInteger ret = [_avatarEngine enableAvatarGeneratorItem:YES
+   NSInteger ret = [_renderer enableAvatarGeneratorItem:YES
                                         type:(int)itemType
                                       bundle:path];
     

@@ -108,8 +108,8 @@ class OneToOneControlView: UIView {
         editButton.translatesAutoresizingMaskIntoConstraints = false
         
         addSubview(statckView)
-//        statckView.addArrangedSubview(switchCameraButton)
         statckView.addArrangedSubview(editButton)
+        statckView.addArrangedSubview(switchCameraButton)
 //        statckView.addArrangedSubview(gameButton)
         statckView.addArrangedSubview(micButton)
         statckView.addArrangedSubview(exitButton)
@@ -122,6 +122,8 @@ class OneToOneControlView: UIView {
         
         editButton.widthAnchor.constraint(equalToConstant: 60.fit).isActive = true
         editButton.heightAnchor.constraint(equalToConstant: 60.fit).isActive = true
+        switchCameraButton.widthAnchor.constraint(equalToConstant: 60.fit).isActive = true
+        switchCameraButton.heightAnchor.constraint(equalToConstant: 60.fit).isActive = true
         gameButton.widthAnchor.constraint(equalToConstant: 60.fit).isActive = true
         gameButton.heightAnchor.constraint(equalToConstant: 60.fit).isActive = true
         micButton.widthAnchor.constraint(equalToConstant: 60.fit).isActive = true

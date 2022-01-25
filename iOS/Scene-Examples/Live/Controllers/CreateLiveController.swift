@@ -158,7 +158,9 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
         avaterEngine?.enableOrUpdateLocalAvatarVideo(true, configs: avatarConfigs)
         
         let _ = FUManager.shareInstance()
-        FUManager.shareInstance().avatarEngine = avaterEngine
+        let renderer = FURendererObj()
+        renderer.avatarEngine = avaterEngine
+        FUManager.shareInstance().renderer = renderer
         FUManager.shareInstance().setAvatarStyleDefault()
         FUManager.shareInstance().setupForHalfMode()
         

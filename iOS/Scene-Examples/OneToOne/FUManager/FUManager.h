@@ -47,7 +47,7 @@
     int light_ptr;   // 绑定在q_controller上的_cam.bundle道具句柄
 }
 
-@property (nonatomic, strong)id<AvatarEngineProtocol> _Nonnull avatarEngine;
+@property (nonatomic, strong)FURendererObj * _Nonnull renderer;
 
 //@property (nonatomic, strong) FURotatedImage *rotatedImageManager;
 

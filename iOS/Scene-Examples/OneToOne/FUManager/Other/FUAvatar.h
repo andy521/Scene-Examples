@@ -79,7 +79,6 @@ static const int tmpItemsCount  = 100;
 @property (nonatomic, assign) FUGender gender;
 @property (nonatomic, copy) NSString *imagePath;
 
-@property (nonatomic, strong)id<AvatarEngineProtocol> _Nonnull avatarEngine;
 @property (nonatomic, strong)FURendererObj * _Nonnull renderer;
 
 // 是否是新版本
