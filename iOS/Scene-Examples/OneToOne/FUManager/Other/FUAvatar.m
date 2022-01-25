@@ -77,9 +77,17 @@
  -- 包括 , head, body, hair, clothes, glasses, beard, hat, animatiom, arfilter.
  */
 - (void)destroyAvatarResouce {
-    
+    // 先销毁普通道具
+    for (int i = 1 ; i < sizeof(items)/sizeof(int); i ++) {
+        if (items[i] != 0) {
+            
+            [_renderer enableAvatarGeneratorItem:NO type:items[i] bundle:@""];
+            items[i] = 0;
+        }
+    }
+    // 销毁临时道具
+    [self destoryAllTmpItems];
 }
-
 
 /**
  更新Cam道具
@@ -180,7 +188,14 @@
 }
 /// 销毁所有的临时句柄
 -(void)destoryAllTmpItems{
-    
+    for (int i = 0; i < tmpItemsCount; i++) {
+        if (tmpItems[i] > 0) {
+            [_renderer enableAvatarGeneratorItem:NO
+                                            type:tmpItems[i]
+                                          bundle:@""];
+            tmpItems[i] = 0;
+        }
+    }
 }
 // 销毁某个道具
 - (void)destroyItemAnimationItemType{
@@ -307,7 +322,7 @@
 - (void)loadFullAvatar {}
 - (void)human3dSetYOffset:(float)y_offset {}
 - (void)enterARMode {
-    
+    [self disableBackGroundColor];
 }
 - (void)quitARMode {
     
@@ -513,6 +528,11 @@
     [_renderer fuItemSetParamdUseAlph:@"set_background_color"
                            colorValue:color
                                sub255:NO];
+}
+
+- (void)disableBackGroundColor {
+    [_renderer fuItemSetParamd:@"enable_background_color"
+                         value:0];
 }
 
 #pragma mark ----- 以下动画相关

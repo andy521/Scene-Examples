@@ -157,6 +157,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
     private func clickControlViewHandler(controlType: OneToOneControlType, isSelected: Bool) {
         switch controlType {
         case .switchCamera:
+            changeToArMode()
             break
             
         case .game:
@@ -271,6 +272,20 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         FUManager.shareInstance().setupForHalfMode()
         
         videoHandler.delegate = self
+    }
+    
+    private func changeToArMode() {
+        avaterEngine = agoraKit!.queryAvatarEngine()
+        let avatarConfigs = AgoraAvatarConfigs()
+        avatarConfigs.mode = .AR
+        avatarConfigs.enable_face_detection = 1
+        avatarConfigs.enable_human_detection = 1
+        avaterEngine?.enableOrUpdateLocalAvatarVideo(true, configs: avatarConfigs)
+        
+        let renderer = FURendererObj()
+        renderer.avatarEngine = avaterEngine
+        FUManager.shareInstance().renderer = renderer
+        FUManager.shareInstance().setAsArMode()
     }
     
     private func createAgoraVideoCanvas(uid: UInt,

@@ -2057,8 +2057,27 @@ static int ARFilterID = 0 ;
  @param avatar Avatar
  */
 - (void)reloadRenderAvatarInARModeInSameController:(FUAvatar *)avatar {
+    dispatch_semaphore_wait(self.signal, DISPATCH_TIME_FOREVER);
     
+    // 销毁上一个 avatar
+    if (self.currentAvatars.count != 0) {
+        FUAvatar *lastAvatar = self.currentAvatars.firstObject;
+        [lastAvatar destroyAvatarResouce];
+        [self.currentAvatars removeObject:lastAvatar];
+        arItems[0] = 0;
+    }
     
+    if (avatar == nil) {
+        dispatch_semaphore_signal(self.signal);
+        return;
+    }
+    
+    arItems[0] = [avatar loadAvatarWithARMode];
+    [avatar closeHairAnimation];
+    // 保存到当前 render 列表里面
+    [self.currentAvatars addObject:avatar];
+    
+    dispatch_semaphore_signal(self.signal);
 }
 
 
@@ -2707,6 +2726,16 @@ static int ranNum = 0;
 /// @param height 指定图像高
 - (void)setOutputResolutionWithWidth:(CGFloat)width height:(CGFloat)height
 {
+    
+}
+
+
+- (void)setAsArMode {
+    FUAvatar *avatar = self.currentAvatars.firstObject;
+    [self bindHairMask];
+    [self reloadRenderAvatarInARModeInSameController:avatar];
+    [self enterARMode];
+    [avatar enterARMode];
     
 }
 

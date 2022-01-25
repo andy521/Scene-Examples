@@ -520,4 +520,6 @@
 - (void)setAvatarStyleDefault;
 - (void)setupForHalfMode;
 
+- (void)setAsArMode;
+
 @end
