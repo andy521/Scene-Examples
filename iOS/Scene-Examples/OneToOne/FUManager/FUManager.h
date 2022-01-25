@@ -109,6 +109,8 @@
 /// 获取实例
 + (instancetype)shareInstance;
 - (CVPixelBufferRef)renderBodyTrackWithBuffer:(CVPixelBufferRef)pixelBuffer ptr:(void *)human3dPtr RenderMode:(FURenderMode)renderMode Landmarks:(float *)landmarks LandmarksLength:(int)landmarksLength;
+
+- (void)initProperty;
 /**
  AR 滤镜处理接口
  

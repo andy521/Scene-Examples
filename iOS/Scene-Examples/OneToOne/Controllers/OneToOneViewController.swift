@@ -65,6 +65,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
     private var isSelfExitGame: Bool = false
 
     var avaterEngine: AvatarEngineProtocol!
+    var currentMode = Mode.avatar
     
     init(channelName: String,
          sceneType: SceneType,
@@ -108,7 +109,6 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         super.viewDidDisappear(animated)
         agoraKit?.muteAllRemoteAudioStreams(true)
         agoraKit?.muteAllRemoteVideoStreams(true)
-        leaveChannel()
         navigationTransparent(isTransparent: false)
         UIApplication.shared.isIdleTimerDisabled = false
         navigationController?.interactivePopGestureRecognizer?.isEnabled = true
@@ -157,7 +157,17 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
     private func clickControlViewHandler(controlType: OneToOneControlType, isSelected: Bool) {
         switch controlType {
         case .switchCamera:
-            changeToArMode()
+            
+            if currentMode == .avatar {
+                currentMode = .ar
+                changeToArMode()
+            }
+            else {
+                currentMode = .avatar
+                changeToAvatarMode()
+            }
+            
+            
             break
             
         case .game:
@@ -247,6 +257,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         guard agoraKit == nil else {
             agoraKit?.delegate = self
             agoraKit?.setVideoFrameDelegate(videoHandler)
+            videoHandler.delegate = self
             return
         }
     
@@ -261,7 +272,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         let avatarConfigs = AgoraAvatarConfigs()
         avatarConfigs.mode = .avatar
         avatarConfigs.enable_face_detection = 1
-        avatarConfigs.enable_human_detection = 1
+        avatarConfigs.enable_human_detection = 0
         avaterEngine?.enableOrUpdateLocalAvatarVideo(true, configs: avatarConfigs)
         
         let _ = FUManager.shareInstance()
@@ -279,13 +290,28 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         let avatarConfigs = AgoraAvatarConfigs()
         avatarConfigs.mode = .AR
         avatarConfigs.enable_face_detection = 1
-        avatarConfigs.enable_human_detection = 1
+        avatarConfigs.enable_human_detection = 0
         avaterEngine?.enableOrUpdateLocalAvatarVideo(true, configs: avatarConfigs)
         
         let renderer = FURendererObj()
         renderer.avatarEngine = avaterEngine
         FUManager.shareInstance().renderer = renderer
         FUManager.shareInstance().setAsArMode()
+    }
+    
+    private func changeToAvatarMode() {
+        avaterEngine = agoraKit!.queryAvatarEngine()
+        let avatarConfigs = AgoraAvatarConfigs()
+        avatarConfigs.mode = .avatar
+        avatarConfigs.enable_face_detection = 1
+        avatarConfigs.enable_human_detection = 0
+        avaterEngine?.enableOrUpdateLocalAvatarVideo(true, configs: avatarConfigs)
+        
+        let renderer = FURendererObj()
+        renderer.avatarEngine = avaterEngine
+        FUManager.shareInstance().renderer = renderer
+        FUManager.shareInstance().setAvatarStyleDefault()
+        FUManager.shareInstance().setupForHalfMode()
     }
     
     private func createAgoraVideoCanvas(uid: UInt,
@@ -325,6 +351,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
     
     deinit {
         LogUtils.log(message: "释放 === \(self)", level: .info)
+        leaveChannel()
     }
     
     func getPath(_ name: String, dir: String? = "Resource/4") -> String? {
@@ -403,9 +430,17 @@ extension OneToOneViewController: VideoFrameHandlerDelegate {
         let height = CVPixelBufferGetHeight(pixelBuffer)
         videoPixelSize = CGSize(width: width,
                                 height: height)
+        assert(width != 0, "not 0");
         
 //        let size = AppManager.getSuitablePixelBufferSizeForCurrentDevice()
 //        videoPixelSize = size
+    }
+}
+
+extension OneToOneViewController {
+    enum Mode {
+        case avatar
+        case ar
     }
 }
 

@@ -108,7 +108,7 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
         view.addSubview(localView)
         view.addSubview(randomNameView)
         view.addSubview(startLiveButton)
-        view.addSubview(settingButton)
+//        view.addSubview(settingButton)
         view.addSubview(editButton)
         
         localView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -126,8 +126,8 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
         startLiveButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
         startLiveButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
-        settingButton.centerYAnchor.constraint(equalTo: startLiveButton.centerYAnchor).isActive = true
-        settingButton.leadingAnchor.constraint(equalTo: startLiveButton.trailingAnchor, constant: 25).isActive = true
+//        settingButton.centerYAnchor.constraint(equalTo: startLiveButton.centerYAnchor).isActive = true
+//        settingButton.leadingAnchor.constraint(equalTo: startLiveButton.trailingAnchor, constant: 25).isActive = true
         
         editButton.centerYAnchor.constraint(equalTo: startLiveButton.centerYAnchor).isActive = true
         editButton.rightAnchor.constraint(equalTo: startLiveButton.leftAnchor, constant: -25).isActive = true

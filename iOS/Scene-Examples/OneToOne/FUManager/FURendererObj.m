@@ -11,7 +11,7 @@
 @implementation FURendererObj
 
 - (void)setGeneratorOptionsInternal:(NSString*)key value:(AgoraAvatarOptionValue *)value {
-    NSLog(@"setGeneratorOptions key %@", key);
+    NSLog(@"FURendererObj setGeneratorOptions key %@", key);
     [_avatarEngine setGeneratorOptions:key value:value];
 }
 
@@ -168,7 +168,7 @@
 - (int)enableAvatarGeneratorItem:(BOOL)enable
                             type:(AgoraAvatarItemType)type
                           bundle:(NSString *  _Nonnull)bundle {
-    NSLog(@"enableAvatarGeneratorItem %d %@", type, enable ? @"YES" : @"NO");
+    NSLog(@"FURendererObj enableAvatarGeneratorItem %d %@", type, enable ? @"YES" : @"NO");
     return [_avatarEngine enableAvatarGeneratorItem:enable type:type bundle:bundle];
 }
 

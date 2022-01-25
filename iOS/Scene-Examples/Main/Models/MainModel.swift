@@ -19,7 +19,7 @@ enum SceneType: String {
     /// 同玩
     case playTogether = "playTogether"
     /// 1v1
-    case oneToOne = "oneToOne"
+    case oneToOne = "signleMetaLive"
     
     var alertTitle: String {
         switch self {

@@ -21,6 +21,10 @@ static FUManager *fuManager = nil;
     return fuManager;
 }
 
++ (void)destory {
+    fuManager = nil;
+}
+
 - (instancetype)init
 {
     self = [super init];
@@ -1228,10 +1232,10 @@ static int ARFilterID = 0 ;
 /// 加载默认背景
 - (void)loadDefaultBackGroundToController
 {
-    
-//    NSString *default_bg_Path = [[NSBundle mainBundle] pathForResource:@"default_bg" ofType:@"bundle"];
-    /// 这里取消加载，因为设置了背景颜色
-//    [self reloadBackGroundAndBindToController:default_bg_Path];
+    NSString *default_bg_Path = [[NSBundle mainBundle] pathForResource:@"default_bg" ofType:@"bundle"];
+    [_renderer enableAvatarGeneratorItem:YES
+                                    type:FUItemTypeBackground
+                                  bundle:default_bg_Path];
 }
 
 - (void)loadKetingBackGroundToController
@@ -1867,7 +1871,7 @@ static int ARFilterID = 0 ;
     avatar.decoration_toushi = [self getItemModelWithKey:TAG_FU_ITEM_DECORATION_TOUSHI andDict:dict];
     
     avatar.hairHat = [self getItemModelWithKey:TAG_FU_ITEM_HAIRHAT andDict:dict];
-//    avatar.dress_2d = [self getItemModelWithKey:TAG_FU_ITEM_DRESS_2D andDict:dict];
+    avatar.dress_2d = [self getItemModelWithKey:TAG_FU_ITEM_DRESS_2D andDict:dict];
     
     avatar.skinColorIndex = [self getIndexWithColorTypeKey:@"skin" andDict:dict];
     avatar.lipColorIndex = [self getIndexWithColorTypeKey:@"lip" andDict:dict];
@@ -2376,13 +2380,8 @@ static float CenterScale = 0.3;
 }
 
 - (void)setupForHalfMode {
-    
     FUAvatar *avatar = _currentAvatars.firstObject;
-//    [[FUManager shareInstance] reloadAvatarToControllerWithAvatar:avatar isBg:NO];
-    
-//    [avatar resetScaleToSmallBody_UseCam];
     [avatar resetPositionToShowHalf];
-    [avatar setBackGroundColor:[UIColor colorWithHexColorString:@"AE8EF0"]];
 }
 
 - (void)loadDefaultAvatar
@@ -2390,7 +2389,7 @@ static float CenterScale = 0.3;
     FUAvatar *avatar = [FUManager shareInstance].avatarList.firstObject;
     [avatar setCurrentAvatarIndex:0];
     [self reloadAvatarToControllerWithAvatar:avatar];
-    [avatar loadStandbyAnimation];
+//    [avatar loadStandbyAnimation];
 }
 
 /// 设置形象风格

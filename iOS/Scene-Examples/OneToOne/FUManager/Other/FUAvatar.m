@@ -322,7 +322,8 @@
 - (void)loadFullAvatar {}
 - (void)human3dSetYOffset:(float)y_offset {}
 - (void)enterARMode {
-    [self disableBackGroundColor];
+    [_renderer enableAvatarGeneratorItem:NO type:FUItemTypeUpper bundle:@""];
+    [_renderer enableAvatarGeneratorItem:NO type:FUItemTypeBackground bundle:@""];
 }
 - (void)quitARMode {
     
@@ -976,10 +977,10 @@
  */
 - (void)resetScaleToShowShoes
 {
-    [_renderer itemSetWithName:@"target_scale" value:-800];
-    [_renderer itemSetWithName:@"target_trans" value:100];
-    [_renderer itemSetWithName:@"target_angle" value:0];
-    [_renderer itemSetWithName:@"reset_all" value:6];
+//    [_renderer itemSetWithName:@"target_scale" value:-800];
+//    [_renderer itemSetWithName:@"target_trans" value:100];
+//    [_renderer itemSetWithName:@"target_angle" value:0];
+//    [_renderer itemSetWithName:@"reset_all" value:6];
 }
 
 /**
