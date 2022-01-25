@@ -245,6 +245,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
     private func setupAgoraKit() {
         guard agoraKit == nil else {
             agoraKit?.delegate = self
+            agoraKit?.setVideoFrameDelegate(videoHandler)
             return
         }
     

@@ -10,8 +10,6 @@ import AgoraRtcKit
 import AgoraSyncManager
 
 class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
-    
-    
     private lazy var randomNameView: LiveRandomNameView = {
         let view = LiveRandomNameView()
         return view
@@ -71,6 +69,8 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
     }()
     private var liveSettingModel: LiveSettingUseData?
     private var sceneType: SceneType = .singleLive
+    private var videoPixelSize: CGSize?
+    private let videoHandler = VideoFrameHandler()
     
     init(sceneType: SceneType) {
         super.init(nibName: nil, bundle: nil)
@@ -144,6 +144,8 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: rtcEngineConfig, delegate: nil)
         avaterEngine = agoraKit!.queryAvatarEngine()
         agoraKit?.setLogFile(LogUtils.sdkLogPath())
+        videoHandler.delegate = self
+        agoraKit?.setVideoFrameDelegate(videoHandler)
         
         let _ = AuthPack.bytes.withUnsafeBytes { pointer in
             avaterEngine?.initialize(Data(bytes: pointer))
@@ -154,33 +156,6 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
         avatarConfigs.enable_face_detection = 1
         avatarConfigs.enable_human_detection = 1
         avaterEngine?.enableOrUpdateLocalAvatarVideo(true, configs: avatarConfigs)
-        
-//        var path:String!
-//        path = getPath("hair_hat_6")
-//        avaterEngine?.enableAvatarGeneratorItem(true, type: 0, bundle: path)
-//
-//        path = getPath("head")
-//        avaterEngine?.enableAvatarGeneratorItem(true, type: 1, bundle: path)
-//
-//        path = getPath("wuguan_mesh", dir: "Resource/QItems/background/dress_2d/mid/")
-//        avaterEngine?.enableAvatarGeneratorItem(true, type: 2, bundle: path)
-//
-//        path = getPath("midBody_male0", dir: nil)
-//        avaterEngine?.enableAvatarGeneratorItem(true, type: 3, bundle: path)
-//
-//
-//        path = getPath("taozhuang_2_shoes", dir: "/Resource/QItems/cloth/shoes/mid")
-//        avaterEngine?.enableAvatarGeneratorItem(true, type: 4, bundle: path)
-//
-//        path = getPath("yiqun_3", dir: "Resource/QItems/cloth/dress/mid")
-//        avaterEngine?.enableAvatarGeneratorItem(true, type: 5, bundle: path)
-//
-//
-//        path = getPath("cam_02", dir: "Resource/page_cam")
-//        avaterEngine?.enableAvatarGeneratorItem(true, type: 6, bundle: path)
-//
-//        path = getPath("ani_idle", dir: nil)
-//        avaterEngine?.enableAvatarGeneratorItem(true, type: 7, bundle: path)
         
         let _ = FUManager.shareInstance()
         FUManager.shareInstance().avatarEngine = avaterEngine
@@ -222,6 +197,9 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
         let vc = FUEditViewController.instacneFromStoryBoard()!
         vc.delegate = self
         vc.modalPresentationStyle = .fullScreen
+        if let size = videoPixelSize {
+            vc.setPixelBufferSize(size)
+        }
         self.present(vc, animated: true, completion: nil)
         let renderView = vc.getVideoView()!
         let canvas = AgoraRtcVideoCanvas()
@@ -313,6 +291,16 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
     }
 }
 
-
+extension CreateLiveController: VideoFrameHandlerDelegate {
+    func videoHandlerDidRecvPixelData(_ pixelBuffer: CVPixelBuffer) {
+        let width = CVPixelBufferGetWidth(pixelBuffer)
+        let height = CVPixelBufferGetHeight(pixelBuffer)
+        videoPixelSize = CGSize(width: width,
+                                height: height)
+        
+//        let size = AppManager.getSuitablePixelBufferSizeForCurrentDevice()
+//        videoPixelSize = size
+    }
+}
 
 

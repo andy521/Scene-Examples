@@ -14,7 +14,7 @@
 #import "FUItemModel.h"
 #import <AgoraRtcKit/AgoraRtcKit.h>
 
-@class FUAvatar, FUP2AColor;
+@class FUAvatar, FUP2AColor, FURendererObj;
 @interface FUManager : NSObject
 {
     // render 句柄

@@ -121,6 +121,8 @@ static int ARFilterID = 0 ;
                                                                         num:1
                                                                       bytes:&enable];
     [_avatarEngine setGeneratorOptions:@"enable_face_processor" value:value];
+    
+    
 }
 
 
