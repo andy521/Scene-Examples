@@ -175,7 +175,7 @@ public class FUManager {
         }
 
         mP2ACore.loadWholeBodyCamera();
-        mAvatarHandle.setBackgroundColor("#AE8EF0");
+        mAvatarHandle.setFaceCapture(true);
         mAvatarHandle.setNeedTrackFace(true);
         mAvatarHandle.setAvatar(getShowAvatarP2A(), true, true);
         mAvatarHandle.openLight(FilePathFactory.BUNDLE_light);
