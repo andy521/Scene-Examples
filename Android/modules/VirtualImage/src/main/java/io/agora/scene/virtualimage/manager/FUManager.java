@@ -67,6 +67,12 @@ public class FUManager {
     private int touchMode;
 
     private boolean isARMode = false;
+    private Runnable disableBackgroundColorRun = new Runnable() {
+        @Override
+        public void run() {
+            mAvatarHandle.disableBackgroundColor();
+        }
+    };
 
 
     public void initialize(Context context){
@@ -159,19 +165,22 @@ public class FUManager {
             return;
         }
         isARMode = false;
+        mFUP2ARenderer.getFUItemHandler().removeCallbacks(disableBackgroundColorRun);
+        mAvatarHandle.setBackgroundColor("#AE8EF0");
         if(mARAvatarHandle != null){
             mARDriveCore.release();
             mARDriveCore = null;
             mARAvatarHandle = null;
             mFUP2ARenderer.setFUCore(mP2ACore);
         }
-        mP2ACore.loadWholeBodyCamera();
 
-        mAvatarHandle.setAvatar(getShowAvatarP2A(), true, true);
+        mP2ACore.loadWholeBodyCamera();
+        mAvatarHandle.setBackgroundColor("#AE8EF0");
         mAvatarHandle.setNeedTrackFace(true);
+        mAvatarHandle.setAvatar(getShowAvatarP2A(), true, true);
         mAvatarHandle.openLight(FilePathFactory.BUNDLE_light);
         mAvatarHandle.setScale(new double[]{0.0, -50f, 300f});
-        mAvatarHandle.setBackgroundColor("#AE8EF0");
+
     }
 
     private void resetMode() {
@@ -195,7 +204,8 @@ public class FUManager {
             mARAvatarHandle = mARDriveCore.createAvatarARHandle();
         }
         mARAvatarHandle.setARAvatar(getShowAvatarP2A(), true);
-        mAvatarHandle.disableBackgroundColor();
+        mFUP2ARenderer.getFUItemHandler().removeCallbacks(disableBackgroundColorRun);
+        mFUP2ARenderer.getFUItemHandler().postDelayed(disableBackgroundColorRun, 500);
     }
 
     public void stop(){
