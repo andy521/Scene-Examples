@@ -24,6 +24,7 @@ import io.agora.scene.virtualimage.base.BaseNavFragment;
 import io.agora.scene.virtualimage.bean.GameInfo;
 import io.agora.scene.virtualimage.bean.RoomInfo;
 import io.agora.scene.virtualimage.databinding.VirtualImageFragmentRoomBinding;
+import io.agora.scene.virtualimage.manager.FUManager;
 import io.agora.scene.virtualimage.util.NormalContainerInsetsListener;
 import io.agora.scene.virtualimage.util.OneUtil;
 import io.agora.scene.virtualimage.util.ViewStatus;
@@ -83,12 +84,19 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
 
         // 翻转相机 按钮
         mBinding.btnBeauty.setOnClickListener(v -> {
+            boolean arMode = FUManager.getInstance().isARMode();
+            if(arMode){
+                FUManager.getInstance().switchMode();
+            }
             EditFaceFragment fragment = new EditFaceFragment();
             fragment.setOnCloseListener(() -> {
                 mBinding.containerFgRoom.setVisibility(View.VISIBLE);
                 getChildFragmentManager().beginTransaction()
                         .remove(fragment)
                         .commit();
+                if(arMode){
+                    FUManager.getInstance().switchMode();
+                }
             });
             mBinding.containerFgRoom.setVisibility(View.GONE);
             getChildFragmentManager().beginTransaction()
@@ -97,8 +105,8 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
 
         });
         mBinding.btnMode.setOnClickListener(v -> {
-            // TODO 切换AR和Avatar模式
-
+            // 切换AR和Avatar模式
+            FUManager.getInstance().switchMode();
         });
         // 退出房间按钮
         mBinding.btnEndLiveFgRoom.setOnClickListener(v -> {
@@ -179,19 +187,6 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
     }
 
     /**
-     * 退出游戏 弹窗
-     * 主播、观众：endGame ==》双人视图
-     */
-    private void showAlertExitGameDialog() {
-        new AlertDialog.Builder(requireContext()).setTitle(R.string.virtual_image_exit_game)
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> mViewModel.requestEndGame())
-                .setMessage(R.string.virtual_image_exit_game_msg)
-                .setCancelable(false)
-                .show();
-    }
-
-    /**
      * 关闭直播间 弹窗
      */
     private void showAlertEndLiveDialog() {
@@ -209,7 +204,7 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
         mBinding.hostViewFgRoom.setSingleHost(true);
 
         mBinding.btnEndLiveFgRoom.setVisibility(View.VISIBLE);
-        mBinding.btnMode.setVisibility(View.GONE);
+        mBinding.btnMicFgRoom.setVisibility(View.GONE);
         mBinding.btnEndCallFgRoom.setVisibility(View.GONE);
     }
 
@@ -218,7 +213,7 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
         mBinding.hostViewFgRoom.setSingleHost(false);
 
         mBinding.btnEndLiveFgRoom.setVisibility(View.GONE);
-        mBinding.btnMode.setVisibility(View.VISIBLE);
+        mBinding.btnMicFgRoom.setVisibility(View.VISIBLE);
         mBinding.btnEndCallFgRoom.setVisibility(View.VISIBLE);
 
     }

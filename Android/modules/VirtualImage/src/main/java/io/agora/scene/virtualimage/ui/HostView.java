@@ -64,11 +64,10 @@ public class HostView extends ConstraintLayout {
             safeAddView(currentViewport);
             safeDetachView(viewportContainer);
         } else { // 两个人
-            safeAddView(targetViewport);
+            safeAddView(currentViewport);
             safeAddView(viewportContainer);
-            safeAddView(viewportContainer, currentViewport);
+            safeAddView(viewportContainer, targetViewport);
         }
-
     }
 
     private void safeAddView(@NonNull View view) {

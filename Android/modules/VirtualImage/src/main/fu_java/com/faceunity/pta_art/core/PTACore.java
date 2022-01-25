@@ -42,12 +42,7 @@ public class PTACore extends BaseCore {
 
 
     public AvatarHandle createAvatarHandle() {
-        return avatarHandle = new AvatarHandle(this, mFUItemHandler, new Runnable() {
-            @Override
-            public void run() {
-                setNeedTrackFace(true);
-            }
-        });
+        return avatarHandle = new AvatarHandle(this, mFUItemHandler, null);
     }
 
     public void setCurrentInstancceId(int id) {

@@ -16,6 +16,8 @@ import com.faceunity.pta_art.core.AvatarHandle;
 import com.faceunity.pta_art.core.FUPTARenderer;
 import com.faceunity.pta_art.core.PTACore;
 import com.faceunity.pta_art.core.client.PTAClientWrapper;
+import com.faceunity.pta_art.core.driver.ar.AvatarARDriveHandle;
+import com.faceunity.pta_art.core.driver.ar.PTAARDriveCore;
 import com.faceunity.pta_art.entity.AvatarPTA;
 import com.faceunity.pta_art.entity.DBHelper;
 import com.faceunity.pta_art.fragment.BaseFragment;
@@ -31,6 +33,9 @@ public class FUManager {
     }
 
     private static volatile FUManager INSTANCE;
+    private PTAARDriveCore mARDriveCore;
+    private AvatarARDriveHandle mARAvatarHandle;
+
     public static FUManager getInstance(){
         if(INSTANCE == null){
             synchronized (FUManager.class){
@@ -60,6 +65,8 @@ public class FUManager {
     private GestureDetectorCompat mGestureDetector;
     private ScaleGestureDetector mScaleGestureDetector;
     private int touchMode;
+
+    private boolean isARMode = false;
 
 
     public void initialize(Context context){
@@ -128,34 +135,77 @@ public class FUManager {
         mFUP2ARenderer = new FUPTARenderer(mContext);
         mP2ACore = new PTACore(mContext, mFUP2ARenderer);
         mFUP2ARenderer.setFUCore(mP2ACore);
-
         mAvatarHandle = mP2ACore.createAvatarHandle();
-        mAvatarHandle.setAvatar(getShowAvatarP2A(), new Runnable() {
-            @Override
-            public void run() {
-                mAvatarHandle.openLight(FilePathFactory.BUNDLE_light);
-                mAvatarHandle.setScale(new double[]{0.0, -50f, 300f});
-                //mAvatarHandle.setBackgroundColor("#AE8EF0");
-
-//                mP2ACore.unBind();
-//                PTAARDriveCore driveCore = new PTAARDriveCore(mContext, mFUP2ARenderer);
-//                mFUP2ARenderer.setFUCore(driveCore);
-//                AvatarARDriveHandle avatarARHandle = driveCore.createAvatarARHandle();
-//                avatarARHandle.setARAvatar(getShowAvatarP2A(), new Runnable() {
-//                    @Override
-//                    public void run() {
-//
-//                    }
-//                });
-            }
-        });
-        mP2ACore.loadWholeBodyCamera();
 
         isStarted = true;
+        isARMode = false;
+        resetMode();
+    }
+
+    public void switchMode(){
+        if(isARMode){
+            switch2AvatarMode();
+        }else{
+            switch2ARMode();
+        }
+    }
+
+    public boolean isARMode() {
+        return isARMode;
+    }
+
+    public void switch2AvatarMode(){
+        if(!isStarted){
+            return;
+        }
+        isARMode = false;
+        if(mARAvatarHandle != null){
+            mARDriveCore.release();
+            mARDriveCore = null;
+            mARAvatarHandle = null;
+            mFUP2ARenderer.setFUCore(mP2ACore);
+        }
+        mP2ACore.loadWholeBodyCamera();
+
+        mAvatarHandle.setAvatar(getShowAvatarP2A(), true, true);
+        mAvatarHandle.setNeedTrackFace(true);
+        mAvatarHandle.openLight(FilePathFactory.BUNDLE_light);
+        mAvatarHandle.setScale(new double[]{0.0, -50f, 300f});
+        mAvatarHandle.setBackgroundColor("#AE8EF0");
+    }
+
+    private void resetMode() {
+        if(isARMode){
+            switch2ARMode();
+        }
+        else {
+            switch2AvatarMode();
+        }
+    }
+
+    public void switch2ARMode() {
+        if(!isStarted){
+            return;
+        }
+        isARMode = true;
+        if(mARAvatarHandle == null){
+            mP2ACore.unBind();
+            mARDriveCore = new PTAARDriveCore(mContext, mFUP2ARenderer);
+            mFUP2ARenderer.setFUCore(mARDriveCore);
+            mARAvatarHandle = mARDriveCore.createAvatarARHandle();
+        }
+        mARAvatarHandle.setARAvatar(getShowAvatarP2A(), true);
+        mAvatarHandle.disableBackgroundColor();
     }
 
     public void stop(){
         isStarted = false;
+        if(mARAvatarHandle != null){
+            mARDriveCore.release();
+            mARDriveCore = null;
+            mARAvatarHandle = null;
+        }
+
         if(mFUP2ARenderer != null){
             mFUP2ARenderer.release();
         }
@@ -208,20 +258,10 @@ public class FUManager {
     private final BaseFragment.IContextCallback contextCallbackImpl = new BaseFragment.IContextCallback() {
 
         @Override
-        public void showHomeFragment() {
-            // do nothing
-        }
-
-        @Override
         public AvatarPTA getShowAvatarP2A() {
             return mShowAvatarP2A;
         }
 
-
-        @Override
-        public void setCanController(boolean b) {
-
-        }
 
         @Override
         public void setShowAvatarP2A(AvatarPTA avatarP2A) {
@@ -230,11 +270,7 @@ public class FUManager {
 
         @Override
         public void updateAvatarP2As() {
-            mP2ACore.loadWholeBodyCamera();
-            mP2ACore.setNeedTrackFace(true);
-            if(mAvatarHandle != null){
-                mAvatarHandle.setScale(new double[]{0.0, -50f, 300f});
-            }
+            resetMode();
         }
 
     };

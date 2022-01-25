@@ -396,13 +396,9 @@ public class EditFaceFragment extends BaseFragment
             mFUP2ARenderer.setFUCore(mP2ACore);
 
             if(mActivity != null){
-                mActivity.showHomeFragment();
-                mActivity.setCanController(true);
-                mActivity.updateAvatarP2As();
                 mActivity.setShowAvatarP2A(avatarP2A);
+                mActivity.updateAvatarP2As();
             }
-
-            mAvatarHandle.setAvatar(avatarP2A, true, true, null);
         }
         workerHandler.removeCallbacksAndMessages(null);
         workerThread.quit();
@@ -1448,9 +1444,6 @@ public class EditFaceFragment extends BaseFragment
             mP2ACore.loadHalfLengthBodyCamera();
         } else {
             mP2ACore.loadBigHalfLengthBodyCamera();
-        }
-        if(mActivity != null){
-            mActivity.setCanController(mEditFacePoints == null);
         }
         mEditPointLayout.post(new Runnable() {
             @Override

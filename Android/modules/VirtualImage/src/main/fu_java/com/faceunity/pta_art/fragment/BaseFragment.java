@@ -29,11 +29,7 @@ public class BaseFragment extends Fragment {
 
     public interface IContextCallback{
 
-        void showHomeFragment();
-
         AvatarPTA getShowAvatarP2A();
-
-        void setCanController(boolean b);
 
         void setShowAvatarP2A(AvatarPTA avatarP2A);
 
@@ -52,11 +48,7 @@ public class BaseFragment extends Fragment {
 
     }
 
-    public void onBackPressed() {
-        if(mActivity != null){
-            mActivity.showHomeFragment();
-        }
-    }
+    public void onBackPressed() {}
 
     public boolean onSingleTapUp(MotionEvent e) {
         return false;
