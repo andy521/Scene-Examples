@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -83,7 +84,8 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
         mBinding.btnBeauty.setOnClickListener(v -> {
             boolean arMode = FUManager.getInstance().isARMode();
             if (arMode) {
-                FUManager.getInstance().switchMode();
+                Toast.makeText(getContext(), R.string.room_mode_switch_error, Toast.LENGTH_LONG).show();
+                return;
             }
             mEditFaceFragment = new EditFaceFragment();
             mEditFaceFragment.setOnCloseListener(() -> {
@@ -92,9 +94,6 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
                 getChildFragmentManager().beginTransaction()
                         .remove(mEditFaceFragment)
                         .commit();
-                if (arMode) {
-                    FUManager.getInstance().switchMode();
-                }
                 mEditFaceFragment = null;
             });
             mBinding.containerFgRoom.setVisibility(View.GONE);

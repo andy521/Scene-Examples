@@ -35,5 +35,6 @@
 
 
     <string name="virtual_image_remote_video">远端视频</string>
+    <string name="room_mode_switch_error">AR模式下不支持捏脸，请切回Avatar模式</string>
 
 </resources>
