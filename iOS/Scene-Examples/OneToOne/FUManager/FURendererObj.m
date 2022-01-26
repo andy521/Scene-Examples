@@ -142,14 +142,16 @@
                                 result:&optionValue];
     
     NSAssert(optionValue != nil, @"optionValue not nil");
+  
+    NSInteger num = optionValue.num;
     
-    double (* arrPtr)[length] = NULL;
-    arrPtr = (double (*)[length]) optionValue.value.bytes;
+    double* arrPtr = NULL;
+    arrPtr = (double*) optionValue.value.bytes;
     
     NSMutableArray *params = [[NSMutableArray alloc]init];
-    for (int i = 0; i < length; i++)
+    for (int i = 0; i < num; i++)
     {
-        [params addObject:[NSNumber numberWithDouble:*(arrPtr[i])]];
+        [params addObject:[NSNumber numberWithDouble:*(arrPtr + i)]];
     }
     return params;
 }

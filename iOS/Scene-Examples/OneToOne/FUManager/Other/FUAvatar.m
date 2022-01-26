@@ -1058,7 +1058,9 @@
  */
 - (void)resetScaleChange_UseCam
 {
-    [self resetScaleToShowShoes];
+    double position[3] = {0,0,0};
+    [_renderer itemSetParamdv:@"target_position" value:position];
+    [_renderer itemSetWithName:@"reset_all" value:1];
 }
 
 

@@ -22,6 +22,8 @@ class MainViewController: BaseViewController, FUPoseTrackViewDelegate {
         super.viewDidLoad()
         title = "首页"
         setupUI()
+        
+        SyncUtil.fetchAll(success: nil, fail: nil)
     }
     
     private func setupUI() {
