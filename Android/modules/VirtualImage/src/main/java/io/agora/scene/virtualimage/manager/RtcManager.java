@@ -472,7 +472,7 @@ public class RtcManager {
         if(engine == null){
             return;
         }
-        engine.muteLocalAudioStream(mute);
+        engine.enableLocalAudio(!mute);
     }
 
     public void disableAvatarGeneratorItems(int type){

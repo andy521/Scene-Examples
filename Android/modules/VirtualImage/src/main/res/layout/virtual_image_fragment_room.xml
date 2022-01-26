@@ -41,8 +41,7 @@
             android:layout_marginBottom="32dp"
             android:gravity="center"
             app:icon="@drawable/virtual_image_ic_mode_switch"
-            app:iconSize="40dp"
-            app:iconGravity="end"
+            app:iconSize="@dimen/preview_control_button_size"
             app:layout_constraintBottom_toTopOf="@id/btn_end_call_fg_room"
             app:layout_constraintEnd_toStartOf="@id/btn_mic_fg_room"
             app:layout_constraintStart_toEndOf="@id/btn_beauty" />
