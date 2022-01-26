@@ -137,7 +137,7 @@
 
 - (NSArray <NSNumber *>*)getArrayByKey:(NSString *)key length:(int)length {
     AgoraAvatarOptionValue *optionValue;
-    [_avatarEngine getGeneratorOptions:@"facepup_expression"
+    [_avatarEngine getGeneratorOptions:key
                                   type:AgoraAvatarValueTypeDoubleArray
                                 result:&optionValue];
     

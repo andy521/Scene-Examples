@@ -523,5 +523,6 @@
 - (void)setupForHalfMode;
 
 - (void)setAsArMode;
+- (void)quitARMode;
 
 @end

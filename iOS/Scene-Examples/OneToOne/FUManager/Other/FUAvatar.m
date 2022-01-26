@@ -675,6 +675,7 @@
 {
     [dict enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop)
      {
+        NSLog(@"by key %@ value %f", key, [obj doubleValue]);
         key  = [NSString stringWithFormat:@"{\"name\":\"facepup\",\"param\":\"%@\"}", key];
         [_renderer itemSetWithName:key value:[obj doubleValue]];
     }];

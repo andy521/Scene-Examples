@@ -29,7 +29,7 @@ class OneToOneControlView: UIView {
         return stackView
     }()
     private lazy var switchCameraButton: AGEButton = {
-        let button = AGEButton(style: .switchCamera(imageColor: .white))
+        let button = AGEButton(style: .imageName(name: "oneToOne/change"))
         button.backgroundColor = .init(hex: "#737374")
         button.imageSize = CGSize(width: 26.fit, height: 22.fit)
         button.cornerRadius = 30.fit

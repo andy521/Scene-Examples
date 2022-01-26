@@ -193,7 +193,9 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
             controlView.isHidden = false
             isCloseGame = true
         case .edit:
-            
+            guard currentMode == .avatar else {
+                return
+            }
             let vc = FUEditViewController.instacneFromStoryBoard()!
             vc.modalPresentationStyle = .fullScreen
             vc.delegate = self
@@ -258,11 +260,13 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
             agoraKit?.delegate = self
             agoraKit?.setVideoFrameDelegate(videoHandler)
             videoHandler.delegate = self
+            agoraKit?.enableAudio()
             return
         }
     
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: rtcEngineConfig, delegate: self)
         avaterEngine = agoraKit!.queryAvatarEngine()
+        agoraKit?.enableAudio()
         agoraKit?.setLogFile(LogUtils.sdkLogPath())
         agoraKit?.setVideoFrameDelegate(videoHandler)
         let _ = AuthPack.bytes.withUnsafeBytes { pointer in
@@ -300,6 +304,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
     }
     
     private func changeToAvatarMode() {
+        FUManager.shareInstance().quitARMode()
         avaterEngine = agoraKit!.queryAvatarEngine()
         let avatarConfigs = AgoraAvatarConfigs()
         avatarConfigs.mode = .avatar
@@ -312,6 +317,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         FUManager.shareInstance().renderer = renderer
         FUManager.shareInstance().setAvatarStyleDefault()
         FUManager.shareInstance().setupForHalfMode()
+        FUManager.shareInstance().enableFaceCapture(1)
     }
     
     private func createAgoraVideoCanvas(uid: UInt,

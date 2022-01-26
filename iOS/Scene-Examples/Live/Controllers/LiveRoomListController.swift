@@ -47,10 +47,10 @@ class LiveRoomListController: BaseViewController {
         super.viewDidLoad()
         setupUI()
         showWaitHUD()
+        getLiveData()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        getLiveData()
         navigationTransparent(isTransparent: false)
     }
     

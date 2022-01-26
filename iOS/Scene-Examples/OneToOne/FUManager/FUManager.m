@@ -2738,4 +2738,10 @@ static int ranNum = 0;
     
 }
 
+- (void)quitARMode {
+    [_renderer itemSetWithName:@"quit_ar_mode" value:1];
+    [_renderer itemSetWithName:@"reset_all" value:1];
+}
+
+
 @end
