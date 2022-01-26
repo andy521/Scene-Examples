@@ -731,6 +731,8 @@ static const int tmpItemsCount  = 100;
 /// 设置背景颜色
 - (void)setBackGroundColor:(UIColor *)color;
 
+- (void)resetPosition;
+
 @end
 
 

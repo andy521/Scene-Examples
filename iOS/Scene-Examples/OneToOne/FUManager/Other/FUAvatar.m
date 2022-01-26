@@ -390,6 +390,7 @@
     double y = [_renderer getDoubleWithName:@"query_vert_y"];
     
     y = pixelBufferH - y;
+    x = pixelBufferW - x;
     CGSize size = [UIScreen mainScreen].bounds.size;
     double realScreenWidth  = size.width;
     double realScreenHeight = size.height;
@@ -978,10 +979,10 @@
  */
 - (void)resetScaleToShowShoes
 {
-//    [_renderer itemSetWithName:@"target_scale" value:-800];
-//    [_renderer itemSetWithName:@"target_trans" value:100];
-//    [_renderer itemSetWithName:@"target_angle" value:0];
-//    [_renderer itemSetWithName:@"reset_all" value:6];
+    [_renderer itemSetWithName:@"target_scale" value:-800 * -1];
+    [_renderer itemSetWithName:@"target_trans" value:100 * -1];
+    [_renderer itemSetWithName:@"target_angle" value:0];
+    [_renderer itemSetWithName:@"reset_all" value:6 * -1];
 }
 
 /**
@@ -1042,7 +1043,7 @@
     // 获取当前相机动画bundle路径
     NSString *camPath = [[NSBundle mainBundle].resourcePath stringByAppendingFormat:@"/Resource/page_cam/cam_02.bundle"];
     // 将相机动画绑定到controller上
-    [[FUManager shareInstance] reloadCamItemWithPath:camPath];
+    [_renderer enableAvatarGeneratorItem:YES type:FUItemTypeCamera bundle:camPath];
 }
 
 /**
@@ -1050,7 +1051,12 @@
  */
 - (void)resetScaleToBody_UseCam
 {
-    [self resetScaleToOriginal];
+    [self resetPosition];
+    
+    // 获取当前相机动画bundle路径
+    NSString *camPath = [[NSBundle mainBundle].resourcePath stringByAppendingFormat:@"/Resource/page_cam/cam_35mm_full_80mm_jinjing.bundle"];
+    // 将相机动画绑定到controller上
+    [_renderer enableAvatarGeneratorItem:YES type:FUItemTypeCamera bundle:camPath];
 }
 
 /**
@@ -1058,9 +1064,12 @@
  */
 - (void)resetScaleChange_UseCam
 {
-    double position[3] = {0,0,0};
-    [_renderer itemSetParamdv:@"target_position" value:position];
-    [_renderer itemSetWithName:@"reset_all" value:1];
+    [self resetPosition];
+    
+    // 获取当前相机动画bundle路径
+    NSString *camPath = [[NSBundle mainBundle].resourcePath stringByAppendingFormat:@"/Resource/page_cam/cam_quanshen.bundle"];
+    // 将相机动画绑定到controller上
+    [_renderer enableAvatarGeneratorItem:YES type:FUItemTypeCamera bundle:camPath];
 }
 
 

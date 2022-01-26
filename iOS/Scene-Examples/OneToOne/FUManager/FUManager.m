@@ -2381,6 +2381,7 @@ static float CenterScale = 0.3;
 
 - (void)setupForHalfMode {
     FUAvatar *avatar = _currentAvatars.firstObject;
+    [avatar resetScaleToBody_UseCam];
     [avatar resetPositionToShowHalf];
 }
 

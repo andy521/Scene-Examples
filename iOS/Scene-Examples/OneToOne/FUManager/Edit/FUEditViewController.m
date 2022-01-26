@@ -327,9 +327,8 @@
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         [[FUManager shareInstance]saveAvatar];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.currentAvatar resetScaleToSmallBody_UseCam];
+            [self.currentAvatar resetScaleToBody_UseCam];
             [self.currentAvatar resetPositionToShowHalf];
-//            [self.currentAvatar resetPositionToShowHalf];
             [self stopLoadingSaveAvartAnimation];
             [[FUManager shareInstance] enableFaceCapture:1];
             [self dismissViewControllerAnimated:true completion:nil];
@@ -600,7 +599,7 @@
 	
 	NSArray *meshArray = [meshSource objectForKey:key];
 	
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 		
 		
 		dispatch_semaphore_wait(self.meshSigin, DISPATCH_TIME_FOREVER);
