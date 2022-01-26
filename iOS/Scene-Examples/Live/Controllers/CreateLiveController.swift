@@ -216,8 +216,7 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
     private func clickStartLiveButton() {
         let roomInfo = LiveRoomInfo(roomName: randomNameView.text)
         let params = JSONObject.toJson(roomInfo)
-        SyncUtil.joinScene(id: roomInfo.roomId, userId: roomInfo.userId, property: params, success: { results in
-            guard let result = results.first else { return }
+        SyncUtil.joinScene(id: roomInfo.roomId, userId: roomInfo.userId, property: params, success: { result in
             self.startLiveHandler(result: result)
         })
     }

@@ -184,9 +184,9 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
             }
             
         case .back:
-//            let name = channelName
+            let name = channelName
             showAlert(title: "关闭直播间", message: "关闭直播间后，其他用户将不能再和您连线。确定关闭 ？") {
-//                SyncUtil.delete(id: name, success: nil, fail: nil)
+                SyncUtil.delete(id: name, success: nil, fail: nil)
                 self.navigationController?.popViewController(animated: true)
             }
             

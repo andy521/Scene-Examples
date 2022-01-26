@@ -23,6 +23,7 @@ class MainViewController: BaseViewController, FUPoseTrackViewDelegate {
         title = "首页"
         setupUI()
         
+        SyncUtil.initSyncManager(sceneId: SceneType.oneToOne.rawValue)
         SyncUtil.fetchAll(success: nil, fail: nil)
     }
     
@@ -33,6 +34,11 @@ class MainViewController: BaseViewController, FUPoseTrackViewDelegate {
         tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
     }
 }
 
@@ -46,12 +52,13 @@ extension MainViewController: AGETableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let sceneType = MainModel.mainDatas()[indexPath.row].sceneType
-        SyncUtil.initSyncManager(sceneId: sceneType.rawValue)
+        
         if sceneType == .breakoutRoom {
             let breakoutRoomVC = BORHomeViewController()
             breakoutRoomVC.title = MainModel.mainDatas()[indexPath.row].title
             navigationController?.pushViewController(breakoutRoomVC, animated: true)
         } else {
+            
             let roomListVC = LiveRoomListController(sceneType: sceneType)
             roomListVC.title = MainModel.mainDatas()[indexPath.row].title
             navigationController?.pushViewController(roomListVC, animated: true)
