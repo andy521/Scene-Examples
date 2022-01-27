@@ -21,6 +21,7 @@ import io.agora.example.base.BaseRecyclerViewAdapter;
 import io.agora.example.base.BaseUtil;
 import io.agora.example.base.DividerDecoration;
 import io.agora.example.base.OnItemClickListener;
+import io.agora.rtc2.RtcEngine;
 import io.agora.scene.virtualimage.GlobalViewModel;
 import io.agora.scene.virtualimage.R;
 import io.agora.scene.virtualimage.base.BaseNavFragment;
@@ -116,8 +117,11 @@ public class RoomListFragment extends BaseNavFragment<VirtualImageFragmentRoomLi
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                android.os.Process.killProcess(android.os.Process.myPid());
-                Runtime.getRuntime().gc();
+//                android.os.Process.killProcess(android.os.Process.myPid());
+//                Runtime.getRuntime().gc();
+                FUManager.getInstance().stop();
+                RtcEngine.destroy();
+                requireActivity().finish();
             }
         });
         ViewCompat.setOnApplyWindowInsetsListener(mBinding.getRoot(), (v, insets) -> {
