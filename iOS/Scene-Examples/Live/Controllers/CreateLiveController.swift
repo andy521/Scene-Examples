@@ -37,6 +37,12 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
         button.addTarget(self, action: #selector(clickEditButton(sender:)), for: .touchUpInside)
         return button
     }()
+    private lazy var closeButton: UIButton = {
+        let button = UIButton()
+        button.setImage(.init(named: "icon-close-gray"), for: .normal)
+        button.addTarget(self, action: #selector(clickCloseButton(sender:)), for: .touchUpInside)
+        return button
+    }()
     private lazy var startLiveButton: UIButton = {
         let button = UIButton()
         button.setTitle("Create_Start".localized, for: .normal)
@@ -105,10 +111,11 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
         settingButton.translatesAutoresizingMaskIntoConstraints = false
         localView.translatesAutoresizingMaskIntoConstraints = false
         editButton.translatesAutoresizingMaskIntoConstraints = false
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(localView)
         view.addSubview(randomNameView)
         view.addSubview(startLiveButton)
-//        view.addSubview(settingButton)
+        view.addSubview(closeButton)
         view.addSubview(editButton)
         
         localView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -116,8 +123,13 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
         localView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         localView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         
+        closeButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 5).isActive = true
+        closeButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        closeButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
+        closeButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        
         randomNameView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10).isActive = true
-        randomNameView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
+        randomNameView.topAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: 10).isActive = true
         randomNameView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10).isActive = true
         randomNameView.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
@@ -210,6 +222,11 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
         canvas.view = renderView
         avaterEngine?.setupLocalVideoCanvas(canvas)
         agoraKit?.startPreview()
+    }
+    
+    @objc
+    private func clickCloseButton(sender: UIButton) {
+        navigationController?.popViewController(animated: true)
     }
     
     @objc

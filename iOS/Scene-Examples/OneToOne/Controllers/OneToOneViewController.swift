@@ -46,6 +46,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         let option = AgoraRtcChannelMediaOptions()
         option.publishCameraTrack = AgoraRtcBoolOptional.of(false)
         option.publishAvatarTrack = AgoraRtcBoolOptional.of(true)
+        option.publishAudioTrack = AgoraRtcBoolOptional.of(true)
         option.clientRoleType = .of((Int32)(AgoraClientRole.broadcaster.rawValue))
         option.autoSubscribeVideo = AgoraRtcBoolOptional.of(true)
         return option
@@ -107,8 +108,6 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        agoraKit?.muteAllRemoteAudioStreams(true)
-        agoraKit?.muteAllRemoteVideoStreams(true)
         navigationTransparent(isTransparent: false)
         UIApplication.shared.isIdleTimerDisabled = false
         navigationController?.interactivePopGestureRecognizer?.isEnabled = true
@@ -171,7 +170,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
             break
             
         case .game:
-//            clickAvaterHandler()
+
             break
         case .mic:
             agoraKit?.muteLocalAudioStream(isSelected)
@@ -317,7 +316,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         let renderer = FURendererObj()
         renderer.avatarEngine = avaterEngine
         FUManager.shareInstance().renderer = renderer
-        FUManager.shareInstance().setAvatarStyleDefault()
+        FUManager.shareInstance().loadDefaultAvatar()
         FUManager.shareInstance().setupForHalfMode()
         FUManager.shareInstance().enableFaceCapture(1)
     }

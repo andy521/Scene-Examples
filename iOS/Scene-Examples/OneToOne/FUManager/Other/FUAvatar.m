@@ -1018,7 +1018,7 @@
     // 获取当前相机动画bundle路径
     NSString *camPath = [[NSBundle mainBundle].resourcePath stringByAppendingFormat:@"/Resource/page_cam/cam_texie.bundle"];
     // 将相机动画绑定到controller上
-    [[FUManager shareInstance] reloadCamItemWithPath:camPath];
+    [_renderer enableAvatarGeneratorItem:YES type:FUItemTypeCamera bundle:camPath];
 }
 /**
  使用相机bundle缩放至脸部特写,不使用信号量，防止造成死锁
@@ -1030,7 +1030,7 @@
     // 获取当前相机动画bundle路径
     NSString *camPath = [[NSBundle mainBundle].resourcePath stringByAppendingFormat:@"/Resource/page_cam/cam_texie.bundle"];
     // 将相机动画绑定到controller上
-    [[FUManager shareInstance] reloadCamItemNoSignalWithPath:camPath];
+    [_renderer enableAvatarGeneratorItem:YES type:FUItemTypeCamera bundle:camPath];
 }
 
 /**
@@ -1067,7 +1067,7 @@
     [self resetPosition];
     
     // 获取当前相机动画bundle路径
-    NSString *camPath = [[NSBundle mainBundle].resourcePath stringByAppendingFormat:@"/Resource/page_cam/cam_quanshen.bundle"];
+    NSString *camPath = [[NSBundle mainBundle].resourcePath stringByAppendingFormat:@"/Resource/page_cam/cam_02.bundle"];
     // 将相机动画绑定到controller上
     [_renderer enableAvatarGeneratorItem:YES type:FUItemTypeCamera bundle:camPath];
 }

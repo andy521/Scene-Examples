@@ -524,5 +524,6 @@
 
 - (void)setAsArMode;
 - (void)quitARMode;
+- (void)loadDefaultAvatar;
 
 @end

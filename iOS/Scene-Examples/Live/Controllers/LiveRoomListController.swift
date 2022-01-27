@@ -52,6 +52,7 @@ class LiveRoomListController: BaseViewController {
         super.viewWillAppear(animated)
         navigationTransparent(isTransparent: false)
         getLiveData()
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
     }
     
     private func getLiveData() {
@@ -79,9 +80,7 @@ class LiveRoomListController: BaseViewController {
         
         createLiveButton.translatesAutoresizingMaskIntoConstraints = false
         createLiveButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -15).isActive = true
-        createLiveButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -25).isActive = true
-        createLiveButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
-        createLiveButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        createLiveButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -25).isActive = true
     }
     
     @objc
