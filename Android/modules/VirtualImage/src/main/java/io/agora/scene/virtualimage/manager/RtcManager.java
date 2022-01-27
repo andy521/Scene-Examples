@@ -571,6 +571,16 @@ public class RtcManager {
         return sb.toString();
     }
 
+    public void destroy() {
+        if(engine != null){
+            engine.leaveChannel();
+            engine.stopPreview();
+            RtcEngine.destroy();
+            engine = null;
+        }
+        isInitialized = false;
+    }
+
 
     public interface OnInitializeListener {
         void onError(int code, String message);

@@ -21,7 +21,6 @@ import io.agora.example.base.BaseRecyclerViewAdapter;
 import io.agora.example.base.BaseUtil;
 import io.agora.example.base.DividerDecoration;
 import io.agora.example.base.OnItemClickListener;
-import io.agora.rtc2.RtcEngine;
 import io.agora.scene.virtualimage.GlobalViewModel;
 import io.agora.scene.virtualimage.R;
 import io.agora.scene.virtualimage.base.BaseNavFragment;
@@ -120,7 +119,7 @@ public class RoomListFragment extends BaseNavFragment<VirtualImageFragmentRoomLi
 //                android.os.Process.killProcess(android.os.Process.myPid());
 //                Runtime.getRuntime().gc();
                 FUManager.getInstance().stop();
-                RtcEngine.destroy();
+                RtcManager.getInstance().destroy();
                 requireActivity().finish();
             }
         });
