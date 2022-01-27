@@ -4,6 +4,7 @@ import android.Manifest;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,7 +37,7 @@ import static java.lang.Boolean.TRUE;
 public class RoomListFragment extends BaseNavFragment<VirtualImageFragmentRoomListBinding> implements OnItemClickListener<RoomInfo> {
 
     ////////////////////////////////////// -- PERMISSION --//////////////////////////////////////////////////////////////
-    public static final String[] permissions = {Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,  Manifest.permission.READ_EXTERNAL_STORAGE};
+    public static final String[] permissions = {Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
 
     private final BaseUtil.PermissionResultCallback<String[]> callback = new BaseUtil.PermissionResultCallback<String[]>() {
         @Override
@@ -82,12 +83,11 @@ public class RoomListFragment extends BaseNavFragment<VirtualImageFragmentRoomLi
         initListener();
     }
 
-    //    @Override
-//    public void onResume() {
-//        super.onResume();
-    // 退出房间 更新列表 FIXME 更好的方式实现监听退出房间更新列表
-//        mBinding.getRoot().postDelayed(() -> mViewModel.fetchRoomList(),300);
-//    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        mBinding.getRoot().postDelayed(() -> mViewModel.fetchRoomList(), 300);
+    }
 
     private void initView() {
         mBinding.recyclerViewFgList.setLayoutManager(new GridLayoutManager(getContext(), 2));
@@ -101,6 +101,13 @@ public class RoomListFragment extends BaseNavFragment<VirtualImageFragmentRoomLi
     }
 
     private void initListener() {
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                android.os.Process.killProcess(android.os.Process.myPid());
+                Runtime.getRuntime().gc();
+            }
+        });
         ViewCompat.setOnApplyWindowInsetsListener(mBinding.getRoot(), (v, insets) -> {
             Insets inset = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             // 顶部

@@ -269,10 +269,6 @@ public class RoomViewModel extends ViewModel {
         RtcManager.getInstance().muteLocalAudio(!isMute);
     }
 
-    public void flipCamera() {
-        RtcManager.getInstance().switchCamera();
-    }
-
     public void joinRoom(Context context, RtcManager.OnChannelListener listener) {
         RtcManager.getInstance().joinChannel(currentRoom.getId(), localUser.getUserId(),
                 context.getString(R.string.rtc_app_token),
@@ -285,7 +281,16 @@ public class RoomViewModel extends ViewModel {
     }
 
     public void setupLocalView(@NonNull FrameLayout view) {
-        RtcManager.getInstance().renderLocalVideo(view, null);
+        RtcManager.getInstance().setOnMediaOptionUpdateListener(new RtcManager.OnMediaOptionUpdateListener() {
+            @Override
+            public void onMediaOptionUpdated() {
+                if (RtcManager.getInstance().isPublishAvatarTrack()) {
+                    RtcManager.getInstance().renderLocalAvatarVideo(view);
+                }else{
+                    RtcManager.getInstance().renderLocalCameraVideo(view);
+                }
+            }
+        });
         FUManager.getInstance().start();
     }
 

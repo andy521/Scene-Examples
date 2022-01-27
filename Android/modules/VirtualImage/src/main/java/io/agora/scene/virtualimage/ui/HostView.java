@@ -15,17 +15,17 @@ import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.agora.example.base.BaseUtil;
 import io.agora.scene.virtualimage.R;
 
 public class HostView extends ConstraintLayout {
 
-    private boolean isSingleHost = true;
-
     private final FrameLayout currentViewport;
-    private final FrameLayout targetViewport;
-
-    private final CardView viewportContainer;
+    private final List<FrameLayout> targetViewportList = new ArrayList<>();
+    private final List<CardView> viewportContainerList = new ArrayList<>();
 
     public HostView(@NonNull Context context) {
         this(context, null);
@@ -44,39 +44,35 @@ public class HostView extends ConstraintLayout {
 
         currentViewport = new FrameLayout(context);
         currentViewport.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        safeAddView(currentViewport);
 
-        targetViewport = new FrameLayout(context);
-        currentViewport.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        int lastOneViewId = View.NO_ID;
+        for (int i = 0; i < 1; i++) {
+            LayoutParams layoutParams = new LayoutParams(0, 0);
+            layoutParams.endToEnd = lastOneViewId == View.NO_ID ? ConstraintSet.PARENT_ID: lastOneViewId;
+            layoutParams.topToTop = lastOneViewId == View.NO_ID ? ConstraintSet.PARENT_ID: lastOneViewId;
+            layoutParams.matchConstraintPercentWidth = 0.28f;
+            layoutParams.dimensionRatio = "105:140";
 
-        // Init CardView
-        LayoutParams layoutParams = new LayoutParams(0, 0);
-        layoutParams.endToEnd = ConstraintSet.PARENT_ID;
-        layoutParams.topToTop = ConstraintSet.PARENT_ID;
-        layoutParams.matchConstraintPercentWidth = 0.28f;
-        layoutParams.dimensionRatio = "105:140";
+            lastOneViewId = View.generateViewId();
+            CardView viewportContainer = new CardView(context);
+            viewportContainer.setCardElevation(BaseUtil.dp2px(4));
+            viewportContainer.setCardBackgroundColor(Color.GRAY);
+            viewportContainer.setRadius(BaseUtil.dp2px(8));
+            viewportContainer.setLayoutParams(layoutParams);
+            viewportContainer.setId(lastOneViewId);
 
-        viewportContainer = new CardView(context);
-        viewportContainer.setCardElevation(BaseUtil.dp2px(4));
-        viewportContainer.setCardBackgroundColor(Color.GRAY);
-        viewportContainer.setRadius(BaseUtil.dp2px(8));
-        viewportContainer.setLayoutParams(layoutParams);
+            TextView viewportTextView = new TextView(context);
+            viewportTextView.setText(R.string.virtual_image_remote_video);
+            viewportTextView.setTextColor(Color.WHITE);
+            viewportTextView.setGravity(Gravity.CENTER);
+            viewportContainer.addView(viewportTextView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        TextView viewportTextView = new TextView(context);
-        viewportTextView.setText(R.string.virtual_image_remote_video);
-        viewportTextView.setTextColor(Color.WHITE);
-        viewportTextView.setGravity(Gravity.CENTER);
-        viewportContainer.addView(viewportTextView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-    }
-
-    private void configViewForCurrentState() {
-        if (isSingleHost) { // 只有一个人
-            safeAddView(currentViewport);
+            viewportContainerList.add(viewportContainer);
             safeAddView(viewportContainer);
-            safeDetachView(targetViewport);
-        } else { // 两个人
-            safeAddView(currentViewport);
-            safeAddView(viewportContainer);
-            safeAddView(viewportContainer, targetViewport);
+
+            FrameLayout targetViewport = new FrameLayout(context);
+            targetViewportList.add(targetViewport);
         }
     }
 
@@ -100,17 +96,10 @@ public class HostView extends ConstraintLayout {
         }
     }
 
-    public boolean isSingleHost() {
-        return isSingleHost;
-    }
-
-    public void setSingleHost(boolean singleHost) {
-        isSingleHost = singleHost;
-        configViewForCurrentState();
-    }
-
-    public void setViewportContainerVisible(boolean visible){
-        viewportContainer.setVisibility(visible ? View.VISIBLE: View.GONE);
+    public void setViewportContainersVisible(boolean visible){
+        for (CardView cardView : viewportContainerList) {
+            cardView.setVisibility(visible ? View.VISIBLE: View.GONE);
+        }
     }
 
     @NonNull
@@ -119,12 +108,31 @@ public class HostView extends ConstraintLayout {
     }
 
     @NonNull
-    public FrameLayout getTargetViewport() {
-        return targetViewport;
+    public FrameLayout getTargetViewport(int index) {
+        if(index >= targetViewportList.size() || index < 0){
+            throw new RuntimeException("getTargetViewport index=" + index + " out of the list size");
+        }
+        return targetViewportList.get(index);
     }
 
     @NonNull
-    public CardView getViewportContainer() {
-        return viewportContainer;
+    public CardView getViewportContainer(int index) {
+        if(index >= viewportContainerList.size() || index < 0){
+            throw new RuntimeException("getViewportContainer index=" + index + " out of the list size");
+        }
+        return viewportContainerList.get(index);
+    }
+
+    public void setViewportTarget(int index, boolean attach){
+        if(index >= targetViewportList.size() || index < 0){
+            throw new RuntimeException("removeViewportTarget index=" + index + " out of the list size");
+        }
+        FrameLayout targetViewport = targetViewportList.get(index);
+        FrameLayout viewportContainer = viewportContainerList.get(index);
+        if(attach){
+            safeAddView(viewportContainer, targetViewport);
+        }else{
+            safeDetachView(targetViewport);
+        }
     }
 }

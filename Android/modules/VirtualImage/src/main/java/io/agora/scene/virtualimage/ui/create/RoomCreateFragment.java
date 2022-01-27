@@ -1,11 +1,16 @@
 package io.agora.scene.virtualimage.ui.create;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -27,6 +32,7 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
 
     private GlobalViewModel mGlobalModel;
     private EditFaceFragment mEditFaceFragment;
+    private CardView localCameraView;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -36,8 +42,30 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
 
         setupRandomName();
 
-        RtcManager.getInstance().renderLocalVideo(mBinding.videoContainer, null);
+        RtcManager.getInstance().renderLocalAvatarVideo(mBinding.videoContainer);
         FUManager.getInstance().start();
+        initLocalCameraView();
+    }
+
+    private void initLocalCameraView() {
+        ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(0, 0);
+        layoutParams.startToStart = ConstraintSet.PARENT_ID;
+        layoutParams.bottomToBottom = ConstraintSet.PARENT_ID;
+        layoutParams.matchConstraintPercentWidth = 0.28f;
+        layoutParams.dimensionRatio = "105:140";
+        layoutParams.bottomMargin = (int) BaseUtil.dp2px(120);
+        layoutParams.leftMargin = (int) BaseUtil.dp2px(30);
+
+        localCameraView = new CardView(getContext());
+        localCameraView.setCardElevation(BaseUtil.dp2px(4));
+        localCameraView.setCardBackgroundColor(Color.GRAY);
+        localCameraView.setRadius(BaseUtil.dp2px(8));
+        localCameraView.setLayoutParams(layoutParams);
+        mBinding.getRoot().addView(localCameraView);
+
+        FrameLayout targetViewport = new FrameLayout(getContext());
+        localCameraView.addView(targetViewport);
+        RtcManager.getInstance().renderLocalCameraVideo(targetViewport);
     }
 
     private void initListener() {
@@ -69,6 +97,7 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
         });
         mGlobalModel.roomInfo.observe(getViewLifecycleOwner(), new EventObserver<>(this::onRoomInfoChanged));
         mBinding.btnBeauty.setOnClickListener(v -> {
+            localCameraView.setVisibility(View.GONE);
             mEditFaceFragment = new EditFaceFragment();
             mEditFaceFragment.setOnCloseListener(()->{
                 setCreateLiveViewsVisible(true);
@@ -78,6 +107,7 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
                             .commit();
                     mEditFaceFragment = null;
                 }
+                localCameraView.setVisibility(View.VISIBLE);
             });
             setCreateLiveViewsVisible(false);
             getChildFragmentManager().beginTransaction()

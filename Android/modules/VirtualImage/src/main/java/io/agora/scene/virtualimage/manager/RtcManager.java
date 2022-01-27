@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import io.agora.base.TextureBufferHelper;
 import io.agora.base.VideoFrame;
 import io.agora.rtc2.ChannelMediaOptions;
 import io.agora.rtc2.Constants;
@@ -119,14 +118,17 @@ public class RtcManager {
     private RtcEngineEx engine;
     private final Map<Integer, Runnable> firstVideoFramePendingRuns = new HashMap<>();
 
-    private TextureBufferHelper videoPreTexBuffHelper;
     private final SparseArray<OnStreamMessageListener> dataStreamListener = new SparseArray<>();
 
     private static volatile RtcManager INSTANCE;
     private IAvatarEngine avatarEngine;
 
     public Map<String, RtcConnection> connectionMap = new HashMap<>();
+    public Map<String, ChannelMediaOptions> mediaOptionsHashMap = new HashMap<>();
     public Map<Integer, String> avatarItemEnableMap = new HashMap<>();
+
+    private boolean isPublishAvatarTrack = true;
+    private OnMediaOptionUpdateListener onMediaOptionUpdateListener = null;
 
 
     private OnVideoFrameRenderListener onVideoFrameRenderListener;
@@ -175,6 +177,7 @@ public class RtcManager {
             return false;
         }
     };
+
 
     public static RtcManager getInstance(){
         if(INSTANCE == null){
@@ -336,7 +339,7 @@ public class RtcManager {
         engine.sendStreamMessageEx(streamId, msg.getBytes(StandardCharsets.UTF_8), rtcConnection);
     }
 
-    public void renderLocalVideo(FrameLayout container, Runnable firstFrame) {
+    public void renderLocalAvatarVideo(FrameLayout container) {
         if (engine == null) {
             return;
         }
@@ -347,6 +350,19 @@ public class RtcManager {
         VideoCanvas videoCanvas = new VideoCanvas(avatarSurfaceView, RENDER_MODE_HIDDEN);
         videoCanvas.mirrorMode = MIRROR_MODE_TYPE.MIRROR_MODE_DISABLED.getValue();
         avatarEngine.setupLocalVideoCanvas(videoCanvas);
+    }
+
+    public void renderLocalCameraVideo(FrameLayout container) {
+        if (engine == null) {
+            return;
+        }
+        SurfaceView avatarSurfaceView = new SurfaceView(container.getContext());
+
+        container.addView(avatarSurfaceView);
+        engine.startPreview();
+        VideoCanvas videoCanvas = new VideoCanvas(avatarSurfaceView, RENDER_MODE_HIDDEN);
+        videoCanvas.mirrorMode = MIRROR_MODE_TYPE.MIRROR_MODE_ENABLED.getValue();
+        engine.setupLocalVideo(videoCanvas);
     }
 
     public void joinChannel(String channelId, String uid, String token, boolean publish, OnChannelListener listener) {
@@ -363,11 +379,13 @@ public class RtcManager {
             }
         }
         ChannelMediaOptions options = new ChannelMediaOptions();
-        options.publishAvatarTrack = publish;
-        options.publishAudioTrack = publish;
+        options.publishCameraTrack = !isPublishAvatarTrack;
+        options.publishAvatarTrack = isPublishAvatarTrack;
+        options.publishAudioTrack = true;
         options.autoSubscribeAudio = true;
         options.autoSubscribeVideo = true;
         options.clientRoleType = publish ? Constants.CLIENT_ROLE_BROADCASTER : Constants.CLIENT_ROLE_AUDIENCE;
+        mediaOptionsHashMap.put(channelId, options);
 
         RtcConnection connection = new RtcConnection(channelId, _uid);
         connectionMap.put(channelId, connection);
@@ -418,6 +436,38 @@ public class RtcManager {
         Log.i(TAG, String.format("joinChannel channel %s ret %d", channelId, ret));
     }
 
+    public boolean isPublishAvatarTrack() {
+        return isPublishAvatarTrack;
+    }
+
+    public void setOnMediaOptionUpdateListener(OnMediaOptionUpdateListener onMediaOptionUpdateListener) {
+        this.onMediaOptionUpdateListener = onMediaOptionUpdateListener;
+        if(onMediaOptionUpdateListener != null){
+            onMediaOptionUpdateListener.onMediaOptionUpdated();
+        }
+    }
+
+    public void updateChannelTrack(String channelId, boolean isPublishAvatarTrack){
+        RtcConnection rtcConnection = connectionMap.get(channelId);
+        if(rtcConnection == null){
+            return;
+        }
+        if(isPublishAvatarTrack != this.isPublishAvatarTrack){
+            ChannelMediaOptions channelMediaOptions = mediaOptionsHashMap.get(channelId);
+            if(channelMediaOptions == null){
+                return;
+            }
+            channelMediaOptions.publishCameraTrack = !isPublishAvatarTrack;
+            channelMediaOptions.publishAvatarTrack = isPublishAvatarTrack;
+            engine.updateChannelMediaOptionsEx(channelMediaOptions, rtcConnection);
+            engine.setVideoEncoderConfigurationEx(encoderConfiguration, rtcConnection);
+            this.isPublishAvatarTrack = isPublishAvatarTrack;
+            if(onMediaOptionUpdateListener != null){
+                onMediaOptionUpdateListener.onMediaOptionUpdated();
+            }
+        }
+    }
+
     public void renderRemoteVideo(FrameLayout container, String channelId, int uid) {
         if (engine == null) {
             return;
@@ -428,17 +478,11 @@ public class RtcManager {
     }
 
     public void reset(boolean isStopPreview) {
-        if(isStopPreview){
-            if(videoPreTexBuffHelper != null){
-                videoPreTexBuffHelper.dispose();
-                videoPreTexBuffHelper = null;
-            }
-        }
-
         Log.d(TAG, "stopPreview --> reset isStopPreview=" + isStopPreview);
 
         for (String s : connectionMap.keySet()) {
             engine.leaveChannelEx(connectionMap.get(s));
+            mediaOptionsHashMap.remove(s);
         }
         connectionMap.clear();
 
@@ -449,23 +493,8 @@ public class RtcManager {
                 engine.setCameraCapturerConfiguration(new CameraCapturerConfiguration(cameraDirection, new CameraCapturerConfiguration.CaptureFormat(encoderConfiguration.dimensions.width, encoderConfiguration.dimensions.height, encoderConfiguration.frameRate)));
             }
         }
-    }
 
-    public void switchCamera() {
-        if (engine == null) {
-            return;
-        }
-        engine.switchCamera();
-        if (cameraDirection == CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT) {
-            cameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_REAR;
-            encoderConfiguration.mirrorMode = MIRROR_MODE_TYPE.MIRROR_MODE_DISABLED;
-        } else {
-            cameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT;
-            encoderConfiguration.mirrorMode = MIRROR_MODE_TYPE.MIRROR_MODE_ENABLED;
-        }
-        for (String s : connectionMap.keySet()) {
-            engine.setVideoEncoderConfigurationEx(encoderConfiguration, connectionMap.get(s));
-        }
+        onMediaOptionUpdateListener = null;
     }
 
     public void muteLocalAudio(boolean mute){
@@ -566,6 +595,10 @@ public class RtcManager {
 
     public interface OnStreamMessageListener {
         void onMessageReceived(int dataStreamId, int fromUid, String message);
+    }
+
+    public interface OnMediaOptionUpdateListener {
+        void onMediaOptionUpdated();
     }
 
 }
