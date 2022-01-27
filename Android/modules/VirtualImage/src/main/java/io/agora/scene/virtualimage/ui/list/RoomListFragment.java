@@ -15,6 +15,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import java.util.Locale;
+
 import io.agora.example.base.BaseRecyclerViewAdapter;
 import io.agora.example.base.BaseUtil;
 import io.agora.example.base.DividerDecoration;
@@ -90,6 +92,15 @@ public class RoomListFragment extends BaseNavFragment<VirtualImageFragmentRoomLi
     }
 
     private void initView() {
+        try {
+            mBinding.tvVersion.setText(
+                    String.format(Locale.US,
+                            "VERSION : %s",
+                    requireContext().getPackageManager().getPackageInfo(requireContext().getPackageName(), 0).versionName)
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         mBinding.recyclerViewFgList.setLayoutManager(new GridLayoutManager(getContext(), 2));
         mAdapter = new BaseRecyclerViewAdapter<>(null, this, RoomListHolder.class);
         mBinding.recyclerViewFgList.setAdapter(mAdapter);

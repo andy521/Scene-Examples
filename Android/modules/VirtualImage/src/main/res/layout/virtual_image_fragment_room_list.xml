@@ -24,7 +24,19 @@
                 android:layout_gravity="center"
                 android:text="@string/virtual_image_app_name"
                 android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title" />
+
+            <TextView
+                android:id="@+id/tv_version"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|end"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                tools:text="VERSION : 1.0.1"/>
+
         </androidx.appcompat.widget.Toolbar>
+
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <TextView
@@ -72,5 +84,8 @@
             tools:paddingTop="?attr/actionBarSize" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
