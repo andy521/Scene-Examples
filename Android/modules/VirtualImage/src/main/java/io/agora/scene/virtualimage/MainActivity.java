@@ -2,8 +2,11 @@ package io.agora.scene.virtualimage;
 
 import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
+import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
@@ -27,7 +30,7 @@ public class MainActivity extends BaseActivity<VirtualImageActivityMainBinding> 
         globalViewModel = OneUtil.getViewModel(this, GlobalViewModel.class);
 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-
+        setStatusBarTransparent();
     }
 
     @Override
@@ -41,5 +44,17 @@ public class MainActivity extends BaseActivity<VirtualImageActivityMainBinding> 
         super.onWindowFocusChanged(hasFocus);
         if (globalViewModel != null)
             globalViewModel.focused.setValue(hasFocus);
+    }
+
+    private void setStatusBarTransparent() {
+        Window window = getWindow();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            window.setStatusBarColor(Color.TRANSPARENT);
+        } else {
+            window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        }
     }
 }

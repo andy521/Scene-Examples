@@ -5,7 +5,6 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
-import android.view.SurfaceView;
 import android.view.TextureView;
 import android.widget.FrameLayout;
 
@@ -343,7 +342,7 @@ public class RtcManager {
         if (engine == null) {
             return;
         }
-        SurfaceView avatarSurfaceView = new SurfaceView(container.getContext());
+        TextureView avatarSurfaceView = new TextureView(container.getContext());
 
         container.addView(avatarSurfaceView);
         engine.startPreview();
@@ -356,7 +355,7 @@ public class RtcManager {
         if (engine == null) {
             return;
         }
-        SurfaceView avatarSurfaceView = new SurfaceView(container.getContext());
+        TextureView avatarSurfaceView = new TextureView(container.getContext());
 
         container.addView(avatarSurfaceView);
         engine.startPreview();

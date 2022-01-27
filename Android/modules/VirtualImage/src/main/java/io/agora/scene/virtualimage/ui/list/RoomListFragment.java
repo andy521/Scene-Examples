@@ -71,6 +71,7 @@ public class RoomListFragment extends BaseNavFragment<VirtualImageFragmentRoomLi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setStatusBarStyle(false);
         mViewModel = OneUtil.getViewModel(this, RoomListViewModel.class);
 
         mGlobalModel = OneUtil.getViewModel(requireActivity(), GlobalViewModel.class);

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -62,5 +63,15 @@ public abstract class BaseFragment<B extends ViewBinding> extends Fragment {
             return null;
         }
     }
+
+    protected final void setStatusBarStyle(boolean isLight) {
+        Window window = getParentActivity().getWindow();
+        if (isLight) {
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        } else {
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
+    }
+
 
 }

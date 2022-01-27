@@ -37,6 +37,7 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setStatusBarStyle(false);
         mGlobalModel = OneUtil.getViewModel(requireActivity(), GlobalViewModel.class);
         initListener();
 

@@ -11,7 +11,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -34,7 +33,6 @@ import io.agora.scene.virtualimage.util.OneUtil;
 import io.agora.scene.virtualimage.util.ViewStatus;
 
 public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBinding> {
-    private boolean amHost;
     private RoomInfo currentRoom;
 
     private RoomViewModel mViewModel;
@@ -52,8 +50,6 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
             return null;
         }
         mViewModel = OneUtil.getViewModel(this, RoomViewModel.class, new RoomViewModelFactory(requireContext(), mGlobalModel.localUser, currentRoom));
-        //  See if current user is the host
-        amHost = currentRoom.getUserId().equals(mViewModel.localUser.getUserId());
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }
@@ -89,17 +85,26 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
                 Toast.makeText(getContext(), R.string.room_mode_switch_error, Toast.LENGTH_LONG).show();
                 return;
             }
+
+
             mEditFaceFragment = new EditFaceFragment();
             mEditFaceFragment.setOnCloseListener(() -> {
                 mBinding.hostViewFgRoom.setViewportContainersVisible(true);
                 mBinding.containerFgRoom.setVisibility(View.VISIBLE);
+                mBinding.hostViewFgRoom.getCurrentViewport().setVisibility(View.GONE);
+                mViewModel.setupLocalView(mBinding.hostViewFgRoom.getTargetViewport(0));
+
                 getChildFragmentManager().beginTransaction()
                         .remove(mEditFaceFragment)
                         .commit();
                 mEditFaceFragment = null;
             });
+
             mBinding.containerFgRoom.setVisibility(View.GONE);
             mBinding.hostViewFgRoom.setViewportContainersVisible(false);
+            mBinding.hostViewFgRoom.getCurrentViewport().setVisibility(View.VISIBLE);
+            mViewModel.setupLocalView(mBinding.hostViewFgRoom.getCurrentViewport());
+
             getChildFragmentManager().beginTransaction()
                     .replace(R.id.face_up_container, mEditFaceFragment)
                     .commit();
@@ -127,23 +132,23 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
         // RTC 对方用户
         mViewModel.targetUser().observe(getViewLifecycleOwner(), localUsers -> {
             if (localUsers != null) {
-                for (int i = 0; i < HostView.ViewportCount; i++) {
+                for (int i = 0; i < HostView.ViewportRemoteCount; i++) {
                     LocalUser user = null;
-                    if(i < localUsers.size()){
+                    if (i < localUsers.size()) {
                         user = localUsers.get(i);
                     }
-                    if(user == null){
-                        mBinding.hostViewFgRoom.setViewportTarget(i, false);
-                    }else{
-                        mBinding.hostViewFgRoom.setViewportTarget(i, true);
+                    if (user == null) {
+                        mBinding.hostViewFgRoom.setViewportTarget(i + 1, false);
+                    } else {
+                        mBinding.hostViewFgRoom.setViewportTarget(i + 1, true);
                         int uid = -1;
                         try {
                             uid = Integer.parseInt(user.getUserId());
                         } catch (NumberFormatException e) {
                             e.printStackTrace();
                         }
-                        if (uid != -1){
-                            mViewModel.setupRemoteView(mBinding.hostViewFgRoom.getTargetViewport(i), user.channelId, uid);
+                        if (uid != -1) {
+                            mViewModel.setupRemoteView(mBinding.hostViewFgRoom.getTargetViewport(i + 1), user.channelId, uid);
                         }
                     }
                 }
@@ -153,8 +158,9 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
         });
 
         // RTC 引擎初始化
-
-        mViewModel.setupLocalView(mBinding.hostViewFgRoom.getCurrentViewport());
+        setStatusBarStyle(true);
+        mBinding.hostViewFgRoom.setViewportTarget(0, true);
+        mViewModel.setupLocalView(mBinding.hostViewFgRoom.getTargetViewport(0));
 
         // 当前游戏信息
         mViewModel.gameInfo().observe(getViewLifecycleOwner(), this::onGameStatusChanged);
@@ -198,11 +204,6 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
         ViewCompat.setOnApplyWindowInsetsListener(mBinding.containerFgRoom, new NormalContainerInsetsListener());
         ViewCompat.setOnApplyWindowInsetsListener(mBinding.hostViewFgRoom, (v, insets) -> {
             Insets inset = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) mBinding.hostViewFgRoom.getViewportContainer(0).getLayoutParams();
-            lp.rightMargin = (int) (inset.right + BaseUtil.dp2px(16));
-            lp.topMargin = (int) (inset.top + BaseUtil.dp2px(16));
-            mBinding.hostViewFgRoom.getViewportContainer(0).setLayoutParams(lp);
-
             mBinding.getRoot().setPaddingRelative(inset.left, 0, inset.right, inset.bottom);
             return WindowInsetsCompat.CONSUMED;
         });
