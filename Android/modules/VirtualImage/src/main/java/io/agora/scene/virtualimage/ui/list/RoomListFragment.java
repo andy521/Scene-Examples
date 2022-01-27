@@ -86,7 +86,7 @@ public class RoomListFragment extends BaseNavFragment<VirtualImageFragmentRoomLi
     @Override
     public void onResume() {
         super.onResume();
-        mBinding.getRoot().postDelayed(() -> mViewModel.fetchRoomList(), 300);
+        mBinding.getRoot().postDelayed(() -> mViewModel.fetchRoomList(), 800);
     }
 
     private void initView() {

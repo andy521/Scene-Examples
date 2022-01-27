@@ -10,6 +10,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 import io.agora.example.base.BaseUtil;
@@ -58,7 +61,8 @@ public class RoomViewModel extends ViewModel {
     // UI状态
     private final MutableLiveData<ViewStatus> _viewStatus = new MutableLiveData<>();
     // 对方主播信息
-    private final MutableLiveData<LocalUser> _targetUser = new MutableLiveData<>();
+    private final MutableLiveData<List<LocalUser>> _targetUser = new MutableLiveData<>();
+    private List<LocalUser> targetUserList = new ArrayList<>();
     // 当前游戏信息
     private final MutableLiveData<GameInfo> _gameInfo = new MutableLiveData<>();
     // RTC 音频状态
@@ -82,26 +86,28 @@ public class RoomViewModel extends ViewModel {
             @Override
             public void onJoinSuccess(String channelId, int uid) {
                 BaseUtil.logD("onJoinChannelSuccess:" + uid);
-                if (!amHost)
-                    // 副主播只能与房主连线
-                    _targetUser.postValue(new LocalUser(channelId, currentRoom.getUserId()));
             }
 
             @Override
             public void onUserJoined(String channelId, int uid) {
                 BaseUtil.logD("onUserJoined:" + uid);
-                if (!amHost) return;
-                if (_targetUser.getValue() == null)
-                    _targetUser.postValue(new LocalUser(channelId, String.valueOf(uid)));
+                targetUserList = new ArrayList<>(targetUserList);
+                targetUserList.add(new LocalUser(channelId, String.valueOf(uid)));
+                _targetUser.postValue(targetUserList);
             }
 
             @Override
             public void onUserOffline(String channelId, int uid) {
                 BaseUtil.logD("onUserOffline:" + uid);
-                if (_targetUser.getValue() != null) {
-                    if (_targetUser.getValue().getUserId().equals(String.valueOf(uid)))
-                        _targetUser.postValue(null);
+                targetUserList = new ArrayList<>(targetUserList);
+                Iterator<LocalUser> iterator = targetUserList.iterator();
+                while (iterator.hasNext()){
+                    LocalUser user = iterator.next();
+                    if(user.getUserId().equals(String.valueOf(uid))){
+                        iterator.remove();
+                    }
                 }
+                _targetUser.postValue(targetUserList);
                 if (currentGame != null){
                     requestEndGame();
                 }
@@ -188,7 +194,7 @@ public class RoomViewModel extends ViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
-
+        targetUserList.clear();
         // destroy RTE
         RtcManager.getInstance().reset(true);
         FUManager.getInstance().stop();
@@ -223,7 +229,7 @@ public class RoomViewModel extends ViewModel {
     }
 
     @NonNull
-    public LiveData<LocalUser> targetUser() {
+    public LiveData<List<LocalUser>> targetUser() {
         return _targetUser;
     }
 

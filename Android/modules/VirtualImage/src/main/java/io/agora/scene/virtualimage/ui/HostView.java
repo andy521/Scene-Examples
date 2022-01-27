@@ -23,6 +23,8 @@ import io.agora.scene.virtualimage.R;
 
 public class HostView extends ConstraintLayout {
 
+    public static final int ViewportCount = 3;
+
     private final FrameLayout currentViewport;
     private final List<FrameLayout> targetViewportList = new ArrayList<>();
     private final List<CardView> viewportContainerList = new ArrayList<>();
@@ -47,10 +49,16 @@ public class HostView extends ConstraintLayout {
         safeAddView(currentViewport);
 
         int lastOneViewId = View.NO_ID;
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < ViewportCount; i++) {
             LayoutParams layoutParams = new LayoutParams(0, 0);
             layoutParams.endToEnd = lastOneViewId == View.NO_ID ? ConstraintSet.PARENT_ID: lastOneViewId;
-            layoutParams.topToTop = lastOneViewId == View.NO_ID ? ConstraintSet.PARENT_ID: lastOneViewId;
+            if(lastOneViewId == View.NO_ID){
+                layoutParams.topToTop = ConstraintSet.PARENT_ID;
+            }else{
+                layoutParams.topToBottom = lastOneViewId;
+                layoutParams.topMargin = (int) BaseUtil.dp2px(16);
+            }
+
             layoutParams.matchConstraintPercentWidth = 0.28f;
             layoutParams.dimensionRatio = "105:140";
 
@@ -121,6 +129,12 @@ public class HostView extends ConstraintLayout {
             throw new RuntimeException("getViewportContainer index=" + index + " out of the list size");
         }
         return viewportContainerList.get(index);
+    }
+
+    public void removeAllViewportTarget(){
+        for (int i = 0; i < ViewportCount; i++) {
+            setViewportTarget(i, false);
+        }
     }
 
     public void setViewportTarget(int index, boolean attach){

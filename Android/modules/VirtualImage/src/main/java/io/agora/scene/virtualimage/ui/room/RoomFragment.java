@@ -23,10 +23,12 @@ import io.agora.scene.virtualimage.GlobalViewModel;
 import io.agora.scene.virtualimage.R;
 import io.agora.scene.virtualimage.base.BaseNavFragment;
 import io.agora.scene.virtualimage.bean.GameInfo;
+import io.agora.scene.virtualimage.bean.LocalUser;
 import io.agora.scene.virtualimage.bean.RoomInfo;
 import io.agora.scene.virtualimage.databinding.VirtualImageFragmentRoomBinding;
 import io.agora.scene.virtualimage.manager.FUManager;
 import io.agora.scene.virtualimage.manager.RtcManager;
+import io.agora.scene.virtualimage.ui.HostView;
 import io.agora.scene.virtualimage.util.NormalContainerInsetsListener;
 import io.agora.scene.virtualimage.util.OneUtil;
 import io.agora.scene.virtualimage.util.ViewStatus;
@@ -123,19 +125,30 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
 
     private void initLiveDataObserver() {
         // RTC 对方用户
-        mViewModel.targetUser().observe(getViewLifecycleOwner(), localUser -> {
-            if (localUser != null) {
-                mBinding.hostViewFgRoom.setViewportTarget(0, true);
-                int uid = -1;
-                try {
-                    uid = Integer.parseInt(localUser.getUserId());
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+        mViewModel.targetUser().observe(getViewLifecycleOwner(), localUsers -> {
+            if (localUsers != null) {
+                for (int i = 0; i < HostView.ViewportCount; i++) {
+                    LocalUser user = null;
+                    if(i < localUsers.size()){
+                        user = localUsers.get(i);
+                    }
+                    if(user == null){
+                        mBinding.hostViewFgRoom.setViewportTarget(i, false);
+                    }else{
+                        mBinding.hostViewFgRoom.setViewportTarget(i, true);
+                        int uid = -1;
+                        try {
+                            uid = Integer.parseInt(user.getUserId());
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+                        if (uid != -1){
+                            mViewModel.setupRemoteView(mBinding.hostViewFgRoom.getTargetViewport(i), user.channelId, uid);
+                        }
+                    }
                 }
-                if (uid != -1)
-                    mViewModel.setupRemoteView(mBinding.hostViewFgRoom.getTargetViewport(0), localUser.channelId, uid);
             } else {
-                mBinding.hostViewFgRoom.setViewportTarget(0, false);
+                mBinding.hostViewFgRoom.removeAllViewportTarget();
             }
         });
 
