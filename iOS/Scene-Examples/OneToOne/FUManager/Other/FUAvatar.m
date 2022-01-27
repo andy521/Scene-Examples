@@ -324,6 +324,10 @@
 - (void)enterARMode {
     [_renderer enableAvatarGeneratorItem:NO type:FUItemTypeUpper bundle:@""];
     [_renderer enableAvatarGeneratorItem:NO type:FUItemTypeBackground bundle:@""];
+    [_renderer enableAvatarGeneratorItem:NO type:FUItemTypeClothes bundle:@""];
+    [_renderer enableAvatarGeneratorItem:NO type:FUItemTypeDecoration_xianglian bundle:@""];
+    [_renderer enableAvatarGeneratorItem:NO type:FUItemTypeBody bundle:@""];
+    
 }
 - (void)quitARMode {
     
@@ -424,6 +428,7 @@
  */
 - (void)facepupModeSetParam:(NSString *)key level:(double)level {
     key  = [NSString stringWithFormat:@"{\"name\":\"facepup\",\"param\":\"%@\"}", key];
+    NSLog(@"=== %@ %g", key, level);
     [_renderer itemSetWithName:key value:level];
 }
 /**

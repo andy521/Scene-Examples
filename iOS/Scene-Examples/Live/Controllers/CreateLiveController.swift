@@ -8,6 +8,7 @@
 import UIKit
 import AgoraRtcKit
 import AgoraSyncManager
+import AgoraUIKit_iOS
 
 class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
     private lazy var randomNameView: LiveRandomNameView = {
@@ -17,6 +18,18 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
     private lazy var localView: UIView = {
         let view = UIView()
         return view
+    }()
+    public lazy var originalView: AGEButton = {
+        let button = AGEButton()
+        button.setTitle("原图", for: .normal)
+        button.buttonStyle = .filled(backgroundColor: .gray)
+        button.layer.masksToBounds = true
+        button.layer.cornerRadius = 5
+        button.shadowOffset = CGSize(width: 0, height: 0)
+        button.shadowColor = .init(hex: "#000000")
+        button.shadowRadius = 5
+        button.shadowOpacity = 0.5
+        return button
     }()
     private lazy var cameraChangeButton: UIButton = {
         let button = UIButton()
@@ -57,7 +70,7 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
     private var agoraKit: AgoraRtcEngineKit?
     private var avaterEngine: AvatarEngineProtocol!
     private lazy var rtcEngineConfig: AgoraRtcEngineConfig = {
-       let config = AgoraRtcEngineConfig()
+        let config = AgoraRtcEngineConfig()
         config.appId = KeyCenter.AppId
         config.channelProfile = .liveBroadcasting
         config.areaCode = .global
@@ -65,7 +78,7 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
         return config
     }()
     private lazy var channelMediaOptions: AgoraRtcChannelMediaOptions = {
-       let option = AgoraRtcChannelMediaOptions()
+        let option = AgoraRtcChannelMediaOptions()
         option.publishAudioTrack = .of(true)
         option.publishCameraTrack = .of(true)
         option.clientRoleType = .of((Int32)(AgoraClientRole.broadcaster.rawValue))
@@ -112,11 +125,18 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
         localView.translatesAutoresizingMaskIntoConstraints = false
         editButton.translatesAutoresizingMaskIntoConstraints = false
         closeButton.translatesAutoresizingMaskIntoConstraints = false
+        originalView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(localView)
         view.addSubview(randomNameView)
         view.addSubview(startLiveButton)
         view.addSubview(closeButton)
         view.addSubview(editButton)
+        view.addSubview(originalView)
+        
+        originalView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15).isActive = true
+        originalView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        originalView.widthAnchor.constraint(equalToConstant: 105.fit).isActive = true
+        originalView.heightAnchor.constraint(equalToConstant: 140.fit).isActive = true
         
         localView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         localView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
@@ -138,8 +158,8 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
         startLiveButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
         startLiveButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
-//        settingButton.centerYAnchor.constraint(equalTo: startLiveButton.centerYAnchor).isActive = true
-//        settingButton.leadingAnchor.constraint(equalTo: startLiveButton.trailingAnchor, constant: 25).isActive = true
+        //        settingButton.centerYAnchor.constraint(equalTo: startLiveButton.centerYAnchor).isActive = true
+        //        settingButton.leadingAnchor.constraint(equalTo: startLiveButton.trailingAnchor, constant: 25).isActive = true
         
         editButton.centerYAnchor.constraint(equalTo: startLiveButton.centerYAnchor).isActive = true
         editButton.rightAnchor.constraint(equalTo: startLiveButton.leftAnchor, constant: -25).isActive = true
@@ -181,6 +201,13 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
         canvas.renderMode = .hidden
         canvas.view = localView
         avaterEngine.setupLocalVideoCanvas(canvas)
+        agoraKit?.startPreview()
+        
+        let canvas0 = AgoraRtcVideoCanvas()
+        canvas0.uid = UserInfo.userId
+        canvas0.renderMode = .hidden
+        canvas0.view = originalView
+        agoraKit?.setupLocalVideo(canvas0)
         agoraKit?.startPreview()
     }
     
@@ -240,53 +267,26 @@ class CreateLiveController: BaseViewController, FUEditViewControllerDelegate {
     
     private func startLiveHandler(result: IObject) {
         LogUtils.log(message: "result == \(result.toJson() ?? "")", level: .info)
-        let channelName = result.getPropertyWith(key: "roomId", type: String.self) as? String
         
-        switch sceneType {
-        case .singleLive:
-            let livePlayerVC = SignleLiveController(channelName: channelName ?? "",
-                                                    sceneType: sceneType,
-                                                    userId: "\(UserInfo.userId)",
-                                                    agoraKit: agoraKit)
-            navigationController?.pushViewController(livePlayerVC, animated: true)
-            
-        case .pkApply:
-            let pkLiveVC = PKLiveController(channelName: channelName ?? "",
-                                            sceneType: sceneType,
-                                            userId: "\(UserInfo.userId)",
-                                            agoraKit: agoraKit)
-            navigationController?.pushViewController(pkLiveVC, animated: true)
-            
-        case .game:
-            let dgLiveVC = GameLiveController(channelName: channelName ?? "",
-                                            sceneType: sceneType,
-                                            userId: "\(UserInfo.userId)",
-                                            agoraKit: agoraKit)
-            navigationController?.pushViewController(dgLiveVC, animated: true)
-            
-        case .playTogether:
-            let playTogetherVC = PlayTogetherViewController(channelName: channelName ?? "",
-                                                            sceneType: sceneType,
-                                                            userId: "\(UserInfo.userId)",
-                                                            agoraKit: agoraKit)
-            navigationController?.pushViewController(playTogetherVC, animated: true)
-            
-        case .oneToOne:
-            
-            let canvas = AgoraRtcVideoCanvas()
-            canvas.uid = UserInfo.userId
-            canvas.renderMode = .hidden
-            canvas.view = nil
-            avaterEngine.setupLocalVideoCanvas(canvas)
-            let oneToOneVC = OneToOneViewController(channelName: channelName ?? "",
-                                                    sceneType: sceneType,
-                                                    userId: UserInfo.uid,
-                                                    agoraKit: agoraKit,
-                                                    avaterEngine: avaterEngine)
-            navigationController?.pushViewController(oneToOneVC, animated: true)
-        
-        default: break
+        guard let channelName = result.getPropertyWith(key: "roomId", type: String.self) as? String,
+            let roomName = result.getPropertyWith(key: "roomName", type: String.self) as? String else {
+                LogUtils.log(message: "channelName or roomName is nil ", level: .info)
+            return
         }
+        
+        let canvas = AgoraRtcVideoCanvas()
+        canvas.uid = UserInfo.userId
+        canvas.renderMode = .hidden
+        canvas.view = nil
+        avaterEngine.setupLocalVideoCanvas(canvas)
+        let oneToOneVC = OneToOneViewController(channelName: channelName,
+                                                sceneType: sceneType,
+                                                userId: UserInfo.uid,
+                                                agoraKit: agoraKit,
+                                                avaterEngine: avaterEngine,
+                                                roomName: roomName,
+                                                isHost: true)
+        navigationController?.pushViewController(oneToOneVC, animated: true)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -315,9 +315,6 @@ extension CreateLiveController: VideoFrameHandlerDelegate {
         let height = CVPixelBufferGetHeight(pixelBuffer)
         videoPixelSize = CGSize(width: width,
                                 height: height)
-        
-//        let size = AppManager.getSuitablePixelBufferSizeForCurrentDevice()
-//        videoPixelSize = size
     }
 }
 

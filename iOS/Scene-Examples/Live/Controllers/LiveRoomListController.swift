@@ -92,7 +92,7 @@ class LiveRoomListController: BaseViewController {
                 SyncUtil.joinScene(id: model?.roomId ?? "",
                                    userId: model?.userId ?? "",
                                    property: params, success: { result in
-                    self.joinSceneHandler(result: result)
+                    self.joinSceneHandler(result: result, isHost: true)
                 })
             }
             return
@@ -101,33 +101,16 @@ class LiveRoomListController: BaseViewController {
         navigationController?.pushViewController(createLiveVC, animated: true)
     }
     
-    private func joinSceneHandler(result: IObject) {
+    private func joinSceneHandler(result: IObject, isHost: Bool) {
         let channelName = result.getPropertyWith(key: "roomId", type: String.self) as? String
         let ownerId = result.getPropertyWith(key: "userId", type: String.self) as? String
-        switch sceneType {
-        case .singleLive:
-            let livePlayerVC = SignleLiveController(channelName: channelName ?? "", sceneType: sceneType, userId: ownerId ?? "")
-            navigationController?.pushViewController(livePlayerVC, animated: true)
-        case .pkApply:
-            let pkLiveVC = PKLiveController(channelName: channelName ?? "", sceneType: sceneType, userId: ownerId ?? "")
-            navigationController?.pushViewController(pkLiveVC, animated: true)
-            
-        case .breakoutRoom:
-            let breakoutRoomVC = BORRoomDetailController(channelName: channelName ?? "", ownerId: ownerId ?? "")
-            navigationController?.pushViewController(breakoutRoomVC, animated: true)
-            
-        case .game:
-            let dgLiveVC = GameLiveController(channelName: channelName ?? "", sceneType: sceneType, userId: ownerId ?? "")
-            navigationController?.pushViewController(dgLiveVC, animated: true)
-            
-        case .playTogether:
-            let dgLiveVC = PlayTogetherViewController(channelName: channelName ?? "", sceneType: sceneType, userId: ownerId ?? "")
-            navigationController?.pushViewController(dgLiveVC, animated: true)
-            
-        case .oneToOne:
-            let oneToOneVC = OneToOneViewController(channelName: channelName ?? "", sceneType: sceneType, userId: ownerId ?? "")
-            navigationController?.pushViewController(oneToOneVC, animated: true)
-        }
+        let roomName = result.getPropertyWith(key: "roomName", type: String.self) as? String
+        let oneToOneVC = OneToOneViewController(channelName: channelName ?? "",
+                                                sceneType: sceneType,
+                                                userId: ownerId ?? "",
+                                                roomName: roomName!,
+                                                isHost: isHost)
+        navigationController?.pushViewController(oneToOneVC, animated: true)
     }
 }
 
@@ -136,7 +119,7 @@ extension LiveRoomListController: AGECollectionViewDelegate {
         guard let item = roomView.dataArray?[indexPath.item] as? LiveRoomInfo else { return }
         let params = JSONObject.toJson(item)
         SyncUtil.joinScene(id: item.roomId, userId: item.userId, property: params, success: { result in
-            self.joinSceneHandler(result: result)
+            self.joinSceneHandler(result: result, isHost: false)
         })
 
     }

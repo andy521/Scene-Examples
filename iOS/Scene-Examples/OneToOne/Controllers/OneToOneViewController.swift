@@ -10,18 +10,32 @@ import AgoraRtcKit
 import AgoraUIKit_iOS
 
 class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
-    public lazy var localView = AGEView()
-    public lazy var remoteView: AGEButton = {
+    public lazy var localView: AGEButton = {
+        let button = AGEButton()
+        button.setTitle("本地视频", for: .normal)
+        button.buttonStyle = .filled(backgroundColor: .gray)
+        button.layer.masksToBounds = true
+        return button
+    }()
+    public lazy var remoteView1: AGEButton = {
         let button = AGEButton()
         button.setTitle("远程视频", for: .normal)
-        button.layer.cornerRadius = 5
-        button.shadowOffset = CGSize(width: 0, height: 0)
-        button.shadowColor = .init(hex: "#000000")
-        button.shadowRadius = 5
-        button.shadowOpacity = 0.5
         button.buttonStyle = .filled(backgroundColor: .gray)
         return button
     }()
+    public lazy var remoteView2: AGEButton = {
+        let button = AGEButton()
+        button.setTitle("远程视频", for: .normal)
+        button.buttonStyle = .filled(backgroundColor: .gray)
+        return button
+    }()
+    public lazy var remoteView3: AGEButton = {
+        let button = AGEButton()
+        button.setTitle("远程视频", for: .normal)
+        button.buttonStyle = .filled(backgroundColor: .gray)
+        return button
+    }()
+    let roomNameLabel = UILabel()
     private lazy var containerView: AGEView = {
         let view = AGEView()
         return view
@@ -42,15 +56,6 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
     }()
     private var videoPixelSize: CGSize?
     private let videoHandler = VideoFrameHandler()
-    private lazy var channelMediaOptions: AgoraRtcChannelMediaOptions = {
-        let option = AgoraRtcChannelMediaOptions()
-        option.publishCameraTrack = AgoraRtcBoolOptional.of(false)
-        option.publishAvatarTrack = AgoraRtcBoolOptional.of(true)
-        option.publishAudioTrack = AgoraRtcBoolOptional.of(true)
-        option.clientRoleType = .of((Int32)(AgoraClientRole.broadcaster.rawValue))
-        option.autoSubscribeVideo = AgoraRtcBoolOptional.of(true)
-        return option
-    }()
     
     public lazy var viewModel = GameViewModel(channleName: channelName,
                                               ownerId: UserInfo.uid)
@@ -67,18 +72,24 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
 
     var avaterEngine: AvatarEngineProtocol!
     var currentMode = Mode.avatar
+    var roomName: String!
+    var isHost = false
     
     init(channelName: String,
          sceneType: SceneType,
          userId: String,
          agoraKit: AgoraRtcEngineKit? = nil,
-         avaterEngine: AvatarEngineProtocol? = nil) {
+         avaterEngine: AvatarEngineProtocol? = nil,
+         roomName: String,
+         isHost: Bool = false) {
         super.init(nibName: nil, bundle: nil)
         self.channelName = channelName
         self.currentUserId = userId
         self.sceneType = sceneType
         self.agoraKit = agoraKit
         self.avaterEngine = avaterEngine
+        self.roomName = roomName
+        self.isHost = isHost
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -131,7 +142,9 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
             self?.clickControlViewHandler(controlType: type, isSelected: isSelected)
         }
         /// 监听游戏开始
-        SyncUtil.subscribe(id: channelName, key: SYNC_MANAGER_GAME_INFO, onUpdated: { [weak self] object in
+        SyncUtil.subscribe(id: channelName,
+                           key: SYNC_MANAGER_GAME_INFO,
+                           onUpdated: { [weak self] object in
             guard let self = self else { return }
             let model = JSONObject.toModel(GameInfoModel.self, value: object.toJson())
             if model?.status == .playing {
@@ -157,15 +170,20 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         switch controlType {
         case .switchCamera:
             
-            if currentMode == .avatar {
+            switch currentMode { /** 模式切换 **/
+            case .avatar:
                 currentMode = .ar
                 changeToArMode()
-            }
-            else {
+                break
+            case .ar:
+                currentMode = .original
+                changeToOriginal()
+                break
+            case .original:
                 currentMode = .avatar
                 changeToAvatarMode()
+                break
             }
-            
             
             break
             
@@ -174,6 +192,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
             break
         case .mic:
             agoraKit?.muteLocalAudioStream(isSelected)
+            
             
         case .exit:
             showAlert(title: "退出游戏", message: "确定退出退出游戏 ？") {
@@ -184,8 +203,11 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
             
         case .back:
             let name = channelName
+            let localIsHost = isHost
             showAlert(title: "关闭直播间", message: "关闭直播间后，其他用户将不能再和您连线。确定关闭 ？") {
-                SyncUtil.delete(id: name, success: nil, fail: nil)
+                if localIsHost {
+                    SyncUtil.delete(id: name, success: nil, fail: nil)
+                }
                 self.navigationController?.popViewController(animated: true)
             }
             
@@ -225,31 +247,57 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
     }
     
     private func setupUI() {
+        roomNameLabel.text = roomName
+        roomNameLabel.textColor = .gray
         view.backgroundColor = .init(hex: "#404B54")
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
         containerView.translatesAutoresizingMaskIntoConstraints = false
         localView.translatesAutoresizingMaskIntoConstraints = false
-        remoteView.translatesAutoresizingMaskIntoConstraints = false
+        remoteView1.translatesAutoresizingMaskIntoConstraints = false
+        remoteView2.translatesAutoresizingMaskIntoConstraints = false
+        remoteView3.translatesAutoresizingMaskIntoConstraints = false
         controlView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(localView)
+        roomNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        
         view.addSubview(containerView)
-        containerView.addSubview(remoteView)
+        containerView.addSubview(localView)
+        containerView.addSubview(remoteView1)
+        containerView.addSubview(remoteView2)
+        containerView.addSubview(remoteView3)
         containerView.addSubview(controlView)
+        containerView.addSubview(roomNameLabel)
         
         containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         containerView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: Screen.safeAreaBottomHeight()).isActive = true
-    
-        localView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        localView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        localView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        localView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         
-        remoteView.trailingAnchor.constraint(equalTo: localView.trailingAnchor, constant: -15).isActive = true
-        remoteView.topAnchor.constraint(equalTo: localView.safeAreaLayoutGuide.topAnchor, constant: 15).isActive = true
-        remoteView.widthAnchor.constraint(equalToConstant: 105.fit).isActive = true
-        remoteView.heightAnchor.constraint(equalToConstant: 140.fit).isActive = true
+        let gap = 2.0
+        let width = (UIScreen.main.bounds.size.width - gap * 3)/2
+        let height = width
+        
+        roomNameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5).isActive = true
+        roomNameLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        localView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60).isActive = true
+        localView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: gap).isActive = true
+        localView.widthAnchor.constraint(equalToConstant: width).isActive = true
+        localView.heightAnchor.constraint(equalToConstant: height).isActive = true
+        
+        remoteView1.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60).isActive = true
+        remoteView1.leftAnchor.constraint(equalTo: localView.rightAnchor, constant: gap).isActive = true
+        remoteView1.widthAnchor.constraint(equalToConstant: width).isActive = true
+        remoteView1.heightAnchor.constraint(equalToConstant: height).isActive = true
+        
+        remoteView2.topAnchor.constraint(equalTo: localView.bottomAnchor, constant: gap).isActive = true
+        remoteView2.leftAnchor.constraint(equalTo: view.leftAnchor, constant: gap).isActive = true
+        remoteView2.widthAnchor.constraint(equalToConstant: width).isActive = true
+        remoteView2.heightAnchor.constraint(equalToConstant: height).isActive = true
+        
+        remoteView3.topAnchor.constraint(equalTo: localView.bottomAnchor, constant: gap).isActive = true
+        remoteView3.leftAnchor.constraint(equalTo: remoteView2.rightAnchor, constant: gap).isActive = true
+        remoteView3.widthAnchor.constraint(equalToConstant: width).isActive = true
+        remoteView3.heightAnchor.constraint(equalToConstant: height).isActive = true
         
         controlView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         controlView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
@@ -264,7 +312,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
             agoraKit?.enableAudio()
             return
         }
-    
+        agoraKit?.setLogLevel(.info)
         agoraKit = AgoraRtcEngineKit.sharedEngine(with: rtcEngineConfig, delegate: self)
         avaterEngine = agoraKit!.queryAvatarEngine()
         agoraKit?.enableAudio()
@@ -280,6 +328,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         avatarConfigs.enable_human_detection = 0
         avaterEngine?.enableOrUpdateLocalAvatarVideo(true, configs: avatarConfigs)
         
+        /// 加载资源
         let _ = FUManager.shareInstance()
         let renderer = FURendererObj()
         renderer.avatarEngine = avaterEngine
@@ -290,7 +339,8 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         videoHandler.delegate = self
     }
     
-    private func changeToArMode() {
+    private func changeToArMode() { /** 切换到ar模式 **/
+        LogUtils.log(message: " -- changeToArMode -- ", level: .info)
         avaterEngine = agoraKit!.queryAvatarEngine()
         let avatarConfigs = AgoraAvatarConfigs()
         avatarConfigs.mode = .AR
@@ -304,7 +354,17 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         FUManager.shareInstance().setAsArMode()
     }
     
-    private func changeToAvatarMode() {
+    private func changeToAvatarMode() { /** 切换到avatar模式 **/
+        LogUtils.log(message: " -- changeToAvatarMode -- ", level: .info)
+        
+        let option = AgoraRtcChannelMediaOptions()
+        option.publishCameraTrack = AgoraRtcBoolOptional.of(false)
+        option.publishAvatarTrack = AgoraRtcBoolOptional.of(true)
+        option.publishAudioTrack = AgoraRtcBoolOptional.of(true)
+        option.clientRoleType = .of((Int32)(AgoraClientRole.broadcaster.rawValue))
+        option.autoSubscribeVideo = AgoraRtcBoolOptional.of(true)
+        
+        agoraKit?.updateChannel(with: option)
         FUManager.shareInstance().quitARMode()
         avaterEngine = agoraKit!.queryAvatarEngine()
         let avatarConfigs = AgoraAvatarConfigs()
@@ -316,9 +376,45 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
         let renderer = FURendererObj()
         renderer.avatarEngine = avaterEngine
         FUManager.shareInstance().renderer = renderer
-        FUManager.shareInstance().loadDefaultAvatar()
+        FUManager.shareInstance().loadSelectedAvatar()
         FUManager.shareInstance().setupForHalfMode()
         FUManager.shareInstance().enableFaceCapture(1)
+        
+        let canvas0 = AgoraRtcVideoCanvas()
+        canvas0.uid = UserInfo.userId
+        canvas0.renderMode = .hidden
+        canvas0.view = nil
+        agoraKit?.setupLocalVideo(canvas0)
+        
+        let canvas = AgoraRtcVideoCanvas()
+        canvas.uid = UserInfo.userId
+        canvas.renderMode = .hidden
+        canvas.view = localView
+        avaterEngine?.setupLocalVideoCanvas(canvas)
+    }
+    
+    private func changeToOriginal() { /** 切换到原图模式 **/
+        LogUtils.log(message: " -- changeToOriginal -- ", level: .info)
+        let option = AgoraRtcChannelMediaOptions()
+        option.publishCameraTrack = AgoraRtcBoolOptional.of(true)
+        option.publishAvatarTrack = AgoraRtcBoolOptional.of(false)
+        option.publishAudioTrack = AgoraRtcBoolOptional.of(true)
+        option.clientRoleType = .of((Int32)(AgoraClientRole.broadcaster.rawValue))
+        option.autoSubscribeVideo = AgoraRtcBoolOptional.of(true)
+        agoraKit?.updateChannel(with: option)
+        
+        let canvas0 = AgoraRtcVideoCanvas()
+        canvas0.uid = UserInfo.userId
+        canvas0.renderMode = .hidden
+        canvas0.view = nil
+        avaterEngine?.setupLocalVideoCanvas(canvas0)
+        
+        let canvas = AgoraRtcVideoCanvas()
+        canvas.uid = UserInfo.userId
+        canvas.renderMode = .hidden
+        canvas.view = localView
+        agoraKit?.setupLocalVideo(canvas)
+        agoraKit?.startPreview()
     }
     
     private func createAgoraVideoCanvas(uid: UInt,
@@ -332,7 +428,7 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
             avaterEngine?.setupLocalVideoCanvas(canvas)
             agoraKit?.startPreview()
         } else {
-            canvas.view = specialView ?? remoteView
+            canvas.view = specialView ?? localView
             agoraKit?.setupRemoteVideo(canvas)
         }
     }
@@ -340,10 +436,17 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
     public func joinChannel(channelName: String) {
         self.channelName = channelName
         
+        let option = AgoraRtcChannelMediaOptions()
+        option.publishCameraTrack = AgoraRtcBoolOptional.of(false)
+        option.publishAvatarTrack = AgoraRtcBoolOptional.of(true)
+        option.publishAudioTrack = AgoraRtcBoolOptional.of(true)
+        option.clientRoleType = .of((Int32)(AgoraClientRole.broadcaster.rawValue))
+        option.autoSubscribeVideo = AgoraRtcBoolOptional.of(true)
+        
         let result = agoraKit?.joinChannel(byToken: KeyCenter.Token,
                                            channelId: channelName,
                                            uid: UserInfo.userId,
-                                           mediaOptions: channelMediaOptions)
+                                           mediaOptions: option)
         guard result != 0 else { return }
         // Error code description can be found at:
         // en: https://docs.agora.io/en/Voice/API%20Reference/oc/Constants/AgoraErrorCode.html
@@ -370,6 +473,36 @@ class OneToOneViewController: BaseViewController, FUEditViewControllerDelegate {
                                isLocal: true,
                                specialView: nil)
     }
+    
+    /// 获取正在使用的remoteView
+    func getUnUsedRemoteView() -> UIView? {
+        if remoteView1.tag == 0 {
+            return remoteView1
+        }
+        if remoteView2.tag == 0 {
+            return remoteView2
+        }
+        if remoteView3.tag == 0 {
+            return remoteView3
+        }
+        
+        return nil
+    }
+    
+    /// 获取没有正在使用的remoteView
+    func getUsedRemoteView(uid: UInt) -> UIView? {
+        if remoteView1.tag == uid {
+            return remoteView1
+        }
+        if remoteView2.tag == uid {
+            return remoteView2
+        }
+        if remoteView3.tag == uid {
+            return remoteView3
+        }
+        
+        return nil
+    }
 }
 extension OneToOneViewController: AgoraRtcEngineDelegate {
     
@@ -388,11 +521,31 @@ extension OneToOneViewController: AgoraRtcEngineDelegate {
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinedOfUid uid: UInt, elapsed: Int) {
         LogUtils.log(message: "remote user join: \(uid) \(elapsed)ms", level: .info)
-        createAgoraVideoCanvas(uid: uid, isLocal: false)
+        
+        guard let remoteView = getUnUsedRemoteView() else {
+            LogUtils.log(message: "remote view has full", level: .info)
+            return
+        }
+        remoteView.tag = Int(uid)
+        let canvas = AgoraRtcVideoCanvas()
+        canvas.uid = uid
+        canvas.renderMode = .hidden
+        canvas.view = remoteView
+        agoraKit?.setupRemoteVideo(canvas)
     }
 
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraUserOfflineReason) {
         LogUtils.log(message: "remote user leval: \(uid) reason \(reason)", level: .info)
+        guard let remoteView = getUsedRemoteView(uid: uid) else {
+            LogUtils.log(message: "remote view not exit", level: .info)
+            return
+        }
+        remoteView.tag = 0
+        let canvas = AgoraRtcVideoCanvas()
+        canvas.uid = uid
+        canvas.renderMode = .hidden
+        canvas.view = nil
+        agoraKit?.setupRemoteVideo(canvas)
     }
 
     func rtcEngine(_ engine: AgoraRtcEngineKit, reportRtcStats stats: AgoraChannelStats) {
@@ -448,6 +601,7 @@ extension OneToOneViewController {
     enum Mode {
         case avatar
         case ar
+        case original
     }
 }
 

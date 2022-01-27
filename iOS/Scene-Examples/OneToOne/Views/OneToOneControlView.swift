@@ -31,7 +31,7 @@ class OneToOneControlView: UIView {
     private lazy var switchCameraButton: AGEButton = {
         let button = AGEButton(style: .imageName(name: "oneToOne/change"))
         button.backgroundColor = .init(hex: "#737374")
-        button.imageSize = CGSize(width: 26.fit, height: 22.fit)
+        button.imageSize = CGSize(width: 30.fit, height: 30.fit)
         button.cornerRadius = 30.fit
         button.tag = OneToOneControlType.switchCamera.rawValue
         button.addTarget(self, action: #selector(clickSwitchCamera(sender:)), for: .touchUpInside)
@@ -58,7 +58,7 @@ class OneToOneControlView: UIView {
     private lazy var editButton: AGEButton = {
         let button = AGEButton(style: .imageName(name: "oneToOne/beauty"))
         button.backgroundColor = .init(hex: "#737374")
-        button.imageSize = CGSize(width: 26.fit, height: 22.fit)
+        button.imageSize = CGSize(width: 30.fit, height: 30.fit)
         button.cornerRadius = 30.fit
         button.tag = OneToOneControlType.switchCamera.rawValue
         button.addTarget(self, action: #selector(clickEditButton), for: .touchUpInside)

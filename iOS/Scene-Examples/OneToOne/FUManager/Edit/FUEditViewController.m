@@ -985,12 +985,14 @@ static double preY = 0.0;
             curKey = leftKey;
             value = leftValue - dot;
             zeroKey = rightKey;
+            NSLog(@"=== leftkey 变小 dot:%g", dot);
         }
         else
         {                     // rightkey 变大
             curKey = rightKey;
             value = rightValue + dot;
             zeroKey = leftKey;
+            NSLog(@"=== rightkey %@ %g 变大 dot:%g", curKey, rightValue,dot);
         }
         
     }
@@ -1001,12 +1003,14 @@ static double preY = 0.0;
             curKey = rightKey;
             value = rightValue + dot;
             zeroKey = leftKey;
+            NSLog(@"=== rightkey 变小dot:%g", dot);
         }
         else
         {                     // leftkey 变大
             curKey = leftKey;
             value = leftValue - dot;
             zeroKey = rightKey;
+            NSLog(@"=== leftkey 变大dot:%g", dot);
         }
     }
     
@@ -1014,6 +1018,8 @@ static double preY = 0.0;
     {
         return;
     }
+    
+    NSLog(@"=== value %g", value);
     
     [self.currentAvatar facepupModeSetParam:curKey level:value];
     [self.currentAvatar facepupModeSetParam:zeroKey level:0.0];

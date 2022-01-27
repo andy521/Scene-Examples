@@ -17,10 +17,11 @@
 		26118AB22795961A0026E27C /* AEAColorButtonWapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 26118AB12795961A0026E27C /* AEAColorButtonWapper.m */; };
 		26118AB62796A8270026E27C /* AEABottomInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 26118AB52796A8270026E27C /* AEABottomInfo.m */; };
 		26118AB9279822E60026E27C /* AEACollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 26118AB8279822E60026E27C /* AEACollectionViewCell.m */; };
-		26118AD6279A94C10026E27C /* fuPTAClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 26118AD5279A94C10026E27C /* fuPTAClient.m */; };
 		26118ADA279A974C0026E27C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26118AD9279A974C0026E27C /* Foundation.framework */; };
 		26118ADF279D23330026E27C /* FURendererObj.m in Sources */ = {isa = PBXBuildFile; fileRef = 26118ADE279D23320026E27C /* FURendererObj.m */; };
 		26118AE1279E9DBE0026E27C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E79C25E7273B67DD00909CD4 /* Assets.xcassets */; };
+		261B132427A255FF00025CCB /* p2a_client_q1.bin in Resources */ = {isa = PBXBuildFile; fileRef = 261B132327A255FF00025CCB /* p2a_client_q1.bin */; };
+		261B132627A2563D00025CCB /* p2a_client_core.bin in Resources */ = {isa = PBXBuildFile; fileRef = 261B132527A2563D00025CCB /* p2a_client_core.bin */; };
 		26C7A5822787E469009A8DA5 /* sta_bs_blend_weight.json in Resources */ = {isa = PBXBuildFile; fileRef = 26C7A5222787E468009A8DA5 /* sta_bs_blend_weight.json */; };
 		26C7A5832787E469009A8DA5 /* MeshPoints.json in Resources */ = {isa = PBXBuildFile; fileRef = 26C7A5232787E468009A8DA5 /* MeshPoints.json */; };
 		26C7A5842787E469009A8DA5 /* ketingB.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 26C7A5262787E468009A8DA5 /* ketingB.bundle */; };
@@ -269,10 +270,11 @@
 		26118AB7279822E60026E27C /* AEACollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AEACollectionViewCell.h; sourceTree = "<group>"; };
 		26118AB8279822E60026E27C /* AEACollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AEACollectionViewCell.m; sourceTree = "<group>"; };
 		26118AD4279A93160026E27C /* fuPTAClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fuPTAClient.h; sourceTree = "<group>"; };
-		26118AD5279A94C10026E27C /* fuPTAClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = fuPTAClient.m; sourceTree = "<group>"; };
 		26118AD9279A974C0026E27C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		26118ADD279D23320026E27C /* FURendererObj.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FURendererObj.h; sourceTree = "<group>"; };
 		26118ADE279D23320026E27C /* FURendererObj.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FURendererObj.m; sourceTree = "<group>"; };
+		261B132327A255FF00025CCB /* p2a_client_q1.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = p2a_client_q1.bin; sourceTree = "<group>"; };
+		261B132527A2563D00025CCB /* p2a_client_core.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = p2a_client_core.bin; sourceTree = "<group>"; };
 		26C7A5182787E41F009A8DA5 /* authpack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = authpack.h; sourceTree = "<group>"; };
 		26C7A5222787E468009A8DA5 /* sta_bs_blend_weight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = sta_bs_blend_weight.json; sourceTree = "<group>"; };
 		26C7A5232787E468009A8DA5 /* MeshPoints.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = MeshPoints.json; sourceTree = "<group>"; };
@@ -663,8 +665,9 @@
 		26C7A5192787E45C009A8DA5 /* P2A */ = {
 			isa = PBXGroup;
 			children = (
+				261B132527A2563D00025CCB /* p2a_client_core.bin */,
+				261B132327A255FF00025CCB /* p2a_client_q1.bin */,
 				26118AD4279A93160026E27C /* fuPTAClient.h */,
-				26118AD5279A94C10026E27C /* fuPTAClient.m */,
 			);
 			path = P2A;
 			sourceTree = "<group>";
@@ -1574,6 +1577,7 @@
 				26C7A59F2787E469009A8DA5 /* ani_LRPP_shanzi.bundle in Resources */,
 				26C7A59A2787E469009A8DA5 /* ani_SJG_cam.bundle in Resources */,
 				26C7A58F2787E469009A8DA5 /* midBody_female1.bundle in Resources */,
+				261B132427A255FF00025CCB /* p2a_client_q1.bin in Resources */,
 				E79BEF54273E50ED009FA838 /* SuperWine.gif in Resources */,
 				26C7A5932787E469009A8DA5 /* midBody_female2.bundle in Resources */,
 				26C7A5BA2787E469009A8DA5 /* anim_korheart.bundle in Resources */,
@@ -1584,6 +1588,7 @@
 				26C7A5A02787E469009A8DA5 /* ani_LRPP_cam.bundle in Resources */,
 				26C7A5C42787E469009A8DA5 /* anim_merge.bundle in Resources */,
 				26C7A5E92787E4C0009A8DA5 /* zuojiao_plane_shadow.bundle in Resources */,
+				261B132627A2563D00025CCB /* p2a_client_core.bin in Resources */,
 				26C7A5E72787E4C0009A8DA5 /* ai_face_processor.bundle in Resources */,
 				26C7A5A42787E469009A8DA5 /* ani_danshoubixin_mid.bundle in Resources */,
 				26C7A5B92787E469009A8DA5 /* anim_gun.bundle in Resources */,
@@ -1784,7 +1789,6 @@
 				E7440E2C277420F200CBF4D8 /* LiveBaseView.swift in Sources */,
 				E79C2628273B7D3700909CD4 /* LiveRandomName.swift in Sources */,
 				E79BEF41273E0C3A009FA838 /* LiveToolModel.swift in Sources */,
-				26118AD6279A94C10026E27C /* fuPTAClient.m in Sources */,
 				26118AB62796A8270026E27C /* AEABottomInfo.m in Sources */,
 				E79BEF31273D0EA4009FA838 /* SignleLiveController.swift in Sources */,
 				E79BEF9A274776F8009FA838 /* GameModeModel.swift in Sources */,
@@ -1976,7 +1980,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = HFDBB878GT;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -2035,10 +2039,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
-				DEVELOPMENT_TEAM = YS397FG5PA;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 7;
+				DEVELOPMENT_TEAM = 4G288PA4VS;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2077,9 +2081,9 @@
 					"$(PROJECT_DIR)/Scene-Examples/OneToOne/FUManager/Lib/FaceUnity-SDK-iOS",
 				);
 				MARKETING_VERSION = 3.7.200;
-				PRODUCT_BUNDLE_IDENTIFIER = io.agora.scene.MetaLive;
+				PRODUCT_BUNDLE_IDENTIFIER = io.agora.MetaLive;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = rte_team_ios;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Scene-Examples/OneToOne/FUManager/Scene-Examples-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

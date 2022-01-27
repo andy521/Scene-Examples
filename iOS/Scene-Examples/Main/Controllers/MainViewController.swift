@@ -18,6 +18,8 @@ class MainViewController: BaseViewController, FUPoseTrackViewDelegate {
         view.dataArray = MainModel.mainDatas()
         return view
     }()
+    let versionLabel = UILabel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "首页"
@@ -28,12 +30,27 @@ class MainViewController: BaseViewController, FUPoseTrackViewDelegate {
     }
     
     private func setupUI() {
+        versionLabel.textColor = .gray
+        versionLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
+        view.addSubview(versionLabel)
+        
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40).isActive = true
+        
+        versionLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        versionLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        versionLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10).isActive = true
+        versionLabel.centerXAnchor.constraint(equalTo: tableView.centerXAnchor).isActive = true
+        
+        let dict = Bundle.main.infoDictionary
+        let version = dict!["CFBundleShortVersionString"] as! String
+        let build = dict!["CFBundleVersion"] as! String
+        versionLabel.text = "\(version)(\(build))"
+        versionLabel.textAlignment = .center
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -68,4 +85,5 @@ extension MainViewController: AGETableViewDelegate {
     func pullToRefreshHandler() {
         
     }
+    
 }

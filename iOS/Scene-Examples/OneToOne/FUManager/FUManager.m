@@ -38,7 +38,8 @@ static FUManager *fuManager = nil;
         // 配饰类型数组
         self.decorationTypeArray = @[TAG_FU_ITEM_DECORATION_SHOU,TAG_FU_ITEM_DECORATION_JIAO,TAG_FU_ITEM_DECORATION_XIANGLIAN,
         TAG_FU_ITEM_DECORATION_ERHUAN,TAG_FU_ITEM_DECORATION_TOUSHI];
-        
+        _avatarStyle = FUAvatarStyleQ;
+        [self loadClientDataWithFirstSetup:YES];
     }
     return self;
 }
@@ -51,6 +52,40 @@ static FUManager *fuManager = nil;
     self.signal = dispatch_semaphore_create(1);
     isCreatingAvatar = NO;
 
+}
+
+//初始化P2AClient库
+- (void)loadClientDataWithFirstSetup:(BOOL)firstSetup
+{
+    NSString *qPath;
+    switch (self.avatarStyle)
+    {
+        case FUAvatarStyleNormal:
+        {
+            if (![[NSFileManager defaultManager] fileExistsAtPath:AvatarListPath])
+            {
+                [[NSFileManager defaultManager] createDirectoryAtPath:AvatarListPath withIntermediateDirectories:YES attributes:nil error:nil];
+            }
+            qPath =[[NSBundle mainBundle] pathForResource:@"p2a_client_q" ofType:@"bin"];
+        }
+            break;
+        case FUAvatarStyleQ:
+        {
+            if (![[NSFileManager defaultManager] fileExistsAtPath:AvatarQPath])
+            {
+                [[NSFileManager defaultManager] createDirectoryAtPath:AvatarQPath withIntermediateDirectories:YES attributes:nil error:nil];
+            }
+            qPath =[[NSBundle mainBundle] pathForResource:@"p2a_client_q1" ofType:@"bin"];
+        }
+            break;
+    }
+    // p2a bin
+    if (firstSetup)
+    {
+        NSString *corePath = [[NSBundle mainBundle] pathForResource:@"p2a_client_core" ofType:@"bin"];
+        [[fuPTAClient shareInstance] setupCore:corePath authPackage:&g_auth_package authSize:sizeof(g_auth_package)];
+    }
+    [[fuPTAClient shareInstance] setupCustomData:qPath];
 }
 
 #pragma mark ------ 图像 ------
@@ -1493,7 +1528,6 @@ static int ARFilterID = 0 ;
 //如果是预制形象生成新的形象，如果不是预制模型保存新的信息
 - (void)saveAvatar
 {
-    return;
     FUAvatar *currentAvatar = self.currentAvatars.lastObject;
     BOOL deformHead = [[FUShapeParamsMode shareInstance]propertiesIsChanged]||[self faceHasChanged];
     
@@ -2084,8 +2118,6 @@ static int ARFilterID = 0 ;
     dispatch_semaphore_signal(self.signal);
 }
 
-
-
 #pragma mark ------ 数据处理 ------
 /// 获取颜色编号
 /// @param key 颜色类别
@@ -2390,7 +2422,17 @@ static float CenterScale = 0.3;
     FUAvatar *avatar = [FUManager shareInstance].avatarList.firstObject;
     [avatar setCurrentAvatarIndex:0];
     [self reloadAvatarToControllerWithAvatar:avatar];
-//    [avatar loadStandbyAnimation];
+}
+
+- (void)loadSelectedAvatar {
+    if ([FUManager shareInstance].avatarList.count > DefaultAvatarNum) {
+        FUAvatar *avatar = [FUManager shareInstance].avatarList[DefaultAvatarNum];
+        [avatar setCurrentAvatarIndex:DefaultAvatarNum];
+        [self reloadAvatarToControllerWithAvatar:avatar];
+    }
+    else {
+        [self loadDefaultAvatar];
+    }
 }
 
 /// 设置形象风格

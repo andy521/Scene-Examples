@@ -406,6 +406,9 @@
  @param avatar Avatar
  */
 - (void)reloadRenderAvatarInARModeInSameController:(FUAvatar *)avatar;
+
+
+- (void)reloadRenderAvatarInARMode;
 //
 //
 #pragma mark ------ 数据处理 ------
@@ -525,5 +528,6 @@
 - (void)setAsArMode;
 - (void)quitARMode;
 - (void)loadDefaultAvatar;
+- (void)loadSelectedAvatar;
 
 @end
