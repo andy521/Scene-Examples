@@ -159,8 +159,8 @@ public class AvatarHandle extends BasePTAHandle {
     @Override
     protected void unBindAll() {
         RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HEAD);
-            RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAIR);
-            RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAT);
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAIR);
+        RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAT);
         RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_GLASS);
         RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BEARD);
         RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BROW);
@@ -180,9 +180,7 @@ public class AvatarHandle extends BasePTAHandle {
         RtcManager.getInstance().disableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_BO_SHI);
 
         RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_EYE_LINER);
-        eyeshadowItemTypeId = AvatarItemType.AvatarItemType_EYE_SHADOW;
         RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_EYE_SHADOW);
-        lipglossItemTypeId = AvatarItemType.AvatarItemType_LIP_GLOSS;
         RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_LIP_GLOSS);
         RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_PUPIL);
 

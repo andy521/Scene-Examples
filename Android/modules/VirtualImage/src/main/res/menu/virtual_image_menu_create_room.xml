@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/flip_camera"
-        android:icon="@drawable/virtual_image_ic_switch_camera"
-        android:title="@string/virtual_image_flip_camera"
-        app:showAsAction="ifRoom" />
-</menu>

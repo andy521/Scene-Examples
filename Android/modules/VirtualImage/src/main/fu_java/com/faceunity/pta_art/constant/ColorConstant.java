@@ -2,9 +2,7 @@ package com.faceunity.pta_art.constant;
 
 import android.content.Context;
 
-import com.faceunity.pta_art.entity.StaBsBlendBean;
 import com.faceunity.pta_art.ui.seekbar.ColorPickGradient;
-import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
@@ -28,7 +26,6 @@ public abstract class ColorConstant {
     public static double[][] glass_color;
     public static double[][] hat_color;
     public static double[][] makeup_color;
-    public static StaBsBlendBean sta_bs_blend;
 
     public static void init(Context context) {
         try {
@@ -50,16 +47,6 @@ public abstract class ColorConstant {
             makeup_color = parseJson(jsonObject, "makeup_color");
 
             ColorPickGradient.init(skin_color);
-            /**
-             * sta bs blend json
-             */
-            InputStream isSta = context.getAssets().open("new/sta_bs_blend_weight.json");
-            byte[] itemStaData = new byte[isSta.available()];
-            isSta.read(itemStaData);
-            isSta.close();
-            String jsonSta = new String(itemStaData);
-            Gson gson = new Gson();
-            sta_bs_blend = gson.fromJson(jsonSta, StaBsBlendBean.class);
         } catch (Exception e) {
             e.printStackTrace();
         }

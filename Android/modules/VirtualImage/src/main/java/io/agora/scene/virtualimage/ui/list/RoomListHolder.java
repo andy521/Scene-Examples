@@ -7,7 +7,7 @@ import io.agora.example.base.BaseRecyclerViewAdapter;
 import io.agora.example.base.BaseUtil;
 import io.agora.scene.virtualimage.bean.RoomInfo;
 import io.agora.scene.virtualimage.databinding.VirtualImageItemRoomListBinding;
-import io.agora.scene.virtualimage.util.OneUtil;
+import io.agora.scene.virtualimage.util.MetaUtil;
 
 public class RoomListHolder extends BaseRecyclerViewAdapter.BaseViewHolder<VirtualImageItemRoomListBinding, RoomInfo> {
     public RoomListHolder(@NonNull VirtualImageItemRoomListBinding mBinding) {
@@ -19,7 +19,7 @@ public class RoomListHolder extends BaseRecyclerViewAdapter.BaseViewHolder<Virtu
         if (room != null){
             mBinding.titleItemRoomList.setText(room.getRoomName());
             mBinding.bgdItemRoomList.setImageTintList(BaseUtil.getScrimColorSelector(itemView.getContext()));
-            mBinding.bgdItemRoomList.setImageResource(OneUtil.getBgdByRoomBgdId(room.getBackgroundId()));
+            mBinding.bgdItemRoomList.setImageResource(MetaUtil.getBgdByRoomBgdId(room.getBackgroundId()));
         }
     }
 }

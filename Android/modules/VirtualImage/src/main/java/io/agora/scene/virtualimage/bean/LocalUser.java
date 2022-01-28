@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Random;
 
-import io.agora.scene.virtualimage.util.OneUtil;
+import io.agora.scene.virtualimage.util.MetaUtil;
 
 public class LocalUser {
     //    随机Int转string获得, 用来作为加rtc的uid
@@ -32,7 +32,7 @@ public class LocalUser {
         this.channelId = channelId;
         this.userId = userId;
         this.name = "User-" + userId;
-        this.avatar = OneUtil.randomAvatar();
+        this.avatar = MetaUtil.randomAvatar();
     }
 
     @NonNull

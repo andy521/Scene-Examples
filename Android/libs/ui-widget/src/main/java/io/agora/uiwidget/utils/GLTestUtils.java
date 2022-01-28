@@ -1,4 +1,4 @@
-package io.agora.scene.virtualimage.manager;
+package io.agora.uiwidget.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

@@ -26,7 +26,7 @@ import io.agora.scene.virtualimage.databinding.VirtualImageFragmentCreateRoomBin
 import io.agora.scene.virtualimage.manager.FUManager;
 import io.agora.scene.virtualimage.manager.RtcManager;
 import io.agora.scene.virtualimage.util.EventObserver;
-import io.agora.scene.virtualimage.util.OneUtil;
+import io.agora.scene.virtualimage.util.MetaUtil;
 
 public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCreateRoomBinding> {
 
@@ -38,7 +38,7 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setStatusBarStyle(false);
-        mGlobalModel = OneUtil.getViewModel(requireActivity(), GlobalViewModel.class);
+        mGlobalModel = MetaUtil.getViewModel(requireActivity(), GlobalViewModel.class);
         initListener();
 
         setupRandomName();
@@ -146,12 +146,13 @@ public class RoomCreateFragment extends BaseNavFragment<VirtualImageFragmentCrea
     }
 
     private void setupRandomName() {
-        String currentName = OneUtil.getRandomRoomName();
+        String currentName = MetaUtil.getRandomRoomName();
         mBinding.nameFgCreate.setText(currentName);
     }
 
     private void navigateToStartPage() {
         RtcManager.getInstance().reset(true);
+        FUManager.getInstance().stop();
         findNavController().popBackStack(R.id.roomListFragment, false);
     }
 }

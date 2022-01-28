@@ -21,15 +21,14 @@ import io.agora.example.base.BaseUtil;
 import io.agora.scene.virtualimage.GlobalViewModel;
 import io.agora.scene.virtualimage.R;
 import io.agora.scene.virtualimage.base.BaseNavFragment;
-import io.agora.scene.virtualimage.bean.GameInfo;
 import io.agora.scene.virtualimage.bean.LocalUser;
 import io.agora.scene.virtualimage.bean.RoomInfo;
 import io.agora.scene.virtualimage.databinding.VirtualImageFragmentRoomBinding;
 import io.agora.scene.virtualimage.manager.FUManager;
 import io.agora.scene.virtualimage.manager.RtcManager;
 import io.agora.scene.virtualimage.ui.HostView;
+import io.agora.scene.virtualimage.util.MetaUtil;
 import io.agora.scene.virtualimage.util.NormalContainerInsetsListener;
-import io.agora.scene.virtualimage.util.OneUtil;
 import io.agora.scene.virtualimage.util.ViewStatus;
 
 public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBinding> {
@@ -41,7 +40,7 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        GlobalViewModel mGlobalModel = OneUtil.getViewModel(requireActivity(), GlobalViewModel.class);
+        GlobalViewModel mGlobalModel = MetaUtil.getViewModel(requireActivity(), GlobalViewModel.class);
         // hold current RoomInfo
         if (mGlobalModel.roomInfo.getValue() != null)
             currentRoom = mGlobalModel.roomInfo.getValue().peekContent();
@@ -49,7 +48,7 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
             findNavController().navigate(R.id.action_roomFragment_to_roomCreateFragment);
             return null;
         }
-        mViewModel = OneUtil.getViewModel(this, RoomViewModel.class, new RoomViewModelFactory(requireContext(), mGlobalModel.localUser, currentRoom));
+        mViewModel = MetaUtil.getViewModel(this, RoomViewModel.class, new RoomViewModelFactory(requireContext(), mGlobalModel.localUser, currentRoom));
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }
@@ -62,6 +61,7 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
 
         initListener();
         initLiveDataObserver();
+        mBinding.tvRoomName.setText(mViewModel.currentRoom.getRoomName());
     }
 
 
@@ -162,9 +162,6 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
         mBinding.hostViewFgRoom.setViewportTarget(0, true);
         mViewModel.setupLocalView(mBinding.hostViewFgRoom.getTargetViewport(0));
 
-        // 当前游戏信息
-        mViewModel.gameInfo().observe(getViewLifecycleOwner(), this::onGameStatusChanged);
-
         // 静音状态
         mViewModel.isLocalMicMuted.observe(getViewLifecycleOwner(), isMute -> {
             int resId = isMute ? R.drawable.virtual_image_ic_microphone_off : R.drawable.virtual_image_ic_microphone;
@@ -192,13 +189,6 @@ public class RoomFragment extends BaseNavFragment<VirtualImageFragmentRoomBindin
                 .show();
     }
 
-
-    private void onGameStatusChanged(@NonNull GameInfo gameInfo) {
-        BaseUtil.logD("onGameStatusChanged:" + gameInfo.getStatus());
-        boolean btnGameEnabled = gameInfo.getStatus() != GameInfo.START;
-        mBinding.btnMode.setEnabled(btnGameEnabled);
-        mBinding.btnMode.setAlpha(btnGameEnabled ? 1f : 0.5f);
-    }
 
     private void setupInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(mBinding.containerFgRoom, new NormalContainerInsetsListener());

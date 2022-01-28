@@ -21,7 +21,6 @@ import com.faceunity.pta_art.core.driver.ar.PTAARDriveCore;
 import com.faceunity.pta_art.entity.AvatarPTA;
 import com.faceunity.pta_art.entity.DBHelper;
 import com.faceunity.pta_art.fragment.BaseFragment;
-import com.faceunity.wrapper.faceunity;
 
 import java.util.List;
 
@@ -59,8 +58,6 @@ public class FUManager {
     private List<AvatarPTA> mAvatarP2As;
     private int mShowIndex;
     private AvatarPTA mShowAvatarP2A;
-
-    private faceunity.RotatedImage mRotatedImage = null;
 
     private GestureDetectorCompat mGestureDetector;
     private ScaleGestureDetector mScaleGestureDetector;
@@ -215,15 +212,18 @@ public class FUManager {
             mARDriveCore = null;
             mARAvatarHandle = null;
         }
+        if(mP2ACore != null){
+            mP2ACore.unBind();
+            mP2ACore.release();
+            mAvatarHandle.closeLight();
+            mAvatarHandle = null;
+            mP2ACore = null;
+        }
 
         if(mFUP2ARenderer != null){
             mFUP2ARenderer.release();
+            mFUP2ARenderer = null;
         }
-
-        mFUP2ARenderer = null;
-        mAvatarHandle = null;
-        mP2ACore = null;
-        mRotatedImage = null;
     }
 
     public AvatarPTA getShowAvatarP2A() {

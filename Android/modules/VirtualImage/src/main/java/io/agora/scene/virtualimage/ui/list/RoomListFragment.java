@@ -31,7 +31,7 @@ import io.agora.scene.virtualimage.manager.FUManager;
 import io.agora.scene.virtualimage.manager.RtcManager;
 import io.agora.scene.virtualimage.util.Event;
 import io.agora.scene.virtualimage.util.EventObserver;
-import io.agora.scene.virtualimage.util.OneUtil;
+import io.agora.scene.virtualimage.util.MetaUtil;
 import io.agora.scene.virtualimage.util.ViewStatus;
 
 import static java.lang.Boolean.TRUE;
@@ -72,9 +72,9 @@ public class RoomListFragment extends BaseNavFragment<VirtualImageFragmentRoomLi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setStatusBarStyle(false);
-        mViewModel = OneUtil.getViewModel(this, RoomListViewModel.class);
+        mViewModel = MetaUtil.getViewModel(this, RoomListViewModel.class);
 
-        mGlobalModel = OneUtil.getViewModel(requireActivity(), GlobalViewModel.class);
+        mGlobalModel = MetaUtil.getViewModel(requireActivity(), GlobalViewModel.class);
         mGlobalModel.clearRoomInfo();
         // FIXME To avoid APP be killed in background
         //       Apparently this is gonna trigger a second request
@@ -108,21 +108,23 @@ public class RoomListFragment extends BaseNavFragment<VirtualImageFragmentRoomLi
         mBinding.recyclerViewFgList.addItemDecoration(new DividerDecoration(2));
         mBinding.swipeFgList.setProgressViewOffset(true, 0, mBinding.swipeFgList.getProgressViewEndOffset());
         mBinding.swipeFgList.setColorSchemeResources(R.color.virtual_image_btn_gradient_start_color, R.color.virtual_image_btn_gradient_end_color);
-        int backgroundColor = OneUtil.getMaterialBackgroundColor(BaseUtil.getColorInt(requireContext(), R.attr.colorSurface));
+        int backgroundColor = MetaUtil.getMaterialBackgroundColor(BaseUtil.getColorInt(requireContext(), R.attr.colorSurface));
         mBinding.swipeFgList.setProgressBackgroundColorSchemeColor(backgroundColor);
     }
 
     private void initListener() {
-        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-//                android.os.Process.killProcess(android.os.Process.myPid());
-//                Runtime.getRuntime().gc();
-                FUManager.getInstance().stop();
-                RtcManager.getInstance().destroy();
-                requireActivity().finish();
-            }
-        });
+        requireActivity().getOnBackPressedDispatcher().addCallback(
+                getViewLifecycleOwner(),
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        //android.os.Process.killProcess(android.os.Process.myPid());
+                        //Runtime.getRuntime().gc();
+                        //FUManager.getInstance().stop();
+                        //RtcManager.getInstance().destroy();
+                        requireActivity().finish();
+                    }
+                });
         ViewCompat.setOnApplyWindowInsetsListener(mBinding.getRoot(), (v, insets) -> {
             Insets inset = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             // 顶部

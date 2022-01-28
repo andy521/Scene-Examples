@@ -8,9 +8,7 @@ import com.faceunity.pta_art.entity.AvatarPTA;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import io.agora.rtc2.Constants;
 import io.agora.rtc2.video.AvatarOptionValue;
@@ -29,8 +27,6 @@ public abstract class BasePTAHandle extends BaseHandle {
      */
     public int eyebrowHandleId, eyeshadowHandleId, lipglossHandleId,
             eyelashHandleId;
-    protected final List<Runnable> bindEvents = new ArrayList<>();
-    protected final List<Runnable> destroyEvents = new ArrayList<>();
 
     public BasePTAHandle(BaseCore baseCore, FUItemHandler FUItemHandler) {
         super(baseCore, FUItemHandler);

@@ -14,8 +14,8 @@ import java.util.HashMap;
 import io.agora.scene.virtualimage.bean.LocalUser;
 import io.agora.scene.virtualimage.bean.RoomInfo;
 import io.agora.scene.virtualimage.util.Event;
-import io.agora.scene.virtualimage.util.OneConstants;
-import io.agora.scene.virtualimage.util.OneUtil;
+import io.agora.scene.virtualimage.util.MetaLiveConstants;
+import io.agora.scene.virtualimage.util.MetaUtil;
 import io.agora.syncmanager.rtm.Sync;
 import io.agora.syncmanager.rtm.SyncManagerException;
 
@@ -75,7 +75,7 @@ public class GlobalViewModel extends ViewModel {
     }
 
     public void createRoom(@NonNull RoomInfo room) {
-        Sync.Instance().createScene(OneUtil.getSceneFromRoomInfo(room), new Sync.Callback() {
+        Sync.Instance().createScene(MetaUtil.getSceneFromRoomInfo(room), new Sync.Callback() {
 
             @Override
             public void onSuccess() {
@@ -94,7 +94,7 @@ public class GlobalViewModel extends ViewModel {
         HashMap<String, String> map = new HashMap<>();
         map.put("appid", context.getString(R.string.rtm_app_id));
         map.put("token", context.getString(R.string.rtm_app_token));
-        map.put("defaultChannel", OneConstants.globalChannel);
+        map.put("defaultChannel", MetaLiveConstants.globalChannel);
         Sync.Instance().init(context, map, new Sync.Callback() {
             @Override
             public void onSuccess() {

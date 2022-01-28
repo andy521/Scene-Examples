@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import io.agora.base.VideoFrame;
 import io.agora.rtc2.ChannelMediaOptions;
@@ -572,6 +573,20 @@ public class RtcManager {
     }
 
     public void destroy() {
+        if(avatarEngine != null){
+            Set<Integer> avatarItemIds = avatarItemEnableMap.keySet();
+            for (Integer id : avatarItemIds) {
+                if(id == null){
+                    continue;
+                }
+                String bundlePath = avatarItemEnableMap.get(id);
+                if(!TextUtils.isEmpty(bundlePath)){
+                    disableAvatarGeneratorItems(id);
+                }
+            }
+            avatarItemEnableMap.clear();
+            avatarEngine = null;
+        }
         if(engine != null){
             engine.leaveChannel();
             engine.stopPreview();

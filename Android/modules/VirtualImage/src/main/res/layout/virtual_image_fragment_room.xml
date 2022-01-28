@@ -11,6 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+
+
     <!-- Button -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container_fg_room"
@@ -19,6 +21,17 @@
         android:animateLayoutChanges="true"
         tools:background="@drawable/virtual_image_portrait01">
 
+        <TextView
+            android:id="@+id/tv_room_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            android:gravity="center"
+            android:paddingVertical="16dp"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            tools:text="标题"
+            />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_beauty"

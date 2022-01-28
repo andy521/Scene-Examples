@@ -8,4 +8,4 @@
     android:layout_height="match_parent"
     android:background="@android:color/transparent"
     app:defaultNavHost="true"
-    app:navGraph="@navigation/virtual_image_nav_graph_game" />
+    app:navGraph="@navigation/virtual_image_nav_graph" />

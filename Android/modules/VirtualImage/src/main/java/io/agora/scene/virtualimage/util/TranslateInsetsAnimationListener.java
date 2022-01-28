@@ -1,7 +1,5 @@
 package io.agora.scene.virtualimage.util;
 
-import static android.view.View.GONE;
-
 import android.annotation.SuppressLint;
 import android.view.View;
 
@@ -15,6 +13,8 @@ import androidx.core.view.WindowInsetsCompat;
 import java.util.List;
 
 import io.agora.example.base.BaseUtil;
+
+import static android.view.View.GONE;
 
 /**
  * Add translationY to a view when Keyboard shows
@@ -79,7 +79,7 @@ public class TranslateInsetsAnimationListener extends WindowInsetsAnimationCompa
     private void setTranslationY(WindowInsetsCompat insets, float fraction){
         if (view != null){
             Insets desiredAnimationInset = insets.getInsets(desiredAnimationInsets);
-            float desiredY = OneUtil.lerp(view.getMeasuredHeight(), -desiredAnimationInset.bottom, fraction);
+            float desiredY = MetaUtil.lerp(view.getMeasuredHeight(), -desiredAnimationInset.bottom, fraction);
             BaseUtil.logD("desiredY ->>>"+ desiredY);
             view.setTranslationY(desiredY);
         }

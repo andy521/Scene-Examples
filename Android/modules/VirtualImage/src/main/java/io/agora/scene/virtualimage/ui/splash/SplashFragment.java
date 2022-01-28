@@ -11,7 +11,7 @@ import io.agora.scene.virtualimage.R;
 import io.agora.scene.virtualimage.base.BaseNavFragment;
 import io.agora.scene.virtualimage.databinding.VirtualImageFragmentSplashBinding;
 import io.agora.scene.virtualimage.util.EventObserver;
-import io.agora.scene.virtualimage.util.OneUtil;
+import io.agora.scene.virtualimage.util.MetaUtil;
 
 
 public class SplashFragment extends BaseNavFragment<VirtualImageFragmentSplashBinding> {
@@ -20,7 +20,7 @@ public class SplashFragment extends BaseNavFragment<VirtualImageFragmentSplashBi
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        globalViewModel = OneUtil.getViewModel(requireActivity(), GlobalViewModel.class);
+        globalViewModel = MetaUtil.getViewModel(requireActivity(), GlobalViewModel.class);
 
         initListener();
     }

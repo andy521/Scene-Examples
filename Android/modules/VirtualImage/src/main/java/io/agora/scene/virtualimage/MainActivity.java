@@ -15,7 +15,7 @@ import androidx.core.view.WindowCompat;
 import io.agora.example.base.BaseActivity;
 import io.agora.scene.virtualimage.databinding.VirtualImageActivityMainBinding;
 import io.agora.scene.virtualimage.manager.FUManager;
-import io.agora.scene.virtualimage.util.OneUtil;
+import io.agora.scene.virtualimage.util.MetaUtil;
 
 public class MainActivity extends BaseActivity<VirtualImageActivityMainBinding> {
 
@@ -27,7 +27,7 @@ public class MainActivity extends BaseActivity<VirtualImageActivityMainBinding> 
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        globalViewModel = OneUtil.getViewModel(this, GlobalViewModel.class);
+        globalViewModel = MetaUtil.getViewModel(this, GlobalViewModel.class);
 
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         setStatusBarTransparent();

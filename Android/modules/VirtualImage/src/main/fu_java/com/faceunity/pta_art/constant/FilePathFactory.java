@@ -1,18 +1,9 @@
 package com.faceunity.pta_art.constant;
 
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYEBROW_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYELASH_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYELINER_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYESHADOW_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_FACEMAKEUP_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_LIPGLOSS_INDEX;
-import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_PUPIL_INDEX;
-
 import androidx.collection.ArrayMap;
 
 import com.faceunity.pta_art.entity.AvatarPTA;
 import com.faceunity.pta_art.entity.BundleRes;
-import com.faceunity.pta_art.entity.Scenes;
 import com.faceunity.pta_art.entity.SpecialBundleRes;
 import com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager;
 
@@ -23,6 +14,14 @@ import java.util.Random;
 
 import io.agora.scene.virtualimage.R;
 import io.agora.scene.virtualimage.manager.FUManager;
+
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYEBROW_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYELASH_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYELINER_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_EYESHADOW_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_FACEMAKEUP_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_LIPGLOSS_INDEX;
+import static com.faceunity.pta_art.fragment.editface.core.EditFaceItemManager.TITLE_PUPIL_INDEX;
 
 /**
  * Created by tujh on 2019/3/27.
@@ -504,27 +503,6 @@ public abstract class FilePathFactory {
         return Arrays.asList(SCENES_ANI);
     }
 
-
-    /**
-     * 合影
-     */
-    public static Scenes[] singleScenes() {
-        JsonUtils jsonUtils = new JsonUtils();
-        jsonUtils.readExpressionJson("new/expression/expression_config.json", 0, false);
-        return jsonUtils.getScenesList();
-    }
-
-    public static Scenes[] multipleScenes() {
-        JsonUtils jsonUtils = new JsonUtils();
-        jsonUtils.readExpressionJson("new/expression/expression_config.json", 1, false);
-        return jsonUtils.getScenesList();
-    }
-
-    public static Scenes[] animationScenes() {
-        JsonUtils jsonUtils = new JsonUtils();
-        jsonUtils.readExpressionJson("new/expression/expression_config.json", 2, true);
-        return jsonUtils.getScenesList();
-    }
 
     /**
      * 过滤列表性别

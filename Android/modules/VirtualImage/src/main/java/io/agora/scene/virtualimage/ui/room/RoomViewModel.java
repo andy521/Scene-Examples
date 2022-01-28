@@ -18,17 +18,11 @@ import java.util.Objects;
 import io.agora.example.base.BaseUtil;
 import io.agora.rtc2.RtcEngine;
 import io.agora.scene.virtualimage.R;
-import io.agora.scene.virtualimage.bean.AgoraGame;
-import io.agora.scene.virtualimage.bean.GameInfo;
 import io.agora.scene.virtualimage.bean.LocalUser;
 import io.agora.scene.virtualimage.bean.RoomInfo;
 import io.agora.scene.virtualimage.manager.FUManager;
 import io.agora.scene.virtualimage.manager.RtcManager;
-import io.agora.scene.virtualimage.repo.GameRepo;
-import io.agora.scene.virtualimage.util.OneConstants;
-import io.agora.scene.virtualimage.util.OneSyncEventListener;
 import io.agora.scene.virtualimage.util.ViewStatus;
-import io.agora.syncmanager.rtm.IObject;
 import io.agora.syncmanager.rtm.SceneReference;
 import io.agora.syncmanager.rtm.Sync;
 import io.agora.syncmanager.rtm.SyncManagerException;
@@ -45,9 +39,6 @@ public class RoomViewModel extends ViewModel {
     public final boolean amHost;
     // 当前房间信息
     public final RoomInfo currentRoom;
-    // 当前在玩游戏信息
-    @Nullable
-    public AgoraGame currentGame;
     // 当前用户信息
     @NonNull
     public final LocalUser localUser;
@@ -63,8 +54,6 @@ public class RoomViewModel extends ViewModel {
     // 对方主播信息
     private final MutableLiveData<List<LocalUser>> _targetUser = new MutableLiveData<>();
     private List<LocalUser> targetUserList = new ArrayList<>();
-    // 当前游戏信息
-    private final MutableLiveData<GameInfo> _gameInfo = new MutableLiveData<>();
     // RTC 音频状态
     public final MutableLiveData<Boolean> isLocalMicMuted = new MutableLiveData<>(false);
     //</editor-fold>
@@ -108,9 +97,6 @@ public class RoomViewModel extends ViewModel {
                     }
                 }
                 _targetUser.postValue(targetUserList);
-                if (currentGame != null){
-                    requestEndGame();
-                }
             }
         });
     }
@@ -118,78 +104,8 @@ public class RoomViewModel extends ViewModel {
     private void onJoinRTMSucceed(@NonNull SceneReference sceneReference) {
         BaseUtil.logD("RTM ready");
         currentSceneRef = sceneReference;
-        subscribeAttr();
     }
 
-    private void subscribeAttr() {
-        if (currentSceneRef != null) {
-            if (amHost)
-                currentSceneRef.update(OneConstants.GAME_INFO, new GameInfo(GameInfo.END, -1), null);
-            else
-                currentSceneRef.get(OneConstants.GAME_INFO, (GetAttrCallback) this::handleGetGameInfo);
-            currentSceneRef.subscribe(OneConstants.GAME_INFO, new OneSyncEventListener(OneConstants.GAME_INFO, this::handleGameInfo));
-        }
-    }
-
-    private void handleGetGameInfo(@Nullable IObject iObject) {
-        GameInfo gameInfo = tryHandleIObject(iObject, GameInfo.class);
-        if (gameInfo != null) {
-            switch (gameInfo.getStatus()) {
-                case GameInfo.IDLE:
-                    break;
-                case GameInfo.START: {
-                    currentGame = GameRepo.getGameDetail(gameInfo.getGameId());
-                    _gameInfo.postValue(gameInfo);
-                    break;
-                }
-                case GameInfo.END: {
-                    currentGame = null;
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
-     * 游戏 未开始：不做任何操作
-     * 已开始：加载
-     * 结束： 发送网络请求
-     */
-    private void handleGameInfo(@Nullable IObject iObject) {
-        GameInfo gameInfo = tryHandleIObject(iObject, GameInfo.class);
-        if (gameInfo != null) {
-            switch (gameInfo.getStatus()) {
-                case GameInfo.IDLE:
-                    break;
-                case GameInfo.START: {
-                    currentGame = GameRepo.getGameDetail(gameInfo.getGameId());
-                    _gameInfo.postValue(gameInfo);
-                    break;
-                }
-                case GameInfo.END: {
-                    _gameInfo.postValue(gameInfo);
-                    if (currentGame != null) {
-                        GameRepo.endThisGame(currentRoom, currentGame);
-                        currentGame = null;
-                    }
-                    if (currentSceneRef != null)
-                        currentSceneRef.update(OneConstants.GAME_INFO, new GameInfo(GameInfo.IDLE, gameInfo.getGameId()), (GetAttrCallback) this::handleGameInfo);
-                    break;
-                }
-            }
-        }
-    }
-
-    @Nullable
-    private <T> T tryHandleIObject(@Nullable IObject result, @NonNull Class<T> modelClass) {
-        if (result == null) return null;
-        T obj = null;
-        try {
-            obj = result.toObject(modelClass);
-        } catch (Exception ignored) {
-        }
-        return obj;
-    }
 
     @Override
     protected void onCleared() {
@@ -199,27 +115,24 @@ public class RoomViewModel extends ViewModel {
         RtcManager.getInstance().reset(true);
         FUManager.getInstance().stop();
 
-        new Thread(() -> {
-            if (currentGame != null) {
-                GameRepo.endThisGame(currentRoom, currentGame);
-            }
-            // destroy RTM
-            if (currentSceneRef != null) {
-                if (amHost)
-                    currentSceneRef.delete(new Sync.Callback() {
-                        @Override
-                        public void onSuccess() {
-                            BaseUtil.logD("delete onSuccess");
-                        }
+        if (currentSceneRef != null) {
+            if (amHost){
+                currentSceneRef.delete(new Sync.Callback() {
+                    @Override
+                    public void onSuccess() {
+                        BaseUtil.logD("delete onSuccess");
+                    }
 
-                        @Override
-                        public void onFail(SyncManagerException exception) {
-                            BaseUtil.logD("delete onFail");
-                        }
-                    });
-                else currentSceneRef.unsubscribe(null);
+                    @Override
+                    public void onFail(SyncManagerException exception) {
+                        BaseUtil.logD("delete onFail");
+                    }
+                });
             }
-        }).start();
+            else {
+                currentSceneRef.unsubscribe(null);
+            }
+        }
     }
     //</editor-fold>
 
@@ -231,24 +144,6 @@ public class RoomViewModel extends ViewModel {
     @NonNull
     public LiveData<List<LocalUser>> targetUser() {
         return _targetUser;
-    }
-
-    @NonNull
-    public LiveData<GameInfo> gameInfo() {
-        return _gameInfo;
-    }
-
-    public void requestStartGame(@NonNull AgoraGame agoraGame) {
-        if (currentSceneRef != null) {
-            GameInfo gameInfo = new GameInfo(GameInfo.START, agoraGame.getGameId());
-            currentSceneRef.update(OneConstants.GAME_INFO, gameInfo, null);
-        }
-    }
-
-    public void requestEndGame() {
-        if (currentSceneRef != null && currentGame != null) {
-            currentSceneRef.update(OneConstants.GAME_INFO, new GameInfo(GameInfo.END, currentGame.getGameId()), null);
-        }
     }
 
     public void initRTM() {
@@ -309,10 +204,4 @@ public class RoomViewModel extends ViewModel {
 
     //</editor-fold>
 
-    private interface GetAttrCallback extends Sync.DataItemCallback {
-        @Override
-        default void onFail(SyncManagerException exception) {
-
-        }
-    }
 }
