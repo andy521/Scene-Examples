@@ -394,7 +394,7 @@
     double y = [_renderer getDoubleWithName:@"query_vert_y"];
     
     y = pixelBufferH - y;
-    x = pixelBufferW - x;
+//    x = pixelBufferW - x;
     CGSize size = [UIScreen mainScreen].bounds.size;
     double realScreenWidth  = size.width;
     double realScreenHeight = size.height;
@@ -1072,7 +1072,7 @@
     [self resetPosition];
     
     // 获取当前相机动画bundle路径
-    NSString *camPath = [[NSBundle mainBundle].resourcePath stringByAppendingFormat:@"/Resource/page_cam/cam_02.bundle"];
+    NSString *camPath = [[NSBundle mainBundle].resourcePath stringByAppendingFormat:@"/Resource/page_cam/change_cam.bundle"];
     // 将相机动画绑定到controller上
     [_renderer enableAvatarGeneratorItem:YES type:FUItemTypeCamera bundle:camPath];
 }
