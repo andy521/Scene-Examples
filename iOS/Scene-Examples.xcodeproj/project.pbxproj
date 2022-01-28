@@ -22,6 +22,7 @@
 		26118AE1279E9DBE0026E27C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E79C25E7273B67DD00909CD4 /* Assets.xcassets */; };
 		261B132427A255FF00025CCB /* p2a_client_q1.bin in Resources */ = {isa = PBXBuildFile; fileRef = 261B132327A255FF00025CCB /* p2a_client_q1.bin */; };
 		261B132627A2563D00025CCB /* p2a_client_core.bin in Resources */ = {isa = PBXBuildFile; fileRef = 261B132527A2563D00025CCB /* p2a_client_core.bin */; };
+		261B132827A3C1FE00025CCB /* libp2a_client.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 261B132727A3C1FE00025CCB /* libp2a_client.a */; };
 		26C7A5822787E469009A8DA5 /* sta_bs_blend_weight.json in Resources */ = {isa = PBXBuildFile; fileRef = 26C7A5222787E468009A8DA5 /* sta_bs_blend_weight.json */; };
 		26C7A5832787E469009A8DA5 /* MeshPoints.json in Resources */ = {isa = PBXBuildFile; fileRef = 26C7A5232787E468009A8DA5 /* MeshPoints.json */; };
 		26C7A5842787E469009A8DA5 /* ketingB.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 26C7A5262787E468009A8DA5 /* ketingB.bundle */; };
@@ -275,6 +276,7 @@
 		26118ADE279D23320026E27C /* FURendererObj.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FURendererObj.m; sourceTree = "<group>"; };
 		261B132327A255FF00025CCB /* p2a_client_q1.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = p2a_client_q1.bin; sourceTree = "<group>"; };
 		261B132527A2563D00025CCB /* p2a_client_core.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = p2a_client_core.bin; sourceTree = "<group>"; };
+		261B132727A3C1FE00025CCB /* libp2a_client.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libp2a_client.a; sourceTree = "<group>"; };
 		26C7A5182787E41F009A8DA5 /* authpack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = authpack.h; sourceTree = "<group>"; };
 		26C7A5222787E468009A8DA5 /* sta_bs_blend_weight.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = sta_bs_blend_weight.json; sourceTree = "<group>"; };
 		26C7A5232787E468009A8DA5 /* MeshPoints.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = MeshPoints.json; sourceTree = "<group>"; };
@@ -536,6 +538,7 @@
 			files = (
 				B5DF969B7ED11BACA57C6864 /* Pods_Scene_Examples.framework in Frameworks */,
 				26C7A6002787F48C009A8DA5 /* CoreML.framework in Frameworks */,
+				261B132827A3C1FE00025CCB /* libp2a_client.a in Frameworks */,
 				26118ADA279A974C0026E27C /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -665,6 +668,7 @@
 		26C7A5192787E45C009A8DA5 /* P2A */ = {
 			isa = PBXGroup;
 			children = (
+				261B132727A3C1FE00025CCB /* libp2a_client.a */,
 				261B132527A2563D00025CCB /* p2a_client_core.bin */,
 				261B132327A255FF00025CCB /* p2a_client_q1.bin */,
 				26118AD4279A93160026E27C /* fuPTAClient.h */,
