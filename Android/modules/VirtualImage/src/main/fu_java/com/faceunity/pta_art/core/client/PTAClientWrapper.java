@@ -149,7 +149,7 @@ public abstract class PTAClientWrapper {
         headIS.close();
         fuPTAClient.HeadData headData = new fuPTAClient.HeadData();
         FUPTAClient.deformAvatarHeadWithHeadData(headData, headBundle, values);
-        FileUtil.saveDataToFile(dst, headData.bundle);
+        FileUtil.saveDataToFile(dst, headData.bundle == null ? headBundle : headData.bundle);
         return headData.bundle;
     }
 }

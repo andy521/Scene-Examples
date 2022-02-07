@@ -70,58 +70,63 @@ public class AvatarHandle extends BasePTAHandle {
     }
 
     public void setAvatar(final AvatarPTA avatar, final boolean mustLoadHead, final boolean mistLoadHair) {
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HEAD, avatar.getHeadFile(), mustLoadHead);
-        // 当前的帽子都是帽子头发道具，所以就不需要原先的头发道具了
-        if (TextUtils.isEmpty(avatar.getHatFile())) {
-            RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAIR, avatar.getHairFile(), mistLoadHair);
-            RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAT, avatar.getHatFile());
-        } else {
-            RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAIR);
-            RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAT, avatar.getHatFile());
-        }
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_GLASS, avatar.getGlassesFile());
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BEARD, avatar.getBeardFile());
+        mFUItemHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HEAD, avatar.getHeadFile(), mustLoadHead);
+                // 当前的帽子都是帽子头发道具，所以就不需要原先的头发道具了
+                if (TextUtils.isEmpty(avatar.getHatFile())) {
+                    RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAIR, avatar.getHairFile(), mistLoadHair);
+                    RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAT, avatar.getHatFile());
+                } else {
+                    RtcManager.getInstance().disableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAIR);
+                    RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAT, avatar.getHatFile());
+                }
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_GLASS, avatar.getGlassesFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BEARD, avatar.getBeardFile());
 
-        eyebrowItemTypeId = AvatarItemType.AvatarItemType_BROW;
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BROW, avatar.getEyebrowFile());
-        eyelashItemTypeId = AvatarItemType.AvatarItemType_ELASH;
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_ELASH, avatar.getEyelashFile());
+                eyebrowItemTypeId = AvatarItemType.AvatarItemType_BROW;
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BROW, avatar.getEyebrowFile());
+                eyelashItemTypeId = AvatarItemType.AvatarItemType_ELASH;
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_ELASH, avatar.getEyelashFile());
 
-        RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_BODY, FilePathFactory.bodyBundle(avatar.getClothesGender(), avatar.getBodyLevel()));
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_CLOTHES_SUIT, avatar.getClothesFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_BODY, FilePathFactory.bodyBundle(avatar.getClothesGender(), avatar.getBodyLevel()));
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_CLOTHES_SUIT, avatar.getClothesFile());
 
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_CLOTHES_UPPER, avatar.getClothesUpperFile());
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_CLOTHES_LOWER, avatar.getClothesLowerFile());
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_SHOES, avatar.getShoeFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_CLOTHES_UPPER, avatar.getClothesUpperFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_CLOTHES_LOWER, avatar.getClothesLowerFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_SHOES, avatar.getShoeFile());
 
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_TOUSHI, avatar.getHeadDecorationsFile());
-        RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_ER_SHI, avatar.getEarDecorationsFile());
-        RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_JIAO_SHI, avatar.getFootDecorationsFile());
-        RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_SHOU_SHI, avatar.getHandDecorationsFile());
-        RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_BO_SHI, avatar.getNeckDecorationsFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_TOUSHI, avatar.getHeadDecorationsFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_ER_SHI, avatar.getEarDecorationsFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_JIAO_SHI, avatar.getFootDecorationsFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_SHOU_SHI, avatar.getHandDecorationsFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_BO_SHI, avatar.getNeckDecorationsFile());
 
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_EYE_LINER, avatar.getEyelinerFile());
-        eyeshadowItemTypeId = AvatarItemType.AvatarItemType_EYE_SHADOW;
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_EYE_SHADOW, avatar.getEyeshadowFile());
-        lipglossItemTypeId = AvatarItemType.AvatarItemType_LIP_GLOSS;
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_LIP_GLOSS, avatar.getLipglossFile());
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_PUPIL, avatar.getPupilFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_EYE_LINER, avatar.getEyelinerFile());
+                eyeshadowItemTypeId = AvatarItemType.AvatarItemType_EYE_SHADOW;
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_EYE_SHADOW, avatar.getEyeshadowFile());
+                lipglossItemTypeId = AvatarItemType.AvatarItemType_LIP_GLOSS;
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_LIP_GLOSS, avatar.getLipglossFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_PUPIL, avatar.getPupilFile());
 
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_MAKEUP, avatar.getFacemakeupFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_MAKEUP, avatar.getFacemakeupFile());
 
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_ANIMATION, loadExpressionBundle(avatar));
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BACKGROUND, isGroupPhoto ? "" : avatar.getBackgroundFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_ANIMATION, loadExpressionBundle(avatar));
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BACKGROUND, isGroupPhoto ? "" : avatar.getBackgroundFile());
 
-        // 其他？
-        String[] others = avatar.getOtherFile();
-        for (int i = 0; i < otherItem.length; i++) {
-            if (others != null && i < others.length) {
-                RtcManager.getInstance().enableAvatarGeneratorItems(otherItem[i], others[i]);
-            } else {
-                RtcManager.getInstance().disableAvatarGeneratorItems(otherItem[i]);
+                // 其他？
+                String[] others = avatar.getOtherFile();
+                for (int i = 0; i < otherItem.length; i++) {
+                    if (others != null && i < others.length) {
+                        RtcManager.getInstance().enableAvatarGeneratorItems(otherItem[i], others[i]);
+                    } else {
+                        RtcManager.getInstance().disableAvatarGeneratorItems(otherItem[i]);
+                    }
+                }
+                commitItem(avatar);
             }
-        }
-        commitItem(avatar);
+        });
     }
 
     private String loadExpressionBundle(AvatarPTA avatar) {

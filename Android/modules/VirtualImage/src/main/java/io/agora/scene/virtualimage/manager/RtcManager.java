@@ -198,6 +198,7 @@ public class RtcManager {
         }
         try {
             // 0. create engine
+            long startTime = System.currentTimeMillis();
             engine = (RtcEngineEx)RtcEngineEx.create(context.getApplicationContext(), appId, new IRtcEngineEventHandler() {
                 @Override
                 public void onWarning(int warn) {
@@ -282,7 +283,9 @@ public class RtcManager {
                     true,
                     Constants.AvatarProcessingMode.AVATAR_PROCESSING_MODE_AVATAR
             );
+
             avatarEngine.enableOrUpdateLocalAvatarVideo(true, avatarConfigs);
+
 
             engine.setChannelProfile(Constants.CHANNEL_PROFILE_LIVE_BROADCASTING);
             engine.setClientRole(Constants.CLIENT_ROLE_BROADCASTER);
@@ -303,6 +306,7 @@ public class RtcManager {
             }
 
             isInitialized = true;
+            Log.d(TAG, "RTCManager initialize cost time ms=" + (System.currentTimeMillis() - startTime));
         } catch (Exception e) {
             if (listener != null) {
                 listener.onError(-1, "RtcEngine create exception : " + e.toString());
@@ -343,6 +347,7 @@ public class RtcManager {
         if (engine == null) {
             return;
         }
+        long startTime = System.currentTimeMillis();
         TextureView avatarSurfaceView = new TextureView(container.getContext());
 
         container.addView(avatarSurfaceView);
@@ -350,6 +355,7 @@ public class RtcManager {
         VideoCanvas videoCanvas = new VideoCanvas(avatarSurfaceView, RENDER_MODE_HIDDEN);
         videoCanvas.mirrorMode = MIRROR_MODE_TYPE.MIRROR_MODE_DISABLED.getValue();
         avatarEngine.setupLocalVideoCanvas(videoCanvas);
+        Log.d(TAG, "RTCManager renderLocalAvatarVideo cost time ms=" + (System.currentTimeMillis() - startTime));
     }
 
     public void renderLocalCameraVideo(FrameLayout container) {

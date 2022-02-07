@@ -17,8 +17,6 @@ import io.agora.scene.virtualimage.manager.RtcManager;
  * Created by tujh on 2018/12/17.
  */
 public class AvatarARDriveHandle extends BasePTAHandle {
-    private static final String TAG = AvatarARDriveHandle.class.getSimpleName();
-    final int FUItemHandler_what_filter = FUItemHandler_what + 2;
 
     public int eyebrowItem = 0;
     public int eyelashItem = 0;
@@ -32,34 +30,39 @@ public class AvatarARDriveHandle extends BasePTAHandle {
     }
 
     public void setARAvatar(final AvatarPTA avatar, boolean needDestory) {
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HEAD, avatar.getHeadFile(), needDestory);
-        // 当前的帽子都是帽子头发道具，所以就不需要原先的头发道具了
-        if (TextUtils.isEmpty(avatar.getHatFile())) {
-            RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAIR, avatar.getHairFile(), needDestory);
-            RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAT, avatar.getHatFile(), needDestory);
-        } else {
-            RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAIR, "", needDestory);
-            RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAT, avatar.getHatFile(), needDestory);
-        }
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_GLASS, avatar.getGlassesFile(), needDestory);
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BEARD, avatar.getBeardFile(), needDestory);
-        eyebrowItem = AvatarItemType.AvatarItemType_EYE_SHADOW;
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_EYE_SHADOW, avatar.getEyebrowFile(), needDestory);
-        eyelashItem = AvatarItemType.AvatarItemType_ELASH;
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_ELASH, avatar.getEyelashFile(), needDestory);
+        mFUItemHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HEAD, avatar.getHeadFile(), needDestory);
+                // 当前的帽子都是帽子头发道具，所以就不需要原先的头发道具了
+                if (TextUtils.isEmpty(avatar.getHatFile())) {
+                    RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAIR, avatar.getHairFile(), needDestory);
+                    RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAT, avatar.getHatFile(), needDestory);
+                } else {
+                    RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAIR, "", needDestory);
+                    RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_HAT, avatar.getHatFile(), needDestory);
+                }
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_GLASS, avatar.getGlassesFile(), needDestory);
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_BEARD, avatar.getBeardFile(), needDestory);
+                eyebrowItem = AvatarItemType.AvatarItemType_EYE_SHADOW;
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_EYE_SHADOW, avatar.getEyebrowFile(), needDestory);
+                eyelashItem = AvatarItemType.AvatarItemType_ELASH;
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_ELASH, avatar.getEyelashFile(), needDestory);
 
-        RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_ER_SHI, avatar.getEarDecorationsFile());
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_TOUSHI, avatar.getHeadDecorationsFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(RtcManager.AVATAR_ITEM_TYPE_ER_SHI, avatar.getEarDecorationsFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_TOUSHI, avatar.getHeadDecorationsFile());
 
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_EYE_LINER, avatar.getEyelinerFile());
-        eyeshadowItem = AvatarItemType.AvatarItemType_EYE_SHADOW;
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_EYE_SHADOW, avatar.getEyeshadowFile());
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_MAKEUP, avatar.getFacemakeupFile());
-        lipglossItem = AvatarItemType.AvatarItemType_LIP_GLOSS;
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_LIP_GLOSS, avatar.getLipglossFile());
-        RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_PUPIL, avatar.getPupilFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_EYE_LINER, avatar.getEyelinerFile());
+                eyeshadowItem = AvatarItemType.AvatarItemType_EYE_SHADOW;
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_EYE_SHADOW, avatar.getEyeshadowFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_MAKEUP, avatar.getFacemakeupFile());
+                lipglossItem = AvatarItemType.AvatarItemType_LIP_GLOSS;
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_LIP_GLOSS, avatar.getLipglossFile());
+                RtcManager.getInstance().enableAvatarGeneratorItems(AvatarItemType.AvatarItemType_PUPIL, avatar.getPupilFile());
 
-        commitItem(avatar);
+                commitItem(avatar);
+            }
+        });
     }
 
     @Override
